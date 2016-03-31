@@ -1,3 +1,4 @@
+
 //
 //  CBCollectionViewDocumentView.swift
 //  Lingo
@@ -18,18 +19,23 @@ public class CBCollectionViewDocumentView : NSView {
         return self.superview!.superview as! CBCollectionView
     }
     
-    public override func prepareContentInRect(rect: NSRect) {
-        Swift.print("Prepare content in rect: \(rect) - \(self.visibleRect)")
-        super.prepareContentInRect(self.prepareRect(rect, remove: true))
-    }
+//    public override func prepareContentInRect(rect: NSRect) {
+//        let _rect = self.prepareRect(rect, remove: true)
+//        super.prepareContentInRect(_rect)
+//    }
     
     var preparedRect = CGRectZero
     var preparedCellIndex : [NSIndexPath:CBCollectionViewCell] = [:]
     var preparedSupplementaryViewIndex : [SupplementaryViewIdentifier:CBCollectionReusableView] = [:]
     
     
+    public override func layout() {
+        super.layout()
+        
+    }
+    
     func reset() {
-        self.preparedContentRect = self.visibleRect
+        prepareCount = 0
         for cell in preparedCellIndex {
             cell.1.hidden = true
             cell.1._indexPath = nil
@@ -41,13 +47,14 @@ public class CBCollectionViewDocumentView : NSView {
         for view in preparedSupplementaryViewIndex {
             view.1.hidden = true
             view.1._indexPath = nil
-            view.1.removeFromSuperview()
+            view.1.removeFromSuperviewWithoutNeedingDisplay()
             let id = view.0
             self.collectionView.enqueueSupplementaryViewForReuse(view.1, withIdentifier: id)
             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view.1, forElementOfKind: id.kind, atIndexPath: id.indexPath!)
         }
         preparedSupplementaryViewIndex.removeAll()
         self.preparedRect = CGRectZero
+        self.preparedContentRect = self.visibleRect
     }
     
     
@@ -56,86 +63,91 @@ public class CBCollectionViewDocumentView : NSView {
         
     }
     
+    var prepareCount = 0
     
-    func prepareRect(rect: CGRect, remove: Bool = false) -> NSRect {
-        
-        if remove == false && CGRectInset(self.preparedRect, 0, -1).contains(rect) { return self.preparedContentRect }
-
-        let totalRect = CGRectUnion(rect, self.preparedRect)
-        var finalRect = remove ? rect : self.preparedRect
-        
-        
-        
+    
+     
+    
+    func prepareRect(rect: CGRect, remove: Bool = false) {
         
         let d = NSDate()
-        if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForElementsInRect(totalRect) {
+        
+        
+        var _rect = rect
+        if self.preparedRect.contains(rect) {
+            Swift.print("Not laying out because we're good!")
+            return
+        }
+        Swift.print("New rect, doing layout")
+        
+        _rect = self.layoutItemsInRect(_rect)
+        
+        
+        self.preparedRect = _rect
+        
+        /*
+        var addIn = CGRectSubtract(rect, rect2: self.preparedRect, horizontal: false)
+        
+        var final = rect
+        var updated = 0
+        
+        if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForElementsInRect(addIn) where attrs.count > 0 {
+            updated += attrs.count
             for attr in attrs {
-                if attr.representedElementCategory == .SupplementaryView {
-                    
-                    
+                final = CGRectUnion(rect, attr.frame)
+                guard let cell = self.preparedCellIndex[attr.indexPath] ?? self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAtIndexPath: attr.indexPath) else {
+                    "For some reason collection view tried to load cells without a data source"
                     continue
                 }
-                else {
-                    finalRect.unionInPlace(attr.frame)
-                    
-                    // Cell is prepared, if not in the rect remove it
-                    if let cell = self.preparedCellIndex[attr.indexPath] {
-                        if !attr.frame.intersects(rect) {
-                            cell.hidden = true
-                            cell._indexPath = nil
-                            cell.removeFromSuperview()
-                            self.collectionView.enqueueCellForReuse(cell)
-                            self.preparedCellIndex[attr.indexPath] = nil
-                            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: attr.indexPath)
-                        }
-                        else {
-                            self._applyLayoutAttributes(attr, toItem: cell, animated: false)
-                        }
-                    }
-                    else {
-                        guard let cell = self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAtIndexPath: attr.indexPath) else {
-                            "For some reason collection view tried to load cells without a data source"
-                            continue
-                        }
-                        cell._indexPath = attr.indexPath
-                        
-                        self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: attr.indexPath)
-                        if cell.superview == nil {
-                            self.addSubview(cell)
-                        }
-//                        if animated {
-//                            self._applyLayoutAttributes(attrs, toItem: cell, animated: false)
-//                            cell.hidden = true
-//                            //                if let a = attrs?.frame { cell.frame = f }
-//                        }
-                        self._applyLayoutAttributes(attr, toItem: cell, animated: false)
-                        cell.setSelected(self.collectionView._selectedIndexPaths.contains(cell._indexPath!), animated: false)
-                        self.preparedCellIndex[attr.indexPath] = cell
-                    }
+                cell._indexPath = attr.indexPath
+                
+                self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: attr.indexPath)
+                if cell.superview == nil {
+                    self.addSubview(cell)
+                }
+                self._applyLayoutAttributes(attr, toItem: cell, animated: false)
+                cell.setSelected(self.collectionView._selectedIndexPaths.contains(cell._indexPath!), animated: false)
+                self.preparedCellIndex[attr.indexPath] = cell
+            }
+        }
+        var removeIn = CGRectSubtract(self.preparedRect, rect2: final, horizontal: false)
+        if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForElementsInRect(removeIn) where attrs.count > 0 {
+            updated += attrs.count
+            for attr in attrs {
+                if !self.visibleRect.intersects(attr.frame), let cell = self.preparedCellIndex[attr.indexPath] {
+                    cell.hidden = true
+                    cell._indexPath = nil
+                    cell.removeFromSuperview()
+                    self.collectionView.enqueueCellForReuse(cell)
+                    self.preparedCellIndex[attr.indexPath] = nil
+                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: attr.indexPath)
                 }
             }
         }
-        else {
-            return rect
-        }
-        Swift.print(d.timeIntervalSinceNow)
+        Swift.print("remove: \(removeIn)  added: \(addIn)")
         
-        self.preparedRect = finalRect
-        return rect
+        self.preparedRect = final ?? self.preparedRect
+        Swift.print("\(self.prepareCount) - \(-d.timeIntervalSinceNow) - \(self.preparedRect) -- \(updated)")
+        prepareCount++
+        
+        return self.preparedRect
+*/
+        
     }
     
     
-    func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) {
+    func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {
         
-        /*
+        var _rect = rect
+        
         let oldIPs = Set(self.preparedCellIndex.keys)
-        var inserted = self.indexPathsForItemsInRect(self.documentVisibleRect)
+        var inserted = self.collectionView.indexPathsForItemsInRect(rect)
         let removed = oldIPs.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIPs)
         
         for ip in removed {
-            if let cell = self.cellForItemAtIndexPath(ip) {
-                self._visibleCellIndex[ip] = nil
+            if let cell = self.collectionView.cellForItemAtIndexPath(ip) {
+                self.preparedCellIndex[ip] = nil
                 if animated {
                     NSAnimationContext.runAnimationGroup({ (context) -> Void in
                         context.duration = 0.5
@@ -143,50 +155,51 @@ public class CBCollectionViewDocumentView : NSView {
                         cell.hidden = true
                         }) { () -> Void in
                             cell._indexPath = nil
-                            self.enqueueCellForReuse(cell)
-                            self.delegate?.collectionView?(self, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
+                            self.collectionView.enqueueCellForReuse(cell)
+                            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
                     }
                 }
                 else {
                     cell.hidden = true
                     cell._indexPath = nil
-                    self.enqueueCellForReuse(cell)
-                    self.delegate?.collectionView?(self, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
+                    self.collectionView.enqueueCellForReuse(cell)
+                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
                 }
             }
         }
         
         for ip in inserted {
-            guard let cell = _visibleCellIndex[ip] ?? self.dataSource?.collectionView(self, cellForItemAtIndexPath: ip) else {
+            guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip) else { continue }
+            guard let cell = preparedCellIndex[ip] ?? self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAtIndexPath: ip) else {
                 "For some reason collection view tried to load cells without a data source"
-                return
+                continue
             }
             cell._indexPath = ip
-            let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip)
+            _rect = CGRectUnion(_rect, attrs.frame)
             
-            self.delegate?.collectionView?(self, willDisplayCell: cell, forItemAtIndexPath: ip)
+            self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
             if cell.superview == nil {
-                self.contentDocumentView.addSubview(cell)
+                self.addSubview(cell)
             }
             if animated {
                 self._applyLayoutAttributes(attrs, toItem: cell, animated: false)
                 cell.hidden = true
-                //                if let a = attrs?.frame { cell.frame = f }
+                cell.frame = attrs.frame
             }
             self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
-            cell.setSelected(self._selectedIndexPaths.contains(cell._indexPath!), animated: false)
-            self._visibleCellIndex[ip] = cell
+            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell._indexPath!), animated: false)
+            self.preparedCellIndex[ip] = cell
         }
         if forceAll {
             for ip in updated {
-                let cell = _visibleCellIndex[ip]
+                let cell = preparedCellIndex[ip]
                 cell?._indexPath = ip
-                let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip)
+                let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip)
                 self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
-                cell?.selected = self._selectedIndexPaths.contains(ip)
+                cell?.selected = self.collectionView.itemAtIndexPathIsSelected(ip)
             }
         }
-        */
+        return _rect
     }
     
     

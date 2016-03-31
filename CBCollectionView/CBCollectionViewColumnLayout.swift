@@ -421,6 +421,36 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     }
     
     
+    func changesInRect(newRect: CGRect, oldRect: CGRect) -> (new: [CBCollectionViewLayoutAttributes], remove: [CBCollectionViewLayoutAttributes]) {
+        var new : [CBCollectionViewLayoutAttributes] = []
+        var remove : [CBCollectionViewLayoutAttributes] = []
+        
+        var union = newRect.union(oldRect)
+        
+        guard let cv = self.collectionView else { return (new, remove) }
+        
+        if CGRectEqualToRect(union, CGRectZero) || cv.numberOfSections() == 0 { return (new, remove) }
+        for sectionIndex in 0...cv.numberOfSections() - 1 {
+            guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
+            if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, union) { continue }
+            
+            for attr in sectionItemAttributes[sectionIndex] {
+                let inNew = attr.frame.intersects(newRect)
+                let inOld = attr.frame.intersects(oldRect)
+                
+                if inNew && !inOld {
+                    new.append(attr)
+                }
+                else if inOld && !inNew {
+                    remove.append(attr)
+                }
+            }
+        }
+        return (new, remove)
+    }
+
+    
+    
     public override func indexPathsForItemsInRect(rect: CGRect) -> Set<NSIndexPath>? {
 //        return nil
         
@@ -431,34 +461,40 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
             if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, rect) { continue }
             
-            guard let sColumns = sectionColumnAttributes[sectionIndex] where sColumns.count > 0 else { continue }
-            let firstColumn = sColumns[0]
-            
-            var start = -1
-            var end = -1
-            let itemCount = cv.numberOfItemsInSection(sectionIndex)
-            
-            let maxY = CGRectGetMaxY(rect)
-            for row in 0...firstColumn.count - 1 {
-                let attrs = firstColumn[row]
-                let include = CGRectIntersectsRect(attrs.frame, rect)
-                if !include { continue }
-                if CGRectGetMinY(attrs.frame) > maxY { break }
-                if start == -1 { start = row }
-                end = row
-                indexPaths.insert(NSIndexPath._indexPathForItem(sColumns.count * row, inSection: sectionIndex))
-            }
-            
-            if start == -1 || sColumns.count == 1 { continue }
-            
-            for c in 1...sColumns.count - 1 {
-                for r in start...end {
-                    let item = sColumns.count * r + c
-                    if item < itemCount {
-                        indexPaths.insert(NSIndexPath._indexPathForItem(item, inSection: sectionIndex))
-                    }
+            for attr in sectionItemAttributes[sectionIndex] {
+                if attr.frame.intersects(rect) {
+                    indexPaths.insert(attr.indexPath)
                 }
             }
+            
+//            guard let sColumns = sectionColumnAttributes[sectionIndex] where sColumns.count > 0 else { continue }
+//            let firstColumn = sColumns[0]
+//            
+//            var start = -1
+//            var end = -1
+//            let itemCount = cv.numberOfItemsInSection(sectionIndex)
+//            
+//            let maxY = CGRectGetMaxY(rect)
+//            for row in 0...firstColumn.count - 1 {
+//                let attrs = firstColumn[row]
+//                let include = CGRectIntersectsRect(attrs.frame, rect)
+//                if !include { continue }
+//                if CGRectGetMinY(attrs.frame) > maxY { break }
+//                if start == -1 { start = row }
+//                end = row
+//                indexPaths.insert(NSIndexPath._indexPathForItem(sColumns.count * row, inSection: sectionIndex))
+//            }
+//            
+//            if start == -1 || sColumns.count == 1 { continue }
+//            
+//            for c in 1...sColumns.count - 1 {
+//                for r in start...end {
+//                    let item = sColumns.count * r + c
+//                    if item < itemCount {
+//                        indexPaths.insert(NSIndexPath._indexPathForItem(item, inSection: sectionIndex))
+//                    }
+//                }
+//            }
 
         }
         return indexPaths

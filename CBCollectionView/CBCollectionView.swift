@@ -305,11 +305,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func didScroll(notification: NSNotification) {
-//        self.contentDocumentView.prepareRect(self.contentVisibleRect)
+        self.contentDocumentView.prepareRect(self.contentVisibleRect)
 //        self.contentDocumentView._layoutSupplementaryViews(false, forceAll: false)
 //        self.contentDocumentView._layoutItems(false, forceAll: false)
     }
-    
+
     public func indexPathForFirstVisibleItem() -> NSIndexPath? {
         for sectionIndex in 0...self.info.numberOfSections - 1 {
             guard let section = self.info.sections[sectionIndex] else { continue }
@@ -346,7 +346,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             if let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
                 self.scrollToRect(rect, atPosition: .Top, animated: false)
             }
-            self.contentDocumentView.prepareRect(self.contentVisibleRect)
+            self.contentDocumentView.preparedRect = CGRectZero
+            self.contentDocumentView.prepareContentInRect(self.contentVisibleRect)
 //            self.contentDocumentView.prepareRect(self.contentVisibleRect)
         }
         
@@ -566,7 +567,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     internal func allIndexPaths() -> Set<NSIndexPath> { return self.info.allIndexPaths }
     public func indexPathForCell(cell: CBCollectionViewCell) -> NSIndexPath?  { return cell._indexPath }
     public func indexPathForSupplementaryView(view: CBCollectionReusableView) -> NSIndexPath? { return view._indexPath }
-    
     
     public func indexPathForItemAtPoint(point: CGPoint) -> NSIndexPath?  {
         if self.info.numberOfSections == 0 { return nil }

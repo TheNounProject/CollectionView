@@ -110,6 +110,43 @@ internal enum CBCollectionViewSelectionType {
     case Multiple
 }
 
+/*
+    Subtract r2 from r1 along
+    -------------
+   |\\\\ r1 \\\\\|
+   |\\\\\\\\\\\\\|
+   |=============|
+   !    overlap  !
+   !_____________!
+   I             I
+   I     r2      I
+   I=============I
+*/
+
+func CGRectSubtract(rect1: CGRect, rect2: CGRect, horizontal: Bool) -> CGRect {
+    
+    if rect2.contains(rect1) { return CGRectZero }
+    if rect2.isEmpty { return rect1 }
+    if !rect1.intersects(rect2) { return rect1 }
+    
+    if horizontal {
+        
+        
+    }
+    else {
+        if rect1.origin.y < rect2.origin.y {
+            return CGRect(origin: rect1.origin, size: CGSize(width: rect1.size.width, height: rect2.origin.y - rect1.origin.y))
+        }
+        else {
+            let origin = CGPoint(x: rect1.origin.x, y: CGRectGetMaxY(rect1))
+            let size = CGSize(width: rect1.size.width, height: CGRectGetMaxY(rect2) - origin.y)
+            return CGRect(origin: origin, size: size)
+        }
+    }
+    
+    return rect1
+}
+
 public class CBCollectionViewLayoutAttributes {
     public var frame: CGRect = CGRectZero
     public var center: CGPoint {

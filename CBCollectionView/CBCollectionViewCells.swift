@@ -25,7 +25,7 @@ public class CBCollectionReusableView : NSView {
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         self.wantsLayer = true
-        self.canDrawSubviewsIntoLayer = true
+//        self.canDrawSubviewsIntoLayer = true
     }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -68,7 +68,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        self.wantsLayer = true
+//        self.wantsLayer = true
     }
     
     required public init?(coder: NSCoder) {

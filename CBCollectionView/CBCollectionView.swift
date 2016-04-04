@@ -314,7 +314,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     func didEndScroll(notification: NSNotification) {
 //        let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
-        self.contentDocumentView.prepareRect(self.contentVisibleRect)
+//        self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height/2))
     }
 
     public func indexPathForFirstVisibleItem() -> NSIndexPath? {
@@ -681,6 +681,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             break;
         }
         
+        self.contentDocumentView.prepareRect(CGRectUnion(rect, self.contentVisibleRect), force: false)
         self.clipView?.scrollRectToVisible(rect, animated: animated, completion: { (fin) -> Void in
 //            self._layoutItems(false, forceAll: false)
 //            self._layoutSupplementaryViews(false, forceAll: false)

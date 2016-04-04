@@ -54,9 +54,9 @@ public class CBScrollView : NSScrollView {
     }
 }
 
-private class FloatingSupplementaryView : NSView {
+class FloatingSupplementaryView : NSView {
     override var flipped : Bool { return true }
-    private override func hitTest(aPoint: NSPoint) -> NSView? {
+    internal override func hitTest(aPoint: NSPoint) -> NSView? {
         for view in self.subviews {
             if view.frame.contains(aPoint){
                 return super.hitTest(aPoint)
@@ -81,7 +81,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
 //    internal var collectionViewDocumentView : CBCollectionViewDocumentView! { return self.documentView as! CBCollectionViewDocumentView }
     public var contentDocumentView : CBCollectionViewDocumentView! { return self.documentView as! CBCollectionViewDocumentView }
-    public var contentVisibleRect : CGRect { return contentDocumentView.visibleRect }
+    public var contentVisibleRect : CGRect { return self.documentVisibleRect }
     
     
     public var contentOffset : CGPoint {
@@ -92,7 +92,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     
-    private let _floatingSupplementaryView = FloatingSupplementaryView(frame: NSZeroRect)
+    let _floatingSupplementaryView = FloatingSupplementaryView(frame: NSZeroRect)
     
     // MARK: - Data Source & Delegate
     public weak var delegate : CBCollectionViewDelegate?
@@ -134,6 +134,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.scrollsDynamically = true
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "didScroll:", name: NSScrollViewDidLiveScrollNotification, object: self)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "didEndScroll:", name: NSScrollViewDidEndLiveScrollNotification, object: self)
         
         self.addSubview(_floatingSupplementaryView, positioned: .Above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
@@ -278,10 +279,15 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public func relayout(animated: Bool, scrollToTop: Bool = true) {
         
+//        return
         let firstIP = indexPathForFirstVisibleItem()
         self.info.recalculate()
-        
         let nContentSize = self.info.contentSize
+        contentDocumentView.frame.size = nContentSize
+        
+        self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
+        return
+        
         if animated {
             NSAnimationContext.runAnimationGroup({ (context) -> Void in
                 context.duration = 0.5
@@ -299,15 +305,16 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         if nFirstIP != firstIP, let ip = firstIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
 //            self.scrollToRect(rect, atPosition: .Top, animated: false)
         }
-        
-//        self.contentDocumentView._layoutSupplementaryViews(animated, forceAll: true)
-//        self.contentDocumentView.._layoutItems(animated, forceAll: true)
+        self.contentDocumentView.prepareRect(self.contentVisibleRect)
     }
     
     func didScroll(notification: NSNotification) {
         self.contentDocumentView.prepareRect(self.contentVisibleRect)
-//        self.contentDocumentView._layoutSupplementaryViews(false, forceAll: false)
-//        self.contentDocumentView._layoutItems(false, forceAll: false)
+    }
+    
+    func didEndScroll(notification: NSNotification) {
+//        let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
+        self.contentDocumentView.prepareRect(self.contentVisibleRect)
     }
 
     public func indexPathForFirstVisibleItem() -> NSIndexPath? {
@@ -347,8 +354,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                 self.scrollToRect(rect, atPosition: .Top, animated: false)
             }
             self.contentDocumentView.preparedRect = CGRectZero
-            self.contentDocumentView.prepareContentInRect(self.contentVisibleRect)
-//            self.contentDocumentView.prepareRect(self.contentVisibleRect)
+            self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
         }
         
     }
@@ -383,7 +389,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         var visibleIdentifiers = Set<SupplementaryViewIdentifier>()
         if CGRectEqualToRect(rect, CGRectZero) { return [] }
         for sectionInfo in self.info.sections {
-//            if !CGRectIntersectsRect(sectionInfo.1.frame, rect) { continue }
+            if !CGRectIntersectsRect(sectionInfo.1.frame, rect) { continue }
             for identifier in self._allSupplementaryViewIdentifiers() {
                 let ip = NSIndexPath._indexPathForItem(0, inSection: sectionInfo.1.section)
                 if let attrs = self.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: ip) {
@@ -798,6 +804,14 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     public func moveSelectionDown(extendSelection: Bool) {
         self.moveSelectionInDirection(.Down, extendSelection: extendSelection)
+    }
+    
+    
+    public var scrollEnabled = true
+    public override func scrollWheel(theEvent: NSEvent) {
+        if scrollEnabled {
+            super.scrollWheel(theEvent)
+        }
     }
     
     

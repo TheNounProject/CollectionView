@@ -14,7 +14,7 @@ public class CBCollectionReusableView : NSView {
     public internal(set) var _indexPath: NSIndexPath?
     public internal(set) var reuseIdentifier: String?
     
-    private var attributes : CBCollectionViewLayoutAttributes?
+    internal var attributes : CBCollectionViewLayoutAttributes?
     
     public var backgroundColor: NSColor = NSColor.whiteColor() {
         didSet {

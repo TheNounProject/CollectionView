@@ -196,8 +196,8 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             let itemWidth = (contentWidth - (spaceColumCount*colSpacing)) / CGFloat(colCount)
             _itemWidth = itemWidth
             
-            var sectionHeight : CGFloat = 0
-            var sectionTop : CGFloat = 0
+//            var sectionHeight : CGFloat = 0
+//            var sectionTop : CGFloat = 0
             var sectionRect: CGRect = CGRect(x: sectionInsets.left, y: top, width: contentWidth, height: 0)
             /*
             * 2. Section header

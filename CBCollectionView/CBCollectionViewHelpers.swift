@@ -123,25 +123,26 @@ internal enum CBCollectionViewSelectionType {
    I=============I
 */
 
-func CGRectSubtract(rect1: CGRect, rect2: CGRect, horizontal: Bool) -> CGRect {
+func CGRectSubtract(rect1: CGRect, rect2: CGRect, edge: CGRectEdge) -> CGRect {
     
     if rect2.contains(rect1) { return CGRectZero }
     if rect2.isEmpty { return rect1 }
     if !rect1.intersects(rect2) { return rect1 }
     
-    if horizontal {
+    if edge == .MaxXEdge {
         
         
     }
-    else {
-        if rect1.origin.y < rect2.origin.y {
-            return CGRect(origin: rect1.origin, size: CGSize(width: rect1.size.width, height: rect2.origin.y - rect1.origin.y))
-        }
-        else {
-            let origin = CGPoint(x: rect1.origin.x, y: CGRectGetMaxY(rect1))
-            let size = CGSize(width: rect1.size.width, height: CGRectGetMaxY(rect2) - origin.y)
-            return CGRect(origin: origin, size: size)
-        }
+    else if edge == .MinXEdge {
+        
+    }
+    else if edge == .MinYEdge {
+        let origin = CGPoint(x: rect1.origin.x, y: CGRectGetMaxY(rect2))
+        let size = CGSize(width: rect1.size.width, height: CGRectGetMaxY(rect1) - origin.y)
+        return CGRect(origin: origin, size: size)
+    }
+    else if edge == .MaxYEdge {
+         return CGRect(origin: rect1.origin, size: CGSize(width: rect1.size.width, height: rect2.origin.y - rect1.origin.y))
     }
     
     return rect1

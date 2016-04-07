@@ -89,6 +89,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         set {
             self.clipView?.scrollToPoint(newValue)
             self.reflectScrolledClipView(self.clipView!)
+            self.contentDocumentView.prepareRect(self.contentVisibleRect)
         }
     }
     
@@ -133,8 +134,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.hasVerticalScroller = true
         self.scrollsDynamically = true
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "didScroll:", name: NSScrollViewDidLiveScrollNotification, object: self)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "didEndScroll:", name: NSScrollViewDidEndLiveScrollNotification, object: self)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSScrollViewDidLiveScrollNotification, object: self)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSScrollViewDidEndLiveScrollNotification, object: self)
         
         self.addSubview(_floatingSupplementaryView, positioned: .Above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
@@ -410,6 +411,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     var _selectedIndexPaths = Set<NSIndexPath>()
     
     public func indexPathsForSelectedItems() -> Set<NSIndexPath> { return _selectedIndexPaths }
+    public func sortedIndexPathsForSelectedItems() -> [NSIndexPath] {
+        return indexPathsForSelectedItems().sort { (ip1, ip2) -> Bool in
+            let before =  ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
+            return before
+        }
+    }
+    
     public func itemAtIndexPathIsSelected(indexPath: NSIndexPath) -> Bool {
         return _selectedIndexPaths.contains(indexPath)
     }
@@ -428,16 +436,19 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         for ip in indexPaths { self.selectItemAtIndexPath(ip, animated: animated, scrollPosition: .None) }
     }
     public func selectItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .None) {
-        self._selectItemAtIndexPath(indexPath, animated: animated, scrollPosition: scrollPosition, notifyDelegate: true)
+        self._selectItemAtIndexPath(indexPath, animated: animated, scrollPosition: scrollPosition, withEvent: nil)
     }
     
-    private func _selectItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .None, notifyDelegate: Bool = true) {
+    private func _selectItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .None, withEvent event: NSEvent?) {
         guard let indexPath = indexPath else {
             self.deselectAllItems(animated)
             return
         }
+        
+        if indexPath._section >= self.info.numberOfSections || indexPath._item >= self.info.numberOfItemsInSection(indexPath._section) { return }
+        
         if !self.allowsSelection { return }
-        if let shouldSelect = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: indexPath, withKey: false) where !shouldSelect { return }
+        if let shouldSelect = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: indexPath, withEvent: event) where !shouldSelect { return }
         
         if self.allowsMultipleSelection == false {
             self.deselectAllItems()
@@ -449,9 +460,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self._firstSelection = indexPath
         }
         self._lastSelection = indexPath
-        if notifyDelegate {
-            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
-        }
+        self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
         
         if scrollPosition != .None {
             self.scrollToItemAtIndexPath(indexPath, atScrollPosition: scrollPosition, animated: animated)
@@ -480,7 +489,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         atScrollPosition: CBCollectionViewScrollPosition,
         animated: Bool,
         selectionType: CBCollectionViewSelectionType) {
-            
+        
             var indexesToSelect = Set<NSIndexPath>()
             
             if selectionType == .Single {
@@ -521,7 +530,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             
             self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
             for ip in indexesToSelect {
-                self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, notifyDelegate: true)
+                self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil)
             }
             self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated)
             self._lastSelection = indexPath
@@ -574,9 +583,19 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public func indexPathForCell(cell: CBCollectionViewCell) -> NSIndexPath?  { return cell._indexPath }
     public func indexPathForSupplementaryView(view: CBCollectionReusableView) -> NSIndexPath? { return view._indexPath }
     
+    public func indexPathForSectionAtPoint(point: CGPoint) -> NSIndexPath? {
+        for sectionIndex in 0..<self.info.numberOfSections {
+            guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
+            if CGRectContainsPoint(sectionInfo.frame, point) {
+                return NSIndexPath._indexPathForItem(0, inSection: sectionIndex)
+            }
+        }
+        return nil
+    }
+    
     public func indexPathForItemAtPoint(point: CGPoint) -> NSIndexPath?  {
         if self.info.numberOfSections == 0 { return nil }
-        for sectionIndex in 0...self.info.numberOfSections - 1 {
+        for sectionIndex in 0..<self.info.numberOfSections {
             guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
             if !CGRectContainsPoint(sectionInfo.frame, point) || sectionInfo.numberOfItems == 0 { continue }
             
@@ -756,7 +775,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self.deselectItemAtIndexPath(ip, animated: true)
             return
         }
-        self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, notifyDelegate: true)
+        self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: theEvent)
     }
     
     public override func rightMouseDown(theEvent: NSEvent) {
@@ -770,7 +789,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     func moveSelectionInDirection(direction: CBCollectionViewDirection, extendSelection: Bool) {
         guard let indexPath = (extendSelection ? _lastSelection : _firstSelection) ?? self._selectedIndexPaths.first else { return }
         if let moveTo = self.collectionViewLayout.indexPathForNextItemInDirection(direction, afterItemAtIndexPath: indexPath) {
-            if let move = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: moveTo, withKey: true) where move != true { return }
+            if let move = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: moveTo, withEvent: NSApp.currentEvent) where move != true { return }
             self.selectItemAtIndexPath(moveTo, atScrollPosition: .Nearest, animated: true, selectionType: extendSelection ? .Extending : .Single)
         }
     }
@@ -840,7 +859,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAtIndexPath: mouseDownIP!, withEvent: theEvent) != true { return }
         
         let ips = self.indexPathsForSelectedItems().sort { (ip1, ip2) -> Bool in
-            return ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
+            let before = ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
+            return before
         }
         for indexPath in ips {
             var ip = indexPath

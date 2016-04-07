@@ -55,6 +55,8 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     
     public override func acceptsFirstMouse(theEvent: NSEvent?) -> Bool { return true }
     
+    private var wantsTracking = true
+    
     private var _selected: Bool = false
     private var _highlighted : Bool = false
     public var highlighted: Bool {
@@ -93,15 +95,19 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     
     public override func viewDidMoveToSuperview() {
         super.viewDidMoveToSuperview()
-        self.enableTracking()
+        if wantsTracking {
+            self.enableTracking()
+        }
     }
     
     public func disableTracking() {
+        self.wantsTracking = false
         if let tArea = self._trackingArea {
             self.removeTrackingArea(tArea)
         }
     }
     public func enableTracking() {
+        self.wantsTracking = true
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }
         var opts = [NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.ActiveInKeyWindow, .InVisibleRect]
         if trackMouseMoved {

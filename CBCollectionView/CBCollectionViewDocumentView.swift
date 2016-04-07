@@ -83,7 +83,7 @@ public class CBCollectionViewDocumentView : NSView {
                 }
                 self._applyLayoutAttributes(attrs, toItem: view, animated: false)
             }
-            Swift.print("Not laying out because we're good!")
+//            Swift.print("Not laying out because we're good!")
             return
         }
         
@@ -92,7 +92,7 @@ public class CBCollectionViewDocumentView : NSView {
         let sRect = self.layoutSupplementaryViewsInRect(_rect, forceAll: force)
         let iRect = self.layoutItemsInRect(_rect, forceAll: force)
         
-        Swift.print("Prepared rect: \(_rect)  old: \(previousPrepared)   New: \(self.preparedRect)")
+//        Swift.print("Prepared rect: \(_rect)  old: \(previousPrepared)   New: \(self.preparedRect)")
         
         var newRect = sRect.union(iRect)
         if !self.preparedRect.isEmpty {
@@ -110,7 +110,7 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIPs.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIPs)
         
-        Swift.print("insert: \(inserted.count)   removed: \(removed.count)    updated: \(updated.count)")
+//        Swift.print("insert: \(inserted.count)   removed: \(removed.count)    updated: \(updated.count)")
         
         var removedRect = CGRectZero
         for ip in removed {

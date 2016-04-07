@@ -181,7 +181,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         var top : CGFloat = 0.0
 //        var attributes = CBCollectionViewLayoutAttributes()
         
-        for var section = 0; section < numberOfSections; ++section{
+        for section in 0..<numberOfSections {
             
             /*
             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
@@ -215,7 +215,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             }
             
             top += sectionInsets.top
-            for var idx = 0; idx < colCount; idx++ {
+            for idx in 0..<colCount {
                 self.columnHeights[section][idx] = top;
             }
             
@@ -225,14 +225,12 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             let itemCount = self.collectionView!.numberOfItemsInSection(section)
             var itemAttributes :[CBCollectionViewLayoutAttributes] = []
             sectionColumnAttributes[section] = []
-            for c in 0...colCount - 1 {
+            for _ in 0...colCount - 1 {
                 sectionColumnAttributes[section]?.append([])
             }
             
-            var itemRect = CGRectZero
-            
             // Item will be put into shortest column.
-            for var idx = 0; idx < itemCount; idx++ {
+            for idx in 0..<itemCount {
                 let indexPath = NSIndexPath._indexPathForItem(idx, inSection: section)
                 
                 let columnIndex = self.nextColumnIndexForItem(indexPath)
@@ -281,7 +279,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             sectionRect.size.height = top - sectionRect.origin.y
             sectionFrames[section] = sectionRect
             
-            for var idx = 0; idx < colCount; idx++ {
+            for idx in 0..<colCount {
                 self.columnHeights[section][idx] = top
             }
         }
@@ -293,7 +291,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             idx = min(idx + unionSize, itemCounts) - 1
             let rect2 = self.allItemAttributes[idx].frame
             self.unionRects.addObject(NSValue(rect:CGRectUnion(rect1,rect2)))
-            idx++
+            idx += 1
         }
     }
     
@@ -425,7 +423,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         var new : [CBCollectionViewLayoutAttributes] = []
         var remove : [CBCollectionViewLayoutAttributes] = []
         
-        var union = newRect.union(oldRect)
+        let union = newRect.union(oldRect)
         
         guard let cv = self.collectionView else { return (new, remove) }
         

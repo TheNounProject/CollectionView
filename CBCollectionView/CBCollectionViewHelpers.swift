@@ -60,7 +60,7 @@ public extension NSIndexPath {
     optional func collectionView(collectionView: CBCollectionView, mouseUpInItemAtIndexPath indexPath: NSIndexPath?, withEvent: NSEvent)
     optional func collectionView(collectionView: CBCollectionView, didDoubleClickItemAtIndexPath indexPath: NSIndexPath, withEvent: NSEvent)
     
-    optional func collectionView(collectionView: CBCollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath, withKey: Bool) -> Bool
+    optional func collectionView(collectionView: CBCollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath, withEvent: NSEvent?) -> Bool
     optional func collectionView(collectionView: CBCollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath)
     optional func collectionView(collectionView: CBCollectionView, shouldDeselectItemAtIndexPath indexPath: NSIndexPath) -> Bool
     optional func collectionView(collectionView: CBCollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath)
@@ -93,15 +93,18 @@ public enum CBCollectionElementCategory : UInt {
     case SupplementaryView
 }
 
-
-
-
 public enum CBCollectionViewScrollPosition {
     case None
     case Nearest
     case Top
     case Centered
     case Bottom
+}
+
+enum CBCollectionViewSelectionMethod {
+    case Click
+    case Extending
+    case Multiple
 }
 
 internal enum CBCollectionViewSelectionType {

@@ -270,9 +270,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // discard the dataSource and delegate data and requery as necessary
     public func reloadData() {
         self.contentDocumentView.reset()
-//        self._reusableCells.removeAll()
-//        self._reusableSupplementaryView.removeAll()
-        
         self.info.recalculate()
         contentDocumentView.frame.size = self.info.contentSize
         self.contentDocumentView.prepareRect(self.contentVisibleRect)
@@ -282,11 +279,26 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
 //        return
         let firstIP = indexPathForFirstVisibleItem()
+        var refFrame : CGRect = CGRectZero
+        var refVisibleFrame : CGRect = CGRectZero
+        if firstIP != nil, let cell = cellForItemAtIndexPath(firstIP!) {
+            refFrame = cell.frame
+            refVisibleFrame = self.convertRect(cell.frame, fromView: self.contentDocumentView)
+        }
         self.info.recalculate()
         let nContentSize = self.info.contentSize
         contentDocumentView.frame.size = nContentSize
         
+        if firstIP != nil, let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(firstIP!) {
+            var nRef = self.convertRect(attrs.frame, fromView: self.contentDocumentView)
+            nRef.origin.y -= refVisibleFrame.origin.y
+            nRef = self.convertRect(nRef, toView: self.contentDocumentView)
+            self.scrollToRect(nRef, atPosition: .Top, animated: false)
+        }
+        
         self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
+        
+        
         return
         
         if animated {
@@ -304,7 +316,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         let nFirstIP = self.indexPathForFirstVisibleItem()
         if nFirstIP != firstIP, let ip = firstIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
-//            self.scrollToRect(rect, atPosition: .Top, animated: false)
+            self.scrollToRect(rect, atPosition: .Top, animated: false)
         }
         self.contentDocumentView.prepareRect(self.contentVisibleRect)
     }
@@ -670,8 +682,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         switch atPosition {
         case .Top:
             // make the top of our rect flush with the top of the visible bounds
-            rect.size.height = CGRectGetHeight(visibleRect) + contentInsets.top;
-            //rect.origin.y = self.documentVisibleRect.origin.y + rect.size.height;
+            rect.size.height = CGRectGetHeight(visibleRect) - contentInsets.top;
+            rect.origin.y = aRect.origin.y - contentInsets.top;
             break;
         case .Centered:
             // TODO

@@ -18,8 +18,6 @@
 		DE9072101CAC7FF000AD0E37 /* CBCollectionViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072081CAC7FF000AD0E37 /* CBCollectionViewInfo.swift */; };
 		DE9072111CAC7FF000AD0E37 /* CBCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */; };
 		DE9072121CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */; };
-		DE9072151CAC804000AD0E37 /* JNWClipView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9072131CAC804000AD0E37 /* JNWClipView.h */; };
-		DE9072161CAC804000AD0E37 /* JNWClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9072141CAC804000AD0E37 /* JNWClipView.m */; };
 		DE9072181CAC807900AD0E37 /* CBClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* CBClipView.swift */; };
 /* End PBXBuildFile section */
 
@@ -48,8 +46,6 @@
 		DE9072081CAC7FF000AD0E37 /* CBCollectionViewInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewInfo.swift; sourceTree = "<group>"; };
 		DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionView.swift; sourceTree = "<group>"; };
 		DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewDocumentView.swift; sourceTree = "<group>"; };
-		DE9072131CAC804000AD0E37 /* JNWClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JNWClipView.h; sourceTree = "<group>"; };
-		DE9072141CAC804000AD0E37 /* JNWClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JNWClipView.m; sourceTree = "<group>"; };
 		DE9072171CAC807900AD0E37 /* CBClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBClipView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -103,8 +99,6 @@
 				DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */,
 				DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */,
 				DE9072171CAC807900AD0E37 /* CBClipView.swift */,
-				DE9072131CAC804000AD0E37 /* JNWClipView.h */,
-				DE9072141CAC804000AD0E37 /* JNWClipView.m */,
 				DE9071EE1CAC7FD800AD0E37 /* Info.plist */,
 			);
 			path = CBCollectionView;
@@ -127,7 +121,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */,
-				DE9072151CAC804000AD0E37 /* JNWClipView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,7 +223,6 @@
 			files = (
 				DE90720B1CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift in Sources */,
 				DE90720C1CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift in Sources */,
-				DE9072161CAC804000AD0E37 /* JNWClipView.m in Sources */,
 				DE9072181CAC807900AD0E37 /* CBClipView.swift in Sources */,
 				DE9072111CAC7FF000AD0E37 /* CBCollectionView.swift in Sources */,
 				DE90720F1CAC7FF000AD0E37 /* CBCollectionViewCells.swift in Sources */,

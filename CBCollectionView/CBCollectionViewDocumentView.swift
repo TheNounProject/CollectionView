@@ -87,6 +87,7 @@ public class CBCollectionViewDocumentView : NSView {
             return
         }
         
+        
         let previousPrepared = self.preparedRect
 
         let sRect = self.layoutSupplementaryViewsInRect(_rect, forceAll: force)

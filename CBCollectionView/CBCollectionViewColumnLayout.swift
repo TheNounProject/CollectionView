@@ -109,6 +109,12 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     /// A hint as to how to render items when deciding which column to place them in
     public var itemRenderDirection : CBCollectionViewLayoutItemRenderDirection = .LeftToRight { didSet{ invalidateLayout() }}
     
+    public func numberOfColumnsInSection(section: Int) -> Int {
+        if columnHeights.count > 0 && section >= 0 && section < columnHeights.count {
+            return columnHeights[section].count
+        }
+        return 0
+    }
     
     // Internal caching
     private var _itemWidth : CGFloat = 0

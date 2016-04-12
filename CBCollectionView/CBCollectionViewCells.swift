@@ -24,11 +24,11 @@ public class CBCollectionReusableView : NSView {
     
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-//        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
+        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
     }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
-//        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
+        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
     }
     
     override public func prepareForReuse() {
@@ -40,7 +40,6 @@ public class CBCollectionReusableView : NSView {
         self.alphaValue = layoutAttributes.alpha
         self.layer?.zPosition = layoutAttributes.zIndex
         self.hidden = layoutAttributes.hidden
-//        self.needsDisplay = true
     }
     
     

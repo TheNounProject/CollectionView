@@ -13,7 +13,7 @@ import Foundation
 public class CBCollectionViewDocumentView : NSView {
 
     public override var flipped : Bool { return true }
-    var isCompatibleWithResponsiveScrolling : Bool { return true }
+//    var isCompatibleWithResponsiveScrolling : Bool { return true }
     
     var collectionView : CBCollectionView! {
         return self.superview!.superview as! CBCollectionView
@@ -99,7 +99,7 @@ public class CBCollectionViewDocumentView : NSView {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
-        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: \(date.timeIntervalSinceNow)")
+//        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: \(date.timeIntervalSinceNow)")
     }
     
     func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {
@@ -111,7 +111,7 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIPs.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIPs)
         
-        Swift.print("insert: \(inserted.count)   removed: \(removed.count)    updated: \(updated.count)")
+//        Swift.print("insert: \(inserted.count)   removed: \(removed.count)    updated: \(updated.count)")
         
         var removedRect = CGRectZero
         for ip in removed {

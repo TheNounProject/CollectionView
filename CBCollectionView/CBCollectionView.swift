@@ -132,7 +132,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.documentView = CBCollectionViewDocumentView()
 //        self.contentDocumentView.wantsLayer = true
         self.hasVerticalScroller = true
-        self.scrollsDynamically = true
+//        self.scrollsDynamically = true
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSScrollViewDidLiveScrollNotification, object: self)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSScrollViewDidEndLiveScrollNotification, object: self)
@@ -144,6 +144,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     deinit {
         NSNotificationCenter.defaultCenter().removeObserver(self)
+        self._reusableCells.removeAll()
+        self._reusableSupplementaryView.removeAll()
+        self.contentDocumentView.preparedCellIndex.removeAll()
+        self.contentDocumentView.preparedSupplementaryViewIndex.removeAll()
+        for view in self.contentDocumentView.subviews {
+            view.removeFromSuperview()
+        }
     }
 
     
@@ -625,7 +632,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         return nil;
     }
-
+    
     
     public func indexPathsForItemsInRect(rect: CGRect) -> Set<NSIndexPath> {
         if let providedIndexPaths = self.collectionViewLayout.indexPathsForItemsInRect(rect) { return providedIndexPaths }

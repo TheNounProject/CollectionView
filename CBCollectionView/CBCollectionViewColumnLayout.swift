@@ -489,17 +489,17 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         if CGRectEqualToRect(rect, CGRectZero) || cv.numberOfSections() == 0 { return indexPaths }
         for sectionIndex in 0...cv.numberOfSections() - 1 {
             guard let sectionFrame = cv.frameForSection(sectionIndex),
-                let columns = self.sectionColumnAttributes[sectionIndex] else { continue }
+                let columns = self.sectionColumnAttributes[sectionIndex] where columns.count > 0 else { continue }
             if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, rect) { continue }
             
-            for column in columns {
-                for attr in column {
-                    if attr.frame.intersects(rect) {
-                        indexPaths.insert(attr.indexPath)
-                    }
-                    else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
-                }
-            }
+//            for column in columns {
+//                for attr in column {
+//                    if attr.frame.intersects(rect) {
+//                        indexPaths.insert(attr.indexPath)
+//                    }
+//                    else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
+//                }
+//            }
             
 //                        for attr in sectionItemAttributes[sectionIndex] {
 //                if attr.frame.intersects(rect) {
@@ -508,33 +508,33 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
 //            }
             
 //            guard let sColumns = sectionColumnAttributes[sectionIndex] where sColumns.count > 0 else { continue }
-//            let firstColumn = sColumns[0]
-//            
-//            var start = -1
-//            var end = -1
-//            let itemCount = cv.numberOfItemsInSection(sectionIndex)
-//            
-//            let maxY = CGRectGetMaxY(rect)
-//            for row in 0...firstColumn.count - 1 {
-//                let attrs = firstColumn[row]
-//                let include = CGRectIntersectsRect(attrs.frame, rect)
-//                if !include { continue }
-//                if CGRectGetMinY(attrs.frame) > maxY { break }
-//                if start == -1 { start = row }
-//                end = row
-//                indexPaths.insert(NSIndexPath._indexPathForItem(sColumns.count * row, inSection: sectionIndex))
-//            }
-//            
-//            if start == -1 || sColumns.count == 1 { continue }
-//            
-//            for c in 1...sColumns.count - 1 {
-//                for r in start...end {
-//                    let item = sColumns.count * r + c
-//                    if item < itemCount {
-//                        indexPaths.insert(NSIndexPath._indexPathForItem(item, inSection: sectionIndex))
-//                    }
-//                }
-//            }
+            let firstColumn = columns[0]
+            
+            var start = -1
+            var end = -1
+            let itemCount = cv.numberOfItemsInSection(sectionIndex)
+            
+            let maxY = CGRectGetMaxY(rect)
+            for row in 0...firstColumn.count - 1 {
+                let attrs = firstColumn[row]
+                let include = CGRectIntersectsRect(attrs.frame, rect)
+                if !include { continue }
+                if CGRectGetMinY(attrs.frame) > maxY { break }
+                if start == -1 { start = row }
+                end = row
+                indexPaths.insert(NSIndexPath._indexPathForItem(columns.count * row, inSection: sectionIndex))
+            }
+            
+            if start == -1 || columns.count == 1 { continue }
+            
+            for c in 1...columns.count - 1 {
+                for r in start...end {
+                    let item = columns.count * r + c
+                    if item < itemCount {
+                        indexPaths.insert(NSIndexPath._indexPathForItem(item, inSection: sectionIndex))
+                    }
+                }
+            }
 
         }
         return indexPaths

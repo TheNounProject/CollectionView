@@ -29,7 +29,7 @@ public class CBClipView : NSClipView {
     
     var completionBlock : CBScrollCompletion?
     
-    var isCompatibleWithResponsiveScrolling : Bool { return true }
+//    var isCompatibleWithResponsiveScrolling : Bool { return true }
     
     init(clipView: NSClipView) {
         super.init(frame: clipView.frame)
@@ -49,6 +49,7 @@ public class CBClipView : NSClipView {
 
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
+        self.wantsLayer = true
     }
     
     override public func viewWillMoveToWindow(newWindow: NSWindow?) {

@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		DE57F41F1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
+		DE57F42B1CBDB17200F9E23C /* JNWClipView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE57F4291CBDB17200F9E23C /* JNWClipView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		DE57F42C1CBDB17200F9E23C /* JNWClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE57F42A1CBDB17200F9E23C /* JNWClipView.m */; };
+		DE57F4331CBDB64B00F9E23C /* CBClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* CBClipView.swift */; };
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
 		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
@@ -19,7 +22,6 @@
 		DE9072101CAC7FF000AD0E37 /* CBCollectionViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072081CAC7FF000AD0E37 /* CBCollectionViewInfo.swift */; };
 		DE9072111CAC7FF000AD0E37 /* CBCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */; };
 		DE9072121CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */; };
-		DE9072181CAC807900AD0E37 /* CBClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* CBClipView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +36,8 @@
 
 /* Begin PBXFileReference section */
 		DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewGridLayout.swift; sourceTree = "<group>"; };
+		DE57F4291CBDB17200F9E23C /* JNWClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JNWClipView.h; sourceTree = "<group>"; };
+		DE57F42A1CBDB17200F9E23C /* JNWClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JNWClipView.m; sourceTree = "<group>"; };
 		DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CBCollectionView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCollectionView.h; sourceTree = "<group>"; };
 		DE9071EE1CAC7FD800AD0E37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -102,6 +106,8 @@
 				DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */,
 				DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */,
 				DE9072171CAC807900AD0E37 /* CBClipView.swift */,
+				DE57F4291CBDB17200F9E23C /* JNWClipView.h */,
+				DE57F42A1CBDB17200F9E23C /* JNWClipView.m */,
 				DE9071EE1CAC7FD800AD0E37 /* Info.plist */,
 			);
 			path = CBCollectionView;
@@ -124,6 +130,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */,
+				DE57F42B1CBDB17200F9E23C /* JNWClipView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,8 +234,9 @@
 				DE57F41F1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift in Sources */,
 				DE90720B1CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift in Sources */,
 				DE90720C1CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift in Sources */,
-				DE9072181CAC807900AD0E37 /* CBClipView.swift in Sources */,
 				DE9072111CAC7FF000AD0E37 /* CBCollectionView.swift in Sources */,
+				DE57F4331CBDB64B00F9E23C /* CBClipView.swift in Sources */,
+				DE57F42C1CBDB17200F9E23C /* JNWClipView.m in Sources */,
 				DE90720F1CAC7FF000AD0E37 /* CBCollectionViewCells.swift in Sources */,
 				DE9072101CAC7FF000AD0E37 /* CBCollectionViewInfo.swift in Sources */,
 				DE90720D1CAC7FF000AD0E37 /* CBCollectionViewLayout.swift in Sources */,
@@ -359,7 +367,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = thenounproject.CBCollectionView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Debug;
 		};

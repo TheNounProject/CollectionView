@@ -46,7 +46,6 @@ public class CBScrollView : NSScrollView {
     
     func swapClipView() {
         if self.contentView.isKindOfClass(CBClipView) { return }
-        self.wantsLayer = true
         let docView = self.documentView
         let clipView = CBClipView(frame: self.contentView.frame)
         self.contentView = clipView
@@ -132,7 +131,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.documentView = CBCollectionViewDocumentView()
 //        self.contentDocumentView.wantsLayer = true
         self.hasVerticalScroller = true
-//        self.scrollsDynamically = true
+//        self.scrollsDynamically = false
+    
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSScrollViewDidLiveScrollNotification, object: self)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSScrollViewDidEndLiveScrollNotification, object: self)
@@ -259,6 +259,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func enqueueSupplementaryViewForReuse(item: CBCollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
+        item.hidden = true
         let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: withIdentifier.reuseIdentifier)
         if self._reusableSupplementaryView[newID] == nil {
             self._reusableSupplementaryView[newID] = []
@@ -376,7 +377,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             if let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
                 self.scrollToRect(rect, atPosition: .Top, animated: false)
             }
-            self.contentDocumentView.preparedRect = CGRectZero
+//            self.contentDocumentView.preparedRect = CGRectZero
             self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
         }
         

@@ -28,10 +28,8 @@ public class CBCollectionViewDocumentView : NSView {
     var preparedCellIndex : [NSIndexPath:CBCollectionViewCell] = [:]
     var preparedSupplementaryViewIndex : [SupplementaryViewIdentifier:CBCollectionReusableView] = [:]
     
-    
     public override func layout() {
         super.layout()
-        
     }
     
     func reset() {
@@ -99,7 +97,7 @@ public class CBCollectionViewDocumentView : NSView {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
-//        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: \(date.timeIntervalSinceNow)")
+        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: \(date.timeIntervalSinceNow)  :: Subviews:  \(self.subviews.count)")
     }
     
     func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {

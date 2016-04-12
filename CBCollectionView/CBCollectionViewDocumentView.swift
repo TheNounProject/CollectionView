@@ -59,6 +59,7 @@ public class CBCollectionViewDocumentView : NSView {
     func relayout(animated: Bool) {
         
         
+        
     }
     
     func prepareRect(rect: CGRect, force: Bool = false) {
@@ -87,19 +88,18 @@ public class CBCollectionViewDocumentView : NSView {
             return
         }
         
-        
+        var date = NSDate()
         let previousPrepared = self.preparedRect
 
         let sRect = self.layoutSupplementaryViewsInRect(_rect, forceAll: force)
         let iRect = self.layoutItemsInRect(_rect, forceAll: force)
-        
-//        Swift.print("Prepared rect: \(_rect)  old: \(previousPrepared)   New: \(self.preparedRect)")
         
         var newRect = sRect.union(iRect)
         if !self.preparedRect.isEmpty {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
+        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: \(date.timeIntervalSinceNow)")
     }
     
     func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {
@@ -132,7 +132,6 @@ public class CBCollectionViewDocumentView : NSView {
                     }
                 }
                 else {
-                    cell.hidden = true
                     cell._indexPath = nil
                     self.collectionView.enqueueCellForReuse(cell)
                     self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
@@ -157,7 +156,7 @@ public class CBCollectionViewDocumentView : NSView {
                 continue
             }
             cell._indexPath = ip
-            _rect = CGRectUnion(_rect, attrs.frame)
+            _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, -1, -1))
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
             if cell.superview == nil {
@@ -261,6 +260,9 @@ public class CBCollectionViewDocumentView : NSView {
                     view.hidden = true
                     view.frame = attrs.frame
                 }
+//                if !attrs.floating {
+//                    _rect.unionInPlace(attrs.frame)
+//                }
                 self._applyLayoutAttributes(attrs, toItem: view, animated: animated)
                 self.preparedSupplementaryViewIndex[identifier] = view
             }
@@ -269,21 +271,24 @@ public class CBCollectionViewDocumentView : NSView {
         for id in updated {
             if let cell = preparedSupplementaryViewIndex[id],
                 let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(id.kind, atIndexPath: id.indexPath!) {
-                    _rect = CGRectUnion(_rect, attrs.frame)
-                    
-                    if attrs.floating == true {
-                        if cell.superview != self.collectionView._floatingSupplementaryView {
-                            cell.removeFromSuperview()
-                            self.collectionView._floatingSupplementaryView.addSubview(cell)
-                        }
-                        attrs.frame = self.collectionView._floatingSupplementaryView.convertRect(attrs.frame, fromView: self)
-                    }
-                    else if cell.superview == self.collectionView._floatingSupplementaryView {
+                _rect = CGRectUnion(_rect, attrs.frame)
+                
+                if attrs.floating == true {
+                    if cell.superview != self.collectionView._floatingSupplementaryView {
                         cell.removeFromSuperview()
-                        self.collectionView.contentDocumentView.addSubview(cell)
+                        self.collectionView._floatingSupplementaryView.addSubview(cell)
                     }
-                    
-                    self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
+                    attrs.frame = self.collectionView._floatingSupplementaryView.convertRect(attrs.frame, fromView: self)
+                }
+                else if cell.superview == self.collectionView._floatingSupplementaryView {
+                    cell.removeFromSuperview()
+                    self.collectionView.contentDocumentView.addSubview(cell)
+                }
+                
+//                if !attrs.floating {
+//                _rect.unionInPlace(attrs.frame)
+//                }
+                self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
             }
         }
         return _rect

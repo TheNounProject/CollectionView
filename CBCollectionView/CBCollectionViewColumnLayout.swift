@@ -116,6 +116,8 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         return 0
     }
     
+    public var isGrid : Bool = true
+    
     // Internal caching
     private var _itemWidth : CGFloat = 0
     private var _cvSize = CGSizeZero
@@ -318,24 +320,48 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     
     public override func layoutAttributesForElementsInRect(rect: CGRect) -> [CBCollectionViewLayoutAttributes]? {
         var attrs : [CBCollectionViewLayoutAttributes] = []
-        if let itemAttrs = self.indexPathsForItemsInRect(rect) {
-            for ip in itemAttrs {
-                if let a = layoutAttributesForItemAtIndexPath(ip) {
-                    attrs.append(a)
+        
+        var indexPaths = Set<NSIndexPath>()
+        guard let cv = self.collectionView else { return nil }
+        if CGRectEqualToRect(rect, CGRectZero) || cv.numberOfSections() == 0 { return attrs }
+        for sectionIndex in 0...cv.numberOfSections() - 1 {
+            
+            guard let sectionFrame = cv.frameForSection(sectionIndex),
+                let columns = self.sectionColumnAttributes[sectionIndex] else { continue }
+            if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, rect) { continue }
+            for column in columns {
+                for attr in column {
+                    if attr.frame.intersects(rect) {
+                        indexPaths.insert(attr.indexPath)
+                    }
+                    else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
                 }
             }
+            
+            
+//            guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
+//            if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, rect) { continue }
+//            for attr in sectionItemAttributes[sectionIndex] {
+//                if attr.frame.intersects(rect) {
+//                    attrs.append(attr)
+//                }
+//            }
         }
         
+//        if let itemAttrs = self.indexPathsForItemsInRect(rect) {
+//            for ip in itemAttrs {
+//                if let a = layoutAttributesForItemAtIndexPath(ip) {
+//                    attrs.append(a)
+//                }
+//            }
+//        }
+    
         return attrs
     }
     
     public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {
-        if indexPath._section >= self.sectionItemAttributes.count{
-            return nil
-        }
-        if indexPath._item >= self.sectionItemAttributes[indexPath._section].count{
-            return nil;
-        }
+        if indexPath._section >= self.sectionItemAttributes.count{ return nil }
+        if indexPath._item >= self.sectionItemAttributes[indexPath._section].count{ return nil }
         let list = self.sectionItemAttributes[indexPath._section]
         return list[indexPath._item]
     }
@@ -425,33 +451,33 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     }
     
     
-    func changesInRect(newRect: CGRect, oldRect: CGRect) -> (new: [CBCollectionViewLayoutAttributes], remove: [CBCollectionViewLayoutAttributes]) {
-        var new : [CBCollectionViewLayoutAttributes] = []
-        var remove : [CBCollectionViewLayoutAttributes] = []
-        
-        let union = newRect.union(oldRect)
-        
-        guard let cv = self.collectionView else { return (new, remove) }
-        
-        if CGRectEqualToRect(union, CGRectZero) || cv.numberOfSections() == 0 { return (new, remove) }
-        for sectionIndex in 0...cv.numberOfSections() - 1 {
-            guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
-            if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, union) { continue }
-            
-            for attr in sectionItemAttributes[sectionIndex] {
-                let inNew = attr.frame.intersects(newRect)
-                let inOld = attr.frame.intersects(oldRect)
-                
-                if inNew && !inOld {
-                    new.append(attr)
-                }
-                else if inOld && !inNew {
-                    remove.append(attr)
-                }
-            }
-        }
-        return (new, remove)
-    }
+//    func changesInRect(newRect: CGRect, oldRect: CGRect) -> (new: [CBCollectionViewLayoutAttributes], remove: [CBCollectionViewLayoutAttributes]) {
+//        var new : [CBCollectionViewLayoutAttributes] = []
+//        var remove : [CBCollectionViewLayoutAttributes] = []
+//        
+//        let union = newRect.union(oldRect)
+//        
+//        guard let cv = self.collectionView else { return (new, remove) }
+//        
+//        if CGRectEqualToRect(union, CGRectZero) || cv.numberOfSections() == 0 { return (new, remove) }
+//        for sectionIndex in 0...cv.numberOfSections() - 1 {
+//            guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
+//            if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, union) { continue }
+//            
+//            for attr in sectionItemAttributes[sectionIndex] {
+//                let inNew = attr.frame.intersects(newRect)
+//                let inOld = attr.frame.intersects(oldRect)
+//                
+//                if inNew && !inOld {
+//                    new.append(attr)
+//                }
+//                else if inOld && !inNew {
+//                    remove.append(attr)
+//                }
+//            }
+//        }
+//        return (new, remove)
+//    }
 
     
     
@@ -462,14 +488,24 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         guard let cv = self.collectionView else { return nil }
         if CGRectEqualToRect(rect, CGRectZero) || cv.numberOfSections() == 0 { return indexPaths }
         for sectionIndex in 0...cv.numberOfSections() - 1 {
-            guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
+            guard let sectionFrame = cv.frameForSection(sectionIndex),
+                let columns = self.sectionColumnAttributes[sectionIndex] else { continue }
             if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, rect) { continue }
             
-            for attr in sectionItemAttributes[sectionIndex] {
-                if attr.frame.intersects(rect) {
-                    indexPaths.insert(attr.indexPath)
+            for column in columns {
+                for attr in column {
+                    if attr.frame.intersects(rect) {
+                        indexPaths.insert(attr.indexPath)
+                    }
+                    else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
                 }
             }
+            
+//                        for attr in sectionItemAttributes[sectionIndex] {
+//                if attr.frame.intersects(rect) {
+//                    indexPaths.insert(attr.indexPath)
+//                }
+//            }
             
 //            guard let sColumns = sectionColumnAttributes[sectionIndex] where sColumns.count > 0 else { continue }
 //            let firstColumn = sColumns[0]

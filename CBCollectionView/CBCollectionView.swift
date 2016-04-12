@@ -130,7 +130,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.info = CBCollectionViewInfo(collectionView: self)
         self.wantsLayer = true
         self.documentView = CBCollectionViewDocumentView()
-        self.contentDocumentView.wantsLayer = true
+//        self.contentDocumentView.wantsLayer = true
         self.hasVerticalScroller = true
         self.scrollsDynamically = true
         
@@ -242,6 +242,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func enqueueCellForReuse(item: CBCollectionViewCell) {
+//        item.removeFromSuperview()
         guard let id = item.reuseIdentifier else { return }
         if self._reusableCells[id] == nil {
             self._reusableCells[id] = []
@@ -322,7 +323,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func didScroll(notification: NSNotification) {
-        self.contentDocumentView.prepareRect(self.contentVisibleRect)
+        let rect = CGRectInset(self.contentVisibleRect, 0, -100)
+        self.contentDocumentView.prepareRect(rect)
     }
     
     func didEndScroll(notification: NSNotification) {

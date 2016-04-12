@@ -24,13 +24,14 @@ public class CBCollectionReusableView : NSView {
     
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
+        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
 //        self.wantsLayer = true
 //        self.canDrawSubviewsIntoLayer = true
     }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
 //        self.wantsLayer = true
-//        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
+        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
 //        self.canDrawSubviewsIntoLayer = true
     }
     
@@ -70,12 +71,12 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
+        
     }
     
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
-        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
+        
     }
     
     public func setSelected(selected: Bool, animated: Bool = true) {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DE57F41F1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
 		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
@@ -32,6 +33,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewGridLayout.swift; sourceTree = "<group>"; };
 		DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CBCollectionView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCollectionView.h; sourceTree = "<group>"; };
 		DE9071EE1CAC7FD800AD0E37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 			children = (
 				DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */,
 				DE9072031CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift */,
+				DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */,
 				DE9072041CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift */,
 				DE9072051CAC7FF000AD0E37 /* CBCollectionViewLayout.swift */,
 				DE9072061CAC7FF000AD0E37 /* CBCollectionViewHelpers.swift */,
@@ -221,6 +224,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE57F41F1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift in Sources */,
 				DE90720B1CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift in Sources */,
 				DE90720C1CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift in Sources */,
 				DE9072181CAC807900AD0E37 /* CBClipView.swift in Sources */,

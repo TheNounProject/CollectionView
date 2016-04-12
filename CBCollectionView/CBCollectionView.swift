@@ -242,7 +242,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func enqueueCellForReuse(item: CBCollectionViewCell) {
-//        item.removeFromSuperview()
+//        item.removeFromSuperviewWithoutNeedingDisplay()
+        item.hidden = true
         guard let id = item.reuseIdentifier else { return }
         if self._reusableCells[id] == nil {
             self._reusableCells[id] = []

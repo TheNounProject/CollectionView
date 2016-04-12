@@ -25,14 +25,10 @@ public class CBCollectionReusableView : NSView {
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
-//        self.wantsLayer = true
-//        self.canDrawSubviewsIntoLayer = true
     }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
-//        self.wantsLayer = true
         self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
-//        self.canDrawSubviewsIntoLayer = true
     }
     
     override public func prepareForReuse() {

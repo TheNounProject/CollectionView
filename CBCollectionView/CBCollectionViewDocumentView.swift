@@ -111,7 +111,7 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIPs.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIPs)
         
-//        Swift.print("insert: \(inserted.count)   removed: \(removed.count)    updated: \(updated.count)")
+        Swift.print("insert: \(inserted.count)   removed: \(removed.count)    updated: \(updated.count)")
         
         var removedRect = CGRectZero
         for ip in removed {
@@ -132,6 +132,7 @@ public class CBCollectionViewDocumentView : NSView {
                     }
                 }
                 else {
+                    cell.hidden = true
                     cell._indexPath = nil
                     self.collectionView.enqueueCellForReuse(cell)
                     self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)

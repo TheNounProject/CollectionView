@@ -97,7 +97,7 @@ public class CBCollectionViewDocumentView : NSView {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
-        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: \(date.timeIntervalSinceNow)  :: Subviews:  \(self.subviews.count)")
+//        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: \(date.timeIntervalSinceNow)  :: Subviews:  \(self.subviews.count)")
     }
     
     func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {
@@ -155,7 +155,7 @@ public class CBCollectionViewDocumentView : NSView {
                 continue
             }
             cell._indexPath = ip
-            _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, -1, -1))
+            _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, -1, -1) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
             if cell.superview == nil {
@@ -194,13 +194,13 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIdentifiers.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIdentifiers)
         
-        var removedRect = CGRectZero
+//        var removedRect = CGRectZero
         for identifier in removed {
             if let view = self.preparedSupplementaryViewIndex[identifier] {
-                if let attrs = view.attributes where !attrs.floating {
-                    if removedRect.isEmpty { removedRect = attrs.frame }
-                    else { removedRect.unionInPlace(attrs.frame) }
-                }
+//                if let attrs = view.attributes where !attrs.floating {
+//                    if removedRect.isEmpty { removedRect = attrs.frame }
+//                    else { removedRect.unionInPlace(attrs.frame) }
+//                }
                 self.preparedSupplementaryViewIndex[identifier] = nil
                 if animated {
                     NSAnimationContext.runAnimationGroup({ (context) -> Void in
@@ -222,15 +222,15 @@ public class CBCollectionViewDocumentView : NSView {
             }
         }
         
-        if  !removedRect.isEmpty {
-            if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
-                let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
-                self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
-            }
-            else {
-                
-            }
-        }
+//        if  !removedRect.isEmpty {
+//            if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
+//                let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
+//                self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+//            }
+//            else {
+//                
+//            }
+//        }
         
         
         for identifier in inserted {

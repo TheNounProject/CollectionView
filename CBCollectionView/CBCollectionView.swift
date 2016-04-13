@@ -135,7 +135,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSScrollViewDidLiveScrollNotification, object: self)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSScrollViewDidEndLiveScrollNotification, object: self)
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSScrollViewDidEndLiveScrollNotification, object: self)
         
         self.addSubview(_floatingSupplementaryView, positioned: .Above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
@@ -337,8 +337,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func didEndScroll(notification: NSNotification) {
-//        let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
-//        self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height/2))
+        let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
+        self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height/2))
     }
 
     public func indexPathForFirstVisibleItem() -> NSIndexPath? {

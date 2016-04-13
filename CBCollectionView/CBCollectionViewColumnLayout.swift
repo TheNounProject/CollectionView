@@ -321,7 +321,6 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     public override func layoutAttributesForElementsInRect(rect: CGRect) -> [CBCollectionViewLayoutAttributes]? {
         var attrs : [CBCollectionViewLayoutAttributes] = []
         
-        var indexPaths = Set<NSIndexPath>()
         guard let cv = self.collectionView else { return nil }
         if CGRectEqualToRect(rect, CGRectZero) || cv.numberOfSections() == 0 { return attrs }
         for sectionIndex in 0...cv.numberOfSections() - 1 {
@@ -332,7 +331,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             for column in columns {
                 for attr in column {
                     if attr.frame.intersects(rect) {
-                        indexPaths.insert(attr.indexPath)
+                        attrs.append(attr)
                     }
                     else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
                 }

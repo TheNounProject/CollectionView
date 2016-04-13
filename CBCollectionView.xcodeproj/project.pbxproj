@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		DE57F42B1CBDB17200F9E23C /* JNWClipView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE57F4291CBDB17200F9E23C /* JNWClipView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DE57F42C1CBDB17200F9E23C /* JNWClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE57F42A1CBDB17200F9E23C /* JNWClipView.m */; };
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
 		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
@@ -239,7 +238,6 @@
 				DEF14B9D1CBDD83B00553CEF /* CBCollectionViewHelpers.swift in Sources */,
 				DEF14BA01CBDD83B00553CEF /* CBCollectionView.swift in Sources */,
 				DEF14B9F1CBDD83B00553CEF /* CBCollectionViewInfo.swift in Sources */,
-				DE57F42C1CBDB17200F9E23C /* JNWClipView.m in Sources */,
 				DEF14B991CBDD83B00553CEF /* CBCollectionViewColumnLayout.swift in Sources */,
 				DEF14BA11CBDD83B00553CEF /* CBCollectionViewDocumentView.swift in Sources */,
 			);

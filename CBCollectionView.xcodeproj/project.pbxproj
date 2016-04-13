@@ -12,6 +12,16 @@
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
 		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
+		DEF14B991CBDD83B00553CEF /* CBCollectionViewColumnLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072031CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift */; };
+		DEF14B9A1CBDD83B00553CEF /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
+		DEF14B9B1CBDD83B00553CEF /* CBCollectionViewHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072041CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift */; };
+		DEF14B9C1CBDD83B00553CEF /* CBCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072051CAC7FF000AD0E37 /* CBCollectionViewLayout.swift */; };
+		DEF14B9D1CBDD83B00553CEF /* CBCollectionViewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072061CAC7FF000AD0E37 /* CBCollectionViewHelpers.swift */; };
+		DEF14B9E1CBDD83B00553CEF /* CBCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072071CAC7FF000AD0E37 /* CBCollectionViewCells.swift */; };
+		DEF14B9F1CBDD83B00553CEF /* CBCollectionViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072081CAC7FF000AD0E37 /* CBCollectionViewInfo.swift */; };
+		DEF14BA01CBDD83B00553CEF /* CBCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */; };
+		DEF14BA11CBDD83B00553CEF /* CBCollectionViewDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */; };
+		DEF14BA21CBDD83B00553CEF /* CBClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* CBClipView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -221,7 +231,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DEF14B9A1CBDD83B00553CEF /* CBCollectionViewGridLayout.swift in Sources */,
+				DEF14B9E1CBDD83B00553CEF /* CBCollectionViewCells.swift in Sources */,
+				DEF14B9B1CBDD83B00553CEF /* CBCollectionViewHorizontalLayout.swift in Sources */,
+				DEF14B9C1CBDD83B00553CEF /* CBCollectionViewLayout.swift in Sources */,
+				DEF14BA21CBDD83B00553CEF /* CBClipView.swift in Sources */,
+				DEF14B9D1CBDD83B00553CEF /* CBCollectionViewHelpers.swift in Sources */,
+				DEF14BA01CBDD83B00553CEF /* CBCollectionView.swift in Sources */,
+				DEF14B9F1CBDD83B00553CEF /* CBCollectionViewInfo.swift in Sources */,
 				DE57F42C1CBDB17200F9E23C /* JNWClipView.m in Sources */,
+				DEF14B991CBDD83B00553CEF /* CBCollectionViewColumnLayout.swift in Sources */,
+				DEF14BA11CBDD83B00553CEF /* CBCollectionViewDocumentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

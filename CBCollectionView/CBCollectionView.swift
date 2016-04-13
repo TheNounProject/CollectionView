@@ -131,7 +131,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.documentView = CBCollectionViewDocumentView()
 //        self.contentDocumentView.wantsLayer = true
         self.hasVerticalScroller = true
-//        self.scrollsDynamically = false
+        self.scrollsDynamically = false
     
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSScrollViewDidLiveScrollNotification, object: self)
@@ -851,11 +851,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
     public var scrollEnabled = true
-    public override func scrollWheel(theEvent: NSEvent) {
-        if scrollEnabled {
-            super.scrollWheel(theEvent)
-        }
-    }
+//    public override func scrollWheel(theEvent: NSEvent) {
+//        if scrollEnabled {
+//            super.scrollWheel(theEvent)
+//        }
+//    }
     
     
     // MARK: - Dragging Source

@@ -39,7 +39,14 @@ internal class CBCollectionViewInfo {
         let layout = self.collectionView.collectionViewLayout
         var totalNumberOfItems = 0
         self.numberOfSections = self.collectionView.dataSource?.numberOfSectionsInCollectionView(self.collectionView) ?? 0
-        if self.numberOfSections > 0 {        else {
+        if self.numberOfSections > 0 {
+            for sIndex in 0...self.numberOfSections - 1 {
+                let itemCount = self.collectionView.dataSource?.collectionView(self.collectionView, numberOfItemsInSection: sIndex) ?? 0
+                totalNumberOfItems += itemCount
+                self.sections[sIndex] = CBCollectionViewSectionInfo(section: sIndex, frame: CGRectZero, numberOfItems: itemCount)
+            }
+        }
+        else {
             self.sections = [:]
         }
         
@@ -53,14 +60,7 @@ internal class CBCollectionViewInfo {
             if section?.numberOfItems == 0 { continue }
             
             // We're running through all of the items just to find the total size of each section.
-            // Although this might seem like a w
-            for sIndex in 0...self.numberOfSections - 1 {
-                let itemCount = self.collectionView.dataSource?.collectionView(self.collectionView, numberOfItemsInSection: sIndex) ?? 0
-                totalNumberOfItems += itemCount
-                self.sections[sIndex] = CBCollectionViewSectionInfo(section: sIndex, frame: CGRectZero, numberOfItems: itemCount)
-            }
-        }
-aste, remember that this is only performed each time the
+            // Although this might seem like a waste, remember that this is only performed each time the
             // collection view is reloaded. The benefits of knowing what area the section encompasses
             // far outweight the cost of effectively running a double-iteration over the data.
             // Additionally, the total size of all of the sections is needed so that we can figure out

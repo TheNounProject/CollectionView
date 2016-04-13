@@ -7,21 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DE57F41F1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
 		DE57F42B1CBDB17200F9E23C /* JNWClipView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE57F4291CBDB17200F9E23C /* JNWClipView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE57F42C1CBDB17200F9E23C /* JNWClipView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE57F42A1CBDB17200F9E23C /* JNWClipView.m */; };
-		DE57F4331CBDB64B00F9E23C /* CBClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* CBClipView.swift */; };
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
 		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
-		DE90720B1CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072031CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift */; };
-		DE90720C1CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072041CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift */; };
-		DE90720D1CAC7FF000AD0E37 /* CBCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072051CAC7FF000AD0E37 /* CBCollectionViewLayout.swift */; };
-		DE90720E1CAC7FF000AD0E37 /* CBCollectionViewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072061CAC7FF000AD0E37 /* CBCollectionViewHelpers.swift */; };
-		DE90720F1CAC7FF000AD0E37 /* CBCollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072071CAC7FF000AD0E37 /* CBCollectionViewCells.swift */; };
-		DE9072101CAC7FF000AD0E37 /* CBCollectionViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072081CAC7FF000AD0E37 /* CBCollectionViewInfo.swift */; };
-		DE9072111CAC7FF000AD0E37 /* CBCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */; };
-		DE9072121CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -231,17 +221,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE57F41F1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift in Sources */,
-				DE90720B1CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift in Sources */,
-				DE90720C1CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift in Sources */,
-				DE9072111CAC7FF000AD0E37 /* CBCollectionView.swift in Sources */,
-				DE57F4331CBDB64B00F9E23C /* CBClipView.swift in Sources */,
 				DE57F42C1CBDB17200F9E23C /* JNWClipView.m in Sources */,
-				DE90720F1CAC7FF000AD0E37 /* CBCollectionViewCells.swift in Sources */,
-				DE9072101CAC7FF000AD0E37 /* CBCollectionViewInfo.swift in Sources */,
-				DE90720D1CAC7FF000AD0E37 /* CBCollectionViewLayout.swift in Sources */,
-				DE90720E1CAC7FF000AD0E37 /* CBCollectionViewHelpers.swift in Sources */,
-				DE9072121CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

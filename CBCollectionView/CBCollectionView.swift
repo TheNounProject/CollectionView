@@ -329,16 +329,21 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.contentDocumentView.prepareRect(self.contentVisibleRect)
     }
     
+    
+    public var scrolling : Bool = false
+    
     func didScroll(notification: NSNotification) {
         let rect = CGRectInset(self.contentVisibleRect, 0, -100)
         self.contentDocumentView.prepareRect(rect)
     }
     func willBeginScroll(notification: NSNotification) {
+        scrolling = true
         Swift.print("will Scroll")
         self.delegate?.collectionViewWillBeginScrolling?(self)
     }
     
     func didEndScroll(notification: NSNotification) {
+        scrolling = false
         let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
         self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height/2))
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)

@@ -103,11 +103,11 @@ public class CBCollectionViewDocumentView : NSView {
     func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {
         var _rect = rect
         
-        var date = NSDate()
-        var prepTime : NSTimeInterval = 0
-        var removeTime : NSTimeInterval = 0
-        var insertTime : NSTimeInterval = 0
-        var updateTime : NSTimeInterval = 0
+//        var date = NSDate()
+//        var prepTime : NSTimeInterval = 0
+//        var removeTime : NSTimeInterval = 0
+//        var insertTime : NSTimeInterval = 0
+//        var updateTime : NSTimeInterval = 0
         
         
         let oldIPs = Set(self.preparedCellIndex.keys)
@@ -115,8 +115,8 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIPs.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIPs)
         
-        prepTime = date.timeIntervalSinceNow
-        date = NSDate()
+//        prepTime = date.timeIntervalSinceNow
+//        date = NSDate()
         
         var removedRect = CGRectZero
         for ip in removed {
@@ -155,8 +155,8 @@ public class CBCollectionViewDocumentView : NSView {
             }
         }
         
-        removeTime = date.timeIntervalSinceNow
-        date = NSDate()
+//        removeTime = date.timeIntervalSinceNow
+//        date = NSDate()
         
         for ip in inserted {
             guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip) else { continue }
@@ -181,8 +181,8 @@ public class CBCollectionViewDocumentView : NSView {
             self.preparedCellIndex[ip] = cell
         }
         
-        insertTime = date.timeIntervalSinceNow
-        date = NSDate()
+//        insertTime = date.timeIntervalSinceNow
+//        date = NSDate()
         
         if forceAll {
             for ip in updated {
@@ -195,9 +195,8 @@ public class CBCollectionViewDocumentView : NSView {
                 }
             }
         }
-        updateTime = date.timeIntervalSinceNow
-        
-        Swift.print("prep: \(prepTime ) removed: \(removed.count) in \(removeTime)   inserted: \(inserted.count) in \(insertTime)    updated: \(updated.count) in \(updateTime)")
+//        updateTime = date.timeIntervalSinceNow
+//        Swift.print("prep: \(prepTime ) removed: \(removed.count) in \(removeTime)   inserted: \(inserted.count) in \(insertTime)    updated: \(updated.count) in \(updateTime)")
         
         return _rect
     }

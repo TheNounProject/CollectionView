@@ -129,7 +129,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
 //        self.contentDocumentView.wantsLayer = true
         self.hasVerticalScroller = true
         self.scrollsDynamically = false
-    
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSScrollViewDidLiveScrollNotification, object: self)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.willBeginScroll(_:)), name: NSScrollViewWillStartLiveScrollNotification, object: self)
@@ -338,7 +337,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     func willBeginScroll(notification: NSNotification) {
         scrolling = true
-        Swift.print("will Scroll")
         self.delegate?.collectionViewWillBeginScrolling?(self)
     }
     

@@ -208,7 +208,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Dequeing reusable cells
     public func dequeueReusableCellWithReuseIdentifier(identifier: String, forIndexPath indexPath: NSIndexPath) -> CBCollectionViewCell {
         
-        var cell = self._reusableCells[identifier]?.first
+        var cell =  self._reusableCells[identifier]?.first
         if cell == nil {
             if let nib = self._cellNibs[identifier] {
                 cell = _firstObjectOfClass(CBCollectionViewCell.self, inNib: nib) as? CBCollectionViewCell

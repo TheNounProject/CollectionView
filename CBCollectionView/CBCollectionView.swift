@@ -29,7 +29,6 @@ func ==(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> B
     return lhs.indexPath == rhs.indexPath && lhs.kind == rhs.kind && lhs.reuseIdentifier == rhs.reuseIdentifier
 }
 
-
 public class CBScrollView : NSScrollView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -76,7 +75,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     private var _supplementaryViewClasses : [SupplementaryViewIdentifier:CBCollectionReusableView.Type] = [:]
     private var _supplementaryViewNibs : [SupplementaryViewIdentifier:NSNib] = [:]
     
-    public var contentDocumentView : CBCollectionViewDocumentView! { return self.documentView as! CBCollectionViewDocumentView }
+    public weak var contentDocumentView : CBCollectionViewDocumentView! { return self.documentView as! CBCollectionViewDocumentView }
     public var contentVisibleRect : CGRect { return self.documentVisibleRect }
     
     
@@ -93,10 +92,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // MARK: - Data Source & Delegate
     public weak var delegate : CBCollectionViewDelegate?
-    private var interactionDelegate : CBCollectionViewInteractionDelegate? {
+    public weak var dataSource : CBCollectionViewDataSource?
+    private weak var interactionDelegate : CBCollectionViewInteractionDelegate? {
         return self.delegate as? CBCollectionViewInteractionDelegate
     }
-    public weak var dataSource : CBCollectionViewDataSource?
+    
     
     // MARK: - Selection options
     public var allowsSelection: Bool = true
@@ -140,6 +140,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     deinit {
+        self.delegate = nil
+        self.dataSource = nil
         NSNotificationCenter.defaultCenter().removeObserver(self)
         self._reusableCells.removeAll()
         self._reusableSupplementaryView.removeAll()
@@ -187,7 +189,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         var foundObject: AnyObject? = nil
         var topLevelObjects :NSArray?
         if inNib.instantiateWithOwner(self, topLevelObjects: &topLevelObjects) {
-            let index = topLevelObjects!.indexOfObjectPassingTest({ (obj, idx, stop) -> Bool in
+            let index = topLevelObjects!.indexOfObjectPassingTest({ [unowned self] (obj, idx, stop) -> Bool in
                 if obj.isKindOfClass(aClass) {
                     stop.memory = true
                     return true
@@ -256,6 +258,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func enqueueSupplementaryViewForReuse(item: CBCollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
+//        item.removeFromSuperview()
         item.hidden = true
         let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: withIdentifier.reuseIdentifier)
         if self._reusableSupplementaryView[newID] == nil {
@@ -730,7 +733,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         
         self.contentDocumentView.prepareRect(CGRectUnion(rect, self.contentVisibleRect), force: false)
-        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: { (fin) -> Void in
+        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
             self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
 //            self._layoutItems(false, forceAll: false)
 //            self._layoutSupplementaryViews(false, forceAll: false)

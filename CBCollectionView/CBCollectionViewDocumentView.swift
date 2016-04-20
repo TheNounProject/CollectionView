@@ -15,7 +15,7 @@ public class CBCollectionViewDocumentView : NSView {
     public override var flipped : Bool { return true }
 //    var isCompatibleWithResponsiveScrolling : Bool { return true }
     
-    var collectionView : CBCollectionView! {
+    weak var collectionView : CBCollectionView! {
         return self.superview!.superview as! CBCollectionView
     }
     
@@ -53,12 +53,12 @@ public class CBCollectionViewDocumentView : NSView {
         self.preparedRect = CGRectZero
     }
     
-    
     func relayout(animated: Bool) {
         
         
         
     }
+    
     
     func prepareRect(rect: CGRect, force: Bool = false) {
         
@@ -86,8 +86,8 @@ public class CBCollectionViewDocumentView : NSView {
             return
         }
         
-        var date = NSDate()
-        let previousPrepared = self.preparedRect
+//        var date = NSDate()
+//        let previousPrepared = self.preparedRect
 
         let sRect = self.layoutSupplementaryViewsInRect(_rect, forceAll: force)
         let iRect = self.layoutItemsInRect(_rect, forceAll: force)

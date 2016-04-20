@@ -57,7 +57,6 @@ public class CBClipView : NSClipView {
             NSNotificationCenter.defaultCenter().removeObserver(self, name: NSWindowDidChangeScreenNotification, object: self.window)
         }
         super.viewWillMoveToWindow(newWindow)
-        
         if (newWindow != nil) {
             NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBClipView.updateCVDisplay(_:)), name: NSWindowDidChangeScreenNotification, object: newWindow)
         }

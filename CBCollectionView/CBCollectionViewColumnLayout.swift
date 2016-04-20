@@ -133,7 +133,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     }
     
     //  private property and method above.
-    private var delegate : CBCollectionViewDelegateColumnLayout? { get{ return self.collectionView!.delegate as? CBCollectionViewDelegateColumnLayout }}
+    private weak var delegate : CBCollectionViewDelegateColumnLayout? { get{ return self.collectionView!.delegate as? CBCollectionViewDelegateColumnLayout }}
     
     private var columnHeights : [[CGFloat]]! = []
     private var sectionItemAttributes : [[CBCollectionViewLayoutAttributes]] = []
@@ -142,7 +142,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     private var headersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
     private var footersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
     private var sectionFrames   : [Int : CGRect] = [:]
-    private var unionRects = NSMutableArray()
+    private var unionRects : [CGRect] = []
     private let unionSize = 20
     
     override public init() {
@@ -173,7 +173,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         
         self.headersAttributes.removeAll()
         self.footersAttributes.removeAll()
-        self.unionRects.removeAllObjects()
+        self.unionRects.removeAll()
         self.sectionFrames.removeAll()
         self.columnHeights.removeAll(keepCapacity: false)
         self.allItemAttributes.removeAll()
@@ -298,7 +298,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             let rect1 = self.allItemAttributes[idx].frame
             idx = min(idx + unionSize, itemCounts) - 1
             let rect2 = self.allItemAttributes[idx].frame
-            self.unionRects.addObject(NSValue(rect:CGRectUnion(rect1,rect2)))
+            self.unionRects.append(CGRectUnion(rect1,rect2))
             idx += 1
         }
     }

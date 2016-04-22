@@ -200,7 +200,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                 foundObject = topLevelObjects![index]
             }
         }
-        assert(foundObject != nil, "CBCollectionView: Could not find view of type \(aClass) in nib. Make sure the opt level object in the nib is of this type.")
+        assert(foundObject != nil, "CBCollectionView: Could not find view of type \(aClass) in nib. Make sure the top level object in the nib is of this type.")
         return foundObject as? NSView
     }
     
@@ -285,9 +285,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.contentDocumentView.prepareRect(self.contentVisibleRect)
     }
     
-    public func relayout(animated: Bool, scrollToTop: Bool = true) {
+    public func relayout(animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .Top) {
         
-//        return
+        if animated {
+            self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height))
+        }
+//        self.contentDocumentView.ignoreRemoves = true
+
         let firstIP = indexPathForFirstVisibleItem()
         var refFrame : CGRect = CGRectZero
         var refVisibleFrame : CGRect = CGRectZero
@@ -296,39 +300,19 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             refVisibleFrame = self.convertRect(cell.frame, fromView: self.contentDocumentView)
         }
         self.info.recalculate()
+        var vRect = self.contentVisibleRect
+        
         let nContentSize = self.info.contentSize
         contentDocumentView.frame.size = nContentSize
         
-        if firstIP != nil, let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(firstIP!) {
+        if scrollPosition != .None && firstIP != nil, let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(firstIP!) {
             var nRef = self.convertRect(attrs.frame, fromView: self.contentDocumentView)
             nRef.origin.y -= refVisibleFrame.origin.y
             nRef = self.convertRect(nRef, toView: self.contentDocumentView)
-            self.scrollToRect(nRef, atPosition: .Top, animated: false)
+            vRect.origin.y = nRef.origin.y
         }
-        
-        self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
-        
-        
-        return
-        
-        if animated {
-            NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                context.duration = 0.5
-                context.allowsImplicitAnimation = true
-                self.contentDocumentView.frame.size = nContentSize
-                }) { () -> Void in
-                    
-            }
-        }
-        else {
-            contentDocumentView.frame.size = nContentSize
-        }
-        
-        let nFirstIP = self.indexPathForFirstVisibleItem()
-        if nFirstIP != firstIP, let ip = firstIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
-            self.scrollToRect(rect, atPosition: .Top, animated: false)
-        }
-        self.contentDocumentView.prepareRect(self.contentVisibleRect)
+        self.scrollToRect(vRect, atPosition: .Top, animated: false)
+        self.contentDocumentView.prepareRect(CGRectInset(vRect, 0, -self.contentVisibleRect.size.height), animated: animated, force: true)
     }
     
     
@@ -389,7 +373,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
 //            self.contentDocumentView.preparedRect = CGRectZero
             self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
         }
-        
+    }
+    
+    public func insertItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
+        self.relayout(true, scrollPosition: .None)
     }
     
     public func reloadItemAtIndexPath(indexPath: NSIndexPath) {
@@ -408,7 +395,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         newCell._indexPath = indexPath
         let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
         if attrs != nil {
-            newCell.applyLayoutAttributes(attrs!)
+            newCell.applyLayoutAttributes(attrs!, animated: false)
         }
         if newCell.superview == nil {
             self.contentDocumentView.addSubview(newCell)
@@ -462,16 +449,19 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public func selectAllItems(animated: Bool = true) {
         self.selectItemsAtIndexPaths(Array(self.contentDocumentView.preparedCellIndex.keys), animated: animated)
-        _selectedIndexPaths = Set(self.allIndexPaths())
+//        _selectedIndexPaths = Set(self.allIndexPaths())
     }
     public func selectItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
-        for ip in indexPaths { self.selectItemAtIndexPath(ip, animated: animated, scrollPosition: .None) }
+        for ip in indexPaths { self._selectItemAtIndexPath(ip, animated: animated, scrollPosition: .None, withEvent: nil, notifyDelegate: false) }
+        if let ip = indexPaths.last {
+            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: ip)
+        }
     }
     public func selectItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .None) {
-        self._selectItemAtIndexPath(indexPath, animated: animated, scrollPosition: scrollPosition, withEvent: nil)
+        self._selectItemAtIndexPath(indexPath, animated: animated, scrollPosition: scrollPosition, withEvent: nil, notifyDelegate: false)
     }
     
-    private func _selectItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .None, withEvent event: NSEvent?) {
+    private func _selectItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .None, withEvent event: NSEvent?, notifyDelegate: Bool = true) {
         guard let indexPath = indexPath else {
             self.deselectAllItems(animated)
             return
@@ -492,7 +482,9 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self._firstSelection = indexPath
         }
         self._lastSelection = indexPath
-        self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
+        if notifyDelegate {
+            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
+        }
         
         if scrollPosition != .None {
             self.scrollToItemAtIndexPath(indexPath, atScrollPosition: scrollPosition, animated: animated)
@@ -501,23 +493,32 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // Deselect
     public func deselectItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
-        for ip in indexPaths { self.deselectItemAtIndexPath(ip, animated: animated) }
+        for ip in indexPaths { self._deselectItemAtIndexPath(ip, animated: animated, notifyDelegate: false) }
     }
     public func deselectAllItems(animated: Bool = false) {
+        var anIP = self._selectedIndexPaths.first
         self._lastSelection = nil
         self._selectedIndexPaths.removeAll()
-        for ip in Array(self.contentDocumentView.preparedCellIndex.keys) { self.deselectItemAtIndexPath(ip, animated: animated) }
+        for ip in Array(self.contentDocumentView.preparedCellIndex.keys) { self._deselectItemAtIndexPath(ip, animated: animated, notifyDelegate: false) }
+        if let ip = anIP {
+            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: ip)
+        }
     }
     public func deselectItemAtIndexPath(indexPath: NSIndexPath, animated: Bool) {
+        self._deselectItemAtIndexPath(indexPath, animated: animated, notifyDelegate: false)
+    }
+    
+    func _deselectItemAtIndexPath(indexPath: NSIndexPath, animated: Bool, notifyDelegate : Bool = true) {
         if let deselect = self.delegate?.collectionView?(self, shouldDeselectItemAtIndexPath: indexPath) where !deselect { return }
         contentDocumentView.preparedCellIndex[indexPath]?.setSelected(false, animated: true)
         self._selectedIndexPaths.remove(indexPath)
-        self.delegate?.collectionView?(self, didDeselectItemAtIndexPath: indexPath)
+        if notifyDelegate {
+            self.delegate?.collectionView?(self, didDeselectItemAtIndexPath: indexPath)
+        }
     }
     
-    
     // Multiple selections
-    func selectItemAtIndexPath(indexPath: NSIndexPath,
+    func _selectItemAtIndexPath(indexPath: NSIndexPath,
         atScrollPosition: CBCollectionViewScrollPosition,
         animated: Bool,
         selectionType: CBCollectionViewSelectionType) {
@@ -562,8 +563,9 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             
             self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
             for ip in indexesToSelect {
-                self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil)
+                self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: false)
             }
+            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
             self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated)
             self._lastSelection = indexPath
     }
@@ -776,28 +778,28 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.delegate?.collectionView?(self, mouseUpInItemAtIndexPath: indexPath, withEvent: theEvent)
         guard let ip = indexPath where ip == mouseDownIP else { return }
         
-        if theEvent.clickCount == 2 {
-            self.delegate?.collectionView?(self, didDoubleClickItemAtIndexPath: ip, withEvent: theEvent)
-            return
-        }
-        else if theEvent.modifierFlags.contains(NSEventModifierFlags.ControlKeyMask) {
+        if theEvent.modifierFlags.contains(NSEventModifierFlags.ControlKeyMask) {
             self.rightMouseDown(theEvent)
             self.deselectAllItems()
-            self.selectItemAtIndexPath(ip, animated: false)
+            self._selectItemAtIndexPath(ip, animated: false, withEvent: theEvent, notifyDelegate: true)
             return
         }
         else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask) {
-            self.selectItemAtIndexPath(ip, atScrollPosition: .Nearest, animated: true, selectionType: .Extending)
+            self._selectItemAtIndexPath(ip, atScrollPosition: .Nearest, animated: true, selectionType: .Extending)
             return
         }
         else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.CommandKeyMask) {
             if self._selectedIndexPaths.contains(ip) {
                 if self._selectedIndexPaths.count == 1 { return }
-                self.deselectItemAtIndexPath(ip, animated: true)
+                self._deselectItemAtIndexPath(ip, animated: true, notifyDelegate: true)
             }
             else {
-                self.selectItemAtIndexPath(ip, animated: true)
+                self._selectItemAtIndexPath(ip, animated: true, withEvent: theEvent, notifyDelegate: true)
             }
+            return
+        }
+        else if theEvent.clickCount == 2 {
+            self.delegate?.collectionView?(self, didDoubleClickItemAtIndexPath: ip, withEvent: theEvent)
             return
         }
         
@@ -823,7 +825,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         guard let indexPath = (extendSelection ? _lastSelection : _firstSelection) ?? self._selectedIndexPaths.first else { return }
         if let moveTo = self.collectionViewLayout.indexPathForNextItemInDirection(direction, afterItemAtIndexPath: indexPath) {
             if let move = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: moveTo, withEvent: NSApp.currentEvent) where move != true { return }
-            self.selectItemAtIndexPath(moveTo, atScrollPosition: .Nearest, animated: true, selectionType: extendSelection ? .Extending : .Single)
+            self._selectItemAtIndexPath(moveTo, atScrollPosition: .Nearest, animated: true, selectionType: extendSelection ? .Extending : .Single)
         }
     }
     

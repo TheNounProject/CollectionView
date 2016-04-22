@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 class CBCollectionViewGridLayout: CBCollectionViewLayout {
     
     

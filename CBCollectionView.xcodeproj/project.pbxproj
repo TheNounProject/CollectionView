@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A24A61A9D4A4BE040C4A7E0A /* libPods-CBCollectionViewTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1966F9F26D5254A44A775B4B /* libPods-CBCollectionViewTests.a */; };
 		DE316FAD1CC72ABC00F763E6 /* CBClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* CBClipView.swift */; };
-		DE57F42B1CBDB17200F9E23C /* JNWClipView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE57F4291CBDB17200F9E23C /* JNWClipView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
 		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
@@ -34,6 +34,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1966F9F26D5254A44A775B4B /* libPods-CBCollectionViewTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CBCollectionViewTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F00E984FBC9F8501540F2DA /* Pods-CBCollectionView.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CBCollectionView.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CBCollectionView/Pods-CBCollectionView.debug.xcconfig"; sourceTree = "<group>"; };
+		80B81A642F29C54FBF932E75 /* libPods-CBCollectionView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CBCollectionView.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		920C5124416A03151334C6B1 /* Pods-CBCollectionView.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CBCollectionView.release.xcconfig"; path = "Pods/Target Support Files/Pods-CBCollectionView/Pods-CBCollectionView.release.xcconfig"; sourceTree = "<group>"; };
+		D3D59CF95F26A3F10F366F97 /* Pods-CBCollectionViewTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CBCollectionViewTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-CBCollectionViewTests/Pods-CBCollectionViewTests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewGridLayout.swift; sourceTree = "<group>"; };
 		DE57F4291CBDB17200F9E23C /* JNWClipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JNWClipView.h; sourceTree = "<group>"; };
 		DE57F42A1CBDB17200F9E23C /* JNWClipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JNWClipView.m; sourceTree = "<group>"; };
@@ -52,6 +57,7 @@
 		DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionView.swift; sourceTree = "<group>"; };
 		DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewDocumentView.swift; sourceTree = "<group>"; };
 		DE9072171CAC807900AD0E37 /* CBClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBClipView.swift; sourceTree = "<group>"; };
+		DFB5645491B0AF5CA579AE5E /* Pods-CBCollectionViewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CBCollectionViewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CBCollectionViewTests/Pods-CBCollectionViewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,18 +73,41 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */,
+				A24A61A9D4A4BE040C4A7E0A /* libPods-CBCollectionViewTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2B54715A1BAF66E7D215AF89 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				80B81A642F29C54FBF932E75 /* libPods-CBCollectionView.a */,
+				1966F9F26D5254A44A775B4B /* libPods-CBCollectionViewTests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D5362258CB5B0860171CF4CF /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				6F00E984FBC9F8501540F2DA /* Pods-CBCollectionView.debug.xcconfig */,
+				920C5124416A03151334C6B1 /* Pods-CBCollectionView.release.xcconfig */,
+				D3D59CF95F26A3F10F366F97 /* Pods-CBCollectionViewTests.debug.xcconfig */,
+				DFB5645491B0AF5CA579AE5E /* Pods-CBCollectionViewTests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		DE9071DF1CAC7FD800AD0E37 = {
 			isa = PBXGroup;
 			children = (
 				DE9071EB1CAC7FD800AD0E37 /* CBCollectionView */,
 				DE9071F71CAC7FD800AD0E37 /* CBCollectionViewTests */,
 				DE9071EA1CAC7FD800AD0E37 /* Products */,
+				D5362258CB5B0860171CF4CF /* Pods */,
+				2B54715A1BAF66E7D215AF89 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -129,7 +158,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */,
-				DE57F42B1CBDB17200F9E23C /* JNWClipView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,9 +186,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DE9072001CAC7FD800AD0E37 /* Build configuration list for PBXNativeTarget "CBCollectionViewTests" */;
 			buildPhases = (
+				0BB613CE4767F5E9A83D47DE /* Check Pods Manifest.lock */,
 				DE9071EF1CAC7FD800AD0E37 /* Sources */,
 				DE9071F01CAC7FD800AD0E37 /* Frameworks */,
 				DE9071F11CAC7FD800AD0E37 /* Resources */,
+				F219A58AA890BCB8A9C6B80D /* Embed Pods Frameworks */,
+				3717E451733FC5366F7F7D72 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -178,7 +209,7 @@
 		DE9071E01CAC7FD800AD0E37 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Noun Project";
 				TargetAttributes = {
@@ -224,6 +255,54 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		0BB613CE4767F5E9A83D47DE /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		3717E451733FC5366F7F7D72 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CBCollectionViewTests/Pods-CBCollectionViewTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F219A58AA890BCB8A9C6B80D /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CBCollectionViewTests/Pods-CBCollectionViewTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DE9071E41CAC7FD800AD0E37 /* Sources */ = {
@@ -350,7 +429,9 @@
 		};
 		DE9071FE1CAC7FD800AD0E37 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6F00E984FBC9F8501540F2DA /* Pods-CBCollectionView.debug.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
@@ -365,13 +446,15 @@
 				PRODUCT_BUNDLE_IDENTIFIER = thenounproject.CBCollectionView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		DE9071FF1CAC7FD800AD0E37 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 920C5124416A03151334C6B1 /* Pods-CBCollectionView.release.xcconfig */;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
@@ -391,6 +474,7 @@
 		};
 		DE9072011CAC7FD800AD0E37 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D3D59CF95F26A3F10F366F97 /* Pods-CBCollectionViewTests.debug.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = CBCollectionViewTests/Info.plist;
@@ -402,6 +486,7 @@
 		};
 		DE9072021CAC7FD800AD0E37 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DFB5645491B0AF5CA579AE5E /* Pods-CBCollectionViewTests.release.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = CBCollectionViewTests/Info.plist;

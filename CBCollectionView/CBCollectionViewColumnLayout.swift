@@ -269,20 +269,21 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             */
             let columnIndex  = self.longestColumnIndexInSection(section)
 //            sectionHeight += self.columnHeights[section][columnIndex] - itemSpacing + sectionInsets.bottom - top
-            top = self.columnHeights[section][columnIndex] - itemSpacing + sectionInsets.bottom
+            top = self.columnHeights[section][columnIndex] - itemSpacing
             
             let footerHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForFooterInSection: section) ?? self.footerHeight
             if footerHeight > 0 {
                 let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionFooter, withIndexPath: NSIndexPath._indexPathForItem(0, inSection: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                    CGRectMake(sectionInsets.left, top, self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, heightHeader)
-                    : CGRectMake(0, top, self.collectionView!.bounds.size.width, heightHeader)
+                    CGRectMake(sectionInsets.left, top, self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, footerHeight)
+                    : CGRectMake(0, top, self.collectionView!.bounds.size.width, footerHeight)
                 self.footersAttributes[section] = attributes
                 self.allItemAttributes.append(attributes)
                 top = CGRectGetMaxY(attributes.frame)
 //                sectionHeight += footerHeight
             }
+            top += sectionInsets.bottom
             
             sectionRect.size.height = top - sectionRect.origin.y
             sectionFrames[section] = sectionRect

@@ -53,14 +53,16 @@ public class CBCollectionViewDocumentView : NSView {
         self.preparedRect = CGRectZero
     }
     
+    
+//    var ignoreRemoves = false
+    
     func relayout(animated: Bool) {
         
         
         
     }
     
-    
-    func prepareRect(rect: CGRect, force: Bool = false) {
+    func prepareRect(rect: CGRect, animated: Bool = false, force: Bool = false) {
         
         let _rect = CGRectIntersection(rect, CGRect(origin: CGPointZero, size: self.frame.size))
         
@@ -75,29 +77,31 @@ public class CBCollectionViewDocumentView : NSView {
                         self.collectionView._floatingSupplementaryView.addSubview(view)
                     }
                     attrs.frame = self.collectionView._floatingSupplementaryView.convertRect(attrs.frame, fromView: self)
+                    self._applyLayoutAttributes(attrs, toItem: view, animated: false)
                 }
                 else if view.superview == self.collectionView._floatingSupplementaryView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
+                    self._applyLayoutAttributes(attrs, toItem: view, animated: false)
                 }
-                self._applyLayoutAttributes(attrs, toItem: view, animated: false)
             }
 //            Swift.print("Not laying out because we're good!")
             return
         }
         
 //        var date = NSDate()
-//        let previousPrepared = self.preparedRect
+        let previousPrepared = self.preparedRect
 
-        let sRect = self.layoutSupplementaryViewsInRect(_rect, forceAll: force)
-        let iRect = self.layoutItemsInRect(_rect, forceAll: force)
+        let sRect = self.layoutSupplementaryViewsInRect(_rect, animated: animated, forceAll: force)
+        let iRect = self.layoutItemsInRect(_rect, animated: animated, forceAll: force)
         
         var newRect = sRect.union(iRect)
         if !self.preparedRect.isEmpty {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
-//        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: \(date.timeIntervalSinceNow)  :: Subviews:  \(self.subviews.count)")
+        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count)")
+//        self.ignoreRemoves = false
     }
     
     func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {
@@ -118,42 +122,42 @@ public class CBCollectionViewDocumentView : NSView {
 //        prepTime = date.timeIntervalSinceNow
 //        date = NSDate()
         
-        var removedRect = CGRectZero
-        for ip in removed {
-            if let cell = self.collectionView.cellForItemAtIndexPath(ip) {
-                if removedRect.isEmpty { removedRect = cell.frame }
-                else { removedRect.unionInPlace(cell.frame) }
-                
-                self.preparedCellIndex[ip] = nil
-                if animated {
-                    NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                        context.duration = 0.5
-                        context.allowsImplicitAnimation = true
-                        cell.hidden = true
+            var removedRect = CGRectZero
+            for ip in removed {
+                if let cell = self.collectionView.cellForItemAtIndexPath(ip) {
+                    if removedRect.isEmpty { removedRect = cell.frame }
+                    else { removedRect.unionInPlace(cell.frame) }
+                    
+                    self.preparedCellIndex[ip] = nil
+                    if animated {
+                        NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                            context.duration = 0.5
+                            context.allowsImplicitAnimation = true
+                            cell.hidden = true
                         }) { () -> Void in
                             cell._indexPath = nil
                             self.collectionView.enqueueCellForReuse(cell)
                             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
+                        }
+                    }
+                    else {
+                        cell.hidden = true
+                        cell._indexPath = nil
+                        self.collectionView.enqueueCellForReuse(cell)
+                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
                     }
                 }
+            }
+            
+            if  !removedRect.isEmpty {
+                if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
+                    let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
+                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                }
                 else {
-                    cell.hidden = true
-                    cell._indexPath = nil
-                    self.collectionView.enqueueCellForReuse(cell)
-                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
+                    
                 }
             }
-        }
-        
-        if  !removedRect.isEmpty {
-            if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
-                let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
-                self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
-            }
-            else {
-                
-            }
-        }
         
 //        removeTime = date.timeIntervalSinceNow
 //        date = NSDate()
@@ -174,7 +178,7 @@ public class CBCollectionViewDocumentView : NSView {
             if animated {
                 self._applyLayoutAttributes(attrs, toItem: cell, animated: false)
                 cell.hidden = true
-                cell.frame = attrs.frame
+                cell.alphaValue = 0
             }
             self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
             cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell._indexPath!), animated: false)
@@ -211,41 +215,43 @@ public class CBCollectionViewDocumentView : NSView {
         let updated = inserted.removeAllInSet(oldIdentifiers)
         
 //        var removedRect = CGRectZero
-        for identifier in removed {
-            if let view = self.preparedSupplementaryViewIndex[identifier] {
-//                if let attrs = view.attributes where !attrs.floating {
-//                    if removedRect.isEmpty { removedRect = attrs.frame }
-//                    else { removedRect.unionInPlace(attrs.frame) }
-//                }
-                self.preparedSupplementaryViewIndex[identifier] = nil
-                if animated {
-                    NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                        context.duration = 0.5
-                        context.allowsImplicitAnimation = true
-                        view.hidden = true
+//        if !ignoreRemoves  {
+            for identifier in removed {
+                if let view = self.preparedSupplementaryViewIndex[identifier] {
+                    //                if let attrs = view.attributes where !attrs.floating {
+                    //                    if removedRect.isEmpty { removedRect = attrs.frame }
+                    //                    else { removedRect.unionInPlace(attrs.frame) }
+                    //                }
+                    self.preparedSupplementaryViewIndex[identifier] = nil
+                    if animated {
+                        NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                            context.duration = 0.5
+                            context.allowsImplicitAnimation = true
+                            view.hidden = true
                         }) { () -> Void in
                             view._indexPath = nil
                             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
                             self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
+                        }
+                    }
+                    else {
+                        view.hidden = true
+                        view._indexPath = nil
+                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
+                        self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
                     }
                 }
-                else {
-                    view.hidden = true
-                    view._indexPath = nil
-                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
-                    self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
-                }
             }
-        }
-        
-//        if  !removedRect.isEmpty {
-//            if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
-//                let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
-//                self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
-//            }
-//            else {
-//                
-//            }
+            
+            //        if  !removedRect.isEmpty {
+            //            if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
+            //                let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
+            //                self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+            //            }
+            //            else {
+            //                
+            //            }
+            //        }
 //        }
         
         
@@ -265,7 +271,6 @@ public class CBCollectionViewDocumentView : NSView {
                     }
                     else {
                         self.addSubview(view)
-                        
                     }
                 }
                 if view.superview == self.collectionView._floatingSupplementaryView{
@@ -275,9 +280,6 @@ public class CBCollectionViewDocumentView : NSView {
                     view.hidden = true
                     view.frame = attrs.frame
                 }
-//                if !attrs.floating {
-//                    _rect.unionInPlace(attrs.frame)
-//                }
                 self._applyLayoutAttributes(attrs, toItem: view, animated: animated)
                 self.preparedSupplementaryViewIndex[identifier] = view
             }
@@ -299,10 +301,6 @@ public class CBCollectionViewDocumentView : NSView {
                     cell.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(cell)
                 }
-                
-//                if !attrs.floating {
-//                _rect.unionInPlace(attrs.frame)
-//                }
                 self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
             }
         }
@@ -313,7 +311,10 @@ public class CBCollectionViewDocumentView : NSView {
     private func _applyLayoutAttributes(attributes: CBCollectionViewLayoutAttributes?, toItem : CBCollectionReusableView?, animated: Bool) {
         
         if toItem == nil || attributes == nil { return }
+        toItem!.applyLayoutAttributes(attributes!, animated: animated)
         
+        
+        return;
         if attributes?.floating == false && animated {
             NSAnimationContext.runAnimationGroup({ (context) -> Void in
                 context.duration = 0.5

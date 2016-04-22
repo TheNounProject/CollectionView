@@ -18,3 +18,4 @@ FOUNDATION_EXPORT const unsigned char CBCollectionViewVersionString[];
 
 
 //#import "JNWClipView.h"
+//#import "POP.h"

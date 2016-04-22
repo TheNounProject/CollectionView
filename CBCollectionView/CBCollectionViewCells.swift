@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 public class CBCollectionReusableView : NSView {
     
     public internal(set) var _indexPath: NSIndexPath?
@@ -35,11 +34,28 @@ public class CBCollectionReusableView : NSView {
         super.prepareForReuse()
     }
     
-    public func applyLayoutAttributes(layoutAttributes: CBCollectionViewLayoutAttributes, animated: Bool = false) {
-        self.frame = layoutAttributes.frame
-        self.alphaValue = layoutAttributes.alpha
-        self.layer?.zPosition = layoutAttributes.zIndex
-        self.hidden = layoutAttributes.hidden
+    public func applyLayoutAttributes(layoutAttributes: CBCollectionViewLayoutAttributes, animated: Bool) {
+        
+        if animated {
+            
+            NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                context.duration = 0.25
+                context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                context.allowsImplicitAnimation = true
+                self.frame = layoutAttributes.frame
+                self.alphaValue = layoutAttributes.alpha
+                self.layer?.zPosition = layoutAttributes.zIndex
+                self.hidden = layoutAttributes.hidden
+            }) { () -> Void in
+                
+            }
+        }
+        else {
+            self.frame = layoutAttributes.frame
+            self.alphaValue = layoutAttributes.alpha
+            self.layer?.zPosition = layoutAttributes.zIndex
+            self.hidden = layoutAttributes.hidden
+        }
     }
     
     
@@ -103,6 +119,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
             self.removeTrackingArea(tArea)
         }
     }
+    
     public func enableTracking() {
         self.wantsTracking = true
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }

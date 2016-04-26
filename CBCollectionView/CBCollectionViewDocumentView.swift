@@ -89,7 +89,7 @@ public class CBCollectionViewDocumentView : NSView {
             return
         }
         
-//        var date = NSDate()
+        var date = NSDate()
         let previousPrepared = self.preparedRect
 
         let sRect = self.layoutSupplementaryViewsInRect(_rect, animated: animated, forceAll: force)
@@ -100,7 +100,7 @@ public class CBCollectionViewDocumentView : NSView {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
-        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count)")
+        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
 //        self.ignoreRemoves = false
     }
     

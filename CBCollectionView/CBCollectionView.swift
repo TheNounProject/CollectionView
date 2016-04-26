@@ -134,6 +134,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.willBeginScroll(_:)), name: NSScrollViewWillStartLiveScrollNotification, object: self)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSScrollViewDidEndLiveScrollNotification, object: self)
         
+        
         self.addSubview(_floatingSupplementaryView, positioned: .Above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
         _floatingSupplementaryView.frame = self.bounds
@@ -329,8 +330,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     func didEndScroll(notification: NSNotification) {
         scrolling = false
-        let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
-        self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height/2))
+//        let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
+//        self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height/2))
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
     }
 
@@ -748,14 +749,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public override func mouseDown(theEvent: NSEvent) {
         
 //        if theEvent.clickCount == 2 { return }
-        
+        self.window?.makeFirstResponder(self)
         self.mouseDownIP = nil
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self) == false {
             return
         }
         
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
-        self.window?.makeFirstResponder(self)
         let point = self.contentView.convertPoint(theEvent.locationInWindow, fromView: nil)
         self.mouseDownIP = self.indexPathForItemAtPoint(point)
         self.delegate?.collectionView?(self, mouseDownInItemAtIndexPath: self.mouseDownIP, withEvent: theEvent)

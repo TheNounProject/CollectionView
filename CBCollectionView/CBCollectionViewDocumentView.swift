@@ -34,16 +34,12 @@ public class CBCollectionViewDocumentView : NSView {
     
     func reset() {
         for cell in preparedCellIndex {
-            cell.1.hidden = true
-            cell.1._indexPath = nil
             cell.1.removeFromSuperview()
             self.collectionView.enqueueCellForReuse(cell.1)
             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell.1, forItemAtIndexPath: cell.0)
         }
         preparedCellIndex.removeAll()
         for view in preparedSupplementaryViewIndex {
-            view.1.hidden = true
-            view.1._indexPath = nil
             view.1.removeFromSuperviewWithoutNeedingDisplay()
             let id = view.0
             self.collectionView.enqueueSupplementaryViewForReuse(view.1, withIdentifier: id)
@@ -135,14 +131,11 @@ public class CBCollectionViewDocumentView : NSView {
                             context.allowsImplicitAnimation = true
                             cell.hidden = true
                         }) { () -> Void in
-                            cell._indexPath = nil
                             self.collectionView.enqueueCellForReuse(cell)
                             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
                         }
                     }
                     else {
-                        cell.hidden = true
-                        cell._indexPath = nil
                         self.collectionView.enqueueCellForReuse(cell)
                         self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
                     }
@@ -168,7 +161,9 @@ public class CBCollectionViewDocumentView : NSView {
                 "For some reason collection view tried to load cells without a data source"
                 continue
             }
-            cell._indexPath = ip
+            assert(cell.collectionView != nil, "Attemp to load cell without using deque")
+            
+            cell.indexPath = ip
             _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, -1, -1) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
@@ -181,7 +176,7 @@ public class CBCollectionViewDocumentView : NSView {
                 cell.alphaValue = 0
             }
             self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
-            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell._indexPath!), animated: false)
+            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
             self.preparedCellIndex[ip] = cell
         }
         
@@ -192,7 +187,6 @@ public class CBCollectionViewDocumentView : NSView {
             for ip in updated {
                 if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip) {
                     let cell = preparedCellIndex[ip]
-                    cell?._indexPath = ip
                     _rect = CGRectUnion(_rect, attrs.frame)
                     self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
                     cell?.selected = self.collectionView.itemAtIndexPathIsSelected(ip)
@@ -229,14 +223,12 @@ public class CBCollectionViewDocumentView : NSView {
                             context.allowsImplicitAnimation = true
                             view.hidden = true
                         }) { () -> Void in
-                            view._indexPath = nil
                             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
                             self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
                         }
                     }
                     else {
                         view.hidden = true
-                        view._indexPath = nil
                         self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
                         self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
                     }
@@ -259,10 +251,11 @@ public class CBCollectionViewDocumentView : NSView {
             
             if let view = self.collectionView.dataSource?.collectionView?(self.collectionView, viewForSupplementaryElementOfKind: identifier.kind, forIndexPath: identifier.indexPath!) {
                 
+                assert(view.collectionView != nil, "Attempt to insert a view without using deque:")
+                
                 guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: identifier.indexPath!)
                     else { continue }
                 _rect = CGRectUnion(_rect, attrs.frame)
-                view._indexPath = identifier.indexPath
                 
                 self.collectionView.delegate?.collectionView?(self.collectionView, willDisplaySupplementaryView: view, forElementKind: identifier.kind, atIndexPath: identifier.indexPath!)
                 if view.superview == nil {

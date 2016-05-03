@@ -10,8 +10,9 @@ import Foundation
 
 public class CBCollectionReusableView : NSView {
     
-    public internal(set) var _indexPath: NSIndexPath?
+    public internal(set) var indexPath: NSIndexPath?
     public internal(set) var reuseIdentifier: String?
+    public internal(set) weak var collectionView : CBCollectionView?
     
     internal var attributes : CBCollectionViewLayoutAttributes?
     

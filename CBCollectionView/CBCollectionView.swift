@@ -220,11 +220,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                 cell = aClass.init()
             }
             assert(cell != nil, "CBCollectionView: No cell could be dequed with identifier '\(identifier) for item: \(indexPath._item) in section \(indexPath._section)'. Make sure you have registered your cell class or nib for that identifier.")
+            cell?.collectionView = self
         }
         else {
             self._reusableCells[identifier]?.removeFirst()
         }
         cell?.reuseIdentifier = identifier
+        cell?.indexPath = indexPath
         cell?.prepareForReuse()
         return cell!
     }
@@ -239,18 +241,20 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                 view = aClass.init()
             }
             assert(view != nil, "CBCollectionView: No view could be dequed for supplementary view of kind \(elementKind) with identifier '\(identifier) in section \(indexPath._section)'. Make sure you have registered your view class or nib for that identifier.")
+            view?.collectionView = self
         }
         else {
             self._reusableSupplementaryView[id]?.removeFirst()
         }
         view?.reuseIdentifier = identifier
+        view?.indexPath = indexPath
         view?.prepareForReuse()
         return view!
     }
     
     func enqueueCellForReuse(item: CBCollectionViewCell) {
-//        item.removeFromSuperviewWithoutNeedingDisplay()
         item.hidden = true
+        item.indexPath = nil
         guard let id = item.reuseIdentifier else { return }
         if self._reusableCells[id] == nil {
             self._reusableCells[id] = []
@@ -259,8 +263,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func enqueueSupplementaryViewForReuse(item: CBCollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
-//        item.removeFromSuperview()
         item.hidden = true
+        item.indexPath = nil
         let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: withIdentifier.reuseIdentifier)
         if self._reusableSupplementaryView[newID] == nil {
             self._reusableSupplementaryView[newID] = []
@@ -389,11 +393,14 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             debugPrint("For some reason collection view tried to load cells without a data source")
             return
         }
+        
+        assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
+        
         cell.hidden = true
-        cell._indexPath = nil
+        cell.indexPath = nil
         self.enqueueCellForReuse(cell)
         
-        newCell._indexPath = indexPath
+        newCell.indexPath = indexPath
         let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
         if attrs != nil {
             newCell.applyLayoutAttributes(attrs!, animated: false)
@@ -615,8 +622,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // MARK: - Retrieve Cells & Indexes
     internal func allIndexPaths() -> Set<NSIndexPath> { return self.info.allIndexPaths }
-    public func indexPathForCell(cell: CBCollectionViewCell) -> NSIndexPath?  { return cell._indexPath }
-    public func indexPathForSupplementaryView(view: CBCollectionReusableView) -> NSIndexPath? { return view._indexPath }
+    public func indexPathForCell(cell: CBCollectionViewCell) -> NSIndexPath?  { return cell.indexPath }
+    public func indexPathForSupplementaryView(view: CBCollectionReusableView) -> NSIndexPath? { return view.indexPath }
     
     public func indexPathForSectionAtPoint(point: CGPoint) -> NSIndexPath? {
         for sectionIndex in 0..<self.info.numberOfSections {

@@ -401,6 +401,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         cell.hidden = true
         cell.indexPath = nil
+//        self.contentDocumentView.preparedCellIndex[indexPath] = nil
         self.enqueueCellForReuse(cell)
         
         newCell.indexPath = indexPath

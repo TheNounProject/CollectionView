@@ -57,7 +57,6 @@ internal class CBCollectionViewInfo {
         if self.sections.count == 0 { return }
         for sIndex in 0...self.numberOfSections - 1 {
             let section = self.sections[sIndex];
-            if section?.numberOfItems == 0 { continue }
             
             // We're running through all of the items just to find the total size of each section.
             // Although this might seem like a waste, remember that this is only performed each time the
@@ -74,6 +73,7 @@ internal class CBCollectionViewInfo {
                 self.sections[sIndex]?.frame = potentialSectionFrame
                 continue
             }
+            if section?.numberOfItems == 0 { continue }
             
             var sectionFrame = CGRectNull;
             for itemIndex in 0...section!.numberOfItems - 1 {
@@ -83,7 +83,7 @@ internal class CBCollectionViewInfo {
                     sectionFrame = CGRectUnion(sectionFrame, attributes.frame);
                 }
             }
-            for identifier in self.collectionView._allSupplementaryViewIdentifiers() {
+            for identifier in self.collectionView._allSupplementaryViewIdentifiers {
                 if let attributes = layout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: NSIndexPath._indexPathForItem(0, inSection: sIndex)) {
                     sectionFrame = CGRectUnion(sectionFrame, attributes.frame)
                 }
@@ -105,7 +105,7 @@ internal class CBCollectionViewInfo {
             size = frame.size;
         }
         let collectionViewSize = self.collectionView.frame.size;
-        size.height = max(size.height, collectionViewSize.height - collectionView.contentInsets.top)
+        size.height = max(size.height, collectionViewSize.height - collectionView.contentInsets.top - collectionView.contentInsets.bottom)
         size.width = max(size.width, collectionViewSize.width - collectionView.contentInsets.left - collectionView.contentInsets.right)
         return size
     }

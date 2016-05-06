@@ -40,7 +40,7 @@ public class CBCollectionViewDocumentView : NSView {
         }
         preparedCellIndex.removeAll()
         for view in preparedSupplementaryViewIndex {
-            view.1.removeFromSuperviewWithoutNeedingDisplay()
+            view.1.removeFromSuperview()
             let id = view.0
             self.collectionView.enqueueSupplementaryViewForReuse(view.1, withIdentifier: id)
             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view.1, forElementOfKind: id.kind, atIndexPath: id.indexPath!)
@@ -249,7 +249,7 @@ public class CBCollectionViewDocumentView : NSView {
         
         for identifier in inserted {
             
-            if let view = self.collectionView.dataSource?.collectionView?(self.collectionView, viewForSupplementaryElementOfKind: identifier.kind, forIndexPath: identifier.indexPath!) {
+            if let view = self.preparedSupplementaryViewIndex[identifier] ?? self.collectionView.dataSource?.collectionView?(self.collectionView, viewForSupplementaryElementOfKind: identifier.kind, forIndexPath: identifier.indexPath!) {
                 
                 assert(view.collectionView != nil, "Attempt to insert a view without using deque:")
                 

@@ -142,7 +142,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     private var headersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
     private var footersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
     private var sectionFrames   : [Int : CGRect] = [:]
-    private var unionRects : [CGRect] = []
+//    private var unionRects : [CGRect] = []
     private let unionSize = 20
     
     override public init() {
@@ -173,7 +173,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         
         self.headersAttributes.removeAll()
         self.footersAttributes.removeAll()
-        self.unionRects.removeAll()
+//        self.unionRects.removeAll()
         self.sectionFrames.removeAll()
         self.columnHeights.removeAll(keepCapacity: false)
         self.allItemAttributes.removeAll()
@@ -181,20 +181,21 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         self.sectionColumnAttributes.removeAll()
         
         // Create default column heights for each section
-        for sec in 0...self.numSections-1 {
-            let colCount = self.columnsInSection(sec)
-            columnHeights.append([CGFloat](count: colCount, repeatedValue: 0))
-        }
+//        for sec in 0...self.numSections-1 {
+//            let colCount = self.columnsInSection(sec)
+//            columnHeights.append([CGFloat](count: colCount, repeatedValue: 0))
+//        }
         
         var top : CGFloat = 0.0
 //        var attributes = CBCollectionViewLayoutAttributes()
         
         for section in 0..<numberOfSections {
+            let colCount = self.columnsInSection(section)
             
             /*
             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
             */
-            let colCount = self.columnsInSection(section)
+//            let colCount = self.columnsInSection(section)
             let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAtIndex: section) ?? self.sectionInset
             let itemSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, minimumInteritemSpacingForSectionAtIndex: section) ?? self.minimumInteritemSpacing
             let colSpacing = self.delegate?.collectionview?(self.collectionView!, layout: self, minimumColumnSpacingForSectionAtIndex: section) ?? self.minimumColumnSpacing
@@ -204,8 +205,6 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             let itemWidth = (contentWidth - (spaceColumCount*colSpacing)) / CGFloat(colCount)
             _itemWidth = itemWidth
             
-//            var sectionHeight : CGFloat = 0
-//            var sectionTop : CGFloat = 0
             var sectionRect: CGRect = CGRect(x: sectionInsets.left, y: top, width: contentWidth, height: 0)
             /*
             * 2. Section header
@@ -223,19 +222,21 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             }
             
             top += sectionInsets.top
-            for idx in 0..<colCount {
-                self.columnHeights[section][idx] = top;
-            }
+            columnHeights.append([CGFloat](count: colCount, repeatedValue: top))
+//            for idx in 0..<colCount {
+//                self.columnHeights[section][idx] = top;
+//            }
             
             /*
             * 3. Section items
             */
             let itemCount = self.collectionView!.numberOfItemsInSection(section)
             var itemAttributes :[CBCollectionViewLayoutAttributes] = []
-            sectionColumnAttributes[section] = []
-            for _ in 0...colCount - 1 {
-                sectionColumnAttributes[section]?.append([])
-            }
+            sectionColumnAttributes[section] = [Array](count: colCount, repeatedValue: [])
+            
+//            for _ in 0...colCount - 1 {
+//                sectionColumnAttributes[section]?.append([])
+//            }
             
             // Item will be put into shortest column.
             for idx in 0..<itemCount {
@@ -288,20 +289,20 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             sectionRect.size.height = top - sectionRect.origin.y
             sectionFrames[section] = sectionRect
             
-            for idx in 0..<colCount {
-                self.columnHeights[section][idx] = top
-            }
+//            for idx in 0..<colCount {
+//                self.columnHeights[section][idx] = top
+//            }
         }
         
-        var idx = 0;
-        let itemCounts = self.allItemAttributes.count
-        while(idx < itemCounts){
-            let rect1 = self.allItemAttributes[idx].frame
-            idx = min(idx + unionSize, itemCounts) - 1
-            let rect2 = self.allItemAttributes[idx].frame
-            self.unionRects.append(CGRectUnion(rect1,rect2))
-            idx += 1
-        }
+//        var idx = 0;
+//        let itemCounts = self.allItemAttributes.count
+//        while(idx < itemCounts){
+//            let rect1 = self.allItemAttributes[idx].frame
+//            idx = min(idx + unionSize, itemCounts) - 1
+//            let rect2 = self.allItemAttributes[idx].frame
+//            self.unionRects.append(CGRectUnion(rect1,rect2))
+//            idx += 1
+//        }
     }
     
     override public func collectionViewContentSize() -> CGSize {
@@ -311,7 +312,8 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         }
         var contentSize = self.collectionView!.bounds.size as CGSize
         let height = self.columnHeights.last?.first ?? 0
-        contentSize.height = CGFloat(height)
+        if height == 0 { return CGSizeZero }
+        contentSize.height = height
         return  contentSize
     }
     
@@ -402,7 +404,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     public override func scrollRectForItemAtIndexPath(indexPath: NSIndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItemAtIndexPath(indexPath)?.frame else { return nil }
         if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CBCollectionViewLayoutElementKind.SectionHeader, atIndexPath: NSIndexPath._indexPathForItem(0, inSection: indexPath._section)) {
-            frame.origin.y += attrs.frame.size.height
+            frame.origin.y -= attrs.frame.size.height
         }
         return frame
     }
@@ -488,18 +490,21 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         guard let cv = self.collectionView else { return nil }
         if CGRectEqualToRect(rect, CGRectZero) || cv.numberOfSections() == 0 { return indexPaths }
         for sectionIndex in 0...cv.numberOfSections() - 1 {
+            
+            if cv.numberOfItemsInSection(sectionIndex) == 0 { continue }
+            
             guard let sectionFrame = cv.frameForSection(sectionIndex),
                 let columns = self.sectionColumnAttributes[sectionIndex] where columns.count > 0 else { continue }
             if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, rect) { continue }
             
-//            for column in columns {
-//                for attr in column {
-//                    if attr.frame.intersects(rect) {
-//                        indexPaths.insert(attr.indexPath)
-//                    }
-//                    else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
-//                }
-//            }
+            for column in columns {
+                for attr in column {
+                    if attr.frame.intersects(rect) {
+                        indexPaths.insert(attr.indexPath)
+                    }
+                    else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
+                }
+            }
             
 //                        for attr in sectionItemAttributes[sectionIndex] {
 //                if attr.frame.intersects(rect) {
@@ -508,33 +513,33 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
 //            }
             
 //            guard let sColumns = sectionColumnAttributes[sectionIndex] where sColumns.count > 0 else { continue }
-            let firstColumn = columns[0]
-            
-            var start = -1
-            var end = -1
-            let itemCount = cv.numberOfItemsInSection(sectionIndex)
-            
-            let maxY = CGRectGetMaxY(rect)
-            for row in 0...firstColumn.count - 1 {
-                let attrs = firstColumn[row]
-                let include = CGRectIntersectsRect(attrs.frame, rect)
-                if !include { continue }
-                if CGRectGetMinY(attrs.frame) > maxY { break }
-                if start == -1 { start = row }
-                end = row
-                indexPaths.insert(NSIndexPath._indexPathForItem(columns.count * row, inSection: sectionIndex))
-            }
-            
-            if start == -1 || columns.count == 1 { continue }
-            
-            for c in 1...columns.count - 1 {
-                for r in start...end {
-                    let item = columns.count * r + c
-                    if item < itemCount {
-                        indexPaths.insert(NSIndexPath._indexPathForItem(item, inSection: sectionIndex))
-                    }
-                }
-            }
+//            let firstColumn = columns[0]
+//            
+//            var start = -1
+//            var end = -1
+//            let itemCount = cv.numberOfItemsInSection(sectionIndex)
+//            
+//            let maxY = CGRectGetMaxY(rect)
+//            for row in 0...firstColumn.count - 1 {
+//                let attrs = firstColumn[row]
+//                let include = CGRectIntersectsRect(attrs.frame, rect)
+//                if !include { continue }
+//                if CGRectGetMinY(attrs.frame) > maxY { break }
+//                if start == -1 { start = row }
+//                end = row
+//                indexPaths.insert(NSIndexPath._indexPathForItem(columns.count * row, inSection: sectionIndex))
+//            }
+//            
+//            if start == -1 || columns.count == 1 { continue }
+//            
+//            for c in 1...columns.count - 1 {
+//                for r in start...end {
+//                    let item = columns.count * r + c
+//                    if item < itemCount {
+//                        indexPaths.insert(NSIndexPath._indexPathForItem(item, inSection: sectionIndex))
+//                    }
+//                }
+//            }
 
         }
         return indexPaths
@@ -554,40 +559,129 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         
         switch direction {
         case .Up:
-            var point = cellRect.origin
-            point.y = point.y - cellHeight
-            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-                return indexPath
-            }
-            point.y = point.y - cellHeight
-            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-                return indexPath
-            }
+//            let columns = sectionColumnAttributes[currentIndexPath._section]
             
-            point.y = point.y - cellHeight
-            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-                return indexPath
-            } else {
-                return currentIndexPath
+            guard let cAttrs = collectionView.layoutAttributesForItemAtIndexPath(currentIndexPath),
+                let columns = sectionColumnAttributes[section] else { return nil }
+            
+            let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
+            
+            let left = CGRectGetMinX(cAttrs.frame)
+            let right = CGRectGetMaxX(cAttrs.frame)
+            
+            for column in columns {
+                if let first = column.first {
+                    // This is the first item in the column -> Check the previous section
+                    if first.indexPath == currentIndexPath {
+                        guard let pColumns = sectionColumnAttributes[section - 1] else { return nil }
+                        
+                        var last : NSIndexPath?
+                        for col in pColumns.reverse() {
+                            if let pFirst = col.first {
+                                let flat = CGRect(x: pFirst.frame.origin.x, y: 0, width: pFirst.frame.size.width, height: 50)
+                                if cFlat.intersects(flat) {
+                                    return col.last?.indexPath
+                                }
+                            }
+                        }
+                        return sectionItemAttributes[section - 1].last?.indexPath
+                    }
+                    
+                    let flat = CGRect(x: first.frame.origin.x, y: 0, width: first.frame.size.width, height: 50)
+                    
+                    // Get the same column
+                    if cFlat.intersects(flat) {
+                        for idx in 0..<column.count {
+                            let attr = column[idx]
+                            if attr.indexPath == currentIndexPath {
+                                return column[idx - 1].indexPath
+                            }
+                        }
+                    }
+                }
             }
+            return nil
+            
+            
+//            var point = cellRect.origin
+//            point.y = point.y - cellHeight
+//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
+//                return indexPath
+//            }
+//            point.y = point.y - cellHeight
+//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
+//                return indexPath
+//            }
+//            
+//            point.y = point.y - cellHeight
+//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
+//                return indexPath
+//            } else {
+//                return currentIndexPath
+//            }
             
         case .Down:
-            var point = cellRect.origin
-            point.y = point.y + cellHeight
-            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-                return indexPath
-            }
-            point.y = point.y + cellHeight
-            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-                return indexPath
-            }
             
-            point.y = point.y + cellHeight
-            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-                return indexPath
-            } else {
-                return currentIndexPath
+            
+            guard let cAttrs = collectionView.layoutAttributesForItemAtIndexPath(currentIndexPath),
+                let columns = sectionColumnAttributes[section] else { return nil }
+            
+            let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
+            
+            let left = CGRectGetMinX(cAttrs.frame)
+            let right = CGRectGetMaxX(cAttrs.frame)
+            
+            for column in columns {
+                if let first = column.first {
+                    // This is the last item in the column -> Check the previous section
+                    if column.last?.indexPath == currentIndexPath {
+                        guard let pColumns = sectionColumnAttributes[section + 1] else { return nil }
+                        
+                        var last : NSIndexPath?
+                        for col in pColumns {
+                            if let pFirst = col.first {
+                                let flat = CGRect(x: pFirst.frame.origin.x, y: 0, width: pFirst.frame.size.width, height: 50)
+                                if cFlat.intersects(flat) {
+                                    return col.first?.indexPath
+                                }
+                            }
+                        }
+                        return sectionItemAttributes[section + 1].last?.indexPath
+                    }
+                    
+                    let flat = CGRect(x: first.frame.origin.x, y: 0, width: first.frame.size.width, height: 50)
+                    
+                    // Get the same column
+                    if cFlat.intersects(flat) {
+                        for idx in 0..<column.count {
+                            let attr = column[idx]
+                            if attr.indexPath == currentIndexPath {
+                                return column[idx + 1].indexPath
+                            }
+                        }
+                    }
+                }
             }
+            return nil
+            
+            
+            
+//            var point = cellRect.origin
+//            point.y = point.y + cellHeight
+//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
+//                return indexPath
+//            }
+//            point.y = point.y + cellHeight
+//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
+//                return indexPath
+//            }
+//            
+//            point.y = point.y + cellHeight
+//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
+//                return indexPath
+//            } else {
+//                return currentIndexPath
+//            }
             
         case .Left:
             if section == 0 && index == 0 {

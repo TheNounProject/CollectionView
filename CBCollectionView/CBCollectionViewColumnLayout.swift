@@ -306,12 +306,12 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     }
     
     override public func collectionViewContentSize() -> CGSize {
-        let numberOfSections = self.collectionView!.numberOfSections()
-        if numberOfSections == 0{
-            return CGSizeZero
-        }
-        var contentSize = self.collectionView!.bounds.size as CGSize
-        let height = self.columnHeights.last?.first ?? 0
+        guard let cv = collectionView else { return CGSizeZero }
+        let numberOfSections = cv.numberOfSections()
+        if numberOfSections == 0{ return CGSizeZero }
+        
+        var contentSize = cv.bounds.size as CGSize
+        let height = self.sectionFrames[cv.numberOfSections() - 1]?.maxY ?? 0
         if height == 0 { return CGSizeZero }
         contentSize.height = height
         return  contentSize

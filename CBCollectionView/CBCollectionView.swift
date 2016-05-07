@@ -580,10 +580,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             
             self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
             for ip in indexesToSelect {
-                self._selectItemAtIndexPath(ip, animated: true, scrollPosition: atScrollPosition, withEvent: nil, notifyDelegate: false)
+                self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: false)
             }
             self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
-//            self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated)
+            self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated)
             self._lastSelection = indexPath
     }
     

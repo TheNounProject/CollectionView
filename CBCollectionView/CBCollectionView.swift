@@ -766,7 +766,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
 //        if theEvent.clickCount == 2 { return }
         self.window?.makeFirstResponder(self)
         self.mouseDownIP = nil
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self) == false {
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
             return
         }
         
@@ -779,7 +779,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public override func mouseUp(theEvent: NSEvent) {
         super.mouseUp(theEvent)
         
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self) == false {
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
             return
         }
         
@@ -830,7 +830,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public override func rightMouseDown(theEvent: NSEvent) {
         super.rightMouseDown(theEvent)
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self) == false {
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
             return
         }
         

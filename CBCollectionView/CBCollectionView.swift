@@ -830,6 +830,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public override func rightMouseDown(theEvent: NSEvent) {
         super.rightMouseDown(theEvent)
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self) == false {
+            return
+        }
+        
         let point = self.contentView.convertPoint(theEvent.locationInWindow, fromView: nil)
         if let indexPath = self.indexPathForItemAtPoint(point) {
             self.delegate?.collectionView?(self, didRightClickItemAtIndexPath: indexPath, withEvent: theEvent)

@@ -128,14 +128,12 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.info = CBCollectionViewInfo(collectionView: self)
         self.wantsLayer = true
         self.documentView = CBCollectionViewDocumentView()
-//        self.contentDocumentView.wantsLayer = true
         self.hasVerticalScroller = true
-        self.scrollsDynamically = false
+        self.scrollsDynamically = true
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSScrollViewDidLiveScrollNotification, object: self)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.willBeginScroll(_:)), name: NSScrollViewWillStartLiveScrollNotification, object: self)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSScrollViewDidEndLiveScrollNotification, object: self)
-        
         
         self.addSubview(_floatingSupplementaryView, positioned: .Above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
@@ -154,6 +152,39 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             view.removeFromSuperview()
         }
     }
+    
+//    func scrollerScrolled() {
+//        Swift.print("Scroller scrolled")
+//    }
+    
+    
+    public var trackSectionHover : Bool = false {
+        didSet { self.addTracking() }
+    }
+    var _trackingArea : NSTrackingArea?
+    func addTracking() {
+        if let ta = _trackingArea {
+            self.removeTrackingArea(ta)
+        }
+        if trackSectionHover {
+            _trackingArea = NSTrackingArea(rect: self.bounds, options: [NSTrackingAreaOptions.ActiveInActiveApp, NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.MouseMoved], owner: self, userInfo: nil)
+            self.addTrackingArea(_trackingArea!)
+        }
+    }
+    public override func updateTrackingAreas() {
+        self.addTracking()
+    }
+    
+    public override func mouseExited(theEvent: NSEvent) {
+        self.delegate?.collectionView?(self, mouseMovedToSection: nil)
+    }
+    
+    public override func mouseMoved(theEvent: NSEvent) {
+        super.mouseMoved(theEvent)
+        let loc = self.contentDocumentView.convertPoint(theEvent.locationInWindow, fromView: nil)
+        self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
+    }
+    
 
     
     // MARK: - Registering reusable cells
@@ -340,6 +371,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
 //        let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
 //        self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height/2))
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
+        
+        if trackSectionHover && NSApp.active, let point = self.window?.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin {
+            let loc = self.contentDocumentView.convertPoint(point, fromView: nil)
+            self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
+        }
     }
 
     public func indexPathForFirstVisibleItem() -> NSIndexPath? {
@@ -684,8 +720,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public func cellForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewCell?  { return self.contentDocumentView.preparedCellIndex[indexPath] }
     
-    public func viewForSupplementaryViewOfKind(kind: String, withReuseIdentifier: String, atIndexPath: NSIndexPath) -> CBCollectionReusableView? {
-        let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: withReuseIdentifier, indexPath: atIndexPath)
+    public func viewForSupplementaryViewOfKind(kind: String, atIndexPath: NSIndexPath) -> CBCollectionReusableView? {
+        let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: atIndexPath)
         return self.contentDocumentView.preparedSupplementaryViewIndex[id]
     }
     

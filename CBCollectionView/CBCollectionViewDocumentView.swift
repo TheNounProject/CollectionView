@@ -55,8 +55,9 @@ public class CBCollectionViewDocumentView : NSView {
     func relayout(animated: Bool) {
         
         
-        
     }
+    
+    
     
     func prepareRect(rect: CGRect, animated: Bool = false, force: Bool = false) {
         

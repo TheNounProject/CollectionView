@@ -56,6 +56,9 @@ public extension NSIndexPath {
 }
 
 @objc public protocol CBCollectionViewDelegate {
+    
+    optional func collectionView(collectionView: CBCollectionView, mouseMovedToSection indexPath: NSIndexPath?)
+    
     optional func collectionView(collectionView: CBCollectionView, mouseDownInItemAtIndexPath indexPath: NSIndexPath?, withEvent: NSEvent)
     optional func collectionView(collectionView: CBCollectionView, mouseUpInItemAtIndexPath indexPath: NSIndexPath?, withEvent: NSEvent)
     optional func collectionView(collectionView: CBCollectionView, didDoubleClickItemAtIndexPath indexPath: NSIndexPath, withEvent: NSEvent)

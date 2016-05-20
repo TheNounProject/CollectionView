@@ -13,7 +13,7 @@ import Foundation
 public class CBCollectionViewDocumentView : NSView {
 
     public override var flipped : Bool { return true }
-//    var isCompatibleWithResponsiveScrolling : Bool { return true }
+    var isCompatibleWithResponsiveScrolling : Bool { return true }
     
     weak var collectionView : CBCollectionView! {
         return self.superview!.superview as! CBCollectionView
@@ -97,7 +97,7 @@ public class CBCollectionViewDocumentView : NSView {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
-        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
+//        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
 //        self.ignoreRemoves = false
     }
     

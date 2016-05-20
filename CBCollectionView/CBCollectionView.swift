@@ -152,11 +152,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             view.removeFromSuperview()
         }
     }
-    
-//    func scrollerScrolled() {
-//        Swift.print("Scroller scrolled")
-//    }
-    
+
     
     public var trackSectionHover : Bool = false {
         didSet { self.addTracking() }
@@ -379,10 +375,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
 
     public func indexPathForFirstVisibleItem() -> NSIndexPath? {
-        for sectionIndex in 0...self.info.numberOfSections - 1 {
+        for sectionIndex in 0..<self.info.numberOfSections  {
             guard let section = self.info.sections[sectionIndex] else { continue }
             if CGRectIsEmpty(section.frame) || !CGRectIntersectsRect(section.frame, self.contentVisibleRect) { continue }
-            for item in 0...section.numberOfItems - 1 {
+            for item in 0..<section.numberOfItems {
                 let indexPath = NSIndexPath._indexPathForItem(item, inSection: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
                     if (CGRectIntersectsRect(attributes.frame, self.contentVisibleRect)) {
@@ -673,7 +669,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public func indexPathForSectionAtPoint(point: CGPoint) -> NSIndexPath? {
         for sectionIndex in 0..<self.info.numberOfSections {
             guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
-            if CGRectContainsPoint(sectionInfo.frame, point) {
+            var frame = sectionInfo.frame
+            frame.origin.x = 0
+            frame.size.width = self.bounds.size.width
+            if CGRectContainsPoint(frame, point) {
                 return NSIndexPath._indexPathForItem(0, inSection: sectionIndex)
             }
         }

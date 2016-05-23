@@ -141,6 +141,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     private var allItemAttributes : [CBCollectionViewLayoutAttributes] = []
     private var headersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
     private var footersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
+    private var sectionIndexPaths : [Int : Set<NSIndexPath>] = [:]
     private var sectionFrames   : [Int : CGRect] = [:]
 //    private var unionRects : [CGRect] = []
     private let unionSize = 20
@@ -173,7 +174,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         
         self.headersAttributes.removeAll()
         self.footersAttributes.removeAll()
-//        self.unionRects.removeAll()
+        self.sectionIndexPaths.removeAll()
         self.sectionFrames.removeAll()
         self.columnHeights.removeAll(keepCapacity: false)
         self.allItemAttributes.removeAll()
@@ -191,6 +192,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         
         for section in 0..<numberOfSections {
             let colCount = self.columnsInSection(section)
+            
             
             /*
             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
@@ -223,10 +225,8 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             
             top += sectionInsets.top
             columnHeights.append([CGFloat](count: colCount, repeatedValue: top))
-//            for idx in 0..<colCount {
-//                self.columnHeights[section][idx] = top;
-//            }
             
+            var sIndexPaths = Set<NSIndexPath>()
             /*
             * 3. Section items
             */
@@ -234,13 +234,10 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             var itemAttributes :[CBCollectionViewLayoutAttributes] = []
             sectionColumnAttributes[section] = [Array](count: colCount, repeatedValue: [])
             
-//            for _ in 0...colCount - 1 {
-//                sectionColumnAttributes[section]?.append([])
-//            }
-            
             // Item will be put into shortest column.
             for idx in 0..<itemCount {
                 let indexPath = NSIndexPath._indexPathForItem(idx, inSection: section)
+                sIndexPaths.insert(indexPath)
                 
                 let columnIndex = self.nextColumnIndexForItem(indexPath)
                 let xOffset = sectionInsets.left + (itemWidth + colSpacing) * CGFloat(columnIndex)
@@ -264,6 +261,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
                 self.sectionColumnAttributes[section]?[columnIndex].append(attributes)
             }
             self.sectionItemAttributes.append(itemAttributes)
+            self.sectionIndexPaths[section] = sIndexPaths
             
             /*
             * 4. Section footer
@@ -493,16 +491,23 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             
             if cv.numberOfItemsInSection(sectionIndex) == 0 { continue }
             
-            guard let sectionFrame = cv.frameForSection(sectionIndex),
-                let columns = self.sectionColumnAttributes[sectionIndex] where columns.count > 0 else { continue }
+            guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
             if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, rect) { continue }
             
-            for column in columns {
-                for attr in column {
-                    if attr.frame.intersects(rect) {
-                        indexPaths.insert(attr.indexPath)
+            // If the section is completely show, add all the attrs
+            if CGRectContainsRect(rect, sectionFrame) {
+                if let ips = self.sectionIndexPaths[sectionIndex] {
+                    indexPaths.unionInPlace(ips)
+                }
+            }
+            else if let columns = self.sectionColumnAttributes[sectionIndex] where columns.count > 0 {
+                for column in columns {
+                    for attr in column {
+                        if attr.frame.intersects(rect) {
+                            indexPaths.insert(attr.indexPath)
+                        }
+                        else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
                     }
-                    else if attr.frame.origin.y > CGRectGetMaxY(rect) { break }
                 }
             }
             

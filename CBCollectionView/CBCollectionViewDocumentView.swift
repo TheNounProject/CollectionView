@@ -13,7 +13,7 @@ import Foundation
 public class CBCollectionViewDocumentView : NSView {
 
     public override var flipped : Bool { return true }
-    var isCompatibleWithResponsiveScrolling : Bool { return true }
+//    var isCompatibleWithResponsiveScrolling : Bool { return true }
     
     weak var collectionView : CBCollectionView! {
         return self.superview!.superview as! CBCollectionView

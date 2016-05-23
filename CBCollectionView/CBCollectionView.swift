@@ -159,6 +159,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     var _trackingArea : NSTrackingArea?
     func addTracking() {
+//        return;
         if let ta = _trackingArea {
             self.removeTrackingArea(ta)
         }
@@ -177,6 +178,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public override func mouseMoved(theEvent: NSEvent) {
         super.mouseMoved(theEvent)
+        Swift.print("Mouse Moved")
         let loc = self.contentDocumentView.convertPoint(theEvent.locationInWindow, fromView: nil)
         self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
     }
@@ -970,21 +972,36 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                 guard let rect = self.rectForItemAtIndexPath(ip) else { continue }
                 // The frame of the cell in relation to the document. This is where the dragging
                 // image should start.
+                
                 let originalFrame = UnsafeMutablePointer<CGRect>.alloc(1)
                 let oFrame = self.convertRect( rect,
-                    fromView: self.documentView as? NSView
+                                               fromView: self.documentView as? NSView
                 )
                 originalFrame.initialize(oFrame)
                 self.dataSource?.collectionView?(self, dragRectForItemAtIndexPath: ip, withStartingRect: originalFrame)
-                var image = self.dataSource?.collectionView?(self, dragContentsForItemAtIndexPath: ip)
-                
-                if image == nil{
-                    image = NSImage(named: "empty_project")
-                }
+                let frame = originalFrame.memory
                 
                 self.draggedIPs.append(ip)
                 let item = NSDraggingItem(pasteboardWriter: writer)
-                item.setDraggingFrame(originalFrame.memory, contents: image!)
+                item.draggingFrame = frame
+                
+                if self.itemAtIndexPathIsVisible(indexPath) {
+                    item.imageComponentsProvider = { () -> [NSDraggingImageComponent] in
+                        
+                        var image = self.dataSource?.collectionView?(self, dragContentsForItemAtIndexPath: ip)
+                        
+                        if image == nil {
+                            image = NSImage(named: "empty_project")
+                        }
+                        
+                        let comp = NSDraggingImageComponent()
+                        comp.contents = image
+                        comp.frame = CGRect(origin: CGPointZero, size: frame.size)
+                        
+                        return [comp]
+                    }
+                }
+//                item.setDraggingFrame(originalFrame.memory, contents: image!)
                 items.append(item)
             }
         }

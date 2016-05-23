@@ -105,25 +105,23 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     }
     
     var _trackingArea : NSTrackingArea?
-    public var trackMouseMoved : Bool = false { didSet { self.enableTracking() }}
-    
-    public override func viewDidMoveToSuperview() {
-        super.viewDidMoveToSuperview()
-        if wantsTracking {
-            self.enableTracking()
-        }
-    }
+    public var trackMouseMoved : Bool = false { didSet { self.updateTrackingAreas() }}
     
     public func disableTracking() {
         self.wantsTracking = false
-        if let tArea = self._trackingArea {
-            self.removeTrackingArea(tArea)
-        }
+        self.updateTrackingAreas()
     }
     
     public func enableTracking() {
         self.wantsTracking = true
+        self.updateTrackingAreas()
+    }
+    
+    public override func updateTrackingAreas() {
+        super.updateTrackingAreas()
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }
+        
+        if self.wantsTracking == false { return }
         var opts = [NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.ActiveInKeyWindow, .InVisibleRect]
         if trackMouseMoved {
             opts.append(.MouseMoved)
@@ -131,7 +129,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         _trackingArea = NSTrackingArea(rect: self.bounds, options: NSTrackingAreaOptions(opts), owner: self, userInfo: nil)
         self.addTrackingArea(_trackingArea!)
     }
-    
+
     override public func mouseEntered(theEvent: NSEvent) {
         super.mouseEntered(theEvent)
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {

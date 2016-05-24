@@ -178,7 +178,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public override func mouseMoved(theEvent: NSEvent) {
         super.mouseMoved(theEvent)
-        Swift.print("Mouse Moved")
         let loc = self.contentDocumentView.convertPoint(theEvent.locationInWindow, fromView: nil)
         self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
     }

@@ -137,7 +137,6 @@ public class CBCollectionViewCell : CBCollectionReusableView {
                 self.setHighlighted(true, animated: true)
             }
         }
-        
     }
     
     override public func mouseExited(theEvent: NSEvent) {

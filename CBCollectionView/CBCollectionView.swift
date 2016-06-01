@@ -898,12 +898,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         else if theEvent.keyCode == 124 { self.moveSelectionRight(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
         else if theEvent.keyCode == 125 { self.moveSelectionDown(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
         else if theEvent.keyCode == 126 { self.moveSelectionUp(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
-//        else if theEvent.keyCode == 0 && theEvent.modifierFlags.contains(NSEventModifierFlags.CommandKeyMask) {
-//            self.selectAllItems(true)
-//        }
-//        else if theEvent.keyCode == 2 && theEvent.modifierFlags.contains(NSEventModifierFlags.CommandKeyMask) {
-//            self.deselectAllItems(true)
-//        }
         else {
             super.keyDown(theEvent)
 //            super.interpretKeyEvents([theEvent])

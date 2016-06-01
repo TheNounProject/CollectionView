@@ -143,6 +143,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     private var footersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
     private var sectionIndexPaths : [Int : Set<NSIndexPath>] = [:]
     private var sectionFrames   : [Int : CGRect] = [:]
+
 //    private var unionRects : [CGRect] = []
     private let unionSize = 20
     
@@ -180,6 +181,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         self.allItemAttributes.removeAll()
         self.sectionItemAttributes.removeAll()
         self.sectionColumnAttributes.removeAll()
+        self.allIndexPaths.removeAll()
         
         // Create default column heights for each section
 //        for sec in 0...self.numSections-1 {
@@ -238,6 +240,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             for idx in 0..<itemCount {
                 let indexPath = NSIndexPath._indexPathForItem(idx, inSection: section)
                 sIndexPaths.insert(indexPath)
+                allIndexPaths.insert(indexPath)
                 
                 let columnIndex = self.nextColumnIndexForItem(indexPath)
                 let xOffset = sectionInsets.left + (itemWidth + colSpacing) * CGFloat(columnIndex)

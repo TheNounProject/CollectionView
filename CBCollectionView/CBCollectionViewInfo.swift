@@ -50,11 +50,10 @@ internal class CBCollectionViewInfo {
             self.sections = [:]
         }
         
-        self.allIndexPaths = Set(minimumCapacity: totalNumberOfItems)
-        
         self.collectionView.collectionViewLayout.prepareLayout()
         
         if self.sections.count == 0 { return }
+        self.allIndexPaths = self.collectionView.collectionViewLayout.allIndexPaths
         for sIndex in 0...self.numberOfSections - 1 {
             let section = self.sections[sIndex];
             
@@ -73,6 +72,7 @@ internal class CBCollectionViewInfo {
                 self.sections[sIndex]?.frame = potentialSectionFrame
                 continue
             }
+            
             if section?.numberOfItems == 0 { continue }
             
             var sectionFrame = CGRectNull;

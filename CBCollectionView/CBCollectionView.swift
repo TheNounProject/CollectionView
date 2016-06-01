@@ -319,6 +319,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.info.recalculate()
         contentDocumentView.frame.size = self.info.contentSize
         self.contentDocumentView.prepareRect(self.contentVisibleRect)
+        self._selectedIndexPaths.intersectInPlace(self.allIndexPaths())
+        self.delegate?.collectionViewDidReloadData?(self)
     }
     
     public func relayout(animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .Top) {
@@ -432,15 +434,15 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
         
-        cell.hidden = true
-        cell.indexPath = nil
+//        cell.hidden = true
+//        cell.indexPath = nil
 //        self.contentDocumentView.preparedCellIndex[indexPath] = nil
         self.enqueueCellForReuse(cell)
         
         newCell.indexPath = indexPath
-        let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
-        if attrs != nil {
-            newCell.applyLayoutAttributes(attrs!, animated: false)
+        
+        if let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
+            newCell.applyLayoutAttributes(attrs, animated: false)
         }
         if newCell.superview == nil {
             self.contentDocumentView.addSubview(newCell)
@@ -804,12 +806,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public override func mouseDown(theEvent: NSEvent) {
         
 //        if theEvent.clickCount == 2 { return }
-        self.window?.makeFirstResponder(self)
+        
         self.mouseDownIP = nil
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
             return
         }
-        
+        self.window?.makeFirstResponder(self)
+        self.nextResponder?.mouseDown(theEvent)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
         let point = self.contentView.convertPoint(theEvent.locationInWindow, fromView: nil)
         self.mouseDownIP = self.indexPathForItemAtPoint(point)

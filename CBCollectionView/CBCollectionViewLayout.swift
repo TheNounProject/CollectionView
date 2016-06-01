@@ -30,6 +30,7 @@ public class CBCollectionViewLayout : NSObject {
     public func invalidateLayout() { }
     public func prepareLayout() { }
     public var pinHeadersToTop: Bool = true
+    var allIndexPaths = Set<NSIndexPath>()
     
     public func layoutAttributesForElementsInRect(rect: CGRect) -> [CBCollectionViewLayoutAttributes]? { return nil } // return an array layout attributes instances for all the views in the given rect
     public func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? { return nil }

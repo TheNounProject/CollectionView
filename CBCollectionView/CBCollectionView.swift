@@ -985,23 +985,29 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                 let item = NSDraggingItem(pasteboardWriter: writer)
                 item.draggingFrame = frame
                 
-                if self.itemAtIndexPathIsVisible(indexPath) {
+                if self.itemAtIndexPathIsVisible(ip) {
+//                    var img = self.dataSource?.collectionView?(self, dragContentsForItemAtIndexPath: ip)
+//                    if img == nil, let cell = self.cellForItemAtIndexPath(ip) {
+//                        img = NSImage(data: cell.dataWithPDFInsideRect(cell.bounds))
+//                    }
+//                    if let i = img {
+//                        item.setDraggingFrame(frame, contents: i)
+//                    }
+//                }
                     item.imageComponentsProvider = { () -> [NSDraggingImageComponent] in
                         
                         var image = self.dataSource?.collectionView?(self, dragContentsForItemAtIndexPath: ip)
-                        
-                        if image == nil {
-                            image = NSImage(named: "empty_project")
+                        if image == nil, let cell = self.cellForItemAtIndexPath(ip) {
+                            image = NSImage(data: cell.dataWithPDFInsideRect(cell.bounds))
                         }
-                        
                         let comp = NSDraggingImageComponent()
+                        
                         comp.contents = image
                         comp.frame = CGRect(origin: CGPointZero, size: frame.size)
-                        
                         return [comp]
                     }
                 }
-//                item.setDraggingFrame(originalFrame.memory, contents: image!)
+            
                 items.append(item)
             }
         }

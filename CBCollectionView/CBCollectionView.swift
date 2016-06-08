@@ -67,6 +67,7 @@ class FloatingSupplementaryView : NSView {
 }
 
 
+
 public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     private var _reusableCells : [String:Set<CBCollectionViewCell>] = [:]
@@ -375,7 +376,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.velocity = delta
         self.peakVelocityForScroll = max(abs(peakVelocityForScroll), abs(self.velocity))
         self._offsetMark = CACurrentMediaTime()
-//        Swift.print("Velocity: \(self.velocity), Peak: \(self.peakVelocityForScroll)")
+        Swift.print("Velocity: \(self.velocity), Peak: \(self.peakVelocityForScroll)")
     }
     
     func willBeginScroll(notification: NSNotification) {
@@ -512,6 +513,17 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     private var _firstSelection : NSIndexPath?
     private var _lastSelection : NSIndexPath?
     var _selectedIndexPaths = Set<NSIndexPath>()
+    
+    // this ensures that only one item can be highlighted at a time
+    // Mouse tracking is inconsistent when doing programatic scrolling
+    var _indexPathForHighlightedItem: NSIndexPath? {
+        didSet {
+            if oldValue == _indexPathForHighlightedItem { return }
+            if let ip = oldValue {
+                self.cellForItemAtIndexPath(ip)?.setHighlighted(false, animated: true)
+            }
+        }
+    }
     
     public func indexPathsForSelectedItems() -> Set<NSIndexPath> { return _selectedIndexPaths }
     public func sortedIndexPathsForSelectedItems() -> [NSIndexPath] {

@@ -421,14 +421,14 @@ public class CBCollectionViewGridLayout : CBCollectionViewLayout {
     func nextColumnIndexForItem (indexPath : NSIndexPath) -> Int {
         let colCount = self.columnsInSection(indexPath._section)
         var index = 0
-        switch (self.itemRenderDirection){
-        case .ShortestFirst :
-            index = self.shortestColumnIndexInSection(indexPath._section)
-        case .LeftToRight :
-            index = (indexPath._item % colCount)
-        case .RightToLeft:
-            index = (colCount - 1) - (indexPath._item % colCount);
-        }
+//        switch (self.itemRenderDirection){
+//        case .ShortestFirst :
+//            index = self.shortestColumnIndexInSection(indexPath._section)
+//        case .LeftToRight :
+//            index = (indexPath._item % colCount)
+//        case .RightToLeft:
+//            index = (colCount - 1) - (indexPath._item % colCount);
+//        }
         return index
     }
     

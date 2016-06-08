@@ -132,6 +132,8 @@ public class CBCollectionViewCell : CBCollectionReusableView {
 
     override public func mouseEntered(theEvent: NSEvent) {
         super.mouseEntered(theEvent)
+        guard theEvent.type == NSEventType.MouseEntered && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
+        
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {
             if view.isDescendantOf(self) {
                 self.setHighlighted(true, animated: true)
@@ -141,6 +143,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     
     override public func mouseExited(theEvent: NSEvent) {
         super.mouseExited(theEvent)
+        guard theEvent.type == NSEventType.MouseExited && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
         self.setHighlighted(false, animated: true)
     }
     

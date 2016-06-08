@@ -353,7 +353,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     
-    public internal(set) var scrolling : Bool = false
+    public internal(set) var scrolling : Bool = false {
+        didSet {
+            Swift.print("is Scrolling: \(scrolling)")
+        }
+    }
     private var _previousOffset = CGPointZero
     private var _offsetMark = CACurrentMediaTime()
     
@@ -922,7 +926,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     func moveSelectionInDirection(direction: CBCollectionViewDirection, extendSelection: Bool) {
         guard let indexPath = (extendSelection ? _lastSelection : _firstSelection) ?? self._selectedIndexPaths.first else { return }
-        let date = NSDate()
         if let moveTo = self.collectionViewLayout.indexPathForNextItemInDirection(direction, afterItemAtIndexPath: indexPath) {
             if let move = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: moveTo, withEvent: NSApp.currentEvent) where move != true { return }
             self._selectItemAtIndexPath(moveTo, atScrollPosition: .Nearest, animated: true, selectionType: extendSelection ? .Extending : .Single)
@@ -959,7 +962,9 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     public override func keyUp(theEvent: NSEvent) {
-        super.keyUp(theEvent)
+        if !Set([123,124,125,126]).contains(theEvent.keyCode) {
+            super.keyUp(theEvent)
+        }
         self.repeatKey = false
     }
     

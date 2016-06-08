@@ -169,14 +169,14 @@ public class CBClipView : NSClipView {
     }
     
     func beginScrolling() {
-        (self.scrollView as? CBCollectionView)?.scrolling = true
         if CVDisplayLinkIsRunning(self.displayLink) { return }
+        (self.scrollView as? CBCollectionView)?.scrolling = true
         CVDisplayLinkStart(self.displayLink)
     }
     
     func endScrolling() {
-        (self.scrollView as? CBCollectionView)?.scrolling = false
         if !CVDisplayLinkIsRunning(self.displayLink) { return }
+        (self.scrollView as? CBCollectionView)?.scrolling = false
         CVDisplayLinkStop(self.displayLink)
     }
     

@@ -182,8 +182,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
     }
     
-
-    
     // MARK: - Registering reusable cells
     public func registerClass(cellClass: CBCollectionViewCell.Type!, forCellWithReuseIdentifier identifier: String!) {
         assert(cellClass.isSubclassOfClass(CBCollectionViewCell), "CBCollectionView: Registered cells views must be subclasses of CBCollectionViewCell")
@@ -343,33 +341,54 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         let nContentSize = self.info.contentSize
         contentDocumentView.frame.size = nContentSize
         
-        if scrollPosition != .None && firstIP != nil, let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(firstIP!) {
-            var nRef = self.convertRect(attrs.frame, fromView: self.contentDocumentView)
-            nRef.origin.y -= refVisibleFrame.origin.y
+        if scrollPosition != .None && firstIP != nil, let attrs = self.collectionViewLayout.scrollRectForItemAtIndexPath(firstIP!, atPosition: .Nearest) {
+            var nRef = self.convertRect(attrs, fromView: self.contentDocumentView)
+//            nRef.origin.y -= refVisibleFrame.origin.y
             nRef = self.convertRect(nRef, toView: self.contentDocumentView)
             vRect.origin.y = nRef.origin.y
         }
-        self.scrollToRect(vRect, atPosition: .Top, animated: false)
-        self.contentDocumentView.prepareRect(CGRectInset(vRect, 0, -self.contentVisibleRect.size.height), animated: animated, force: true)
+        self.contentOffset = vRect.origin
+//        self.scrollToRect(vRect, atPosition: .Top, animated: false)
+        self.contentDocumentView.prepareRect(CGRectInset(vRect, 0, -self.contentVisibleRect.size.height/2), animated: animated, force: true)
     }
     
     
-    public var scrolling : Bool = false
+    public internal(set) var scrolling : Bool = false
+    private var _previousOffset = CGPointZero
+    private var _offsetMark = CACurrentMediaTime()
+    
+    public private(set) var velocity: CGFloat = 0
+    public private(set) var peakVelocityForScroll: CGFloat = 0
     
     func didScroll(notification: NSNotification) {
         let rect = CGRectInset(self.contentVisibleRect, 0, -100)
         self.contentDocumentView.prepareRect(rect)
+
+        var _prev = self._previousOffset
+        self._previousOffset = self.contentVisibleRect.origin
+        let delta = _prev.y - self._previousOffset.y
+        var timeOffset = CGFloat(CACurrentMediaTime() - _offsetMark)
+        self.velocity = delta
+        self.peakVelocityForScroll = max(abs(peakVelocityForScroll), abs(self.velocity))
+        self._offsetMark = CACurrentMediaTime()
+//        Swift.print("Velocity: \(self.velocity), Peak: \(self.peakVelocityForScroll)")
     }
+    
     func willBeginScroll(notification: NSNotification) {
-        scrolling = true
+        self.scrolling = true
+//        Swift.print("Begin sCroll")
         self.delegate?.collectionViewWillBeginScrolling?(self)
+//        self._offsetMark = CACurrentMediaTime()
+        self._previousOffset = self.contentVisibleRect.origin
+        self.peakVelocityForScroll = 0
+        self.velocity = 0
     }
     
     func didEndScroll(notification: NSNotification) {
-        scrolling = false
-//        let rect = CGRectInset(self.contentVisibleRect, 0, -self.frame.size.height)
-//        self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height/2))
+        self.scrolling = false
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
+        self.velocity = 0
+        self.peakVelocityForScroll = 0
         
         if trackSectionHover && NSApp.active, let point = self.window?.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin {
             let loc = self.contentDocumentView.convertPoint(point, fromView: nil)
@@ -384,7 +403,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             for item in 0..<section.numberOfItems {
                 let indexPath = NSIndexPath._indexPathForItem(item, inSection: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
-                    if (CGRectIntersectsRect(attributes.frame, self.contentVisibleRect)) {
+                    if (CGRectContainsRect(self.contentVisibleRect, attributes.frame)) {
                         return indexPath
                     }
                 }
@@ -394,27 +413,41 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     var _topIP: NSIndexPath?
+    var _bounds : CGRect = CGRectZero
     public override func viewWillStartLiveResize() {
         _topIP = indexPathForFirstVisibleItem()
     }
     
     public override func viewDidEndLiveResize() {
         _topIP = nil
+        self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: false, force: true)
     }
     
     public override func layout() {
         _floatingSupplementaryView.frame = self.bounds
         super.layout()
         
+        var calc : NSTimeInterval = 0
+        var scroll : NSTimeInterval = 0
+        var prep : NSTimeInterval = 0
+        
         if self.collectionViewLayout.shouldInvalidateLayoutForBoundsChange(self.documentVisibleRect) {
+            var d = NSDate()
             self.info.recalculate()
-            contentDocumentView.frame.size = self.info.contentSize
+            calc = d.timeIntervalSinceNow
             
+            contentDocumentView.frame.size = self.info.contentSize
+            d = NSDate()
             if let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
-                self.scrollToRect(rect, atPosition: .Top, animated: false)
+                let _rect = CGRect(origin: rect.origin, size: self.bounds.size)
+                self.clipView?.scrollRectToVisible(_rect, animated: false, completion: nil)
             }
+            scroll = d.timeIntervalSinceNow
+            d = NSDate()
 //            self.contentDocumentView.preparedRect = CGRectZero
             self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
+            prep = d.timeIntervalSinceNow
+            Swift.print("Calc: \(calc)  Scroll: \(scroll)  prep: \(prep)")
         }
     }
     
@@ -621,8 +654,9 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             for ip in indexesToSelect {
                 self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: false)
             }
+        
+        self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated)
             self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
-            self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated)
             self._lastSelection = indexPath
     }
     
@@ -759,6 +793,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public func scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool) {
         var rect = aRect
+        
         let visibleRect = self.contentVisibleRect
         switch atPosition {
         case .Top:
@@ -783,24 +818,26 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             if visibleRect.contains(rect) { return }
             
             if rect.origin.y < visibleRect.origin.y {
-                rect = visibleRect.offsetBy(dx: 0, dy: rect.origin.y - visibleRect.origin.y)
+                rect = visibleRect.offsetBy(dx: 0, dy: rect.origin.y - visibleRect.origin.y - self.contentInsets.top)
             }
             else if CGRectGetMaxY(rect) >  CGRectGetMaxY(visibleRect) {
-                rect = visibleRect.offsetBy(dx: 0, dy: CGRectGetMaxY(rect) - CGRectGetMaxY(visibleRect))
+                rect = visibleRect.offsetBy(dx: 0, dy: CGRectGetMaxY(rect) - CGRectGetMaxY(visibleRect) + self.contentInsets.top)
             }
             // We just pass the cell's frame onto the scroll view. It calculates this for us.
             break;
         }
-        
-        self.contentDocumentView.prepareRect(CGRectUnion(rect, self.contentVisibleRect), force: false)
-        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
-            self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
+        Swift.print("aRect: \(aRect)   rect: \(rect)")
+        self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
+        self.clipView?.scrollRectToVisible(rect, animated: true)
+//        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
+//            self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
 //            self._layoutItems(false, forceAll: false)
 //            self._layoutSupplementaryViews(false, forceAll: false)
-        })
+//        })
 //        self.clipView!.scrollRectToVisible(rect, animated: animated, completion: )
 
     }
+    
     
     var mouseDownIP: NSIndexPath?
     public override func mouseDown(theEvent: NSEvent) {
@@ -887,21 +924,43 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         guard let indexPath = (extendSelection ? _lastSelection : _firstSelection) ?? self._selectedIndexPaths.first else { return }
         let date = NSDate()
         if let moveTo = self.collectionViewLayout.indexPathForNextItemInDirection(direction, afterItemAtIndexPath: indexPath) {
-            Swift.print("\(direction) Time: \(date.timeIntervalSinceNow)")
             if let move = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: moveTo, withEvent: NSApp.currentEvent) where move != true { return }
             self._selectItemAtIndexPath(moveTo, atScrollPosition: .Nearest, animated: true, selectionType: extendSelection ? .Extending : .Single)
         }
     }
     
+    public var keySelectInterval: NSTimeInterval = 0.08
+    var lastEventTime : NSTimeInterval?
+    public private(set) var repeatKey : Bool = false
+    
     public override func keyDown(theEvent: NSEvent) {
-        if theEvent.keyCode == 123 { self.moveSelectionLeft(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
-        else if theEvent.keyCode == 124 { self.moveSelectionRight(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
-        else if theEvent.keyCode == 125 { self.moveSelectionDown(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
-        else if theEvent.keyCode == 126 { self.moveSelectionUp(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
+        repeatKey = theEvent.ARepeat
+        if Set([123,124,125,126]).contains(theEvent.keyCode) {
+            
+            if theEvent.ARepeat && keySelectInterval > 0 {
+                if let t = lastEventTime where (CACurrentMediaTime() - t) < keySelectInterval {
+                    Swift.print(CACurrentMediaTime() - t)
+                    return
+                }
+                lastEventTime = CACurrentMediaTime()
+            }
+            else {
+                lastEventTime = nil
+            }
+            
+            if theEvent.keyCode == 123 { self.moveSelectionLeft(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
+            else if theEvent.keyCode == 124 { self.moveSelectionRight(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
+            else if theEvent.keyCode == 125 { self.moveSelectionDown(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
+            else if theEvent.keyCode == 126 { self.moveSelectionUp(theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)) }
+        }
         else {
             super.keyDown(theEvent)
 //            super.interpretKeyEvents([theEvent])
         }
+    }
+    public override func keyUp(theEvent: NSEvent) {
+        super.keyUp(theEvent)
+        self.repeatKey = false
     }
     
     

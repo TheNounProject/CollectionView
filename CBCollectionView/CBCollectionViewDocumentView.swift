@@ -63,6 +63,10 @@ public class CBCollectionViewDocumentView : NSView {
         
         let _rect = CGRectIntersection(rect, CGRect(origin: CGPointZero, size: self.frame.size))
         
+        if rect.size.height > 5000 {
+            Swift.print("GIANT")
+        }
+        
         if !force && !CGRectIsEmpty(self.preparedRect) && self.preparedRect.contains(_rect) {
             
             for id in self.preparedSupplementaryViewIndex {
@@ -143,7 +147,7 @@ public class CBCollectionViewDocumentView : NSView {
                 }
             }
             
-            if  !removedRect.isEmpty {
+            if !removedRect.isEmpty {
                 if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
                     self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
@@ -213,10 +217,10 @@ public class CBCollectionViewDocumentView : NSView {
 //        if !ignoreRemoves  {
             for identifier in removed {
                 if let view = self.preparedSupplementaryViewIndex[identifier] {
-                    //                if let attrs = view.attributes where !attrs.floating {
-                    //                    if removedRect.isEmpty { removedRect = attrs.frame }
-                    //                    else { removedRect.unionInPlace(attrs.frame) }
-                    //                }
+//                        if let attrs = view.attributes where !attrs.floating {
+//                            if removedRect.isEmpty { removedRect = attrs.frame }
+//                            else { removedRect.unionInPlace(attrs.frame) }
+//                        }
                     self.preparedSupplementaryViewIndex[identifier] = nil
                     if animated {
                         NSAnimationContext.runAnimationGroup({ (context) -> Void in
@@ -236,15 +240,15 @@ public class CBCollectionViewDocumentView : NSView {
                 }
             }
             
-            //        if  !removedRect.isEmpty {
-            //            if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
-            //                let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
-            //                self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
-            //            }
-            //            else {
-            //                
-            //            }
-            //        }
+//                    if  !removedRect.isEmpty {
+//                        if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
+//                            let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
+//                            self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+//                        }
+//                        else {
+//                            
+//                        }
+//                    }
 //        }
         
         

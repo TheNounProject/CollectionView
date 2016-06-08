@@ -250,6 +250,10 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
                 if aSize != nil && aSize!.width != 0 && aSize!.height != 0 {
                     let h = aSize!.height * (itemWidth/aSize!.width)
                     itemHeight = floor(h)
+                    
+                    if let addHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAtIndexPath: indexPath) {
+                        itemHeight += addHeight
+                    }
                 }
                 else {
                     itemHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAtIndexPath: indexPath) ?? self.defaultItemHeight
@@ -405,7 +409,10 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     public override func scrollRectForItemAtIndexPath(indexPath: NSIndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItemAtIndexPath(indexPath)?.frame else { return nil }
         if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CBCollectionViewLayoutElementKind.SectionHeader, atIndexPath: NSIndexPath._indexPathForItem(0, inSection: indexPath._section)) {
-            frame.origin.y -= attrs.frame.size.height
+            var y = frame.origin.y - attrs.frame.size.height
+            var height = frame.size.height + attrs.frame.size.height
+            frame.size.height = height
+            frame.origin.y = y
         }
         return frame
     }

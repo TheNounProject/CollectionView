@@ -8,6 +8,8 @@
 
 import Foundation
 import AppKit
+import QuartzCore
+import Quartz
 
 let CBClipViewDecelerationRate : CGFloat = 0.78
 //typealias DisplayLinkCallback = @convention(block) ( CVDisplayLink!, UnsafePointer<CVTimeStamp>, UnsafePointer<CVTimeStamp>, CVOptionFlags, UnsafeMutablePointer<CVOptionFlags>, UnsafeMutablePointer<Void>)->Void
@@ -63,14 +65,15 @@ public class CBClipView : NSClipView {
     }
     
     lazy var displayLink : CVDisplayLinkRef = {
-        func linkCallback(displayLink: CVDisplayLink,
+        
+        let linkCallback : CVDisplayLinkOutputCallback = {(displayLink: CVDisplayLink,
             _ inNow: UnsafePointer<CVTimeStamp>,
             _ inOutputTime: UnsafePointer<CVTimeStamp>,
             _ flagsIn: CVOptionFlags,
             _ flagsOut: UnsafeMutablePointer<CVOptionFlags>,
-            _ displayLinkContext: UnsafeMutablePointer<Void>) -> CVReturn {
-                unsafeBitCast(displayLinkContext, CBClipView.self).updateOrigin()
-                return kCVReturnSuccess
+            _ displayLinkContext: UnsafeMutablePointer<Void>) -> CVReturn in
+            unsafeBitCast(displayLinkContext, CBClipView.self).updateOrigin()
+            return kCVReturnSuccess
         }
         
         var link : CVDisplayLinkRef?
@@ -78,6 +81,8 @@ public class CBClipView : NSClipView {
         CVDisplayLinkSetOutputCallback(link!, linkCallback, UnsafeMutablePointer<Void>(unsafeAddressOf(self)))
         return link!
     }()
+    
+
     
     func updateCVDisplay(note: NSNotification) {
         if let screen = self.window?.screen {
@@ -111,6 +116,23 @@ public class CBClipView : NSClipView {
         self.completionBlock = nil;
     }
     
+    public override func scrollToPoint(newOrigin: NSPoint) {
+        if self.shouldAnimateOriginChange {
+            self.shouldAnimateOriginChange = false
+            if CVDisplayLinkIsRunning(self.displayLink) {
+                self.destinationOrigin = newOrigin
+                return
+            }
+            self.destinationOrigin = newOrigin
+            self.beginScrolling()
+        } else {
+            // Otherwise, we stop any scrolling that is currently occurring (if needed) and let
+            // super's implementation handle a normal scroll.
+            self.endScrolling()
+            super.scrollToPoint(newOrigin)
+        }
+    }
+    
     func updateOrigin() {
         if self.window == nil {
             self.endScrolling()
@@ -127,28 +149,33 @@ public class CBClipView : NSClipView {
         
         // Calling -scrollToPoint: instead of manually adjusting the bounds lets us get the expected
         // overlay scroller behavior for free.
-        super.scrollToPoint(o)
+        dispatch_async(dispatch_get_main_queue()) { 
+            super.scrollToPoint(o)
+            // Make this call so that we can force an update of the scroller positions.
+            self.scrollView.reflectScrolledClipView(self)
+        }
         
-        // Make this call so that we can force an update of the scroller positions.
-        self.scrollView.reflectScrolledClipView(self)
-        
-        NSNotificationCenter.defaultCenter().postNotificationName(NSScrollViewDidLiveScrollNotification, object: self, userInfo: nil)
+//        NSNotificationCenter.defaultCenter().postNotificationName(NSScrollViewDidLiveScrollNotification, object: self, userInfo: nil)
         
         if ((fabs(o.x - lastOrigin.x) < 0.1 && fabs(o.y - lastOrigin.y) < 0.1)) {
             self.endScrolling()
             
             // Make sure we always finish out the animation with the actual coordinates
-            self.scrollToPoint(o)
-            self.finishedScrolling(true)
+            dispatch_async(dispatch_get_main_queue(), { 
+                self.scrollToPoint(o)
+                self.finishedScrolling(true)
+            })
         }
     }
     
     func beginScrolling() {
+        (self.scrollView as? CBCollectionView)?.scrolling = true
         if CVDisplayLinkIsRunning(self.displayLink) { return }
         CVDisplayLinkStart(self.displayLink)
     }
     
     func endScrolling() {
+        (self.scrollView as? CBCollectionView)?.scrolling = false
         if !CVDisplayLinkIsRunning(self.displayLink) { return }
         CVDisplayLinkStop(self.displayLink)
     }

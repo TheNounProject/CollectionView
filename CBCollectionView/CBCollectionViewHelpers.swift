@@ -34,6 +34,17 @@ extension Set {
     
 }
 
+extension CGRect {
+    
+    var center : CGPoint {
+        get { return CGPoint(x: CGRectGetMidX(self), y: CGRectGetMidY(self)) }
+        set {
+            self.origin.x = newValue.x - (self.size.width/2)
+            self.origin.y = newValue.y - (self.size.height/2)
+        }
+    }
+}
+
 
 
 @objc public protocol CBCollectionViewDataSource {

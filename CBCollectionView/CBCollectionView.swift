@@ -285,6 +285,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     func enqueueCellForReuse(item: CBCollectionViewCell) {
         item.hidden = true
         item.indexPath = nil
+//        item.alphaValue = 1
         guard let id = item.reuseIdentifier else { return }
         if self._reusableCells[id] == nil {
             self._reusableCells[id] = []
@@ -294,6 +295,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     func enqueueSupplementaryViewForReuse(item: CBCollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
         item.hidden = true
+//        item.alphaValue = 1
         item.indexPath = nil
         let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: item.reuseIdentifier ?? withIdentifier.reuseIdentifier)
         if self._reusableSupplementaryView[newID] == nil {
@@ -322,14 +324,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
-    public func relayout(animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .Top) {
+    public func relayout(animated: Bool, var scrollPosition: CBCollectionViewScrollPosition = .Nearest) {
         
-//        if animated {
-//            self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height))
-//        }
-        
+
         var absoluteCellFrames = [CBCollectionReusableView:CGRect]()
-//        var absoluteSuppFrames = [NSIndexPath:CGRect]()
         
         for cell in self.contentDocumentView.preparedCellIndex {
             absoluteCellFrames[cell.1] = self.convertRect(cell.1.frame, fromView: cell.1.superview)
@@ -337,14 +335,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         for cell in self.contentDocumentView.preparedSupplementaryViewIndex {
             absoluteCellFrames[cell.1] = self.convertRect(cell.1.frame, fromView: cell.1.superview)
         }
+    
+        let holdIP : NSIndexPath? = self.indexPathForFirstVisibleItem()
+            //?? self.indexPathsForSelectedItems().intersect(self.indexPathsForVisibleItems()).first
 
-        let firstIP = indexPathForFirstVisibleItem()
-//        var refFrame : CGRect = CGRectZero
-//        var refVisibleFrame : CGRect = CGRectZero
-//        if firstIP != nil, let cell = cellForItemAtIndexPath(firstIP!) {
-//            refFrame = cell.frame
-//            refVisibleFrame = self.convertRect(cell.frame, fromView: self.contentDocumentView)
-//        }
         self.info.recalculate()
         var vRect = self.contentVisibleRect
         
@@ -352,29 +346,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         let docFrame = self.contentDocumentView.frame
         contentDocumentView.frame.size = nContentSize
         
-        
-        if scrollPosition != .None, let ip = firstIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: .Nearest) ?? self.rectForItemAtIndexPath(ip) {
-//            var nRef = self.convertRect(attrs, fromView: self.contentDocumentView)
-//            nRef.origin.y -= refVisibleFrame.origin.y
-//            nRef = self.convertRect(nRef, toView: self.contentDocumentView)
-//            vRect.origin.y = nRef.origin.y
-            
+        if scrollPosition != .None, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(ip) {
             self._scrollToRect(rect, atPosition: scrollPosition, animated: false, prepare: false)
         }
         
-        Swift.print("Old Dov: \(docFrame)  New \(self.contentDocumentView.frame)")
-        Swift.print("VRect: \(vRect)   cRect: \(self.contentVisibleRect)")
-        
-        
-//        var f = self.contentDocumentView.frame
-//        f.origin = vRect.origin
-        
-//        self._scrollToRect(vRect, atPosition: .Top, animated: true, prepare: false)
-        
-//        self.clipView?.scrollToPoint(vRect.origin)
-//        self.reflectScrolledClipView(self.clipView!)
-        
-//        return
         for item in absoluteCellFrames {
             if let attrs = item.0.attributes where attrs.representedElementCategory == CBCollectionElementCategory.SupplementaryView {
                 if let newAttrs = self.layoutAttributesForSupplementaryElementOfKind(attrs.representedElementKind!, atIndexPath: attrs.indexPath) {
@@ -403,11 +378,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             }
             
             let cFrame = self.contentDocumentView.convertRect(item.1, fromView: self)
-            Swift.print("IP: \(item.0.indexPath!) Current: \(item.0.frame) temp: \(item.1)  Converted: \(cFrame)")
             item.0.frame = cFrame
-            Swift.print(item.0.frame)
         }
         
+        self.contentDocumentView.preparedRect = CGRectZero
         self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: animated, force: true)
     }
     
@@ -460,13 +434,19 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
 
     public func indexPathForFirstVisibleItem() -> NSIndexPath? {
+        var visibleRect = self.contentVisibleRect //.insetBy(dx: self.contentInsets.left + self.contentInsets.right, dy: self.contentInsets.top + self.contentInsets.bottom)
+        visibleRect.origin.y += self.contentInsets.top
+        visibleRect.origin.x += self.contentInsets.top
+        visibleRect.size.height -= self.contentInsets.top + self.contentInsets.bottom
+        visibleRect.size.width -= self.contentInsets.left + self.contentInsets.right
+        
         for sectionIndex in 0..<self.info.numberOfSections  {
             guard let section = self.info.sections[sectionIndex] else { continue }
-            if CGRectIsEmpty(section.frame) || !CGRectIntersectsRect(section.frame, self.contentVisibleRect) { continue }
+            if CGRectIsEmpty(section.frame) || !CGRectIntersectsRect(section.frame, visibleRect) { continue }
             for item in 0..<section.numberOfItems {
                 let indexPath = NSIndexPath._indexPathForItem(item, inSection: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
-                    if (CGRectContainsRect(self.contentVisibleRect, attributes.frame)) {
+                    if (CGRectContainsRect(visibleRect, attributes.frame)) {
                         return indexPath
                     }
                 }
@@ -507,7 +487,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             }
             scroll = d.timeIntervalSinceNow
             d = NSDate()
-//            self.contentDocumentView.preparedRect = CGRectZero
+            self.contentDocumentView.preparedRect = CGRectZero
             self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
             prep = d.timeIntervalSinceNow
             Swift.print("Calc: \(calc)  Scroll: \(scroll)  prep: \(prep)")
@@ -1082,9 +1062,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     public override func keyUp(theEvent: NSEvent) {
-        if !Set([123,124,125,126]).contains(theEvent.keyCode) {
-            super.keyUp(theEvent)
-        }
+        super.keyUp(theEvent)
         self.repeatKey = false
     }
     

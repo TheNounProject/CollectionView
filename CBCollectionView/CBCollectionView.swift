@@ -324,33 +324,91 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public func relayout(animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .Top) {
         
-        if animated {
-            self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height))
+//        if animated {
+//            self.contentDocumentView.prepareRect(CGRectInset(self.contentVisibleRect, 0, -self.contentVisibleRect.size.height))
+//        }
+        
+        var absoluteCellFrames = [CBCollectionReusableView:CGRect]()
+//        var absoluteSuppFrames = [NSIndexPath:CGRect]()
+        
+        for cell in self.contentDocumentView.preparedCellIndex {
+            absoluteCellFrames[cell.1] = self.convertRect(cell.1.frame, fromView: cell.1.superview)
         }
-//        self.contentDocumentView.ignoreRemoves = true
+        for cell in self.contentDocumentView.preparedSupplementaryViewIndex {
+            absoluteCellFrames[cell.1] = self.convertRect(cell.1.frame, fromView: cell.1.superview)
+        }
 
         let firstIP = indexPathForFirstVisibleItem()
-        var refFrame : CGRect = CGRectZero
-        var refVisibleFrame : CGRect = CGRectZero
-        if firstIP != nil, let cell = cellForItemAtIndexPath(firstIP!) {
-            refFrame = cell.frame
-            refVisibleFrame = self.convertRect(cell.frame, fromView: self.contentDocumentView)
-        }
+//        var refFrame : CGRect = CGRectZero
+//        var refVisibleFrame : CGRect = CGRectZero
+//        if firstIP != nil, let cell = cellForItemAtIndexPath(firstIP!) {
+//            refFrame = cell.frame
+//            refVisibleFrame = self.convertRect(cell.frame, fromView: self.contentDocumentView)
+//        }
         self.info.recalculate()
         var vRect = self.contentVisibleRect
         
         let nContentSize = self.info.contentSize
+        let docFrame = self.contentDocumentView.frame
         contentDocumentView.frame.size = nContentSize
         
-        if scrollPosition != .None && firstIP != nil, let attrs = self.collectionViewLayout.scrollRectForItemAtIndexPath(firstIP!, atPosition: .Nearest) {
-            var nRef = self.convertRect(attrs, fromView: self.contentDocumentView)
+        
+        if scrollPosition != .None, let ip = firstIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: .Nearest) ?? self.rectForItemAtIndexPath(ip) {
+//            var nRef = self.convertRect(attrs, fromView: self.contentDocumentView)
 //            nRef.origin.y -= refVisibleFrame.origin.y
-            nRef = self.convertRect(nRef, toView: self.contentDocumentView)
-            vRect.origin.y = nRef.origin.y
+//            nRef = self.convertRect(nRef, toView: self.contentDocumentView)
+//            vRect.origin.y = nRef.origin.y
+            
+            self._scrollToRect(rect, atPosition: scrollPosition, animated: false, prepare: false)
         }
-        self.contentOffset = vRect.origin
-//        self.scrollToRect(vRect, atPosition: .Top, animated: false)
-        self.contentDocumentView.prepareRect(CGRectInset(vRect, 0, -self.contentVisibleRect.size.height/2), animated: animated, force: true)
+        
+        Swift.print("Old Dov: \(docFrame)  New \(self.contentDocumentView.frame)")
+        Swift.print("VRect: \(vRect)   cRect: \(self.contentVisibleRect)")
+        
+        
+//        var f = self.contentDocumentView.frame
+//        f.origin = vRect.origin
+        
+//        self._scrollToRect(vRect, atPosition: .Top, animated: true, prepare: false)
+        
+//        self.clipView?.scrollToPoint(vRect.origin)
+//        self.reflectScrolledClipView(self.clipView!)
+        
+//        return
+        for item in absoluteCellFrames {
+            if let attrs = item.0.attributes where attrs.representedElementCategory == CBCollectionElementCategory.SupplementaryView {
+                if let newAttrs = self.layoutAttributesForSupplementaryElementOfKind(attrs.representedElementKind!, atIndexPath: attrs.indexPath) {
+                    
+                    if newAttrs.floating != attrs.floating {
+                        if newAttrs.floating {
+                            item.0.removeFromSuperview()
+                            self._floatingSupplementaryView.addSubview(item.0)
+                            item.0.frame = item.1
+                        }
+                        else {
+                            item.0.removeFromSuperview()
+                            self.contentDocumentView.addSubview(item.0)
+                            item.0.frame = self.contentDocumentView.convertRect(item.1, fromView: self)
+                        }
+                    }
+                    else if newAttrs.floating {
+                        item.0.frame = item.1
+                    }
+                    else {
+                        let cFrame = self.contentDocumentView.convertRect(item.1, fromView: self)
+                        item.0.frame = cFrame
+                    }
+                    continue
+                }
+            }
+            
+            let cFrame = self.contentDocumentView.convertRect(item.1, fromView: self)
+            Swift.print("IP: \(item.0.indexPath!) Current: \(item.0.frame) temp: \(item.1)  Converted: \(cFrame)")
+            item.0.frame = cFrame
+            Swift.print(item.0.frame)
+        }
+        
+        self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: animated, force: true)
     }
     
     
@@ -808,6 +866,53 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     public func scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool) {
+        self._scrollToRect(aRect, atPosition: atPosition, animated: animated, prepare: true)
+//        var rect = aRect
+//        
+//        let visibleRect = self.contentVisibleRect
+//        switch atPosition {
+//        case .Top:
+//            // make the top of our rect flush with the top of the visible bounds
+//            rect.size.height = CGRectGetHeight(visibleRect) - contentInsets.top;
+//            rect.origin.y = aRect.origin.y - contentInsets.top;
+//            break;
+//        case .Centered:
+//            // TODO
+//            rect.size.height = self.bounds.size.height;
+//            rect.origin.y += (CGRectGetHeight(visibleRect) / 2.0) - CGRectGetHeight(rect);
+//            break;
+//        case .Bottom:
+//            // make the bottom of our rect flush with the bottom of the visible bounds
+//            rect.size.height = CGRectGetHeight(visibleRect);
+//            rect.origin.y -= CGRectGetHeight(visibleRect) - contentInsets.top;
+//            break;
+//        case .None:
+//            // no scroll needed
+//            return;
+//        case .Nearest:
+//            if visibleRect.contains(rect) { return }
+//            
+//            if rect.origin.y < visibleRect.origin.y {
+//                rect = visibleRect.offsetBy(dx: 0, dy: rect.origin.y - visibleRect.origin.y - self.contentInsets.top)
+//            }
+//            else if CGRectGetMaxY(rect) >  CGRectGetMaxY(visibleRect) {
+//                rect = visibleRect.offsetBy(dx: 0, dy: CGRectGetMaxY(rect) - CGRectGetMaxY(visibleRect) + self.contentInsets.top)
+//            }
+//            // We just pass the cell's frame onto the scroll view. It calculates this for us.
+//            break;
+//        }
+//        Swift.print("aRect: \(aRect)   rect: \(rect)")
+//        self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
+//        self.clipView?.scrollRectToVisible(rect, animated: true)
+////        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
+////            self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
+////            self._layoutItems(false, forceAll: false)
+////            self._layoutSupplementaryViews(false, forceAll: false)
+////        })
+////        self.clipView!.scrollRectToVisible(rect, animated: animated, completion: )
+//
+    }
+    public func _scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, prepare: Bool) {
         var rect = aRect
         
         let visibleRect = self.contentVisibleRect
@@ -843,16 +948,19 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             break;
         }
         Swift.print("aRect: \(aRect)   rect: \(rect)")
-        self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
-        self.clipView?.scrollRectToVisible(rect, animated: true)
-//        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
-//            self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
-//            self._layoutItems(false, forceAll: false)
-//            self._layoutSupplementaryViews(false, forceAll: false)
-//        })
-//        self.clipView!.scrollRectToVisible(rect, animated: animated, completion: )
-
+        if prepare {
+            self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
+        }
+        self.clipView?.scrollRectToVisible(rect, animated: animated)
+        //        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
+        //            self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
+        //            self._layoutItems(false, forceAll: false)
+        //            self._layoutSupplementaryViews(false, forceAll: false)
+        //        })
+        //        self.clipView!.scrollRectToVisible(rect, animated: animated, completion: )
+        
     }
+    
     
     
     var mouseDownIP: NSIndexPath?

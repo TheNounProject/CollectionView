@@ -24,6 +24,12 @@ public class CBCollectionViewDocumentView : NSView {
 //        super.prepareContentInRect(_rect)
 //    }
     
+    struct ItemUpdate {
+        let view : CBCollectionReusableView!
+        let attrs : CBCollectionViewLayoutAttributes!
+    }
+    
+    
     var preparedRect = CGRectZero
     var preparedCellIndex : [NSIndexPath:CBCollectionViewCell] = [:]
     var preparedSupplementaryViewIndex : [SupplementaryViewIdentifier:CBCollectionReusableView] = [:]
@@ -92,20 +98,29 @@ public class CBCollectionViewDocumentView : NSView {
         
         var date = NSDate()
         let previousPrepared = self.preparedRect
-
-        let sRect = self.layoutSupplementaryViewsInRect(_rect, animated: animated, forceAll: force)
-        let iRect = self.layoutItemsInRect(_rect, animated: animated, forceAll: force)
+        
+        let supps = self.layoutSupplementaryViewsInRect(_rect, animated: animated, forceAll: force)
+        let items = self.layoutItemsInRect(_rect, animated: animated, forceAll: force)
+        let sRect = supps.rect
+        let iRect = items.rect
         
         var newRect = sRect.union(iRect)
         if !self.preparedRect.isEmpty {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
+        
+        var updates = supps.updates
+        updates.appendContentsOf(items.updates)
+        self.applyUpdates(updates, animated: animated)
+        
+        
 //        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
 //        self.ignoreRemoves = false
     }
     
-    func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {
+    var animating = false
+    func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
         var _rect = rect
         
 //        var date = NSDate()
@@ -114,6 +129,7 @@ public class CBCollectionViewDocumentView : NSView {
 //        var insertTime : NSTimeInterval = 0
 //        var updateTime : NSTimeInterval = 0
         
+        var updates = [ItemUpdate]()
         
         let oldIPs = Set(self.preparedCellIndex.keys)
         var inserted = self.collectionView.indexPathsForItemsInRect(rect)
@@ -180,7 +196,14 @@ public class CBCollectionViewDocumentView : NSView {
                 cell.hidden = true
                 cell.alphaValue = 0
             }
-            self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
+            updates.append(ItemUpdate(view: cell, attrs: attrs))
+//            updates[cell] = attrs
+//            if animated {
+//                animations[cell] = attrs
+//            }
+//            else {
+//                self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
+//            }
             cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
             self.preparedCellIndex[ip] = cell
         }
@@ -190,37 +213,43 @@ public class CBCollectionViewDocumentView : NSView {
         
         if forceAll {
             for ip in updated {
-                if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip) {
-                    let cell = preparedCellIndex[ip]
+                if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip),
+                let cell = preparedCellIndex[ip] {
+                    
                     _rect = CGRectUnion(_rect, attrs.frame)
-                    self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
-                    cell?.selected = self.collectionView.itemAtIndexPathIsSelected(ip)
+//                    cell?.frame = attrs.frame
+                    updates.append(ItemUpdate(view: cell, attrs: attrs))
+//                    if animated {
+//                        self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
+//                    }
+//                    else {
+//                        
+//                    }
+                    cell.selected = self.collectionView.itemAtIndexPathIsSelected(ip)
                 }
             }
         }
+
+        
 //        updateTime = date.timeIntervalSinceNow
 //        Swift.print("prep: \(prepTime ) removed: \(removed.count) in \(removeTime)   inserted: \(inserted.count) in \(insertTime)    updated: \(updated.count) in \(updateTime)")
         
-        return _rect
+        return (_rect, updates)
     }
     
     
-    func layoutSupplementaryViewsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> CGRect {
+    func layoutSupplementaryViewsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
         var _rect = rect
+        
+        var updates = [ItemUpdate]()
         
         let oldIdentifiers = Set(self.preparedSupplementaryViewIndex.keys)
         var inserted = self.collectionView._identifiersForSupplementaryViewsInRect(rect)
         let removed = oldIdentifiers.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIdentifiers)
         
-//        var removedRect = CGRectZero
-//        if !ignoreRemoves  {
             for identifier in removed {
                 if let view = self.preparedSupplementaryViewIndex[identifier] {
-//                        if let attrs = view.attributes where !attrs.floating {
-//                            if removedRect.isEmpty { removedRect = attrs.frame }
-//                            else { removedRect.unionInPlace(attrs.frame) }
-//                        }
                     self.preparedSupplementaryViewIndex[identifier] = nil
                     if animated {
                         NSAnimationContext.runAnimationGroup({ (context) -> Void in
@@ -278,31 +307,93 @@ public class CBCollectionViewDocumentView : NSView {
                     view.hidden = true
                     view.frame = attrs.frame
                 }
-                self._applyLayoutAttributes(attrs, toItem: view, animated: animated)
+                updates.append(ItemUpdate(view: view, attrs: attrs))
+//                self._applyLayoutAttributes(attrs, toItem: view, animated: animated)
                 self.preparedSupplementaryViewIndex[identifier] = view
             }
         }
         
         for id in updated {
-            if let cell = preparedSupplementaryViewIndex[id],
+            if let view = preparedSupplementaryViewIndex[id],
                 let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(id.kind, atIndexPath: id.indexPath!) {
                 _rect = CGRectUnion(_rect, attrs.frame)
                 
                 if attrs.floating == true {
-                    if cell.superview != self.collectionView._floatingSupplementaryView {
-                        cell.removeFromSuperview()
-                        self.collectionView._floatingSupplementaryView.addSubview(cell)
+                    if view.superview != self.collectionView._floatingSupplementaryView {
+                        view.removeFromSuperview()
+                        self.collectionView._floatingSupplementaryView.addSubview(view)
                     }
                     attrs.frame = self.collectionView._floatingSupplementaryView.convertRect(attrs.frame, fromView: self)
                 }
-                else if cell.superview == self.collectionView._floatingSupplementaryView {
-                    cell.removeFromSuperview()
-                    self.collectionView.contentDocumentView.addSubview(cell)
+                else if view.superview == self.collectionView._floatingSupplementaryView {
+                    view.removeFromSuperview()
+                    self.collectionView.contentDocumentView.addSubview(view)
                 }
-                self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
+                
+                updates.append(ItemUpdate(view: view, attrs: attrs))
+//                updates[view] = attrs
+//                self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
             }
         }
-        return _rect
+        
+        
+//        if animated && !animating {
+//            let mDelay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.001 * Double(NSEC_PER_SEC)))
+//            dispatch_after(mDelay, dispatch_get_main_queue(), {
+//                NSAnimationContext.runAnimationGroup({ (context) -> Void in
+//                    context.duration = 0.4
+//                    context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+//                    //                    context.allowsImplicitAnimation = true
+//                    for item in updates {
+//                        item.0.applyLayoutAttributes(item.1, animated: true)
+//                    }
+//                    //                self.animator().frame = layoutAttributes.frame
+//                    //                self.animator().alphaValue = layoutAttributes.alpha
+//                    //                self.layer?.zPosition = layoutAttributes.zIndex
+//                    //                self.animator().hidden = layoutAttributes.hidden
+//                }) { () -> Void in
+//                    
+//                }
+//            })
+//        }
+//        else {
+//            for item in updates {
+//                item.0.applyLayoutAttributes(item.1, animated: false)
+//            }
+//        }
+        
+        
+        return (_rect, updates)
+    }
+    
+    
+    func applyUpdates(updates: [ItemUpdate], animated: Bool) {
+        
+        if animated && !animating {
+            let mDelay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.001 * Double(NSEC_PER_SEC)))
+            self.animating = true
+            dispatch_after(mDelay, dispatch_get_main_queue(), {
+                NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                    context.duration = 0.4
+                    context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                    //                    context.allowsImplicitAnimation = true
+                    for item in updates {
+                        item.view.applyLayoutAttributes(item.attrs, animated: true)
+                    }
+                    //                self.animator().frame = layoutAttributes.frame
+                    //                self.animator().alphaValue = layoutAttributes.alpha
+                    //                self.layer?.zPosition = layoutAttributes.zIndex
+                    //                self.animator().hidden = layoutAttributes.hidden
+                }) { () -> Void in
+                    self.animating = false
+                }
+            })
+        }
+        else {
+            for item in updates {
+                item.view.applyLayoutAttributes(item.attrs, animated: false)
+            }
+        }
     }
     
     
@@ -314,8 +405,10 @@ public class CBCollectionViewDocumentView : NSView {
         
         return;
         if attributes?.floating == false && animated {
+            NSAnimationContext.beginGrouping()
+            
             NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                context.duration = 0.5
+                context.duration = 5
                 context.allowsImplicitAnimation = true
                 toItem?.applyLayoutAttributes(attributes!, animated: true)
                 }) { () -> Void in

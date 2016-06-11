@@ -64,7 +64,7 @@ public class CBCollectionViewDocumentView : NSView {
     }
     
     
-//    var ignoreRemoves = false
+
     
     func relayout(animated: Bool) {
         
@@ -248,23 +248,20 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIdentifiers.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIdentifiers)
         
-//        var removals = [ItemUpdate]()
-            for identifier in removed {
-                if let view = self.preparedSupplementaryViewIndex[identifier] {
-                    self.preparedSupplementaryViewIndex[identifier] = nil
-                    view.layer?.zPosition = -100
-                    
-                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: identifier.indexPath!) {
-                        updates.append(ItemUpdate(view: view, attrs: attrs, removal: true, identifier: identifier))
-                    }
-                    else {
-                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
-                        self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
-                    }
+        for identifier in removed {
+            if let view = self.preparedSupplementaryViewIndex[identifier] {
+                self.preparedSupplementaryViewIndex[identifier] = nil
+                view.layer?.zPosition = -100
+                
+                if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: identifier.indexPath!) {
+                    updates.append(ItemUpdate(view: view, attrs: attrs, removal: true, identifier: identifier))
                 }
+                else {
+                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
+                    self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
+                }
+            }
         }
-//        self.animateRemovedItems(removals)
-        
         
         for identifier in inserted {
             
@@ -314,39 +311,9 @@ public class CBCollectionViewDocumentView : NSView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
                 }
-                
                 updates.append(ItemUpdate(view: view, attrs: attrs))
-//                updates[view] = attrs
-//                self._applyLayoutAttributes(attrs, toItem: cell, animated: animated)
             }
         }
-        
-        
-//        if animated && !animating {
-//            let mDelay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.001 * Double(NSEC_PER_SEC)))
-//            dispatch_after(mDelay, dispatch_get_main_queue(), {
-//                NSAnimationContext.runAnimationGroup({ (context) -> Void in
-//                    context.duration = 0.4
-//                    context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-//                    //                    context.allowsImplicitAnimation = true
-//                    for item in updates {
-//                        item.0.applyLayoutAttributes(item.1, animated: true)
-//                    }
-//                    //                self.animator().frame = layoutAttributes.frame
-//                    //                self.animator().alphaValue = layoutAttributes.alpha
-//                    //                self.layer?.zPosition = layoutAttributes.zIndex
-//                    //                self.animator().hidden = layoutAttributes.hidden
-//                }) { () -> Void in
-//                    
-//                }
-//            })
-//        }
-//        else {
-//            for item in updates {
-//                item.0.applyLayoutAttributes(item.1, animated: false)
-//            }
-//        }
-        
         
         return (_rect, updates)
     }

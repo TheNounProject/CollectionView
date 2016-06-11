@@ -381,16 +381,12 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             item.0.frame = cFrame
         }
         
-        self.contentDocumentView.preparedRect = CGRectZero
+        self.contentDocumentView.preparedRect = self.contentVisibleRect
         self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: animated, force: true)
     }
     
     
-    public internal(set) var scrolling : Bool = false {
-        didSet {
-            Swift.print("is Scrolling: \(scrolling)")
-        }
-    }
+    public internal(set) var scrolling : Bool = false
     private var _previousOffset = CGPointZero
     private var _offsetMark = CACurrentMediaTime()
     
@@ -408,7 +404,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.velocity = delta
         self.peakVelocityForScroll = max(abs(peakVelocityForScroll), abs(self.velocity))
         self._offsetMark = CACurrentMediaTime()
-        Swift.print("Velocity: \(self.velocity), Peak: \(self.peakVelocityForScroll)")
     }
     
     func willBeginScroll(notification: NSNotification) {
@@ -424,8 +419,12 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     func didEndScroll(notification: NSNotification) {
         self.scrolling = false
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
+        Swift.print("Peak Velocity: \(self.peakVelocityForScroll)")
         self.velocity = 0
         self.peakVelocityForScroll = 0
+        
+        self.contentDocumentView.prepareRect(self.contentVisibleRect)
+        self.contentDocumentView.preparedRect = self.contentVisibleRect
         
         if trackSectionHover && NSApp.active, let point = self.window?.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin {
             let loc = self.contentDocumentView.convertPoint(point, fromView: nil)
@@ -463,6 +462,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public override func viewDidEndLiveResize() {
         _topIP = nil
+        self.contentDocumentView.preparedRect = self.contentVisibleRect
         self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: false, force: true)
     }
     
@@ -487,7 +487,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             }
             scroll = d.timeIntervalSinceNow
             d = NSDate()
-            self.contentDocumentView.preparedRect = CGRectZero
+            
             self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
             prep = d.timeIntervalSinceNow
             Swift.print("Calc: \(calc)  Scroll: \(scroll)  prep: \(prep)")

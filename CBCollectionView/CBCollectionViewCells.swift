@@ -196,7 +196,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }
         
         if self.wantsTracking == false { return }
-        var opts = [NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.ActiveInKeyWindow, .InVisibleRect]
+        var opts = [NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.ActiveInKeyWindow, .InVisibleRect, .EnabledDuringMouseDrag]
         if trackMouseMoved {
             opts.append(.MouseMoved)
         }

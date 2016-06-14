@@ -1188,6 +1188,9 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     public func draggingSession(session: NSDraggingSession, willBeginAtPoint screenPoint: NSPoint) {
+        for view in self.visibleCells() {
+            view.disableTracking()
+        }
         self.interactionDelegate?.collectionView?(self, draggingSession: session, willBeginAtPoint: screenPoint)
     }
     
@@ -1196,6 +1199,9 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     public func draggingSession(session: NSDraggingSession, endedAtPoint screenPoint: NSPoint, operation: NSDragOperation) {
+        for view in self.visibleCells() {
+            view.enableTracking()
+        }
         self.mouseDownIP = nil
         self.interactionDelegate?.collectionView?(self, draggingSession: session, enedAtPoint: screenPoint, withOperation: operation, draggedIndexPaths: draggedIPs)
         self.draggedIPs = []

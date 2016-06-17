@@ -78,7 +78,7 @@ public class CBCollectionViewDocumentView : NSView {
         let _rect = CGRectIntersection(rect, CGRect(origin: CGPointZero, size: self.frame.size))
         
         if rect.size.height > 5000 {
-            Swift.print("GIANT")
+//            Swift.print("GIANT")
         }
         
         if !force && !CGRectIsEmpty(self.preparedRect) && self.preparedRect.contains(_rect) {
@@ -121,7 +121,7 @@ public class CBCollectionViewDocumentView : NSView {
         updates.appendContentsOf(items.updates)
         self.applyUpdates(updates, animated: animated)
         
-        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
+//        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
 //        self.ignoreRemoves = false
     }
     

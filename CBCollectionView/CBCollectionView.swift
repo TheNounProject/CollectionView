@@ -93,6 +93,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     let _floatingSupplementaryView = FloatingSupplementaryView(frame: NSZeroRect)
     
+    public func addAccessoryView(view: NSView) {
+        self._floatingSupplementaryView.addSubview(view)
+    }
+    
     // MARK: - Data Source & Delegate
     public weak var delegate : CBCollectionViewDelegate?
     public weak var dataSource : CBCollectionViewDataSource?
@@ -419,7 +423,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     func didEndScroll(notification: NSNotification) {
         self.scrolling = false
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
-        Swift.print("Peak Velocity: \(self.peakVelocityForScroll)")
+//        Swift.print("Peak Velocity: \(self.peakVelocityForScroll)")
         self.velocity = 0
         self.peakVelocityForScroll = 0
         
@@ -490,7 +494,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             
             self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
             prep = d.timeIntervalSinceNow
-            Swift.print("Calc: \(calc)  Scroll: \(scroll)  prep: \(prep)")
+//            Swift.print("Calc: \(calc)  Scroll: \(scroll)  prep: \(prep)")
         }
     }
     
@@ -927,7 +931,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             // We just pass the cell's frame onto the scroll view. It calculates this for us.
             break;
         }
-        Swift.print("aRect: \(aRect)   rect: \(rect)")
+//        Swift.print("aRect: \(aRect)   rect: \(rect)")
         if prepare {
             self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
         }
@@ -1042,7 +1046,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             
             if theEvent.ARepeat && keySelectInterval > 0 {
                 if let t = lastEventTime where (CACurrentMediaTime() - t) < keySelectInterval {
-                    Swift.print(CACurrentMediaTime() - t)
+//                    Swift.print(CACurrentMediaTime() - t)
                     return
                 }
                 lastEventTime = CACurrentMediaTime()

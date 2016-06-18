@@ -49,6 +49,7 @@ public class CBScrollView : NSScrollView {
         if self.contentView.isKindOfClass(CBClipView) { return }
         let docView = self.documentView
         let clipView = CBClipView(frame: self.contentView.frame)
+        clipView.drawsBackground = self.drawsBackground
         self.contentView = clipView
         self.documentView = docView
     }
@@ -88,6 +89,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self.clipView?.scrollToPoint(newValue)
             self.reflectScrolledClipView(self.clipView!)
             self.contentDocumentView.prepareRect(self.contentVisibleRect)
+            self.contentDocumentView.preparedRect = self.contentVisibleRect
         }
     }
     
@@ -318,19 +320,24 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     
+    /// Force layout of all items, not just those in the visible content area (Only applies to reloadData())
+    public var prepareAll : Bool = false
+    
     // discard the dataSource and delegate data and requery as necessary
     public func reloadData() {
         self.contentDocumentView.reset()
         self.info.recalculate()
         contentDocumentView.frame.size = self.info.contentSize
-        self.contentDocumentView.prepareRect(self.contentVisibleRect)
+        
+        self.contentDocumentView.prepareRect(prepareAll
+            ?  CGRect(origin: CGPointZero, size: self.info.contentSize)
+            : self.contentVisibleRect)
         self._selectedIndexPaths.intersectInPlace(self.allIndexPaths())
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
     public func relayout(animated: Bool, var scrollPosition: CBCollectionViewScrollPosition = .Nearest) {
         
-
         var absoluteCellFrames = [CBCollectionReusableView:CGRect]()
         
         for cell in self.contentDocumentView.preparedCellIndex {

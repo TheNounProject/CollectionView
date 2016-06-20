@@ -433,7 +433,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         Swift.print("Peak Velocity: \(self.peakVelocityForScroll)")
         self.velocity = 0
         self.peakVelocityForScroll = 0
-        self.contentDocumentView.preparedRect = self.contentVisibleRect
+//        self.contentDocumentView.preparedRect = self.contentVisibleRect
 //        self.contentDocumentView.prepareRect(self.contentVisibleRect)
         
         if trackSectionHover && NSApp.active, let point = self.window?.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin {

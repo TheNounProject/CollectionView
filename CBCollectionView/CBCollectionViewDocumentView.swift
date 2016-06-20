@@ -112,7 +112,8 @@ public class CBCollectionViewDocumentView : NSView {
         let iRect = items.rect
         
         var newRect = sRect.union(iRect)
-        if !self.preparedRect.isEmpty {
+        Swift.print("Modified : \(self.preparedRect)  Items: \(iRect)  Supps: \(sRect)")
+        if !self.preparedRect.isEmpty && self.preparedRect.intersects(newRect) {
             newRect.unionInPlace(self.preparedRect)
         }
         self.preparedRect = newRect
@@ -121,20 +122,14 @@ public class CBCollectionViewDocumentView : NSView {
         updates.appendContentsOf(items.updates)
         self.applyUpdates(updates, animated: animated)
         
-//        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
+        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
 //        self.ignoreRemoves = false
     }
     
     
     func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
         var _rect = rect
-        
-//        var date = NSDate()
-//        var prepTime : NSTimeInterval = 0
-//        var removeTime : NSTimeInterval = 0
-//        var insertTime : NSTimeInterval = 0
-//        var updateTime : NSTimeInterval = 0
-        
+
         var updates = [ItemUpdate]()
         
         let oldIPs = Set(self.preparedCellIndex.keys)
@@ -142,43 +137,26 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIPs.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIPs)
         
-//        prepTime = date.timeIntervalSinceNow
-//        date = NSDate()
-        
-//        var removals = [ItemUpdate]()
-            var removedRect = CGRectZero
-            for ip in removed {
-                if let cell = self.collectionView.cellForItemAtIndexPath(ip) {
-                    if removedRect.isEmpty { removedRect = cell.frame }
-                    else { removedRect.unionInPlace(cell.frame) }
-                    
-                    self.preparedCellIndex[ip] = nil
-                    cell.layer?.zPosition = -100
-                    if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItemAtIndexPath(ip) {
-                        updates.append(ItemUpdate(view: cell, attrs: attrs, removal: true))
-                    
-//                        let mDelay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.001 * Double(NSEC_PER_SEC)))
-//                        dispatch_after(mDelay, dispatch_get_main_queue(), {
-//                            NSAnimationContext.runAnimationGroup({ (context) -> Void in
-//                                context.duration = 0.4
-//                                if let f = attrs?.frame {
-//                                    cell.animator().frame = f
-//                                }
-//                            }) { () -> Void in
-//                                self.collectionView.enqueueCellForReuse(cell)
-//                                self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
-//                            }
-//                        })
-                    }
-                    else {
-                        self.collectionView.enqueueCellForReuse(cell)
-                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
-                    }
+        var removedRect = CGRectZero
+        for ip in removed {
+            if let cell = self.collectionView.cellForItemAtIndexPath(ip) {
+                if removedRect.isEmpty { removedRect = cell.frame }
+                else { removedRect.unionInPlace(cell.frame) }
+                
+                self.preparedCellIndex[ip] = nil
+                cell.layer?.zPosition = -100
+                if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItemAtIndexPath(ip) {
+                    updates.append(ItemUpdate(view: cell, attrs: attrs, removal: true))
                 }
+                else {
+                    self.collectionView.enqueueCellForReuse(cell)
+                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
+                }
+            }
         }
-//        self.animateRemovedItems(removals)
         
         if !removedRect.isEmpty {
+            Swift.print("Remove: \(removedRect)")
             if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
                     self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
@@ -187,9 +165,6 @@ public class CBCollectionViewDocumentView : NSView {
                     
                 }
             }
-        
-//        removeTime = date.timeIntervalSinceNow
-//        date = NSDate()
         
         for ip in inserted {
             guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip) else { continue }
@@ -200,7 +175,7 @@ public class CBCollectionViewDocumentView : NSView {
             assert(cell.collectionView != nil, "Attemp to load cell without using deque")
             
             cell.indexPath = ip
-            _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, -1, -1) )
+            _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, 0, 0) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
             if cell.superview == nil {
@@ -215,10 +190,7 @@ public class CBCollectionViewDocumentView : NSView {
             cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
             self.preparedCellIndex[ip] = cell
         }
-        
-//        insertTime = date.timeIntervalSinceNow
-//        date = NSDate()
-        
+
         if forceAll {
             for ip in updated {
                 if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip),
@@ -230,10 +202,6 @@ public class CBCollectionViewDocumentView : NSView {
             }
         }
 
-        
-//        updateTime = date.timeIntervalSinceNow
-//        Swift.print("prep: \(prepTime ) removed: \(removed.count) in \(removeTime)   inserted: \(inserted.count) in \(insertTime)    updated: \(updated.count) in \(updateTime)")
-        
         return (_rect, updates)
     }
     
@@ -290,7 +258,6 @@ public class CBCollectionViewDocumentView : NSView {
                     view.frame = attrs.frame
                 }
                 updates.append(ItemUpdate(view: view, attrs: attrs))
-//                self._applyLayoutAttributes(attrs, toItem: view, animated: animated)
                 self.preparedSupplementaryViewIndex[identifier] = view
             }
         }

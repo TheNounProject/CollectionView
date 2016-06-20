@@ -430,12 +430,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     func didEndScroll(notification: NSNotification) {
         self.scrolling = false
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
-//        Swift.print("Peak Velocity: \(self.peakVelocityForScroll)")
+        Swift.print("Peak Velocity: \(self.peakVelocityForScroll)")
         self.velocity = 0
         self.peakVelocityForScroll = 0
-        
-        self.contentDocumentView.prepareRect(self.contentVisibleRect)
         self.contentDocumentView.preparedRect = self.contentVisibleRect
+//        self.contentDocumentView.prepareRect(self.contentVisibleRect)
         
         if trackSectionHover && NSApp.active, let point = self.window?.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin {
             let loc = self.contentDocumentView.convertPoint(point, fromView: nil)

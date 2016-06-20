@@ -93,6 +93,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     
+    public override var contentSize: NSSize {
+        return self.collectionViewLayout.collectionViewContentSize()
+    }
+    
     let _floatingSupplementaryView = FloatingSupplementaryView(frame: NSZeroRect)
     
     public func addAccessoryView(view: NSView) {
@@ -327,7 +331,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public func reloadData() {
         self.contentDocumentView.reset()
         self.info.recalculate()
-        contentDocumentView.frame.size = self.info.contentSize
+        contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
         
         self.contentDocumentView.prepareRect(prepareAll
             ?  CGRect(origin: CGPointZero, size: self.info.contentSize)
@@ -489,7 +493,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self.info.recalculate()
             calc = d.timeIntervalSinceNow
             
-            contentDocumentView.frame.size = self.info.contentSize
+            contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
             d = NSDate()
             if let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
                 let _rect = CGRect(origin: rect.origin, size: self.bounds.size)

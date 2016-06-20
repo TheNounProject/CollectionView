@@ -160,7 +160,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         }else{
             insets = self.sectionInset
         }
-        let width:CGFloat = self.collectionView!.bounds.size.width - insets.left - insets.right
+        let width:CGFloat = self.collectionView!.contentVisibleRect.size.width - insets.left - insets.right
         let spaceColumCount:CGFloat = CGFloat(colCount-1)
         return floor((width - (spaceColumCount*self.minimumColumnSpacing)) / CGFloat(colCount))
     }
@@ -196,7 +196,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             let itemSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, minimumInteritemSpacingForSectionAtIndex: section) ?? self.minimumInteritemSpacing
             let colSpacing = self.delegate?.collectionview?(self.collectionView!, layout: self, minimumColumnSpacingForSectionAtIndex: section) ?? self.minimumColumnSpacing
             
-            let contentWidth = self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right
+            let contentWidth = self.collectionView!.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right
             let spaceColumCount = CGFloat(colCount-1)
             let itemWidth = (contentWidth - (spaceColumCount*colSpacing)) / CGFloat(colCount)
             _itemWidth = itemWidth
@@ -210,8 +210,8 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
                 let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionHeader, withIndexPath: NSIndexPath._indexPathForItem(0, inSection: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                     CGRectMake(sectionInsets.left, top, self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, heightHeader)
-                    : CGRectMake(0, top, self.collectionView!.bounds.size.width, heightHeader)
+                     CGRectMake(sectionInsets.left, top, self.collectionView!.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, heightHeader)
+                    : CGRectMake(0, top, self.collectionView!.contentVisibleRect.size.width, heightHeader)
                 self.headersAttributes[section] = attributes
                 self.allItemAttributes.append(attributes)
                 top = CGRectGetMaxY(attributes.frame)
@@ -273,8 +273,8 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
                 let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionFooter, withIndexPath: NSIndexPath._indexPathForItem(0, inSection: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                    CGRectMake(sectionInsets.left, top, self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, footerHeight)
-                    : CGRectMake(0, top, self.collectionView!.bounds.size.width, footerHeight)
+                    CGRectMake(sectionInsets.left, top, self.collectionView!.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, footerHeight)
+                    : CGRectMake(0, top, self.collectionView!.contentVisibleRect.size.width, footerHeight)
                 self.footersAttributes[section] = attributes
                 self.allItemAttributes.append(attributes)
                 top = CGRectGetMaxY(attributes.frame)
@@ -292,7 +292,7 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         let numberOfSections = cv.numberOfSections()
         if numberOfSections == 0{ return CGSizeZero }
         
-        var contentSize = cv.bounds.size as CGSize
+        var contentSize = cv.contentVisibleRect.size as CGSize
         let height = self.sectionFrames[cv.numberOfSections() - 1]?.maxY ?? 0
         if height == 0 { return CGSizeZero }
         contentSize.height = height

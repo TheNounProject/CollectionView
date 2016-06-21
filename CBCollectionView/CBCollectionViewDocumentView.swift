@@ -175,7 +175,7 @@ public class CBCollectionViewDocumentView : NSView {
             assert(cell.collectionView != nil, "Attemp to load cell without using deque")
             
             cell.indexPath = ip
-            _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, 0, 0) )
+            _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, -1, -1) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
             if cell.superview == nil {

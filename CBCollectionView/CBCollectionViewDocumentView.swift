@@ -112,7 +112,7 @@ public class CBCollectionViewDocumentView : NSView {
         let iRect = items.rect
         
         var newRect = sRect.union(iRect)
-        Swift.print("Modified : \(self.preparedRect)  Items: \(iRect)  Supps: \(sRect)")
+//        Swift.print("Modified : \(self.preparedRect)  Items: \(iRect)  Supps: \(sRect)")
         if !self.preparedRect.isEmpty && self.preparedRect.intersects(newRect) {
             newRect.unionInPlace(self.preparedRect)
         }
@@ -122,7 +122,7 @@ public class CBCollectionViewDocumentView : NSView {
         updates.appendContentsOf(items.updates)
         self.applyUpdates(updates, animated: animated)
         
-        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
+//        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
 //        self.ignoreRemoves = false
     }
     
@@ -156,7 +156,7 @@ public class CBCollectionViewDocumentView : NSView {
         }
         
         if !removedRect.isEmpty {
-            Swift.print("Remove: \(removedRect)")
+//            Swift.print("Remove: \(removedRect)")
             if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
                     self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)

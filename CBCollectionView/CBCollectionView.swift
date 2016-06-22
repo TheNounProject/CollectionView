@@ -68,7 +68,6 @@ class FloatingSupplementaryView : NSView {
 }
 
 
-
 public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     private var _reusableCells : [String:Set<CBCollectionViewCell>] = [:]

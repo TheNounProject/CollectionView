@@ -199,7 +199,6 @@ public class CBCollectionViewDocumentView : NSView {
                 let cell = preparedCellIndex[ip] {
                     _rect = CGRectUnion(_rect, attrs.frame)
                     updates.append(ItemUpdate(view: cell, attrs: attrs))
-//                    cell.selected = self.collectionView.itemAtIndexPathIsSelected(ip)
                 }
             }
         }

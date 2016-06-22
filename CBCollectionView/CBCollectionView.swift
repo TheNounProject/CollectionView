@@ -295,7 +295,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     func enqueueCellForReuse(item: CBCollectionViewCell) {
         item.hidden = true
         item.indexPath = nil
-//        item.alphaValue = 1
         guard let id = item.reuseIdentifier else { return }
         if self._reusableCells[id] == nil {
             self._reusableCells[id] = []
@@ -305,7 +304,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     func enqueueSupplementaryViewForReuse(item: CBCollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
         item.hidden = true
-//        item.alphaValue = 1
         item.indexPath = nil
         let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: item.reuseIdentifier ?? withIdentifier.reuseIdentifier)
         if self._reusableSupplementaryView[newID] == nil {
@@ -332,6 +330,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.contentDocumentView.reset()
         self.info.recalculate()
         contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
+        self.reflectScrolledClipView(self.clipView!)
         
         self.contentDocumentView.prepareRect(prepareAll
             ?  CGRect(origin: CGPointZero, size: self.info.contentSize)
@@ -364,6 +363,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         if scrollPosition != .None, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(ip) {
             self._scrollToRect(rect, atPosition: scrollPosition, animated: false, prepare: false)
         }
+        self.reflectScrolledClipView(self.clipView!)
         
         for item in absoluteCellFrames {
             if let attrs = item.0.attributes where attrs.representedElementCategory == CBCollectionElementCategory.SupplementaryView {
@@ -499,6 +499,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                 let _rect = CGRect(origin: rect.origin, size: self.bounds.size)
                 self.clipView?.scrollRectToVisible(_rect, animated: false, completion: nil)
             }
+            self.reflectScrolledClipView(self.clipView!)
             scroll = d.timeIntervalSinceNow
             d = NSDate()
             

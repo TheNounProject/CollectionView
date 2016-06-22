@@ -337,16 +337,22 @@ public class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         if elementKind == CBCollectionViewLayoutElementKind.SectionHeader {
             let attrs = self.headersAttributes[indexPath._section]?.copy()
             if pinHeadersToTop, let currentAttrs = attrs, let cv = self.collectionView {
+                
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
-
-                var nextHeaderOrigin = CGPoint(x: CGFloat.max, y: CGFloat.max)
-                if let nextHeader = self.headersAttributes[indexPath._section + 1] {
-                    nextHeaderOrigin = nextHeader.frame.origin
+                if indexPath._section == 0 && contentOffset.y <= -cv.contentInsets.top {
+                    currentAttrs.frame.origin.y = 0
+                    currentAttrs.floating = false
                 }
-                let topInset = cv.contentInsets.top ?? 0
-                currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - CGRectGetHeight(frame))
-                currentAttrs.floating = currentAttrs.frame.origin.y > frame.origin.y
+                else {
+                    var nextHeaderOrigin = CGPoint(x: CGFloat.max, y: CGFloat.max)
+                    if let nextHeader = self.headersAttributes[indexPath._section + 1] {
+                        nextHeaderOrigin = nextHeader.frame.origin
+                    }
+                    let topInset = cv.contentInsets.top ?? 0
+                    currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - CGRectGetHeight(frame))
+                    currentAttrs.floating = currentAttrs.frame.origin.y > frame.origin.y
+                }
             }
             return attrs
         }

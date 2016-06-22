@@ -169,7 +169,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     var _trackingArea : NSTrackingArea?
     func addTracking() {
-        return;
+
         if let ta = _trackingArea {
             self.removeTrackingArea(ta)
         }

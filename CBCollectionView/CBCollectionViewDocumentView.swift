@@ -175,6 +175,8 @@ public class CBCollectionViewDocumentView : NSView {
             assert(cell.collectionView != nil, "Attemp to load cell without using deque")
             
             cell.indexPath = ip
+            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
+            
             _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, -1, -1) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
@@ -187,7 +189,7 @@ public class CBCollectionViewDocumentView : NSView {
                 cell.alphaValue = 0
             }
             updates.append(ItemUpdate(view: cell, attrs: attrs))
-            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
+            
             self.preparedCellIndex[ip] = cell
         }
 

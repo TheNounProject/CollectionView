@@ -169,7 +169,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     var _trackingArea : NSTrackingArea?
     func addTracking() {
-//        return;
+        return;
         if let ta = _trackingArea {
             self.removeTrackingArea(ta)
         }
@@ -188,6 +188,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public override func mouseMoved(theEvent: NSEvent) {
         super.mouseMoved(theEvent)
+        if self.scrolling { return }
         let loc = self.contentDocumentView.convertPoint(theEvent.locationInWindow, fromView: nil)
         self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
     }

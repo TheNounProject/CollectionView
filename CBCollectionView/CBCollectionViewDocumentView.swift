@@ -25,15 +25,23 @@ public class CBCollectionViewDocumentView : NSView {
 //    }
     
     struct ItemUpdate {
+        
+        enum Type {
+            case Insert
+            case Remove
+            case Update
+        }
+        
         let view : CBCollectionReusableView!
         let attrs : CBCollectionViewLayoutAttributes!
+        let type : Type!
         var identifier : SupplementaryViewIdentifier?
-        var removal : Bool = false
-        init(view: CBCollectionReusableView, attrs: CBCollectionViewLayoutAttributes, removal: Bool = false, identifier: SupplementaryViewIdentifier? = nil) {
+        
+        init(view: CBCollectionReusableView, attrs: CBCollectionViewLayoutAttributes, type: Type, identifier: SupplementaryViewIdentifier? = nil) {
             self.view = view
             self.attrs = attrs
             self.identifier = identifier
-            self.removal = removal
+            self.type = type
         }
     }
     
@@ -47,6 +55,7 @@ public class CBCollectionViewDocumentView : NSView {
     }
     
     func reset() {
+        
         for cell in preparedCellIndex {
             cell.1.removeFromSuperview()
             self.collectionView.enqueueCellForReuse(cell.1)
@@ -59,27 +68,29 @@ public class CBCollectionViewDocumentView : NSView {
             self.collectionView.enqueueSupplementaryViewForReuse(view.1, withIdentifier: id)
             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view.1, forElementOfKind: id.kind, atIndexPath: id.indexPath!)
         }
+        
+        for v in self.subviews {
+            v.removeFromSuperview()
+        }
+        
         preparedSupplementaryViewIndex.removeAll()
         self.preparedRect = CGRectZero
     }
-    
-    
 
     
-    func relayout(animated: Bool) {
-        
-        
-    }
+    private var extending : Bool = false
     
+    func extendPreparedRect(amount: CGFloat) {
+        if self.preparedRect.isEmpty { return }
+        self.extending = true
+        self.prepareRect(CGRectInset(preparedRect, -amount, -amount))
+        self.extending = false
+    }
     
     
     func prepareRect(rect: CGRect, animated: Bool = false, force: Bool = false) {
         
         let _rect = CGRectIntersection(rect, CGRect(origin: CGPointZero, size: self.frame.size))
-        
-        if rect.size.height > 5000 {
-//            Swift.print("GIANT")
-        }
         
         if !force && !CGRectIsEmpty(self.preparedRect) && self.preparedRect.contains(_rect) {
             
@@ -137,27 +148,28 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIPs.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIPs)
         
-        var removedRect = CGRectZero
-        for ip in removed {
-            if let cell = self.collectionView.cellForItemAtIndexPath(ip) {
-                if removedRect.isEmpty { removedRect = cell.frame }
-                else { removedRect.unionInPlace(cell.frame) }
-                
-                self.preparedCellIndex[ip] = nil
-                cell.layer?.zPosition = -100
-                if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItemAtIndexPath(ip) {
-                    updates.append(ItemUpdate(view: cell, attrs: attrs, removal: true))
-                }
-                else {
-                    self.collectionView.enqueueCellForReuse(cell)
-                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
+        if !extending {
+            var removedRect = CGRectZero
+            for ip in removed {
+                if let cell = self.collectionView.cellForItemAtIndexPath(ip) {
+                    if removedRect.isEmpty { removedRect = cell.frame }
+                    else { removedRect.unionInPlace(cell.frame) }
+                    
+                    self.preparedCellIndex[ip] = nil
+                    cell.layer?.zPosition = -100
+                    if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItemAtIndexPath(ip) {
+                        updates.append(ItemUpdate(view: cell, attrs: attrs, type: .Remove))
+                    }
+                    else {
+                        self.collectionView.enqueueCellForReuse(cell)
+                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
+                    }
                 }
             }
-        }
-        
-        if !removedRect.isEmpty {
-//            Swift.print("Remove: \(removedRect)")
-            if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
+            
+            if !removedRect.isEmpty {
+                //            Swift.print("Remove: \(removedRect)")
+                if self.collectionView.collectionViewLayout.scrollDirection == .Vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.MinYEdge : CGRectEdge.MaxYEdge
                     self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
                 }
@@ -165,6 +177,7 @@ public class CBCollectionViewDocumentView : NSView {
                     
                 }
             }
+        }
         
         for ip in inserted {
             guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip) else { continue }
@@ -175,8 +188,8 @@ public class CBCollectionViewDocumentView : NSView {
             assert(cell.collectionView != nil, "Attemp to load cell without using deque")
             
             cell.indexPath = ip
-            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
             
+            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
             _rect = CGRectUnion(_rect, CGRectInset(attrs.frame, -1, -1) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
@@ -188,7 +201,7 @@ public class CBCollectionViewDocumentView : NSView {
                 cell.hidden = true
                 cell.alphaValue = 0
             }
-            updates.append(ItemUpdate(view: cell, attrs: attrs))
+            updates.append(ItemUpdate(view: cell, attrs: attrs, type: .Insert))
             
             self.preparedCellIndex[ip] = cell
         }
@@ -198,7 +211,7 @@ public class CBCollectionViewDocumentView : NSView {
                 if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip),
                 let cell = preparedCellIndex[ip] {
                     _rect = CGRectUnion(_rect, attrs.frame)
-                    updates.append(ItemUpdate(view: cell, attrs: attrs))
+                    updates.append(ItemUpdate(view: cell, attrs: attrs, type: .Update))
                 }
             }
         }
@@ -217,17 +230,19 @@ public class CBCollectionViewDocumentView : NSView {
         let removed = oldIdentifiers.setByRemovingSubset(inserted)
         let updated = inserted.removeAllInSet(oldIdentifiers)
         
-        for identifier in removed {
-            if let view = self.preparedSupplementaryViewIndex[identifier] {
-                self.preparedSupplementaryViewIndex[identifier] = nil
-                view.layer?.zPosition = -100
-                
-                if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: identifier.indexPath!) {
-                    updates.append(ItemUpdate(view: view, attrs: attrs, removal: true, identifier: identifier))
-                }
-                else {
-                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
-                    self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
+        if !extending {
+            for identifier in removed {
+                if let view = self.preparedSupplementaryViewIndex[identifier] {
+                    self.preparedSupplementaryViewIndex[identifier] = nil
+                    view.layer?.zPosition = -100
+                    
+                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: identifier.indexPath!) {
+                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .Remove, identifier: identifier))
+                    }
+                    else {
+                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
+                        self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
+                    }
                 }
             }
         }
@@ -258,7 +273,7 @@ public class CBCollectionViewDocumentView : NSView {
                     view.hidden = true
                     view.frame = attrs.frame
                 }
-                updates.append(ItemUpdate(view: view, attrs: attrs))
+                updates.append(ItemUpdate(view: view, attrs: attrs, type: .Insert))
                 self.preparedSupplementaryViewIndex[identifier] = view
             }
         }
@@ -279,7 +294,7 @@ public class CBCollectionViewDocumentView : NSView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
                 }
-                updates.append(ItemUpdate(view: view, attrs: attrs))
+                updates.append(ItemUpdate(view: view, attrs: attrs, type: .Update))
             }
         }
         
@@ -300,11 +315,14 @@ public class CBCollectionViewDocumentView : NSView {
                     context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
                     //                    context.allowsImplicitAnimation = true
                     for item in updates {
-                        if item.removal {
+                        if item.type == .Remove {
                             removals.append(item)
                             item.attrs.alpha = 0
                         }
                         item.view.applyLayoutAttributes(item.attrs, animated: true)
+                        if item.type == .Insert {
+                            item.view.viewDidDisplay()
+                        }
                     }
                 }) { () -> Void in
                     if self.disableAnimationTimer == nil {
@@ -321,11 +339,14 @@ public class CBCollectionViewDocumentView : NSView {
                 animating = true
             }
             for item in updates {
-                if item.removal {
+                if item.type == .Remove {
                     removeItem(item)
                 }
                 else {
                     item.view.applyLayoutAttributes(item.attrs, animated: false)
+                    if item.type == .Insert {
+                        item.view.viewDidDisplay()
+                    }
                 }
             }
         }

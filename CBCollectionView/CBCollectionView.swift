@@ -137,7 +137,9 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         collectionViewLayout.collectionView = self
         self.info = CBCollectionViewInfo(collectionView: self)
         self.wantsLayer = true
-        self.documentView = CBCollectionViewDocumentView()
+        let dView = CBCollectionViewDocumentView()
+        dView.wantsLayer = true
+        self.documentView = dView
         self.hasVerticalScroller = true
         self.scrollsDynamically = true
         
@@ -169,7 +171,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     var _trackingArea : NSTrackingArea?
     func addTracking() {
-
         if let ta = _trackingArea {
             self.removeTrackingArea(ta)
         }
@@ -438,7 +439,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.velocity = 0
         self.peakVelocityForScroll = 0
 //        self.contentDocumentView.preparedRect = self.contentVisibleRect
-//        self.contentDocumentView.prepareRect(self.contentVisibleRect)
+//        self.contentDocumentView.extendPreparedRect(self.contentVisibleRect.size.height/2)
         
         if trackSectionHover && NSApp.active, let point = self.window?.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin {
             let loc = self.contentDocumentView.convertPoint(point, fromView: nil)

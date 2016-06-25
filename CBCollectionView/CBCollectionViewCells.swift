@@ -20,16 +20,20 @@ public class CBCollectionReusableView : NSView {
     
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
+        self.wantsLayer = true
         self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
     }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
+        self.wantsLayer = true
         self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
     }
     
     override public func prepareForReuse() {
         super.prepareForReuse()
     }
+    public func viewWillDisplay() { }
+    public func viewDidDisplay() { }
     
     public func applyLayoutAttributes(layoutAttributes: CBCollectionViewLayoutAttributes, animated: Bool) {
 
@@ -47,13 +51,10 @@ public class CBCollectionReusableView : NSView {
         }
         
         self.attributes = layoutAttributes
-       
     }
     
     public override func updateLayer() {
-        super.updateLayer()
         self.layer?.backgroundColor = self.backgroundColor?.CGColor
-        
     }
     
     public override func drawRect(dirtyRect: NSRect) {
@@ -113,6 +114,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         super.prepareForReuse()
         self.setHighlighted(false, animated: false)
     }
+
     
     var _trackingArea : NSTrackingArea?
     public var trackMouseMoved : Bool = false { didSet { self.updateTrackingAreas() }}

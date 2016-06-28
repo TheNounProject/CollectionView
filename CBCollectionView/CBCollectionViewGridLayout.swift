@@ -21,17 +21,9 @@ import Foundation
     optional func collectionView (collectionView: CBCollectionView,layout collectionViewLayout: CBCollectionViewLayout,
                                   heightForItemsInSection section: Int) -> CGFloat
     
-    /**
-     The aspect ration for the item at the given indexPath (Priority 1). Width and height must be greater than 0.
-     
-     - parameter collectionView:       The collection view the item is in
-     - parameter collectionViewLayout: The CollectionViewLayout
-     - parameter indexPath:            The indexPath for the item
-     
-     - returns: The aspect ration for the item
-     */
     optional func collectionView (collectionView: CBCollectionView,layout collectionViewLayout: CBCollectionViewLayout,
-                                  aspectRatioForItemAtIndexPath indexPath: NSIndexPath) -> CGSize
+                                  aspectRatioForItemsInSection indexPath: NSIndexPath) -> CGSize
+    
     
     optional func collectionView (collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
                                   heightForHeaderInSection section: NSInteger) -> CGFloat
@@ -40,14 +32,14 @@ import Foundation
                                   heightForFooterInSection section: NSInteger) -> CGFloat
     
     optional func collectionView (collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
-                                  insetForSectionAtIndex section: NSInteger) -> NSEdgeInsets
+                                  insetsForSectionAtIndex section: NSInteger) -> NSEdgeInsets
     
     // Between to items in the same column
     optional func collectionView (collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
-                                  minimumInteritemSpacingForSectionAtIndex section: NSInteger) -> CGFloat
+                                  rowSpacingForSectionAtIndex section: NSInteger) -> CGFloat
     
     optional func collectionview(collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
-                                 minimumColumnSpacingForSectionAtIndex section: NSInteger) -> CGFloat
+                                 columnSpacingForSectionAtIndex section: NSInteger) -> CGFloat
     
 }
 
@@ -58,44 +50,36 @@ public class CBCollectionViewGridLayout : CBCollectionViewLayout {
     //MARK: - Default layout values
     
     /// The default column count
-    public var columnCount : NSInteger = 2 { didSet{ invalidateLayout() }}
+    public final var columnCount : NSInteger = 2 { didSet{ invalidateLayout() }}
     
     /// The spacing between each column
-    public var minimumColumnSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
+    public final var minimumColumnSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
     
     /// The vertical spacing between items in the same column
-    public var minimumInteritemSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
+    public final var minimumInteritemSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
     
     /// The height of section header views
-    public var headerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
+    public final var headerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
     
     /// The height of section footer views
-    public var footerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
+    public final var footerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
     
     /// The default height to apply to all items
-    public var defaultItemHeight : CGFloat = 50 { didSet{ invalidateLayout() }}
+    public final var defaultItemHeight : CGFloat = 50 { didSet{ invalidateLayout() }}
     
     /// If supplementary views should respect section insets or fill the CollectionView width
-    public var insetSupplementaryViews : Bool = false { didSet{ invalidateLayout() }}
+    public final var insetSupplementaryViews : Bool = false { didSet{ invalidateLayout() }}
     
     /// Default insets for all sections
-    public var sectionInset : NSEdgeInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8) { didSet{ invalidateLayout() }}
+    public final var sectionInset : NSEdgeInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8) { didSet{ invalidateLayout() }}
     
-    public func numberOfColumnsInSection(section: Int) -> Int {
-        if columnHeights.count > 0 && section >= 0 && section < columnHeights.count {
-            return columnHeights[section].count
-        }
-        return 0
+    public final func numberOfColumnsInSection(section: Int) -> Int {
+        return columnCounts[section]
     }
-    
-    public var isGrid : Bool = true
     
     // Internal caching
     private var _itemWidth : CGFloat = 0
     private var _cvSize = CGSizeZero
-    /// the calculated width of items based on the total width and number of columns (read only)
-    public var itemWidth : CGFloat { get { return _itemWidth }}
-    
     
     private var numSections : Int { get { return self.collectionView!.numberOfSections() }}
     private func columnsInSection(section : Int) -> Int {
@@ -105,14 +89,31 @@ public class CBCollectionViewGridLayout : CBCollectionViewLayout {
     }
     
     //  private property and method above.
-    private weak var delegate : CBCollectionViewDelegateColumnLayout? { get{ return self.collectionView!.delegate as? CBCollectionViewDelegateColumnLayout }}
+    private weak var delegate : CBCollectionViewDelegateGridLayout? { get{ return self.collectionView!.delegate as? CBCollectionViewDelegateGridLayout }}
     
-    private var columnHeights : [[CGFloat]]! = []
+    
+    struct SectionSpec {
+        var frame : CGRect
+        
+        var itemCounts : Int
+        var contentRect : CGRect
+        var columnWidth: CGFloat
+        
+        var columnSpacing : CGFloat
+        var rowSpacing : CGFloat
+        
+        var columnCount : Int = 0
+    }
+    
+    private var sections = [SectionSpec]()
+    
+
     private var sectionItemAttributes : [[CBCollectionViewLayoutAttributes]] = []
-    private var sectionColumnAttributes : [Int : [[CBCollectionViewLayoutAttributes]]] = [:]
-    private var allItemAttributes : [CBCollectionViewLayoutAttributes] = []
+
+    private var itemAttributes : [NSIndexPath:CBCollectionViewLayoutAttributes] = [:]
     private var headersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
     private var footersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
+    
     private var sectionIndexPaths : [Int : Set<NSIndexPath>] = [:]
     private var sectionFrames   : [Int : CGRect] = [:]
     
@@ -123,58 +124,48 @@ public class CBCollectionViewGridLayout : CBCollectionViewLayout {
         super.init()
     }
     
-    
-    func itemWidthInSectionAtIndex (section : NSInteger) -> CGFloat {
-        let colCount = self.delegate?.collectionView?(self.collectionView!, layout: self, numberOfColumnsInSection: section) ?? self.columnCount
-        var insets : NSEdgeInsets!
-        if let sectionInsets = self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAtIndex: section){
-            insets = sectionInsets
-        }else{
-            insets = self.sectionInset
-        }
-        let width:CGFloat = self.collectionView!.bounds.size.width - insets.left - insets.right
-        let spaceColumCount:CGFloat = CGFloat(colCount-1)
-        return floor((width - (spaceColumCount*self.minimumColumnSpacing)) / CGFloat(colCount))
-    }
+//    
+//    private func itemWidthInSectionAtIndex (section : NSInteger) -> CGFloat {
+//        let colCount = self.delegate?.collectionView?(self.collectionView!, layout: self, numberOfColumnsInSection: section) ?? self.columnCount
+//        var insets : NSEdgeInsets!
+//        if let sectionInsets = self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSectionAtIndex: section){
+//            insets = sectionInsets
+//        }else{
+//            insets = self.sectionInset
+//        }
+//        let width:CGFloat = self.collectionView!.bounds.size.width - insets.left - insets.right
+//        let spaceColumCount:CGFloat = CGFloat(colCount-1)
+//        return floor((width - (spaceColumCount*self.minimumColumnSpacing)) / CGFloat(colCount))
+//    }
     
     override public func prepareLayout(){
         super.prepareLayout()
         
-        let numberOfSections = self.collectionView!.numberOfSections()
-        if numberOfSections == 0 {
-            return
-        }
-        
         self.headersAttributes.removeAll()
         self.footersAttributes.removeAll()
+        self.itemAttributes.removeAll()
+        
         self.sectionIndexPaths.removeAll()
         self.sectionFrames.removeAll()
-        self.columnHeights.removeAll(keepCapacity: false)
-        self.allItemAttributes.removeAll()
-        self.sectionItemAttributes.removeAll()
-        self.sectionColumnAttributes.removeAll()
+        
+        
         self.allIndexPaths.removeAll()
         
-        // Create default column heights for each section
-        //        for sec in 0...self.numSections-1 {
-        //            let colCount = self.columnsInSection(sec)
-        //            columnHeights.append([CGFloat](count: colCount, repeatedValue: 0))
-        //        }
+        let numberOfSections = self.collectionView!.numberOfSections()
+        if numberOfSections == 0 { return }
         
         var top : CGFloat = 0.0
-        //        var attributes = CBCollectionViewLayoutAttributes()
         
         for section in 0..<numberOfSections {
             let colCount = self.columnsInSection(section)
             
-            
             /*
              * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
              */
-            //            let colCount = self.columnsInSection(section)
-            let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAtIndex: section) ?? self.sectionInset
-            let itemSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, minimumInteritemSpacingForSectionAtIndex: section) ?? self.minimumInteritemSpacing
-            let colSpacing = self.delegate?.collectionview?(self.collectionView!, layout: self, minimumColumnSpacingForSectionAtIndex: section) ?? self.minimumColumnSpacing
+            
+            let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSectionAtIndex: section) ?? self.sectionInset
+            let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, rowSpacingForSectionAtIndex: section) ?? self.minimumInteritemSpacing
+            let colSpacing = self.delegate?.collectionview?(self.collectionView!, layout: self, columnSpacingForSectionAtIndex: section) ?? self.minimumColumnSpacing
             
             let contentWidth = self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right
             let spaceColumCount = CGFloat(colCount-1)
@@ -182,6 +173,7 @@ public class CBCollectionViewGridLayout : CBCollectionViewLayout {
             _itemWidth = itemWidth
             
             var sectionRect: CGRect = CGRect(x: sectionInsets.left, y: top, width: contentWidth, height: 0)
+            
             /*
              * 2. Section header
              */
@@ -198,7 +190,6 @@ public class CBCollectionViewGridLayout : CBCollectionViewLayout {
             }
             
             top += sectionInsets.top
-            columnHeights.append([CGFloat](count: colCount, repeatedValue: top))
             
             var sIndexPaths = Set<NSIndexPath>()
             /*
@@ -206,7 +197,7 @@ public class CBCollectionViewGridLayout : CBCollectionViewLayout {
              */
             let itemCount = self.collectionView!.numberOfItemsInSection(section)
             var itemAttributes :[CBCollectionViewLayoutAttributes] = []
-            sectionColumnAttributes[section] = [Array](count: colCount, repeatedValue: [])
+            row[section] = [Array](count: colCount, repeatedValue: [])
             
             // Item will be put into shortest column.
             for idx in 0..<itemCount {
@@ -339,10 +330,7 @@ public class CBCollectionViewGridLayout : CBCollectionViewLayout {
     }
     
     public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {
-        if indexPath._section >= self.sectionItemAttributes.count{ return nil }
-        if indexPath._item >= self.sectionItemAttributes[indexPath._section].count{ return nil }
-        let list = self.sectionItemAttributes[indexPath._section]
-        return list[indexPath._item]
+        return itemAttributes[indexPath]
     }
     
     public override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {

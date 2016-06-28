@@ -10,6 +10,40 @@ import Foundation
 
 
 
+
+
+public struct IndexPath : Hashable, Comparable {
+    let item : Int
+    let section : Int
+    public var hashValue: Int { return item.hashValue ^ section.hashValue }
+    
+    init(section: Int) {
+        self.item = 0
+        self.section = section
+    }
+    init(item: Int, section: Int) {
+        self.item = item
+        self.section = section
+    }
+}
+
+public func == (lhs: IndexPath, rhs: IndexPath) -> Bool {
+    return lhs.section == rhs.section && lhs.item == rhs.section
+}
+public func <= (lhs: IndexPath, rhs: IndexPath) -> Bool {
+    return lhs.section < rhs.section || (lhs.section == rhs.section && lhs.item <= rhs.item)
+}
+public func < (lhs: IndexPath, rhs: IndexPath) -> Bool {
+    return lhs.section < rhs.section || (lhs.section == rhs.section && lhs.item < rhs.item)
+}
+public func > (lhs: IndexPath, rhs: IndexPath) -> Bool {
+    return lhs.section > rhs.section || (lhs.section == rhs.section && lhs.item > rhs.item)
+}
+public func >= (lhs: IndexPath, rhs: IndexPath) -> Bool {
+    return lhs.section > rhs.section || (lhs.section == rhs.section && lhs.item >= rhs.item)
+}
+
+
 extension Set {
     
     mutating func removeAllInSet(set: Set) -> Set {
@@ -33,6 +67,10 @@ extension Set {
     }
     
 }
+
+
+
+
 
 extension CGRect {
     

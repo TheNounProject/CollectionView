@@ -231,7 +231,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         var foundObject: AnyObject? = nil
         var topLevelObjects :NSArray?
         if inNib.instantiateWithOwner(self, topLevelObjects: &topLevelObjects) {
-            let index = topLevelObjects!.indexOfObjectPassingTest({ [unowned self] (obj, idx, stop) -> Bool in
+            let index = topLevelObjects!.indexOfObjectPassingTest({(obj, idx, stop) -> Bool in
                 if obj.isKindOfClass(aClass) {
                     stop.memory = true
                     return true
@@ -340,7 +340,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
-    public func relayout(animated: Bool, var scrollPosition: CBCollectionViewScrollPosition = .Nearest) {
+    public func relayout(animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .Nearest) {
         
         var absoluteCellFrames = [CBCollectionReusableView:CGRect]()
         
@@ -469,16 +469,19 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         return nil
     }
     
+    
     var _topIP: NSIndexPath?
-    var _bounds : CGRect = CGRectZero
+    var _resizeStartBounds : CGRect = CGRectZero
+    
     public override func viewWillStartLiveResize() {
+        _resizeStartBounds = self.contentVisibleRect
         _topIP = indexPathForFirstVisibleItem()
     }
     
     public override func viewDidEndLiveResize() {
         _topIP = nil
-        self.contentDocumentView.preparedRect = self.contentVisibleRect
-        self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: false, force: true)
+        self.delegate?.collectionViewDidEndLiveResize?(self)
+//        self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: false, force: true)
     }
     
     public override func layout() {

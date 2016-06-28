@@ -90,6 +90,8 @@ public extension NSIndexPath {
     optional func collectionView(collectionView: CBCollectionView, didEndDisplayingCell cell: CBCollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath)
     optional func collectionView(collectionView: CBCollectionView, didEndDisplayingSupplementaryView view: CBCollectionReusableView, forElementOfKind elementKind: String, atIndexPath indexPath: NSIndexPath)
     
+    optional func collectionViewDidEndLiveResize(collectionView: CBCollectionView)
+    
     optional func collectionViewDidScroll(collectionView: CBCollectionView)
     optional func collectionViewWillBeginScrolling(collectionView: CBCollectionView)
     optional func collectionViewDidEndScrolling(collectionView: CBCollectionView, animated: Bool)

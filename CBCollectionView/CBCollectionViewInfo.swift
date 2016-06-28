@@ -16,7 +16,7 @@ internal struct CBCollectionViewSectionInfo {
     var numberOfItems: Int = 0
 }
 
-internal class CBCollectionViewInfo {
+internal final class CBCollectionViewInfo {
     
     private weak var collectionView : CBCollectionView!
     private(set) var numberOfSections : Int = 0
@@ -29,12 +29,12 @@ internal class CBCollectionViewInfo {
         self.collectionView = collectionView
     }
     
-    func numberOfItemsInSection(section: Int) -> Int {
+    final func numberOfItemsInSection(section: Int) -> Int {
         if let count = sections[section]?.numberOfItems { return count }
         return 0
     }
     
-    func recalculate() {
+    final func recalculate() {
         
         let layout = self.collectionView.collectionViewLayout
         var totalNumberOfItems = 0
@@ -95,7 +95,7 @@ internal class CBCollectionViewInfo {
     }
     
     
-    private func calculateContentSize() -> CGSize {
+    final private func calculateContentSize() -> CGSize {
         var size = self.collectionView.collectionViewLayout.collectionViewContentSize()
         if (CGSizeEqualToSize(CGSizeZero, size)) {
             var frame = CGRectNull;

@@ -10,12 +10,12 @@
 import Foundation
 
 
-public class CBCollectionViewDocumentView : NSView {
+final public class CBCollectionViewDocumentView : NSView {
 
     public override var flipped : Bool { return true }
 //    var isCompatibleWithResponsiveScrolling : Bool { return true }
     
-    weak var collectionView : CBCollectionView! {
+    private weak var collectionView : CBCollectionView! {
         return self.superview!.superview as! CBCollectionView
     }
     
@@ -24,8 +24,7 @@ public class CBCollectionViewDocumentView : NSView {
 //        super.prepareContentInRect(_rect)
 //    }
     
-    struct ItemUpdate {
-        
+    private struct ItemUpdate {
         enum Type {
             case Insert
             case Remove
@@ -50,10 +49,6 @@ public class CBCollectionViewDocumentView : NSView {
     var preparedCellIndex : [NSIndexPath:CBCollectionViewCell] = [:]
     var preparedSupplementaryViewIndex : [SupplementaryViewIdentifier:CBCollectionReusableView] = [:]
     
-    public override func layout() {
-        super.layout()
-    }
-    
     func reset() {
         
         for cell in preparedCellIndex {
@@ -70,7 +65,9 @@ public class CBCollectionViewDocumentView : NSView {
         }
         
         for v in self.subviews {
-            v.removeFromSuperview()
+            if v is CBCollectionReusableView {
+                v.removeFromSuperview()
+            }
         }
         
         preparedSupplementaryViewIndex.removeAll()
@@ -103,13 +100,12 @@ public class CBCollectionViewDocumentView : NSView {
                         self.collectionView._floatingSupplementaryView.addSubview(view)
                     }
                     attrs.frame = self.collectionView._floatingSupplementaryView.convertRect(attrs.frame, fromView: self)
-                    view.applyLayoutAttributes(attrs, animated: false)
                 }
                 else if view.superview == self.collectionView._floatingSupplementaryView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
-                    view.applyLayoutAttributes(attrs, animated: false)
                 }
+                view.applyLayoutAttributes(attrs, animated: false)
             }
             return
         }
@@ -138,7 +134,7 @@ public class CBCollectionViewDocumentView : NSView {
     }
     
     
-    func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
+    private func layoutItemsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
         var _rect = rect
 
         var updates = [ItemUpdate]()
@@ -220,7 +216,7 @@ public class CBCollectionViewDocumentView : NSView {
     }
     
     
-    func layoutSupplementaryViewsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
+    private func layoutSupplementaryViewsInRect(rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
         var _rect = rect
         
         var updates = [ItemUpdate]()
@@ -303,7 +299,7 @@ public class CBCollectionViewDocumentView : NSView {
     
     var animating = false
     var disableAnimationTimer : NSTimer?
-    func applyUpdates(updates: [ItemUpdate], animated: Bool) {
+    private func applyUpdates(updates: [ItemUpdate], animated: Bool) {
         
         if animated && !animating {
             let mDelay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.01 * Double(NSEC_PER_SEC)))
@@ -358,12 +354,12 @@ public class CBCollectionViewDocumentView : NSView {
     }
     
     
-    func finishRemovals(removals: [ItemUpdate]) {
+    private func finishRemovals(removals: [ItemUpdate]) {
         for item in removals {
             removeItem(item)
         }
     }
-    func removeItem(item: ItemUpdate) {
+    private func removeItem(item: ItemUpdate) {
         if let cell = item.view as? CBCollectionViewCell {
             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: cell.indexPath!)
             self.collectionView.enqueueCellForReuse(cell)

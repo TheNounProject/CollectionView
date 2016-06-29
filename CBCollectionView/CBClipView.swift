@@ -22,6 +22,8 @@ public class CBClipView : NSClipView {
     var destinationOrigin = CGPointZero
     var scrollView : NSScrollView { return self.enclosingScrollView ?? self.superview as! NSScrollView }
     
+    var scrollEnabled : Bool = true
+    
     public var decelerationRate = CBClipViewDecelerationRate {
         didSet {
             if decelerationRate > 1 { self.decelerationRate = 1 }
@@ -30,8 +32,6 @@ public class CBClipView : NSClipView {
     }
     
     var completionBlock : CBScrollCompletion?
-    
-//    var isCompatibleWithResponsiveScrolling : Bool { return true }
     
     init(clipView: NSClipView) {
         super.init(frame: clipView.frame)
@@ -117,6 +117,8 @@ public class CBClipView : NSClipView {
     }
     
     public override func scrollToPoint(newOrigin: NSPoint) {
+        if !scrollEnabled { return }
+        
         if self.shouldAnimateOriginChange {
             self.shouldAnimateOriginChange = false
             if CVDisplayLinkIsRunning(self.displayLink) {

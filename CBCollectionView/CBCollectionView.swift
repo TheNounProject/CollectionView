@@ -265,10 +265,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         else {
             self._reusableCells[identifier]?.removeFirst()
+            cell?.prepareForReuse()
         }
         cell?.reuseIdentifier = identifier
         cell?.indexPath = indexPath
-        cell?.prepareForReuse()
+        
         return cell!
     }
     public func dequeueReusableSupplementaryViewOfKind(elementKind: String, withReuseIdentifier identifier: String, forIndexPath indexPath: NSIndexPath) -> CBCollectionReusableView {
@@ -286,10 +287,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         else {
             self._reusableSupplementaryView[id]?.removeFirst()
+            view?.prepareForReuse()
         }
         view?.reuseIdentifier = identifier
         view?.indexPath = indexPath
-        view?.prepareForReuse()
         return view!
     }
     
@@ -424,9 +425,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     func willBeginScroll(notification: NSNotification) {
         self.scrolling = true
-//        Swift.print("Begin sCroll")
         self.delegate?.collectionViewWillBeginScrolling?(self)
-//        self._offsetMark = CACurrentMediaTime()
         self._previousOffset = self.contentVisibleRect.origin
         self.peakVelocityForScroll = 0
         self.velocity = 0
@@ -866,51 +865,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public func scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool) {
         self._scrollToRect(aRect, atPosition: atPosition, animated: animated, prepare: true)
-//        var rect = aRect
-//        
-//        let visibleRect = self.contentVisibleRect
-//        switch atPosition {
-//        case .Top:
-//            // make the top of our rect flush with the top of the visible bounds
-//            rect.size.height = CGRectGetHeight(visibleRect) - contentInsets.top;
-//            rect.origin.y = aRect.origin.y - contentInsets.top;
-//            break;
-//        case .Centered:
-//            // TODO
-//            rect.size.height = self.bounds.size.height;
-//            rect.origin.y += (CGRectGetHeight(visibleRect) / 2.0) - CGRectGetHeight(rect);
-//            break;
-//        case .Bottom:
-//            // make the bottom of our rect flush with the bottom of the visible bounds
-//            rect.size.height = CGRectGetHeight(visibleRect);
-//            rect.origin.y -= CGRectGetHeight(visibleRect) - contentInsets.top;
-//            break;
-//        case .None:
-//            // no scroll needed
-//            return;
-//        case .Nearest:
-//            if visibleRect.contains(rect) { return }
-//            
-//            if rect.origin.y < visibleRect.origin.y {
-//                rect = visibleRect.offsetBy(dx: 0, dy: rect.origin.y - visibleRect.origin.y - self.contentInsets.top)
-//            }
-//            else if CGRectGetMaxY(rect) >  CGRectGetMaxY(visibleRect) {
-//                rect = visibleRect.offsetBy(dx: 0, dy: CGRectGetMaxY(rect) - CGRectGetMaxY(visibleRect) + self.contentInsets.top)
-//            }
-//            // We just pass the cell's frame onto the scroll view. It calculates this for us.
-//            break;
-//        }
-//        Swift.print("aRect: \(aRect)   rect: \(rect)")
-//        self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
-//        self.clipView?.scrollRectToVisible(rect, animated: true)
-////        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
-////            self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
-////            self._layoutItems(false, forceAll: false)
-////            self._layoutSupplementaryViews(false, forceAll: false)
-////        })
-////        self.clipView!.scrollRectToVisible(rect, animated: animated, completion: )
-//
     }
+    
     public func _scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, prepare: Bool) {
         var rect = aRect
         
@@ -946,17 +902,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             // We just pass the cell's frame onto the scroll view. It calculates this for us.
             break;
         }
-//        Swift.print("aRect: \(aRect)   rect: \(rect)")
         if prepare {
             self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
         }
         self.clipView?.scrollRectToVisible(rect, animated: animated)
-        //        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
-        //            self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
-        //            self._layoutItems(false, forceAll: false)
-        //            self._layoutSupplementaryViews(false, forceAll: false)
-        //        })
-        //        self.clipView!.scrollRectToVisible(rect, animated: animated, completion: )
         
     }
     
@@ -1101,7 +1050,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     
-    public var scrollEnabled = true
+    public var scrollEnabled = true { didSet { self.clipView?.scrollEnabled = scrollEnabled }}
 //    public override func scrollWheel(theEvent: NSEvent) {
 //        if scrollEnabled {
 //            super.scrollWheel(theEvent)

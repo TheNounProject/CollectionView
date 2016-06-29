@@ -112,6 +112,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     
     public override func prepareForReuse() {
         super.prepareForReuse()
+        self.setSelected(false, animated: false)
         self.setHighlighted(false, animated: false)
     }
 

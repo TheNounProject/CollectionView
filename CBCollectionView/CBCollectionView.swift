@@ -575,11 +575,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     var _indexPathForHighlightedItem: NSIndexPath? {
         didSet {
             if oldValue == _indexPathForHighlightedItem { return }
-            if let ip = oldValue {
-                self.cellForItemAtIndexPath(ip)?.setHighlighted(false, animated: true)
+            if let ip = oldValue, let cell = self.cellForItemAtIndexPath(ip) where cell.highlighted {
+                cell.setHighlighted(false, animated: true)
             }
         }
     }
+    
+    public var indexPathForHighlightedItem: NSIndexPath? { return self._indexPathForHighlightedItem }
     
     public final func indexPathsForSelectedItems() -> Set<NSIndexPath> { return _selectedIndexPaths }
     public final func sortedIndexPathsForSelectedItems() -> [NSIndexPath] {
@@ -625,6 +627,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         if let shouldSelect = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: indexPath, withEvent: event) where !shouldSelect { return }
         
         if self.allowsMultipleSelection == false {
+            self._selectedIndexPaths.remove(indexPath)
             self.deselectAllItems()
         }
         
@@ -641,6 +644,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         if scrollPosition != .None {
             self.scrollToItemAtIndexPath(indexPath, atScrollPosition: scrollPosition, animated: animated)
         }
+        Swift.print("Selected: \(self._selectedIndexPaths)")
     }
     
     // Deselect
@@ -686,7 +690,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
             var indexesToSelect = Set<NSIndexPath>()
             
-            if selectionType == .Single {
+            if selectionType == .Single || !self.allowsMultipleSelection {
                 indexesToSelect.insert(indexPath)
             }
             else if selectionType == .Multiple {

@@ -12,8 +12,8 @@
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
 		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
+		DEE3B5831D243A9900AD34F1 /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
 		DEF14B991CBDD83B00553CEF /* CBCollectionViewColumnLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072031CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift */; };
-		DEF14B9A1CBDD83B00553CEF /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
 		DEF14B9B1CBDD83B00553CEF /* CBCollectionViewHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072041CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift */; };
 		DEF14B9C1CBDD83B00553CEF /* CBCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072051CAC7FF000AD0E37 /* CBCollectionViewLayout.swift */; };
 		DEF14B9D1CBDD83B00553CEF /* CBCollectionViewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072061CAC7FF000AD0E37 /* CBCollectionViewHelpers.swift */; };
@@ -309,7 +309,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEF14B9A1CBDD83B00553CEF /* CBCollectionViewGridLayout.swift in Sources */,
+				DEE3B5831D243A9900AD34F1 /* CBCollectionViewGridLayout.swift in Sources */,
 				DEF14B9E1CBDD83B00553CEF /* CBCollectionViewCells.swift in Sources */,
 				DEF14B9B1CBDD83B00553CEF /* CBCollectionViewHorizontalLayout.swift in Sources */,
 				DEF14B9C1CBDD83B00553CEF /* CBCollectionViewLayout.swift in Sources */,

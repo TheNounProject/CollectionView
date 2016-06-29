@@ -265,10 +265,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         else {
             self._reusableCells[identifier]?.removeFirst()
+            cell?.prepareForReuse()
         }
         cell?.reuseIdentifier = identifier
         cell?.indexPath = indexPath
-        cell?.prepareForReuse()
+        
         return cell!
     }
     public final func dequeueReusableSupplementaryViewOfKind(elementKind: String, withReuseIdentifier identifier: String, forIndexPath indexPath: NSIndexPath) -> CBCollectionReusableView {
@@ -286,10 +287,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         else {
             self._reusableSupplementaryView[id]?.removeFirst()
+            view?.prepareForReuse()
         }
         view?.reuseIdentifier = identifier
         view?.indexPath = indexPath
-        view?.prepareForReuse()
         return view!
     }
     
@@ -424,9 +425,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     final func willBeginScroll(notification: NSNotification) {
         self.scrolling = true
-//        Swift.print("Begin sCroll")
         self.delegate?.collectionViewWillBeginScrolling?(self)
-//        self._offsetMark = CACurrentMediaTime()
         self._previousOffset = self.contentVisibleRect.origin
         self.peakVelocityForScroll = 0
         self.velocity = 0
@@ -867,6 +866,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public func scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool) {
         self._scrollToRect(aRect, atPosition: atPosition, animated: animated, prepare: true)
     }
+    
     public func _scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, prepare: Bool) {
         var rect = aRect
         
@@ -902,17 +902,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             // We just pass the cell's frame onto the scroll view. It calculates this for us.
             break;
         }
-//        Swift.print("aRect: \(aRect)   rect: \(rect)")
         if prepare {
             self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
         }
         self.clipView?.scrollRectToVisible(rect, animated: animated)
-        //        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: {[unowned self] (fin) -> Void in
-        //            self.delegate?.collectionViewDidEndScrolling?(self, animated: animated)
-        //            self._layoutItems(false, forceAll: false)
-        //            self._layoutSupplementaryViews(false, forceAll: false)
-        //        })
-        //        self.clipView!.scrollRectToVisible(rect, animated: animated, completion: )
         
     }
     
@@ -1057,7 +1050,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     
-    public var scrollEnabled = true
+    public var scrollEnabled = true { didSet { self.clipView?.scrollEnabled = scrollEnabled }}
 //    public override func scrollWheel(theEvent: NSEvent) {
 //        if scrollEnabled {
 //            super.scrollWheel(theEvent)

@@ -644,7 +644,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         if scrollPosition != .None {
             self.scrollToItemAtIndexPath(indexPath, atScrollPosition: scrollPosition, animated: animated)
         }
-        Swift.print("Selected: \(self._selectedIndexPaths)")
     }
     
     // Deselect

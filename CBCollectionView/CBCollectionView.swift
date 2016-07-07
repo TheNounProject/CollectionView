@@ -683,56 +683,61 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // Multiple selections
     final func _selectItemAtIndexPath(indexPath: NSIndexPath,
-        atScrollPosition: CBCollectionViewScrollPosition,
-        animated: Bool,
-        selectionType: CBCollectionViewSelectionType) {
+                                      atScrollPosition: CBCollectionViewScrollPosition,
+                                      animated: Bool,
+                                      selectionType: CBCollectionViewSelectionType) {
         
-            var indexesToSelect = Set<NSIndexPath>()
-            
-            if selectionType == .Single || !self.allowsMultipleSelection {
+        var indexesToSelect = Set<NSIndexPath>()
+        
+        if selectionType == .Single || !self.allowsMultipleSelection {
+            indexesToSelect.insert(indexPath)
+        }
+        else if selectionType == .Multiple {
+            indexesToSelect.unionInPlace(self._selectedIndexPaths)
+            if indexesToSelect.contains(indexPath) {
+                indexesToSelect.remove(indexPath)
+            }
+            else {
                 indexesToSelect.insert(indexPath)
             }
-            else if selectionType == .Multiple {
-                indexesToSelect.unionInPlace(self._selectedIndexPaths)
-                if indexesToSelect.contains(indexPath) {
-                    indexesToSelect.remove(indexPath)
-                }
-                else {
-                    indexesToSelect.insert(indexPath)
+        }
+        else {
+            let firstIndex =  self._firstSelection
+            if let index = firstIndex {
+                let order = index.compare(indexPath)
+                var nextIndex : NSIndexPath? = firstIndex
+                
+                while (nextIndex != nil && nextIndex! != indexPath) {
+                    indexesToSelect.insert(nextIndex!)
+                    if order == NSComparisonResult.OrderedAscending {
+                        nextIndex = self.indexPathForSelectableIndexPathAfter(nextIndex!)
+                    }
+                    else if order == .OrderedDescending {
+                        nextIndex = self.indexPathForSelectableIndexPathBefore(nextIndex!)
+                    }
                 }
             }
             else {
-                let firstIndex =  self._firstSelection
-                if let index = firstIndex {
-                    let order = index.compare(indexPath)
-                    var nextIndex : NSIndexPath? = firstIndex
-                    
-                    while (nextIndex != nil && nextIndex! != indexPath) {
-                        indexesToSelect.insert(nextIndex!)
-                        if order == NSComparisonResult.OrderedAscending {
-                            nextIndex = self.indexPathForSelectableIndexPathAfter(nextIndex!)
-                        }
-                        else if order == .OrderedDescending {
-                            nextIndex = self.indexPathForSelectableIndexPathBefore(nextIndex!)
-                        }
-                    }
-                }
-                else {
-                    indexesToSelect.insert(NSIndexPath.Zero)
-                }
-                indexesToSelect.insert(indexPath)
+                indexesToSelect.insert(NSIndexPath.Zero)
             }
-            var deselectIndexes = self._selectedIndexPaths
-            deselectIndexes.removeAllInSet(indexesToSelect)
-            
-            self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
-            for ip in indexesToSelect {
-                self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: false)
-            }
+            indexesToSelect.insert(indexPath)
+        }
+        var deselectIndexes = self._selectedIndexPaths
+        deselectIndexes.removeAllInSet(indexesToSelect)
+        
+        self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
+        let finalSelect = indexesToSelect.remove(indexPath)
+        for ip in indexesToSelect {
+            self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: false)
+        }
         
         self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated)
-            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
-            self._lastSelection = indexPath
+        if let ip = finalSelect {
+            self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: true)
+        }
+        
+//        self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
+        self._lastSelection = indexPath
     }
     
     

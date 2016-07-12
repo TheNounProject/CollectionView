@@ -543,6 +543,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         newCell.selected = self._selectedIndexPaths.contains(indexPath)
         self.contentDocumentView.preparedCellIndex[indexPath] = newCell
+        newCell.viewDidDisplay()
     }
     
     

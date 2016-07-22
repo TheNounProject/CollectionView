@@ -152,8 +152,8 @@ final public class CBCollectionViewDocumentView : NSView {
                     else { removedRect.unionInPlace(cell.frame) }
                     
                     self.preparedCellIndex[ip] = nil
-                    cell.layer?.zPosition = -100
-                    if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItemAtIndexPath(ip) {
+                    cell.layer?.zPosition = 0
+                    if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItemAtIndexPath(ip) ?? cell.attributes {
                         updates.append(ItemUpdate(view: cell, attrs: attrs, type: .Remove))
                     }
                     else {

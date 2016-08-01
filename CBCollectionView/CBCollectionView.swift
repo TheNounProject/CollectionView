@@ -92,6 +92,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     
+    public override var mouseDownCanMoveWindow: Bool { return true }
+    
     public override var contentSize: NSSize {
         return self.collectionViewLayout.collectionViewContentSize()
     }
@@ -922,7 +924,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     var mouseDownIP: NSIndexPath?
     public override func mouseDown(theEvent: NSEvent) {
-        
 //        if theEvent.clickCount == 2 { return }
         
         self.mouseDownIP = nil
@@ -1081,6 +1082,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public final func indexPathsForDraggingItems() -> [NSIndexPath] { return draggedIPs }
     
     override public func mouseDragged(theEvent: NSEvent) {
+        return;
         super.mouseDragged(theEvent)
         self.window?.makeFirstResponder(self)
         self.draggedIPs = []

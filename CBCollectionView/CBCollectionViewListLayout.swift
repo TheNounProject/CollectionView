@@ -81,6 +81,8 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
         self.headersAttributes.removeAll()
         self.footersAttributes.removeAll()
         self.itemAttributes.removeAll()
+        self.sectionFrames.removeAll()
+        self.sectionContentFrames.removeAll()
         
         let numberOfSections = self.numSections
         if numberOfSections == 0 { return }
@@ -94,7 +96,6 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
             /*
              * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
              */
-            
             
             let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSectionAtIndex: section) ?? self.sectionInsets
             let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
@@ -201,7 +202,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
         
         var indexPaths = Set<NSIndexPath>()
         guard let cv = self.collectionView else { return nil }
-        if CGRectEqualToRect(rect, CGRectZero) || self.numSections == 0 { return indexPaths }
+        if rect.isEmpty || self.numSections == 0 { return indexPaths }
         for sectionIndex in 0..<cv.numberOfSections() {
             
             if cv.numberOfItemsInSection(sectionIndex) == 0 { continue }
@@ -230,7 +231,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
         var attrs : [CBCollectionViewLayoutAttributes] = []
         
         guard let cv = self.collectionView else { return nil }
-        if CGRectEqualToRect(rect, CGRectZero) || cv.numberOfSections() == 0 { return attrs }
+        if rect.isEmpty || cv.numberOfSections() == 0 { return attrs }
         for sectionIdx in  0..<cv.numberOfSections() {
             
             let contentFrame = self.sectionContentFrames[sectionIdx]

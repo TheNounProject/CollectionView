@@ -423,6 +423,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.velocity = delta
         self.peakVelocityForScroll = max(abs(peakVelocityForScroll), abs(self.velocity))
         self._offsetMark = CACurrentMediaTime()
+        self.delegate?.collectionViewDidScroll?(self)
     }
     
     final func willBeginScroll(notification: NSNotification) {
@@ -924,7 +925,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     var mouseDownIP: NSIndexPath?
     public override func mouseDown(theEvent: NSEvent) {
-//        if theEvent.clickCount == 2 { return }
         
         self.mouseDownIP = nil
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
@@ -1082,7 +1082,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public final func indexPathsForDraggingItems() -> [NSIndexPath] { return draggedIPs }
     
     override public func mouseDragged(theEvent: NSEvent) {
-        return;
+
         super.mouseDragged(theEvent)
         self.window?.makeFirstResponder(self)
         self.draggedIPs = []

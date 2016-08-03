@@ -13,6 +13,7 @@ public class CBCollectionReusableView : NSView {
     public internal(set) var indexPath: NSIndexPath?
     public internal(set) var reuseIdentifier: String?
     public internal(set) weak var collectionView : CBCollectionView?
+    public internal(set) var reused : Bool = false
     
     internal var attributes : CBCollectionViewLayoutAttributes?
     
@@ -30,6 +31,7 @@ public class CBCollectionReusableView : NSView {
     }
     
     override public func prepareForReuse() {
+        self.reused = true
         super.prepareForReuse()
     }
     public func viewWillDisplay() { }
@@ -78,6 +80,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     public override func acceptsFirstMouse(theEvent: NSEvent?) -> Bool { return true }
     
     private var wantsTracking = true
+    public var trackingOptions = [NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.ActiveInKeyWindow, .InVisibleRect, .EnabledDuringMouseDrag]
     
     private var _selected: Bool = false
     private var _highlighted : Bool = false
@@ -133,13 +136,12 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     public override func updateTrackingAreas() {
         super.updateTrackingAreas()
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }
-        
         if self.wantsTracking == false { return }
-        var opts = [NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.ActiveInKeyWindow, .InVisibleRect, .EnabledDuringMouseDrag]
-        if trackMouseMoved {
-            opts.append(.MouseMoved)
-        }
-        _trackingArea = NSTrackingArea(rect: self.bounds, options: NSTrackingAreaOptions(opts), owner: self, userInfo: nil)
+//        var opts =
+//        if trackMouseMoved {
+//            opts.append(.MouseMoved)
+//        }
+        _trackingArea = NSTrackingArea(rect: self.bounds, options: NSTrackingAreaOptions(trackingOptions), owner: self, userInfo: nil)
         self.addTrackingArea(_trackingArea!)
     }
 

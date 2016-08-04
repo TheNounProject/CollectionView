@@ -116,6 +116,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public var allowsSelection: Bool = true
     public var multiSelect: Bool = false
     public var allowsMultipleSelection: Bool = true
+    public var allowsEmptySelection: Bool = true
     
     // MARK: - Layout
     public var collectionViewLayout : CBCollectionViewLayout! = CBCollectionViewLayout() {
@@ -941,14 +942,15 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public override func mouseUp(theEvent: NSEvent) {
         super.mouseUp(theEvent)
         
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false &&
+            view.isDescendantOf(self._floatingSupplementaryView) == false {
             return
         }
         
         let point = self.contentView.convertPoint(theEvent.locationInWindow, fromView: nil)
         let indexPath = self.indexPathForItemAtPoint(point)
         
-        if mouseDownIP == nil {
+        if mouseDownIP == nil && allowsEmptySelection {
             self._deselectAllItems(true, notify: true)
         }
         

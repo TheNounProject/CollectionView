@@ -274,5 +274,30 @@ public class CBCollectionViewLayoutAttributes {
 
 
 
+public extension NSView {
+    
+    /**
+     Add NSLayoutContraints to the reciever to match it'parent optionally provided insets for each side. If the view does not have a superview, no constraints are added.
+     
+     - parameter insets: Insets to apply to the constraints for Top, Right, Bottom, and Left.
+     - returns: The Top, Right, Bottom, and Top constraint added to the view.
+     */
+    func addConstraintsToMatchParent(insets: NSEdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
+        if let sv = self.superview {
+            let top = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.Top, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Top, multiplier: 1, constant: insets == nil ? 0 : -insets!.top)
+            let right = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.Right, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Right, multiplier: 1, constant: insets?.right ?? 0)
+            let bottom = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Bottom, multiplier: 1, constant: insets?.bottom ?? 0)
+            let left = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.Left, relatedBy: NSLayoutRelation.Equal, toItem: self, attribute: NSLayoutAttribute.Left, multiplier: 1, constant: insets == nil ? 0 : -insets!.left)
+            sv.addConstraints([top, bottom, right, left])
+            self.translatesAutoresizingMaskIntoConstraints = false
+            return (top, right, bottom, left)
+        }
+        else {
+            debugPrint("CBToolkit Warning: Attempt to add contraints to match parent but the view had not superview.")
+        }
+        return nil
+    }
+}
+
 
 

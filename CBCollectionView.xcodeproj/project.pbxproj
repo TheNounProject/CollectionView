@@ -12,6 +12,7 @@
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
 		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
+		DEA6BA631D52E00900B3EF24 /* CBCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA6BA621D52E00900B3EF24 /* CBCollectionViewController.swift */; };
 		DEE3B5831D243A9900AD34F1 /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
 		DEE3B5851D246CB100AD34F1 /* CBCollectionViewListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE3B5841D246CB100AD34F1 /* CBCollectionViewListLayout.swift */; };
 		DEF14B991CBDD83B00553CEF /* CBCollectionViewColumnLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072031CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift */; };
@@ -58,6 +59,7 @@
 		DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionView.swift; sourceTree = "<group>"; };
 		DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewDocumentView.swift; sourceTree = "<group>"; };
 		DE9072171CAC807900AD0E37 /* CBClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBClipView.swift; sourceTree = "<group>"; };
+		DEA6BA621D52E00900B3EF24 /* CBCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewController.swift; sourceTree = "<group>"; };
 		DEE3B5841D246CB100AD34F1 /* CBCollectionViewListLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewListLayout.swift; sourceTree = "<group>"; };
 		DFB5645491B0AF5CA579AE5E /* Pods-CBCollectionViewTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CBCollectionViewTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-CBCollectionViewTests/Pods-CBCollectionViewTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -126,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */,
+				DEA6BA621D52E00900B3EF24 /* CBCollectionViewController.swift */,
 				DE9072031CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift */,
 				DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */,
 				DEE3B5841D246CB100AD34F1 /* CBCollectionViewListLayout.swift */,
@@ -318,6 +321,7 @@
 				DEF14B9B1CBDD83B00553CEF /* CBCollectionViewHorizontalLayout.swift in Sources */,
 				DEF14B9C1CBDD83B00553CEF /* CBCollectionViewLayout.swift in Sources */,
 				DE316FAD1CC72ABC00F763E6 /* CBClipView.swift in Sources */,
+				DEA6BA631D52E00900B3EF24 /* CBCollectionViewController.swift in Sources */,
 				DEF14B9D1CBDD83B00553CEF /* CBCollectionViewHelpers.swift in Sources */,
 				DEF14BA01CBDD83B00553CEF /* CBCollectionView.swift in Sources */,
 				DEF14B9F1CBDD83B00553CEF /* CBCollectionViewInfo.swift in Sources */,

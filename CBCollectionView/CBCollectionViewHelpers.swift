@@ -270,6 +270,20 @@ public class CBCollectionViewLayoutAttributes {
         attrs.hidden = self.hidden
         return attrs
     }
+    internal func copyWithIndexPath(newIndexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes {
+        var attrs : CBCollectionViewLayoutAttributes!
+        if self.representedElementCategory == .Cell {
+            attrs = CBCollectionViewLayoutAttributes(forCellWithIndexPath: newIndexPath)
+        }
+        else {
+            attrs = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: self.representedElementKind!, withIndexPath: newIndexPath)
+        }
+        attrs.frame = self.frame
+        attrs.alpha = self.alpha
+        attrs.zIndex = self.zIndex
+        attrs.hidden = self.hidden
+        return attrs
+    }
 }
 
 

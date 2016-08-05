@@ -339,7 +339,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         self.contentDocumentView.prepareRect(prepareAll
             ?  CGRect(origin: CGPointZero, size: self.info.contentSize)
-            : self.contentVisibleRect)
+            : self.contentVisibleRect, animated: false)
         self._selectedIndexPaths.intersectInPlace(self.allIndexPaths())
         self.delegate?.collectionViewDidReloadData?(self)
     }
@@ -516,39 +516,178 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     
-    public func insertItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
-        self.relayout(true, scrollPosition: .None)
+    
+    
+    public func reloadItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
+        
+        
+        var removals = [ItemUpdate]()
+        for indexPath in indexPaths {
+            guard let cell = self.cellForItemAtIndexPath(indexPath) else {
+                debugPrint("Not reloading cell because it is not visible")
+                return
+            }
+            let oldFrame = cell.frame
+            guard let newCell = self.dataSource?.collectionView(self, cellForItemAtIndexPath: indexPath) else {
+                debugPrint("For some reason collection view tried to load cells without a data source")
+                return
+            }
+            assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
+            
+            var attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
+            attrs?.frame = cell.frame
+            
+            if animated {
+                attrs?.alpha = 0
+            }
+            removals.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .Remove))
+            
+            newCell.indexPath = indexPath
+            
+            if let a = attrs {
+                newCell.applyLayoutAttributes(a, animated: false)
+            }
+            if newCell.superview == nil {
+                self.contentDocumentView.addSubview(newCell)
+            }
+            newCell.selected = self._selectedIndexPaths.contains(indexPath)
+            
+            self.contentDocumentView.preparedCellIndex[indexPath] = newCell
+            newCell.viewDidDisplay()
+        }
+        self.contentDocumentView.pendingUpdates.appendContentsOf(removals)
+        if batchUpdating { return }
+        self.relayout(animated, scrollPosition: .None)
     }
     
-    public func reloadItemAtIndexPath(indexPath: NSIndexPath) {
-        guard let cell = self.cellForItemAtIndexPath(indexPath) else {
-            debugPrint("Not reloading cell because it is not visible")
-            return
-        }
-        guard let newCell = self.dataSource?.collectionView(self, cellForItemAtIndexPath: indexPath) else {
-            debugPrint("For some reason collection view tried to load cells without a data source")
-            return
+    
+    public func insertItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
+        
+        self.indexPathForHighlightedItem = nil
+        
+        var sorted = indexPaths.sort { (ip1, ip2) -> Bool in
+            return ip1._item < ip2._item
         }
         
-        assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
+        var newBySection = [Int:[NSIndexPath]]()
         
-//        cell.hidden = true
-//        cell.indexPath = nil
-//        self.contentDocumentView.preparedCellIndex[indexPath] = nil
-        self.enqueueCellForReuse(cell)
-        
-        newCell.indexPath = indexPath
-        
-        if let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
-            newCell.applyLayoutAttributes(attrs, animated: false)
+        for ip in sorted {
+            if newBySection[ip._section] == nil { newBySection[ip._section] = [ip] }
+            else { newBySection[ip._section]?.append(ip) }
         }
-        if newCell.superview == nil {
-            self.contentDocumentView.addSubview(newCell)
+        
+        var changeMap = [(newIP: NSIndexPath, cell: CBCollectionViewCell)]()
+        for s in newBySection {
+            let sectionIndex = s.0
+            var newIps = s.1
+            
+            let cCount = self.numberOfItemsInSection(sectionIndex)
+            let nCount = cCount + newIps.count
+            
+            var newIndex = 0
+            
+            for idx in 0..<cCount {
+                while let nIP = newIps.first where nIP._item == newIndex {
+                    newIps.removeFirst()
+                    newIndex += 1
+                }
+                
+                let old = NSIndexPath._indexPathForItem(idx, inSection: sectionIndex)
+                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(old) {
+                    let new = NSIndexPath._indexPathForItem(newIndex, inSection: sectionIndex)
+                    changeMap.append((newIP: new, cell: cell))
+                }
+                newIndex += 1
+            }
         }
-        newCell.selected = self._selectedIndexPaths.contains(indexPath)
-        self.contentDocumentView.preparedCellIndex[indexPath] = newCell
-        newCell.viewDidDisplay()
+        
+        for change in changeMap {
+            change.cell.indexPath = change.newIP
+            self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
+        }
+        
+        if batchUpdating { return }
+
+        self.relayout(true, scrollPosition: .None)
+        self.delegate?.collectionViewDidReloadData?(self)
     }
+    
+    
+    
+    public func deleteItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
+        
+        self.indexPathForHighlightedItem = nil
+        
+        var bySection = [Int:[NSIndexPath]]()
+        
+        var sorted = indexPaths.sort { (ip1, ip2) -> Bool in return ip1._item < ip2._item }
+        for ip in sorted {
+            if bySection[ip._section] == nil { bySection[ip._section] = [ip] }
+            else { bySection[ip._section]?.append(ip) }
+        }
+        
+        var updates = [ItemUpdate]()
+        var changeMap = [(newIP: NSIndexPath, cell: CBCollectionViewCell)]()
+        
+        for s in bySection {
+            let sectionIndex = s.0
+            var removeIPs = s.1
+            
+            let cCount = self.numberOfItemsInSection(sectionIndex)
+            let nCount = cCount - removeIPs.count
+    
+            var newIndex = 0
+            
+            for idx in 0..<cCount {
+                if let dIP = removeIPs.first where dIP._item == idx,
+                let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(dIP),
+                let attrs = cell.attributes {
+                    removeIPs.removeFirst()
+                    updates.append(ItemUpdate(view: cell, attrs: attrs, type: .Remove))
+                    continue
+                }
+                
+                let old = NSIndexPath._indexPathForItem(idx, inSection: sectionIndex)
+                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(old) {
+                    let new = NSIndexPath._indexPathForItem(newIndex, inSection: sectionIndex)
+                    changeMap.append((newIP: new, cell: cell))
+                }
+                newIndex += 1
+            }
+        }
+        
+        self.contentDocumentView.pendingUpdates.appendContentsOf(updates)
+        
+        for change in changeMap {
+            change.cell.indexPath = change.newIP
+            self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
+        }
+        
+        if batchUpdating { return }
+        
+        self.relayout(true, scrollPosition: .None)
+        self.delegate?.collectionViewDidReloadData?(self)
+        
+    }
+    
+    
+    private var batchUpdating : Bool = false
+    public var animationDuration: NSTimeInterval = 0.4
+
+    public func performBatchUpdates(updates: (()->Void), completion: ((finished: Bool)->Void)?) {
+        
+        batchUpdating = true
+        updates()
+        batchUpdating = false
+        self.relayout(true, scrollPosition: .None)
+        self.delegate?.collectionViewDidReloadData?(self)
+        
+        completion?(finished: true)
+    }
+    
+    
+    
+    
     
     
     func _identifiersForSupplementaryViewsInRect(rect: CGRect) -> Set<SupplementaryViewIdentifier> {
@@ -577,16 +716,16 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // this ensures that only one item can be highlighted at a time
     // Mouse tracking is inconsistent when doing programatic scrolling
-    var _indexPathForHighlightedItem: NSIndexPath? {
+    public internal(set) var indexPathForHighlightedItem: NSIndexPath? {
         didSet {
-            if oldValue == _indexPathForHighlightedItem { return }
+//            Swift.print("New: \(indexPathForHighlightedItem)  OLD: \(oldValue)")
+            if oldValue == indexPathForHighlightedItem { return }
             if let ip = oldValue, let cell = self.cellForItemAtIndexPath(ip) where cell.highlighted {
                 cell.setHighlighted(false, animated: true)
             }
         }
     }
-    
-    public var indexPathForHighlightedItem: NSIndexPath? { return self._indexPathForHighlightedItem }
+//    public var indexPathForHighlightedItem: NSIndexPath? { return self._indexPathForHighlightedItem }
     
     public final func indexPathsForSelectedItems() -> Set<NSIndexPath> { return _selectedIndexPaths }
     public final func sortedIndexPathsForSelectedItems() -> [NSIndexPath] {
@@ -929,6 +1068,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         self.mouseDownIP = nil
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
+            if view == self.clipView || view.isDescendantOf(self) { self.window?.makeFirstResponder(self) }
             return
         }
         self.window?.makeFirstResponder(self)
@@ -942,8 +1082,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public override func mouseUp(theEvent: NSEvent) {
         super.mouseUp(theEvent)
         
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false &&
-            view.isDescendantOf(self._floatingSupplementaryView) == false {
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false && view.isDescendantOf(self._floatingSupplementaryView) == false {
+            if view == self.clipView { self.window?.makeFirstResponder(self) }
             return
         }
         

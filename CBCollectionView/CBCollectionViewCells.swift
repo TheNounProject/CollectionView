@@ -109,7 +109,7 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     public func setHighlighted(highlighted: Bool, animated: Bool) {
         self._highlighted = highlighted
         if highlighted {
-            self.collectionView?._indexPathForHighlightedItem = self.indexPath
+            self.collectionView?.indexPathForHighlightedItem = self.indexPath
         }
     }
     

@@ -10,6 +10,29 @@
 import Foundation
 
 
+
+internal struct ItemUpdate {
+    enum Type {
+        case Insert
+        case Remove
+        case Update
+    }
+    
+    let view : CBCollectionReusableView!
+    let attrs : CBCollectionViewLayoutAttributes!
+    let type : Type!
+    var identifier : SupplementaryViewIdentifier?
+    
+    init(view: CBCollectionReusableView, attrs: CBCollectionViewLayoutAttributes, type: Type, identifier: SupplementaryViewIdentifier? = nil) {
+        self.view = view
+        self.attrs = attrs
+        self.identifier = identifier
+        self.type = type
+    }
+}
+
+
+
 final public class CBCollectionViewDocumentView : NSView {
 
     public override var flipped : Bool { return true }
@@ -24,26 +47,7 @@ final public class CBCollectionViewDocumentView : NSView {
 //        super.prepareContentInRect(_rect)
 //    }
     
-    private struct ItemUpdate {
-        enum Type {
-            case Insert
-            case Remove
-            case Update
-        }
-        
-        let view : CBCollectionReusableView!
-        let attrs : CBCollectionViewLayoutAttributes!
-        let type : Type!
-        var identifier : SupplementaryViewIdentifier?
-        
-        init(view: CBCollectionReusableView, attrs: CBCollectionViewLayoutAttributes, type: Type, identifier: SupplementaryViewIdentifier? = nil) {
-            self.view = view
-            self.attrs = attrs
-            self.identifier = identifier
-            self.type = type
-        }
-    }
-    
+
     
     var preparedRect = CGRectZero
     var preparedCellIndex : [NSIndexPath:CBCollectionViewCell] = [:]
@@ -83,6 +87,9 @@ final public class CBCollectionViewDocumentView : NSView {
         self.prepareRect(CGRectInset(preparedRect, -amount, -amount))
         self.extending = false
     }
+    
+    
+    var pendingUpdates: [ItemUpdate] = []
     
     
     func prepareRect(rect: CGRect, animated: Bool = false, force: Bool = false) {
@@ -298,8 +305,14 @@ final public class CBCollectionViewDocumentView : NSView {
     }
     
     var animating = false
+    var hasPendingAnimations : Bool = false
     var disableAnimationTimer : NSTimer?
-    private func applyUpdates(updates: [ItemUpdate], animated: Bool) {
+    internal func applyUpdates(updates: [ItemUpdate], animated: Bool) {
+        
+        var _updates = updates
+        _updates.appendContentsOf(pendingUpdates)
+        pendingUpdates = []
+        
         
         if animated && !animating {
             let mDelay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.01 * Double(NSEC_PER_SEC)))
@@ -307,10 +320,11 @@ final public class CBCollectionViewDocumentView : NSView {
             dispatch_after(mDelay, dispatch_get_main_queue(), {
                 var removals = [ItemUpdate]()
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                    context.duration = 0.4
+                    context.duration = self.collectionView.animationDuration
                     context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
                     //                    context.allowsImplicitAnimation = true
-                    for item in updates {
+                    
+                    for item in _updates {
                         if item.type == .Remove {
                             removals.append(item)
                             item.attrs.alpha = 0
@@ -334,7 +348,7 @@ final public class CBCollectionViewDocumentView : NSView {
                 disableAnimationTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: #selector(enableAnimations), userInfo: nil, repeats: false)
                 animating = true
             }
-            for item in updates {
+            for item in _updates {
                 if item.type == .Remove {
                     removeItem(item)
                 }
@@ -372,52 +386,5 @@ final public class CBCollectionViewDocumentView : NSView {
             Swift.print("Invalid item for removal")
         }
     }
-    
-//    private func animateRemovedItems(removals : [ItemUpdate]) {
-//        
-//        if removals.count > 0 {
-//            let mDelay = dispatch_time(DISPATCH_TIME_NOW, Int64(0.01 * Double(NSEC_PER_SEC)))
-//            dispatch_after(mDelay, dispatch_get_main_queue(), {
-//                NSAnimationContext.runAnimationGroup({ (context) -> Void in
-//                    context.duration = 0.4
-//                    context.allowsImplicitAnimation = true
-//                    for item in removals {
-//                        item.attrs.hidden = true
-//                        item.view.applyLayoutAttributes(item.attrs, animated: true)
-////                        item.view.animator().frame = item.attrs.frame
-////                        item.view.animator().hidden = true
-//                    }
-//                }) { () -> Void in
-//                   
-//                }
-//            })
-//        }
-//        
-//    }
-    
-//    private func _applyLayoutAttributes(attributes: CBCollectionViewLayoutAttributes?, toItem : CBCollectionReusableView?, animated: Bool) {
-//        
-//        if toItem == nil || attributes == nil { return }
-//        toItem!.applyLayoutAttributes(attributes!, animated: animated)
-//        
-//        
-//        return;
-//        if attributes?.floating == false && animated {
-//            NSAnimationContext.beginGrouping()
-//            
-//            NSAnimationContext.runAnimationGroup({ (context) -> Void in
-//                context.duration = 5
-//                context.allowsImplicitAnimation = true
-//                toItem?.applyLayoutAttributes(attributes!, animated: true)
-//                }) { () -> Void in
-//                    
-//            }
-//        }
-//        else {
-//            toItem!.applyLayoutAttributes(attributes!, animated: false)
-//        }
-//        
-//    }
-
     
 }

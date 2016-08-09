@@ -337,10 +337,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
         self.reflectScrolledClipView(self.clipView!)
         
+        self._selectedIndexPaths.intersectInPlace(self.allIndexPaths())
         self.contentDocumentView.prepareRect(prepareAll
             ?  CGRect(origin: CGPointZero, size: self.info.contentSize)
             : self.contentVisibleRect, animated: false)
-        self._selectedIndexPaths.intersectInPlace(self.allIndexPaths())
+        
         self.delegate?.collectionViewDidReloadData?(self)
     }
     

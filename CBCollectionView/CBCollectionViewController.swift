@@ -32,17 +32,21 @@ public class CBCollectionViewController : NSViewController, CBCollectionViewData
         collectionView.delegate = self
     }
     
+    public func adjustContentInsets(insets: NSEdgeInsets) {
+        self.adjustConstraint(.Top, value: insets.top)
+        self.adjustConstraint(.Left, value: insets.left)
+        self.adjustConstraint(.Right, value: insets.right)
+        self.adjustConstraint(.Bottom, value: insets.bottom)
+        
+    }
+    
     // Must be .Top, .Right, .Bottom, or .Left
     public func adjustConstraint(attribute: NSLayoutAttribute, value: CGFloat?) {
         var constraint: NSLayoutConstraint?
         for constraint in self.self.view.constraints {
-            if constraint.secondAttribute == attribute && (constraint.secondItem as? CBCollectionView) == collectionView {
+            if (constraint.secondAttribute == attribute && (constraint.secondItem as? CBCollectionView) == collectionView)
+            || (constraint.firstAttribute == attribute && (constraint.firstItem as? CBCollectionView) == collectionView) {
                 if let val = value {
-                    
-//                    switch attribute {
-//                    case .Top, .Left: constraint.constant = -val
-//                    default:
-//                    }
                     constraint.constant = val
                     constraint.active = true
                 }

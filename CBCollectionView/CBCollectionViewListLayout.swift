@@ -142,7 +142,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
                 for idx in 0..<itemCount {
                     
                     let ip = NSIndexPath._indexPathForItem(idx, inSection: section)
-                    
+                    allIndexPaths.insert(ip)
                     
                     let attrs = CBCollectionViewLayoutAttributes(forCellWithIndexPath: ip)
                     var rowHeight : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAtIndexPath: ip) ?? self.itemHeight
@@ -237,14 +237,15 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
             let contentFrame = self.sectionContentFrames[sectionIdx]
             if contentFrame.isEmpty || !contentFrame.intersects(rect) { continue }
             
-            if rect.contains(contentFrame) {
-                attrs.appendContentsOf(sectionItemAttributes[sectionIdx])
-                continue
-            }
+            let containsAll = rect.contains(contentFrame)
+//            if  {
+//                attrs.appendContentsOf(sectionItemAttributes[sectionIdx])
+//                continue
+//            }
             
             for attr in sectionItemAttributes[sectionIdx] {
-                if attr.frame.intersects(rect) {
-                    attrs.append(attr)
+                if containsAll || attr.frame.intersects(rect) {
+                    attrs.append(attr.copy())
                 }
             }
         }
@@ -252,7 +253,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
     }
     
     public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {
-        return itemAttributes[indexPath]
+        return itemAttributes[indexPath]?.copy()
     }
     
     public override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {

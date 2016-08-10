@@ -120,7 +120,9 @@ public extension NSIndexPath {
     optional func collectionView(collectionView: CBCollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath)
     
     optional func collectionView(collectionView: CBCollectionView, didRightClickItemAtIndexPath indexPath: NSIndexPath, withEvent: NSEvent)
+    
     optional func collectionView(collectionView: CBCollectionView, shouldScrollToItemAtIndexPath indexPath: NSIndexPath) -> Bool
+    optional func collectionViewLayoutAnchor(collectionView: CBCollectionView) -> NSIndexPath?
     optional func collectionView(collectionView: CBCollectionView, didScrollToItemAtIndexPath indexPath: NSIndexPath)
     
     optional func collectionView(collectionView: CBCollectionView, willDisplayCell cell:CBCollectionViewCell, forItemAtIndexPath indexPath: NSIndexPath)

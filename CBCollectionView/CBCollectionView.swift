@@ -452,12 +452,20 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
 
     public func indexPathForFirstVisibleItem() -> NSIndexPath? {
+        
+        
+        if let ip = self.delegate?.collectionViewLayoutAnchor?(self) {
+            return ip
+        }
+        
         var visibleRect = self.contentVisibleRect //.insetBy(dx: self.contentInsets.left + self.contentInsets.right, dy: self.contentInsets.top + self.contentInsets.bottom)
         visibleRect.origin.y += self.contentInsets.top
         visibleRect.origin.x += self.contentInsets.top
         visibleRect.size.height -= self.contentInsets.top + self.contentInsets.bottom
         visibleRect.size.width -= self.contentInsets.left + self.contentInsets.right
         
+        
+        var closest : NSIndexPath?
         for sectionIndex in 0..<self.info.numberOfSections  {
             guard let section = self.info.sections[sectionIndex] else { continue }
             if CGRectIsEmpty(section.frame) || !CGRectIntersectsRect(section.frame, visibleRect) { continue }
@@ -467,10 +475,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                     if (CGRectContainsRect(visibleRect, attributes.frame)) {
                         return indexPath
                     }
+                    else if closest == nil && CGRectIntersectsRect(visibleRect, attributes.frame) {
+                        closest = indexPath
+                    }
                 }
             }
         }
-        return nil
+        return closest
     }
     
     
@@ -511,7 +522,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             scroll = d.timeIntervalSinceNow
             d = NSDate()
             
-            self.contentDocumentView.prepareRect(self.contentVisibleRect, force: true)
+            self.contentDocumentView.prepareRect(prepareAll ? contentDocumentView.frame : self.contentVisibleRect, force: true)
             prep = d.timeIntervalSinceNow
 //            Swift.print("Calc: \(calc)  Scroll: \(scroll)  prep: \(prep)")
         }

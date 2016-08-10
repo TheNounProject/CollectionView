@@ -17,11 +17,13 @@ import Foundation
 
 public class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
     
-    //    override func scrollDirection() -> CollectionViewScrollDirection {
-    //        return JNWCollectionViewScrollDirection.Horizontal
-    //    }
+    override public var scrollDirection : CBCollectionViewScrollDirection {
+        return CBCollectionViewScrollDirection.Horizontal
+    }
     
-    public var delegate: CBCollectionViewDelegateHorizontalListLayout?
+    public var delegate: CBCollectionViewDelegateHorizontalListLayout? {
+        return self.collectionView?.delegate as? CBCollectionViewDelegateHorizontalListLayout
+    }
     
     public var sectionInsets = NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     public var itemWidth: CGFloat = 100
@@ -64,8 +66,13 @@ public class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
         contentWidth = xPos + sectionInsets.right
     }
     
+    var _size = CGSizeZero
     public override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
-        return true
+        if !CGSizeEqualToSize(newBounds.size, _size) {
+            self._size = newBounds.size
+            return true
+        }
+        return false
     }
     
     public override func collectionViewContentSize() -> CGSize {
@@ -77,6 +84,11 @@ public class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
         contentSize.width = contentWidth
         return  contentSize
     }
+    
+    public override func scrollRectForItemAtIndexPath(indexPath: NSIndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
+        return layoutAttributesForItemAtIndexPath(indexPath)?.frame
+    }
+    
     
     public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {
         let attrs = CBCollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)

@@ -16,6 +16,9 @@ let CBClipViewDecelerationRate : CGFloat = 0.78
 
 public typealias CBScrollCompletion = (finished: Bool)->Void
 
+
+
+
 public class CBClipView : NSClipView {
     
     var shouldAnimateOriginChange = false
@@ -82,6 +85,7 @@ public class CBClipView : NSClipView {
         return link!
     }()
     
+    
 
     
     func updateCVDisplay(note: NSNotification) {
@@ -96,13 +100,15 @@ public class CBClipView : NSClipView {
         }
     }
     
-
+    var manualScroll = false
     public func scrollRectToVisible(aRect: NSRect, animated: Bool) -> Bool {
+        manualScroll = true
         self.shouldAnimateOriginChange = animated
         return super.scrollRectToVisible(aRect)
     }
     
     public func scrollRectToVisible(rect: CGRect, animated: Bool, completion: CBScrollCompletion?) -> Bool {
+        manualScroll = true
         self.completionBlock = completion
         let success = self.scrollRectToVisible(rect, animated: animated)
         if !animated || !success {
@@ -117,8 +123,6 @@ public class CBClipView : NSClipView {
     }
     
     public override func scrollToPoint(newOrigin: NSPoint) {
-        if !scrollEnabled { return }
-        
         if self.shouldAnimateOriginChange {
             self.shouldAnimateOriginChange = false
             if CVDisplayLinkIsRunning(self.displayLink) {
@@ -127,13 +131,19 @@ public class CBClipView : NSClipView {
             }
             self.destinationOrigin = newOrigin
             self.beginScrolling()
-        } else {
+        } else if self.scrollEnabled || manualScroll {
             // Otherwise, we stop any scrolling that is currently occurring (if needed) and let
             // super's implementation handle a normal scroll.
             self.endScrolling()
             super.scrollToPoint(newOrigin)
         }
     }
+    
+//    public override func scrollWheel(theEvent: NSEvent) {
+//        if scrollEnabled {
+//            super.scrollWheel(theEvent)
+//        }
+//    }
     
     func updateOrigin() {
         if self.window == nil {
@@ -177,6 +187,7 @@ public class CBClipView : NSClipView {
     }
     
     func endScrolling() {
+        manualScroll = false
         if !CVDisplayLinkIsRunning(self.displayLink) { return }
         (self.scrollView as? CBCollectionView)?.scrolling = false
         CVDisplayLinkStop(self.displayLink)

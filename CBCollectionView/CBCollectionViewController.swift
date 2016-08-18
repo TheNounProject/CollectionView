@@ -15,7 +15,10 @@ public class CBCollectionViewController : NSViewController, CBCollectionViewData
     public let collectionView = CBCollectionView()
     
     public override func loadView() {
-        self.view = NSView(frame: NSRect(origin: CGPointZero, size: CGSize(width: 100, height: 100)))
+        if self.nibName != nil { super.loadView() }
+        else {
+            self.view = NSView(frame: NSRect(origin: CGPointZero, size: CGSize(width: 100, height: 100)))
+        }
     }
     
     override public func viewDidLoad() {

@@ -367,7 +367,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         contentDocumentView.frame.size = nContentSize
         
         if scrollPosition != .None, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(ip) {
-            self._scrollToRect(rect, atPosition: scrollPosition, animated: false, prepare: false)
+            self._scrollToRect(rect, atPosition: scrollPosition, animated: false, prepare: false, completion: nil)
         }
         self.reflectScrolledClipView(self.clipView!)
         
@@ -737,6 +737,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             }
         }
     }
+    
+    public func highlightItemAtIndexPath(indexPath: NSIndexPath, animated: Bool) {
+        if let cell = self.cellForItemAtIndexPath(indexPath) {
+            cell.setHighlighted(true, animated: animated)
+        }
+    }
+    
 //    public var indexPathForHighlightedItem: NSIndexPath? { return self._indexPathForHighlightedItem }
     
     public final func indexPathsForSelectedItems() -> Set<NSIndexPath> { return _selectedIndexPaths }
@@ -798,7 +805,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         
         if scrollPosition != .None {
-            self.scrollToItemAtIndexPath(indexPath, atScrollPosition: scrollPosition, animated: animated)
+            self.scrollToItemAtIndexPath(indexPath, atScrollPosition: scrollPosition, animated: animated, completion: nil)
         }
     }
     
@@ -887,7 +894,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: false)
         }
         
-        self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated)
+        self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated, completion: nil)
         if let ip = finalSelect {
             self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: true)
         }
@@ -1017,21 +1024,23 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Scrolling
     
     
-    public func scrollToItemAtIndexPath(indexPath: NSIndexPath, atScrollPosition scrollPosition: CBCollectionViewScrollPosition, animated: Bool) {
+    public func scrollToItemAtIndexPath(indexPath: NSIndexPath, atScrollPosition scrollPosition: CBCollectionViewScrollPosition, animated: Bool, completion: CBScrollCompletion?) {
         if self.info.numberOfItemsInSection(indexPath._section) < indexPath._item { return }
         if let shouldScroll = self.delegate?.collectionView?(self, shouldScrollToItemAtIndexPath: indexPath) where shouldScroll != true { return }
         
         guard let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(indexPath, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(indexPath) else { return }
         
-        self.scrollToRect(rect, atPosition: scrollPosition, animated: animated)
-        self.delegate?.collectionView?(self, didScrollToItemAtIndexPath: indexPath)
+        self.scrollToRect(rect, atPosition: scrollPosition, animated: animated, completion: { fin in
+            completion?(finished: fin)
+            self.delegate?.collectionView?(self, didScrollToItemAtIndexPath: indexPath)
+        })
     }
     
-    public func scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool) {
-        self._scrollToRect(aRect, atPosition: atPosition, animated: animated, prepare: true)
+    public func scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, completion: CBScrollCompletion?) {
+        self._scrollToRect(aRect, atPosition: atPosition, animated: animated, prepare: true, completion: completion)
     }
     
-    public func _scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, prepare: Bool) {
+    public func _scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, prepare: Bool, completion: CBScrollCompletion?) {
         var rect = aRect
         
         let visibleRect = self.contentVisibleRect
@@ -1069,7 +1078,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         if prepare {
             self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
         }
-        self.clipView?.scrollRectToVisible(rect, animated: animated)
+        self.clipView?.scrollRectToVisible(rect, animated: animated, completion: completion)
+//        self.clipView?.scrollRectToVisible(rect, animated: animated)
         
     }
     

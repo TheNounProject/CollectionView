@@ -151,6 +151,10 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {
             if view.isDescendantOf(self) {
+                if let cv = self.collectionView,
+                    let ip = self.indexPath,
+                    let h = self.collectionView?.delegate?.collectionView?(self.collectionView!, shouldHighlightItemAtIndexPath: self.indexPath!)
+                    where h == false { return }
                 self.setHighlighted(true, animated: true)
             }
         }

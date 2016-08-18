@@ -114,6 +114,7 @@ public extension NSIndexPath {
     optional func collectionView(collectionView: CBCollectionView, mouseUpInItemAtIndexPath indexPath: NSIndexPath?, withEvent: NSEvent)
     optional func collectionView(collectionView: CBCollectionView, didDoubleClickItemAtIndexPath indexPath: NSIndexPath, withEvent: NSEvent)
     
+    optional func collectionView(collectionView: CBCollectionView, shouldHighlightItemAtIndexPath indexPath: NSIndexPath) -> Bool
     optional func collectionView(collectionView: CBCollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath, withEvent: NSEvent?) -> Bool
     optional func collectionView(collectionView: CBCollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath)
     optional func collectionView(collectionView: CBCollectionView, shouldDeselectItemAtIndexPath indexPath: NSIndexPath) -> Bool

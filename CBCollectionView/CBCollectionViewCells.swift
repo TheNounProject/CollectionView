@@ -121,7 +121,18 @@ public class CBCollectionViewCell : CBCollectionReusableView {
 
     
     var _trackingArea : NSTrackingArea?
-    public var trackMouseMoved : Bool = false { didSet { self.updateTrackingAreas() }}
+    public var trackMouseMoved : Bool = false { didSet {
+        if trackMouseMoved == oldValue { return }
+        let idx = trackingOptions.indexOf(.MouseMoved)
+        if trackMouseMoved && idx == nil {
+            trackingOptions.append(.MouseMoved)
+        }
+        else if !trackMouseMoved, let i = idx {
+            trackingOptions.removeAtIndex(i)
+        }
+        self.updateTrackingAreas()
+        }
+    }
     
     public func disableTracking() {
         self.wantsTracking = false
@@ -137,7 +148,6 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         super.updateTrackingAreas()
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }
         if self.wantsTracking == false { return }
-//        var opts =
 //        if trackMouseMoved {
 //            opts.append(.MouseMoved)
 //        }

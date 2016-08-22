@@ -1026,9 +1026,15 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public func scrollToItemAtIndexPath(indexPath: NSIndexPath, atScrollPosition scrollPosition: CBCollectionViewScrollPosition, animated: Bool, completion: CBScrollCompletion?) {
         if self.info.numberOfItemsInSection(indexPath._section) < indexPath._item { return }
-        if let shouldScroll = self.delegate?.collectionView?(self, shouldScrollToItemAtIndexPath: indexPath) where shouldScroll != true { return }
+        if let shouldScroll = self.delegate?.collectionView?(self, shouldScrollToItemAtIndexPath: indexPath) where shouldScroll != true {
+            completion?(finished: false)
+            return
+        }
         
-        guard let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(indexPath, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(indexPath) else { return }
+        guard let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(indexPath, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(indexPath) else {
+            completion?(finished: false)
+            return
+        }
         
         self.scrollToRect(rect, atPosition: scrollPosition, animated: animated, completion: { fin in
             completion?(finished: fin)
@@ -1062,9 +1068,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             break;
         case .None:
             // no scroll needed
+            completion?(finished: true)
             return;
         case .Nearest:
-            if visibleRect.contains(rect) { return }
+            if visibleRect.contains(rect) {
+                completion?(finished: true)
+                return
+            }
             
             if rect.origin.y < visibleRect.origin.y {
                 rect = visibleRect.offsetBy(dx: 0, dy: rect.origin.y - visibleRect.origin.y - self.contentInsets.top)

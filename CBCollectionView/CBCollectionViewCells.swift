@@ -148,23 +148,24 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         super.updateTrackingAreas()
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }
         if self.wantsTracking == false { return }
-//        if trackMouseMoved {
-//            opts.append(.MouseMoved)
-//        }
         _trackingArea = NSTrackingArea(rect: self.bounds, options: NSTrackingAreaOptions(trackingOptions), owner: self, userInfo: nil)
         self.addTrackingArea(_trackingArea!)
     }
-
+    
     override public func mouseEntered(theEvent: NSEvent) {
-        super.mouseEntered(theEvent)
+        Swift.print("Entered: ")
+        
+        guard let window = self.window else { return }
+        let mLoc = window.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin
+        if !self.bounds.contains(self.convertPoint(mLoc, fromView: nil)) { return }
+        
+        guard let cv = self.collectionView, let ip = self.indexPath else { return }
         guard theEvent.type == NSEventType.MouseEntered && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
         
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {
             if view.isDescendantOf(self) {
-                if let cv = self.collectionView,
-                    let ip = self.indexPath,
-                    let h = self.collectionView?.delegate?.collectionView?(self.collectionView!, shouldHighlightItemAtIndexPath: self.indexPath!)
-                    where h == false { return }
+                if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAtIndexPath: ip) where h == false { return }
+                super.mouseEntered(theEvent)
                 self.setHighlighted(true, animated: true)
             }
         }

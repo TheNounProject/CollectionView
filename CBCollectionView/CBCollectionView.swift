@@ -402,8 +402,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             item.0.frame = cFrame
         }
         
-        self.contentDocumentView.preparedRect = self.contentVisibleRect
-        self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: animated, force: true)
+        self.contentDocumentView.preparedRect = _rectToPrepare
+        self.contentDocumentView.prepareRect(_rectToPrepare, animated: animated, force: true)
     }
     
     
@@ -414,8 +414,14 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public private(set) var velocity: CGFloat = 0
     public private(set) var peakVelocityForScroll: CGFloat = 0
     
+    var _rectToPrepare : CGRect {
+        return prepareAll
+            ?  CGRect(origin: CGPointZero, size: self.info.contentSize)
+            : self.contentVisibleRect.insetBy(dx: 0, dy: -100)
+    }
+    
     final func didScroll(notification: NSNotification) {
-        let rect = CGRectInset(self.contentVisibleRect, 0, -100)
+        let rect = _rectToPrepare
         self.contentDocumentView.prepareRect(rect)
 
         var _prev = self._previousOffset
@@ -509,12 +515,15 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         if self.collectionViewLayout.shouldInvalidateLayoutForBoundsChange(self.documentVisibleRect) {
             var d = NSDate()
+            
+            let _size = self.info.contentSize
+            
             self.info.recalculate()
             calc = d.timeIntervalSinceNow
             
             contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
             d = NSDate()
-            if let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
+            if self.info.contentSize.height != _size.height, let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
                 let _rect = CGRect(origin: rect.origin, size: self.bounds.size)
                 self.clipView?.scrollRectToVisible(_rect, animated: false, completion: nil)
             }
@@ -738,13 +747,16 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     
-    public func highlightItemAtIndexPath(indexPath: NSIndexPath, animated: Bool) {
-        if let cell = self.cellForItemAtIndexPath(indexPath) {
+    public func highlightItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool) {
+        
+        guard let ip = indexPath else {
+            self.indexPathForHighlightedItem = nil
+            return
+        }
+        if let cell = self.cellForItemAtIndexPath(ip) {
             cell.setHighlighted(true, animated: animated)
         }
     }
-    
-//    public var indexPathForHighlightedItem: NSIndexPath? { return self._indexPathForHighlightedItem }
     
     public final func indexPathsForSelectedItems() -> Set<NSIndexPath> { return _selectedIndexPaths }
     public final func sortedIndexPathsForSelectedItems() -> [NSIndexPath] {
@@ -1089,30 +1101,48 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
         }
         self.clipView?.scrollRectToVisible(rect, animated: animated, completion: completion)
-//        self.clipView?.scrollRectToVisible(rect, animated: animated)
-        
     }
     
     
+//    public override func pressureChangeWithEvent(event: NSEvent) {
+//        Swift.print("Pressue: \(event.pressure))")
+//        
+//        if let ip = mouseDownIP {
+//            self.delegate?.collectionView?(self, pressureChanged: CGFloat(event.pressure), forItemAt: ip)
+//        }
+//    }
     
     var mouseDownIP: NSIndexPath?
     public override func mouseDown(theEvent: NSEvent) {
         
+        Swift.print("Mouse Down")
+        
+        theEvent.pressure
         self.mouseDownIP = nil
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
             if view == self.clipView || view.isDescendantOf(self) { self.window?.makeFirstResponder(self) }
             return
         }
         self.window?.makeFirstResponder(self)
-        self.nextResponder?.mouseDown(theEvent)
+//        self.nextResponder?.mouseDown(theEvent)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
         let point = self.contentView.convertPoint(theEvent.locationInWindow, fromView: nil)
         self.mouseDownIP = self.indexPathForItemAtPoint(point)
         self.delegate?.collectionView?(self, mouseDownInItemAtIndexPath: self.mouseDownIP, withEvent: theEvent)
     }
     
+    
+    
+    
     public override func mouseUp(theEvent: NSEvent) {
         super.mouseUp(theEvent)
+        
+        Swift.print("Mouse Up")
+        
+        if self.draggedIPs.count > 0 {
+            self.draggedIPs = []
+            return
+        }
         
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false && view.isDescendantOf(self._floatingSupplementaryView) == false {
             if view == self.clipView { self.window?.makeFirstResponder(self) }
@@ -1233,7 +1263,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.moveSelectionInDirection(.Down, extendSelection: extendSelection)
     }
     
-    
     public var scrollEnabled = true { didSet { self.clipView?.scrollEnabled = scrollEnabled }}
 //    public override func scrollWheel(theEvent: NSEvent) {
 //        if scrollEnabled {
@@ -1256,7 +1285,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public final func indexPathsForDraggingItems() -> [NSIndexPath] { return draggedIPs }
     
     override public func mouseDragged(theEvent: NSEvent) {
-
         super.mouseDragged(theEvent)
         self.window?.makeFirstResponder(self)
         self.draggedIPs = []
@@ -1333,9 +1361,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     public func draggingSession(session: NSDraggingSession, willBeginAtPoint screenPoint: NSPoint) {
-        for view in self.visibleCells() {
-            view.disableTracking()
-        }
         self.interactionDelegate?.collectionView?(self, draggingSession: session, willBeginAtPoint: screenPoint)
     }
     
@@ -1344,12 +1369,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     public func draggingSession(session: NSDraggingSession, endedAtPoint screenPoint: NSPoint, operation: NSDragOperation) {
-        for view in self.visibleCells() {
-            view.enableTracking()
-        }
-        self.mouseDownIP = nil
+//        self.mouseDownIP = nil
         self.interactionDelegate?.collectionView?(self, draggingSession: session, enedAtPoint: screenPoint, withOperation: operation, draggedIndexPaths: draggedIPs)
-        self.draggedIPs = []
     }
     
     

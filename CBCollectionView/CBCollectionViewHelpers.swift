@@ -107,6 +107,7 @@ public extension NSIndexPath {
 @objc public protocol CBCollectionViewDelegate {
     
     optional func collectionViewDidReloadData(collectionView: CBCollectionView)
+    optional func collectionView(collectionView: CBCollectionView, didChangeFirstResponderStatus firstResponder: Bool)
     
     optional func collectionView(collectionView: CBCollectionView, mouseMovedToSection indexPath: NSIndexPath?)
     

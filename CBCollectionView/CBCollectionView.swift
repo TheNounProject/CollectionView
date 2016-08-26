@@ -251,7 +251,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
     
-    
     // MARK: - Dequeing reusable cells
     public final func dequeueReusableCellWithReuseIdentifier(identifier: String, forIndexPath indexPath: NSIndexPath) -> CBCollectionViewCell {
         
@@ -1135,7 +1134,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
     public override func mouseUp(theEvent: NSEvent) {
-        super.mouseUp(theEvent)
+//        super.mouseUp(theEvent)
         
         Swift.print("Mouse Up")
         
@@ -1276,11 +1275,17 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     override public var acceptsFirstResponder : Bool { return true }
     public override func acceptsFirstMouse(theEvent: NSEvent?) -> Bool { return true }
-    public override func becomeFirstResponder() -> Bool { return true }
-//    public override func hitTest(aPoint: NSPoint) -> NSView? {
-//        if (NSMouseInRect(aPoint, self.frame, true)) { return self }
-//        return nil;
-//    }
+    public override func becomeFirstResponder() -> Bool {
+        super.becomeFirstResponder()
+        self.delegate?.collectionView?(self, didChangeFirstResponderStatus: true)
+        return true
+    }
+    
+    public override func resignFirstResponder() -> Bool {
+        super.resignFirstResponder()
+        self.delegate?.collectionView?(self, didChangeFirstResponderStatus: false)
+        return true
+    }
     
     public final func indexPathsForDraggingItems() -> [NSIndexPath] { return draggedIPs }
     

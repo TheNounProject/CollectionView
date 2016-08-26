@@ -338,7 +338,6 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
             return ip
             
         case .Down, .Right:
-            
             if currentIndexPath._item < self.sectionIndexPaths[currentIndexPath._section].count - 1 {
                 return NSIndexPath._indexPathForItem(currentIndexPath._item + 1, inSection: currentIndexPath._section)
             }

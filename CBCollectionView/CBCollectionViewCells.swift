@@ -74,7 +74,6 @@ public class CBCollectionReusableView : NSView {
     
 }
 
-// Will get to this later...
 public class CBCollectionViewCell : CBCollectionReusableView {
     
     public override func acceptsFirstMouse(theEvent: NSEvent?) -> Bool { return true }
@@ -153,7 +152,6 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     }
     
     override public func mouseEntered(theEvent: NSEvent) {
-        Swift.print("Entered: ")
         
         guard let window = self.window else { return }
         let mLoc = window.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin
@@ -176,14 +174,5 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         guard theEvent.type == NSEventType.MouseExited && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
         self.setHighlighted(false, animated: true)
     }
-    
-   
-    
-//    public override func mouseMoved(theEvent: NSEvent) {
-//        super.mouseMoved(theEvent)
-//        if self.highlighted == false {
-//            self.setHighlighted(true, animated: false)
-//        }
-//    }
     
 }

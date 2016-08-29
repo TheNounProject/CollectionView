@@ -1104,7 +1104,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
 //    public override func pressureChangeWithEvent(event: NSEvent) {
-//        Swift.print("Pressue: \(event.pressure))")
+//        Swift.print("Pressue: \(event.pressure)  -- \(event.stage)")
 //        
 //        if let ip = mouseDownIP {
 //            self.delegate?.collectionView?(self, pressureChanged: CGFloat(event.pressure), forItemAt: ip)
@@ -1114,9 +1114,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     var mouseDownIP: NSIndexPath?
     public override func mouseDown(theEvent: NSEvent) {
         
-        Swift.print("Mouse Down")
-        
-        theEvent.pressure
         self.mouseDownIP = nil
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
             if view == self.clipView || view.isDescendantOf(self) { self.window?.makeFirstResponder(self) }
@@ -1135,8 +1132,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public override func mouseUp(theEvent: NSEvent) {
 //        super.mouseUp(theEvent)
-        
-        Swift.print("Mouse Up")
         
         if self.draggedIPs.count > 0 {
             self.draggedIPs = []

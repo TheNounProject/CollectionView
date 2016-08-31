@@ -117,19 +117,20 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         self.setSelected(false, animated: false)
         self.setHighlighted(false, animated: false)
     }
-
+    
     
     var _trackingArea : NSTrackingArea?
-    public var trackMouseMoved : Bool = false { didSet {
-        if trackMouseMoved == oldValue { return }
-        let idx = trackingOptions.indexOf(.MouseMoved)
-        if trackMouseMoved && idx == nil {
-            trackingOptions.append(.MouseMoved)
-        }
-        else if !trackMouseMoved, let i = idx {
-            trackingOptions.removeAtIndex(i)
-        }
-        self.updateTrackingAreas()
+    public var trackMouseMoved : Bool = false {
+        didSet {
+            if trackMouseMoved == oldValue { return }
+            let idx = trackingOptions.indexOf(.MouseMoved)
+            if trackMouseMoved && idx == nil {
+                trackingOptions.append(.MouseMoved)
+            }
+            else if !trackMouseMoved, let i = idx {
+                trackingOptions.removeAtIndex(i)
+            }
+            self.updateTrackingAreas()
         }
     }
     

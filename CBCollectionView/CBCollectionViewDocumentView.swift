@@ -148,8 +148,8 @@ final public class CBCollectionViewDocumentView : NSView {
         
         let oldIPs = Set(self.preparedCellIndex.keys)
         var inserted = self.collectionView.indexPathsForItemsInRect(rect)
-        let removed = oldIPs.setByRemovingSubset(inserted)
-        let updated = inserted.removeAllInSet(oldIPs)
+        let removed = oldIPs.removingSet(inserted)
+        let updated = inserted.removeSet(oldIPs)
         
         if !extending {
             var removedRect = CGRectZero
@@ -230,8 +230,8 @@ final public class CBCollectionViewDocumentView : NSView {
         
         let oldIdentifiers = Set(self.preparedSupplementaryViewIndex.keys)
         var inserted = self.collectionView._identifiersForSupplementaryViewsInRect(rect)
-        let removed = oldIdentifiers.setByRemovingSubset(inserted)
-        let updated = inserted.removeAllInSet(oldIdentifiers)
+        let removed = oldIdentifiers.removingSet(inserted)
+        let updated = inserted.removeSet(oldIdentifiers)
         
         if !extending {
             for identifier in removed {

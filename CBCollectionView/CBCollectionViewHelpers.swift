@@ -46,7 +46,14 @@ public func >= (lhs: IndexPath, rhs: IndexPath) -> Bool {
 
 extension Set {
     
-    mutating func removeAllInSet(set: Set) -> Set {
+    
+    /**
+     Remove elements shared by both sets, returning the removed items
+     
+     - parameter set: The set of elements to remove from the receiver
+     - returns: A new set of removed elements
+     */
+    mutating func removeSet(set: Set) -> Set {
         var removed = Set(minimumCapacity: self.count)
         for item in set {
             if let r = self.remove(item) {
@@ -56,7 +63,7 @@ extension Set {
         return removed
     }
     
-    func setByRemovingSubset(set: Set) -> Set {
+    func removingSet(set: Set) -> Set {
         var newSet = Set(minimumCapacity: self.count)
         for item in self {
             if !set.contains(item) {

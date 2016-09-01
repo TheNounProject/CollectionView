@@ -621,10 +621,18 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             }
         }
         
+        var updatedSelections = Set<NSIndexPath>()
+        var movedSelections = Set<NSIndexPath>()
         for change in changeMap {
+            if let ip = change.cell.indexPath where self._selectedIndexPaths.contains(ip) {
+                updatedSelections.insert(ip)
+                movedSelections.insert(change.newIP)
+            }
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
+        _selectedIndexPaths.removeSet(updatedSelections)
+        _selectedIndexPaths.unionInPlace(movedSelections)
         
         if batchUpdating { return }
 
@@ -678,10 +686,19 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         self.contentDocumentView.pendingUpdates.appendContentsOf(updates)
         
+        var updatedSelections = Set<NSIndexPath>()
+        var movedSelections = Set<NSIndexPath>()
         for change in changeMap {
+            if let ip = change.cell.indexPath where self._selectedIndexPaths.contains(ip) {
+                updatedSelections.insert(ip)
+                movedSelections.insert(change.newIP)
+            }
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
+        
+        _selectedIndexPaths.removeSet(updatedSelections)
+        _selectedIndexPaths.unionInPlace(movedSelections)
         
         if batchUpdating { return }
         
@@ -897,7 +914,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             indexesToSelect.insert(indexPath)
         }
         var deselectIndexes = self._selectedIndexPaths
-        deselectIndexes.removeAllInSet(indexesToSelect)
+        deselectIndexes.removeSet(indexesToSelect)
         
         self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
         let finalSelect = indexesToSelect.remove(indexPath)

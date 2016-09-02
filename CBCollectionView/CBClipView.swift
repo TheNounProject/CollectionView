@@ -14,11 +14,6 @@ import Quartz
 let CBClipViewDecelerationRate : CGFloat = 0.78
 //typealias DisplayLinkCallback = @convention(block) ( CVDisplayLink!, UnsafePointer<CVTimeStamp>, UnsafePointer<CVTimeStamp>, CVOptionFlags, UnsafeMutablePointer<CVOptionFlags>, UnsafeMutablePointer<Void>)->Void
 
-public typealias CBScrollCompletion = (finished: Bool)->Void
-
-
-
-
 public class CBClipView : NSClipView {
     
     var shouldAnimateOriginChange = false
@@ -34,7 +29,7 @@ public class CBClipView : NSClipView {
         }
     }
     
-    var completionBlock : CBScrollCompletion?
+    var completionBlock : CBAnimationCompletion?
     
     init(clipView: NSClipView) {
         super.init(frame: clipView.frame)
@@ -107,7 +102,7 @@ public class CBClipView : NSClipView {
         return super.scrollRectToVisible(aRect)
     }
     
-    public func scrollRectToVisible(rect: CGRect, animated: Bool, completion: CBScrollCompletion?) -> Bool {
+    public func scrollRectToVisible(rect: CGRect, animated: Bool, completion: CBAnimationCompletion?) -> Bool {
         manualScroll = true
         self.completionBlock = completion
         let success = self.scrollRectToVisible(rect, animated: animated)

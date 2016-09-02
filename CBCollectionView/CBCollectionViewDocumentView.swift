@@ -42,13 +42,6 @@ final public class CBCollectionViewDocumentView : NSView {
         return self.superview!.superview as! CBCollectionView
     }
     
-//    public override func prepareContentInRect(rect: NSRect) {
-//        let _rect = self.prepareRect(rect, remove: true)
-//        super.prepareContentInRect(_rect)
-//    }
-    
-
-    
     var preparedRect = CGRectZero
     var preparedCellIndex : [NSIndexPath:CBCollectionViewCell] = [:]
     var preparedSupplementaryViewIndex : [SupplementaryViewIdentifier:CBCollectionReusableView] = [:]
@@ -84,7 +77,7 @@ final public class CBCollectionViewDocumentView : NSView {
     func extendPreparedRect(amount: CGFloat) {
         if self.preparedRect.isEmpty { return }
         self.extending = true
-        self.prepareRect(CGRectInset(preparedRect, -amount, -amount))
+        self.prepareRect(CGRectInset(preparedRect, -amount, -amount), completion: nil)
         self.extending = false
     }
     
@@ -92,7 +85,7 @@ final public class CBCollectionViewDocumentView : NSView {
     var pendingUpdates: [ItemUpdate] = []
     
     
-    func prepareRect(rect: CGRect, animated: Bool = false, force: Bool = false) {
+    func prepareRect(rect: CGRect, animated: Bool = false, force: Bool = false, completion: CBAnimationCompletion? = nil) {
         
         let _rect = CGRectIntersection(rect, CGRect(origin: CGPointZero, size: self.frame.size))
         
@@ -114,6 +107,7 @@ final public class CBCollectionViewDocumentView : NSView {
                 }
                 view.applyLayoutAttributes(attrs, animated: false)
             }
+            completion?(finished: true)
             return
         }
         
@@ -134,7 +128,7 @@ final public class CBCollectionViewDocumentView : NSView {
         
         var updates = supps.updates
         updates.appendContentsOf(items.updates)
-        self.applyUpdates(updates, animated: animated)
+        self.applyUpdates(updates, animated: animated, completion: completion)
         
 //        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
 //        self.ignoreRemoves = false
@@ -307,7 +301,7 @@ final public class CBCollectionViewDocumentView : NSView {
     var animating = false
     var hasPendingAnimations : Bool = false
     var disableAnimationTimer : NSTimer?
-    internal func applyUpdates(updates: [ItemUpdate], animated: Bool) {
+    internal func applyUpdates(updates: [ItemUpdate], animated: Bool, completion: CBAnimationCompletion?) {
         
         var _updates = updates
         _updates.appendContentsOf(pendingUpdates)
@@ -322,7 +316,6 @@ final public class CBCollectionViewDocumentView : NSView {
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in
                     context.duration = self.collectionView.animationDuration
                     context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-                    //                    context.allowsImplicitAnimation = true
                     
                     for item in _updates {
                         if item.type == .Remove {
@@ -339,6 +332,7 @@ final public class CBCollectionViewDocumentView : NSView {
                         self.animating = false
                     }
                     self.finishRemovals(removals)
+                    completion?(finished: true)
                 }
             })
         }
@@ -359,6 +353,7 @@ final public class CBCollectionViewDocumentView : NSView {
                     }
                 }
             }
+            completion?(finished: !animated)
         }
     }
     func enableAnimations() {

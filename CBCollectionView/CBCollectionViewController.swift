@@ -36,6 +36,7 @@ public class CBCollectionViewController : NSViewController, CBCollectionViewData
     }
     
     public func adjustContentInsets(insets: NSEdgeInsets) {
+        
         self.adjustConstraint(.Top, value: insets.top)
         self.adjustConstraint(.Left, value: insets.left)
         self.adjustConstraint(.Right, value: insets.right)

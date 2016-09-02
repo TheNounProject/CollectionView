@@ -61,7 +61,6 @@ import Foundation
 }
 
 
-
 public enum CBCollectionViewLayoutItemRenderDirection : NSInteger {
     case ShortestFirst
     case LeftToRight

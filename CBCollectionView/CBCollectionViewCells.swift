@@ -8,6 +8,8 @@
 
 import Foundation
 
+
+
 public class CBCollectionReusableView : NSView {
     
     public internal(set) var indexPath: NSIndexPath?

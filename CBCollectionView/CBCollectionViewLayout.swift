@@ -9,19 +9,6 @@
 import Foundation
 
 
-public enum CBCollectionViewScrollDirection {
-    case Vertical
-    case Horizontal
-    
-}
-
-public enum CBCollectionViewDirection {
-    case Left
-    case Right
-    case Up
-    case Down
-}
-
 public class CBCollectionViewLayout : NSObject {
     
     public internal(set) weak var collectionView: CBCollectionView?

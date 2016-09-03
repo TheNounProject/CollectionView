@@ -22,6 +22,15 @@ public extension NSIndexPath {
     public static var Zero : NSIndexPath { return NSIndexPath._indexPathForItem(0, inSection: 0) }
     public var _item: Int { return self.indexAtPosition(1) }
     public var _section: Int { return self.indexAtPosition(0) }
+    
+    
+    public static func inRange(range: Range<Int>, section: Int) -> [NSIndexPath] {
+        var ips = [NSIndexPath]()
+        for idx in range {
+            ips.append(NSIndexPath._indexPathForItem(idx, inSection: section))
+        }
+        return ips
+    }
 }
 
 

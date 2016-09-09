@@ -1214,8 +1214,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         var ips = self._selectedIndexPaths.intersect(Set(self.indexPathsForVisibleItems()))
         
-        self._selectedIndexPaths.removeAll()
         for ip in ips { self._deselectItemAtIndexPath(ip, animated: animated, notifyDelegate: false) }
+        self._selectedIndexPaths.removeAll()
         if notify, let ip = anIP {
             self.delegate?.collectionView?(self, didDeselectItemAtIndexPath: ip)
         }

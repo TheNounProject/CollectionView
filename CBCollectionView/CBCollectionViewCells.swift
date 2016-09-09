@@ -59,6 +59,13 @@ public class CBCollectionReusableView : NSView {
     
     public override func updateLayer() {
         self.layer?.backgroundColor = self.backgroundColor?.CGColor
+        if self.layer?.cornerRadius > 0 {
+            let l = CALayer()
+            l.backgroundColor = NSColor.whiteColor().CGColor
+            l.frame = self.bounds
+            l.cornerRadius = self.layer!.cornerRadius
+            self.layer?.mask = l
+        }
     }
     
     public override func drawRect(dirtyRect: NSRect) {

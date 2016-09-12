@@ -746,14 +746,9 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     public final func insertSections(indexes: [Int]) {
         
-        for sec in indexes {
-            
-        }
         self.indexPathForHighlightedItem = nil
         
         var sorted = Set(indexes).sort()
-        var newBySection = [Int:[NSIndexPath]]()
-        
         var changeMap = [(newIP: NSIndexPath, cell: CBCollectionViewCell)]()
         
         let cCount = self.numberOfSections()
@@ -763,17 +758,20 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         for sec in 0..<cCount {
             
-            while let nSec = sorted.first where nSec == sec {
+            while let nSec = sorted.first where nSec <= sec {
                 sorted.removeFirst()
                 newSection += 1
             }
-            for index in 0..<numberOfItemsInSection(sec) {
-                let ip = NSIndexPath._indexPathForItem(index, inSection: sec)
-                if let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(ip) {
-                    let newIP = NSIndexPath._indexPathForItem(index, inSection: newSection)
-                    changeMap.append((newIP: newIP, cell: cell))
+            if newSection != sec {
+                for index in 0..<numberOfItemsInSection(sec) {
+                    let ip = NSIndexPath._indexPathForItem(index, inSection: sec)
+                    if let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(ip) {
+                        let newIP = NSIndexPath._indexPathForItem(index, inSection: newSection)
+                        changeMap.append((newIP: newIP, cell: cell))
+                    }
                 }
             }
+            newSection += 1
         }
         
         var updatedSelections = Set<NSIndexPath>()

@@ -84,6 +84,13 @@ extension Set {
         }
         return newSet
     }
+}
+
+extension CGPoint {
+    
+    var integral : CGPoint {
+        return CGPoint(x: round(self.x), y: round(self.y))
+    }
     
 }
 

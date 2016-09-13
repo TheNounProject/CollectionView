@@ -388,7 +388,6 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     public override func viewDidEndLiveResize() {
         _topIP = nil
         self.delegate?.collectionViewDidEndLiveResize?(self)
-        //        self.contentDocumentView.prepareRect(self.contentVisibleRect, animated: false, force: true)
     }
     
     

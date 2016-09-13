@@ -134,12 +134,6 @@ public class CBClipView : NSClipView {
         }
     }
     
-//    public override func scrollWheel(theEvent: NSEvent) {
-//        if scrollEnabled {
-//            super.scrollWheel(theEvent)
-//        }
-//    }
-    
     func updateOrigin() {
         if self.window == nil {
             self.endScrolling()
@@ -154,10 +148,18 @@ public class CBClipView : NSClipView {
         o.x = o.x * deceleration + self.destinationOrigin.x * (1 - self.decelerationRate);
         o.y = o.y * deceleration + self.destinationOrigin.y * (1 - self.decelerationRate);
         
+        if self.window?.backingScaleFactor == 1 {
+            o = o.integral
+        }
+        
         // Calling -scrollToPoint: instead of manually adjusting the bounds lets us get the expected
         // overlay scroller behavior for free.
         dispatch_async(dispatch_get_main_queue()) { 
             super.scrollToPoint(o)
+            
+            if let cv = self.scrollView as? CBCollectionView {
+                cv.delegate?.collectionViewDidScroll?(cv)
+            }
             // Make this call so that we can force an update of the scroller positions.
             self.scrollView.reflectScrolledClipView(self)
         }
@@ -171,6 +173,9 @@ public class CBClipView : NSClipView {
             dispatch_async(dispatch_get_main_queue(), { 
                 self.scrollToPoint(o)
                 self.finishedScrolling(true)
+                if let cv = self.scrollView as? CBCollectionView {
+                    cv.delegate?.collectionViewDidEndScrolling?(cv, animated: true)
+                }
             })
         }
     }

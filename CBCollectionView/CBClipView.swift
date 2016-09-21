@@ -14,15 +14,15 @@ import Quartz
 let CBClipViewDecelerationRate : CGFloat = 0.78
 //typealias DisplayLinkCallback = @convention(block) ( CVDisplayLink!, UnsafePointer<CVTimeStamp>, UnsafePointer<CVTimeStamp>, CVOptionFlags, UnsafeMutablePointer<CVOptionFlags>, UnsafeMutablePointer<Void>)->Void
 
-public class CBClipView : NSClipView {
+open class CBClipView : NSClipView {
     
     var shouldAnimateOriginChange = false
-    var destinationOrigin = CGPointZero
+    var destinationOrigin = CGPoint.zero
     var scrollView : NSScrollView { return self.enclosingScrollView ?? self.superview as! NSScrollView }
     
     var scrollEnabled : Bool = true
     
-    public var decelerationRate = CBClipViewDecelerationRate {
+    open var decelerationRate = CBClipViewDecelerationRate {
         didSet {
             if decelerationRate > 1 { self.decelerationRate = 1 }
             else if decelerationRate < 0 { self.decelerationRate = 0 }
@@ -38,7 +38,7 @@ public class CBClipView : NSClipView {
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     
@@ -52,42 +52,42 @@ public class CBClipView : NSClipView {
         self.wantsLayer = true
     }
     
-    override public func viewWillMoveToWindow(newWindow: NSWindow?) {
+    override open func viewWillMove(toWindow newWindow: NSWindow?) {
         if (self.window != nil) {
-            NSNotificationCenter.defaultCenter().removeObserver(self, name: NSWindowDidChangeScreenNotification, object: self.window)
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.NSWindowDidChangeScreen, object: self.window)
         }
-        super.viewWillMoveToWindow(newWindow)
+        super.viewWillMove(toWindow: newWindow)
         if (newWindow != nil) {
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBClipView.updateCVDisplay(_:)), name: NSWindowDidChangeScreenNotification, object: newWindow)
+            NotificationCenter.default.addObserver(self, selector: #selector(CBClipView.updateCVDisplay(_:)), name: NSNotification.Name.NSWindowDidChangeScreen, object: newWindow)
         }
     }
     
-    lazy var displayLink : CVDisplayLinkRef = {
+    lazy var displayLink : CVDisplayLink = {
         
         let linkCallback : CVDisplayLinkOutputCallback = {(displayLink: CVDisplayLink,
             _ inNow: UnsafePointer<CVTimeStamp>,
             _ inOutputTime: UnsafePointer<CVTimeStamp>,
             _ flagsIn: CVOptionFlags,
             _ flagsOut: UnsafeMutablePointer<CVOptionFlags>,
-            _ displayLinkContext: UnsafeMutablePointer<Void>) -> CVReturn in
-            unsafeBitCast(displayLinkContext, CBClipView.self).updateOrigin()
+            _ displayLinkContext: UnsafeMutableRawPointer) -> CVReturn in
+            unsafeBitCast(displayLinkContext, to: CBClipView.self).updateOrigin()
             return kCVReturnSuccess
-        }
+        } as! CVDisplayLinkOutputCallback
         
-        var link : CVDisplayLinkRef?
+        var link : CVDisplayLink?
         CVDisplayLinkCreateWithActiveCGDisplays(&link)
-        CVDisplayLinkSetOutputCallback(link!, linkCallback, UnsafeMutablePointer<Void>(unsafeAddressOf(self)))
+        CVDisplayLinkSetOutputCallback(link!, linkCallback, UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()))
         return link!
     }()
     
     
 
     
-    func updateCVDisplay(note: NSNotification) {
+    func updateCVDisplay(_ note: Notification) {
         if let screen = self.window?.screen {
             let screenDictionary = screen.deviceDescription
             let screenID = screenDictionary["NSScreenNumber"] as! NSNumber
-            let displayID = screenID.unsignedIntValue
+            let displayID = screenID.uint32Value
             CVDisplayLinkSetCurrentCGDisplay(displayLink, displayID)
         }
         else {
@@ -96,13 +96,13 @@ public class CBClipView : NSClipView {
     }
     
     var manualScroll = false
-    public func scrollRectToVisible(aRect: NSRect, animated: Bool) -> Bool {
+    open func scrollRectToVisible(_ aRect: NSRect, animated: Bool) -> Bool {
         manualScroll = true
         self.shouldAnimateOriginChange = animated
-        return super.scrollRectToVisible(aRect)
+        return super.scrollToVisible(aRect)
     }
     
-    public func scrollRectToVisible(rect: CGRect, animated: Bool, completion: CBAnimationCompletion?) -> Bool {
+    open func scrollRectToVisible(_ rect: CGRect, animated: Bool, completion: CBAnimationCompletion?) -> Bool {
         manualScroll = true
         self.completionBlock = completion
         let success = self.scrollRectToVisible(rect, animated: animated)
@@ -112,12 +112,12 @@ public class CBClipView : NSClipView {
         return success
     }
     
-    func finishedScrolling(success: Bool) {
-        self.completionBlock?(finished: success)
+    func finishedScrolling(_ success: Bool) {
+        self.completionBlock?(success)
         self.completionBlock = nil;
     }
     
-    public override func scrollToPoint(newOrigin: NSPoint) {
+    open override func scroll(to newOrigin: NSPoint) {
         if self.shouldAnimateOriginChange {
             self.shouldAnimateOriginChange = false
             if CVDisplayLinkIsRunning(self.displayLink) {
@@ -130,7 +130,7 @@ public class CBClipView : NSClipView {
             // Otherwise, we stop any scrolling that is currently occurring (if needed) and let
             // super's implementation handle a normal scroll.
             self.endScrolling()
-            super.scrollToPoint(newOrigin)
+            super.scroll(to: newOrigin)
         }
     }
     
@@ -154,8 +154,8 @@ public class CBClipView : NSClipView {
         
         // Calling -scrollToPoint: instead of manually adjusting the bounds lets us get the expected
         // overlay scroller behavior for free.
-        dispatch_async(dispatch_get_main_queue()) { 
-            super.scrollToPoint(o)
+        DispatchQueue.main.async { 
+            super.scroll(to: o)
             
             if let cv = self.scrollView as? CBCollectionView {
                 cv.delegate?.collectionViewDidScroll?(cv)
@@ -170,8 +170,8 @@ public class CBClipView : NSClipView {
             self.endScrolling()
             
             // Make sure we always finish out the animation with the actual coordinates
-            dispatch_async(dispatch_get_main_queue(), { 
-                self.scrollToPoint(o)
+            DispatchQueue.main.async(execute: { 
+                self.scroll(to: o)
                 self.finishedScrolling(true)
                 if let cv = self.scrollView as? CBCollectionView {
                     cv.delegate?.collectionViewDidEndScrolling?(cv, animated: true)

@@ -7,68 +7,88 @@
 //
 
 import Foundation
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
 
 
 
-public class CBCollectionReusableView : NSView {
+
+open class CBCollectionReusableView : NSView {
     
-    public internal(set) var indexPath: NSIndexPath?
-    public internal(set) var reuseIdentifier: String?
-    public internal(set) weak var collectionView : CBCollectionView?
-    public internal(set) var reused : Bool = false
+    open internal(set) var indexPath: IndexPath?
+    open internal(set) var reuseIdentifier: String?
+    open internal(set) weak var collectionView : CBCollectionView?
+    open internal(set) var reused : Bool = false
     
     internal var attributes : CBCollectionViewLayoutAttributes?
     
-    public var backgroundColor: NSColor?
+    open var backgroundColor: NSColor?
     
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         self.wantsLayer = true
-        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
+        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.onSetNeedsDisplay
     }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.wantsLayer = true
-        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.OnSetNeedsDisplay
+        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.onSetNeedsDisplay
     }
     
-    override public func prepareForReuse() {
+    override open func prepareForReuse() {
         self.reused = true
         super.prepareForReuse()
     }
-    public func viewWillDisplay() { }
-    public func viewDidDisplay() { }
+    open func viewWillDisplay() { }
+    open func viewDidDisplay() { }
     
-    public func applyLayoutAttributes(layoutAttributes: CBCollectionViewLayoutAttributes, animated: Bool) {
+    open func applyLayoutAttributes(_ layoutAttributes: CBCollectionViewLayoutAttributes, animated: Bool) {
 
         if animated {
             self.animator().frame = layoutAttributes.frame
             self.animator().alphaValue = layoutAttributes.alpha
             self.layer?.zPosition = layoutAttributes.zIndex
-            self.animator().hidden = layoutAttributes.hidden
+            self.animator().isHidden = layoutAttributes.hidden
         }
         else {
             self.frame = layoutAttributes.frame
             self.alphaValue = layoutAttributes.alpha
             self.layer?.zPosition = layoutAttributes.zIndex
-            self.hidden = layoutAttributes.hidden
+            self.isHidden = layoutAttributes.hidden
         }
         
         self.attributes = layoutAttributes
     }
     
-    public override func updateLayer() {
-        self.layer?.backgroundColor = self.backgroundColor?.CGColor
+    open override func updateLayer() {
+        self.layer?.backgroundColor = self.backgroundColor?.cgColor
         if self.layer?.cornerRadius > 0 {
             let l = CALayer()
-            l.backgroundColor = NSColor.whiteColor().CGColor
+            l.backgroundColor = NSColor.white.cgColor
             l.frame = self.bounds
             l.cornerRadius = self.layer!.cornerRadius
             self.layer?.mask = l
         }
     }
     
-    public override func drawRect(dirtyRect: NSRect) {
+    open override func draw(_ dirtyRect: NSRect) {
         
         if let c = self.backgroundColor {
             NSGraphicsContext.saveGraphicsState()
@@ -76,27 +96,27 @@ public class CBCollectionReusableView : NSView {
             NSRectFill(dirtyRect)
             NSGraphicsContext.restoreGraphicsState()
         }
-        super.drawRect(dirtyRect)
+        super.draw(dirtyRect)
     }
     
     
     
 }
 
-public class CBCollectionViewCell : CBCollectionReusableView {
+open class CBCollectionViewCell : CBCollectionReusableView {
     
-    public override func acceptsFirstMouse(theEvent: NSEvent?) -> Bool { return true }
+    open override func acceptsFirstMouse(for theEvent: NSEvent?) -> Bool { return true }
     
-    private var wantsTracking = true
-    public var trackingOptions = [NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.ActiveInKeyWindow, .InVisibleRect, .EnabledDuringMouseDrag]
+    fileprivate var wantsTracking = true
+    open var trackingOptions = [NSTrackingAreaOptions.mouseEnteredAndExited, NSTrackingAreaOptions.activeInKeyWindow, .inVisibleRect, .enabledDuringMouseDrag]
     
-    private var _selected: Bool = false
-    private var _highlighted : Bool = false
-    public var highlighted: Bool {
+    fileprivate var _selected: Bool = false
+    fileprivate var _highlighted : Bool = false
+    open var highlighted: Bool {
         get { return _highlighted }
         set { self.setHighlighted(newValue, animated: false) }
     }
-    public var selected : Bool {
+    open var selected : Bool {
         set { self.setSelected(newValue, animated: false) }
         get { return self._selected }
     }
@@ -110,18 +130,18 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         super.init(coder: coder)
     }
     
-    public func setSelected(selected: Bool, animated: Bool = true) {
+    open func setSelected(_ selected: Bool, animated: Bool = true) {
         self._selected = selected
     }
     
-    public func setHighlighted(highlighted: Bool, animated: Bool) {
+    open func setHighlighted(_ highlighted: Bool, animated: Bool) {
         self._highlighted = highlighted
         if highlighted {
             self.collectionView?.indexPathForHighlightedItem = self.indexPath
         }
     }
     
-    public override func prepareForReuse() {
+    open override func prepareForReuse() {
         super.prepareForReuse()
         self.setSelected(false, animated: false)
         self.setHighlighted(false, animated: false)
@@ -129,31 +149,31 @@ public class CBCollectionViewCell : CBCollectionReusableView {
     
     
     var _trackingArea : NSTrackingArea?
-    public var trackMouseMoved : Bool = false {
+    open var trackMouseMoved : Bool = false {
         didSet {
             if trackMouseMoved == oldValue { return }
-            let idx = trackingOptions.indexOf(.MouseMoved)
+            let idx = trackingOptions.index(of: .mouseMoved)
             if trackMouseMoved && idx == nil {
-                trackingOptions.append(.MouseMoved)
+                trackingOptions.append(.mouseMoved)
             }
             else if !trackMouseMoved, let i = idx {
-                trackingOptions.removeAtIndex(i)
+                trackingOptions.remove(at: i)
             }
             self.updateTrackingAreas()
         }
     }
     
-    public func disableTracking() {
+    open func disableTracking() {
         self.wantsTracking = false
         self.updateTrackingAreas()
     }
     
-    public func enableTracking() {
+    open func enableTracking() {
         self.wantsTracking = true
         self.updateTrackingAreas()
     }
     
-    public override func updateTrackingAreas() {
+    open override func updateTrackingAreas() {
         super.updateTrackingAreas()
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }
         if self.wantsTracking == false { return }
@@ -161,27 +181,27 @@ public class CBCollectionViewCell : CBCollectionReusableView {
         self.addTrackingArea(_trackingArea!)
     }
     
-    override public func mouseEntered(theEvent: NSEvent) {
+    override open func mouseEntered(with theEvent: NSEvent) {
         
         guard let window = self.window else { return }
-        let mLoc = window.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin
-        if !self.bounds.contains(self.convertPoint(mLoc, fromView: nil)) { return }
+        let mLoc = window.convertFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSize.zero)).origin
+        if !self.bounds.contains(self.convert(mLoc, from: nil)) { return }
         
         guard let cv = self.collectionView, let ip = self.indexPath else { return }
-        guard theEvent.type == NSEventType.MouseEntered && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
+        guard theEvent.type == NSEventType.mouseEntered && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
         
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {
-            if view.isDescendantOf(self) {
-                if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAtIndexPath: ip) where h == false { return }
-                super.mouseEntered(theEvent)
+            if view.isDescendant(of: self) {
+                if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAtIndexPath: ip) , h == false { return }
+                super.mouseEntered(with: theEvent)
                 self.setHighlighted(true, animated: true)
             }
         }
     }
     
-    override public func mouseExited(theEvent: NSEvent) {
-        super.mouseExited(theEvent)
-        guard theEvent.type == NSEventType.MouseExited && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
+    override open func mouseExited(with theEvent: NSEvent) {
+        super.mouseExited(with: theEvent)
+        guard theEvent.type == NSEventType.mouseExited && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
         self.setHighlighted(false, animated: true)
     }
     

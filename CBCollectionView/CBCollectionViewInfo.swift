@@ -12,7 +12,7 @@ import Foundation
 
 internal struct CBCollectionViewSectionInfo {
     var section: Int = 0
-    var frame : CGRect = CGRectZero
+    var frame : CGRect = CGRect.zero
     var numberOfItems: Int = 0
 }
 
@@ -21,15 +21,15 @@ internal final class CBCollectionViewInfo {
     private weak var collectionView : CBCollectionView!
     private(set) var numberOfSections : Int = 0
     private(set) var sections : [Int: CBCollectionViewSectionInfo] = [:]
-    private(set) var contentSize: CGSize = CGSizeZero
+    private(set) var contentSize: CGSize = CGSize.zero
     
-    var allIndexPaths = Set<NSIndexPath>()
+    var allIndexPaths = Set<IndexPath>()
     
     init(collectionView: CBCollectionView) {
         self.collectionView = collectionView
     }
     
-    final func numberOfItemsInSection(section: Int) -> Int {
+    final func numberOfItemsInSection(_ section: Int) -> Int {
         if let count = sections[section]?.numberOfItems { return count }
         return 0
     }
@@ -43,7 +43,7 @@ internal final class CBCollectionViewInfo {
             for sIndex in 0...self.numberOfSections - 1 {
                 let itemCount = self.collectionView.dataSource?.collectionView(self.collectionView, numberOfItemsInSection: sIndex) ?? 0
                 totalNumberOfItems += itemCount
-                self.sections[sIndex] = CBCollectionViewSectionInfo(section: sIndex, frame: CGRectZero, numberOfItems: itemCount)
+                self.sections[sIndex] = CBCollectionViewSectionInfo(section: sIndex, frame: CGRect.zero, numberOfItems: itemCount)
             }
         }
         else {
@@ -53,7 +53,7 @@ internal final class CBCollectionViewInfo {
         self.collectionView.collectionViewLayout.prepareLayout()
         
         if self.sections.count == 0 { return }
-        self.allIndexPaths = self.collectionView.collectionViewLayout.allIndexPaths
+        self.allIndexPaths = self.collectionView.collectionViewLayout.allIndexPaths as Set<IndexPath>
         for sIndex in 0...self.numberOfSections - 1 {
             let section = self.sections[sIndex];
             
@@ -68,24 +68,24 @@ internal final class CBCollectionViewInfo {
             // than CGRectNull in -rectForSectionAtIndex:, which allows us to bypass this entire section iteration
             // and increase the speed of the layout reloading.
             let potentialSectionFrame = layout.rectForSection(sIndex)
-            if !CGRectIsEmpty(potentialSectionFrame) {
+            if !potentialSectionFrame.isEmpty {
                 self.sections[sIndex]?.frame = potentialSectionFrame
                 continue
             }
             
             if section?.numberOfItems == 0 { continue }
             
-            var sectionFrame = CGRectNull;
+            var sectionFrame = CGRect.null;
             for itemIndex in 0...section!.numberOfItems - 1 {
-                let indexPath = NSIndexPath._indexPathForItem(itemIndex, inSection: sIndex)
+                let indexPath = IndexPath._indexPathForItem(itemIndex, inSection: sIndex)
                 allIndexPaths.insert(indexPath)
                 if let attributes = layout.layoutAttributesForItemAtIndexPath(indexPath) {
-                    sectionFrame = CGRectUnion(sectionFrame, attributes.frame);
+                    sectionFrame = sectionFrame.union(attributes.frame);
                 }
             }
             for identifier in self.collectionView._allSupplementaryViewIdentifiers {
-                if let attributes = layout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: NSIndexPath._indexPathForItem(0, inSection: sIndex)) {
-                    sectionFrame = CGRectUnion(sectionFrame, attributes.frame)
+                if let attributes = layout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: IndexPath._indexPathForItem(0, inSection: sIndex)) {
+                    sectionFrame = sectionFrame.union(attributes.frame)
                 }
             }
             
@@ -95,12 +95,12 @@ internal final class CBCollectionViewInfo {
     }
     
     
-    final private func calculateContentSize() -> CGSize {
+    final fileprivate func calculateContentSize() -> CGSize {
         var size = self.collectionView.collectionViewLayout.collectionViewContentSize()
-        if (CGSizeEqualToSize(CGSizeZero, size)) {
-            var frame = CGRectNull;
+        if (CGSize.zero.equalTo(size)) {
+            var frame = CGRect.null;
             for section in self.sections {
-                frame = CGRectUnion(frame, section.1.frame);
+                frame = frame.union(section.1.frame);
             }
             size = frame.size;
         }

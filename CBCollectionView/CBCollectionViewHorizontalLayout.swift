@@ -10,29 +10,29 @@ import Foundation
 
 
 @objc public protocol CBCollectionViewDelegateHorizontalListLayout: CBCollectionViewDelegate {
-    optional func collectionView (collectionView: CBCollectionView,layout collectionViewLayout: CBCollectionViewLayout,
-        widthForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat
+    @objc optional func collectionView (_ collectionView: CBCollectionView,layout collectionViewLayout: CBCollectionViewLayout,
+        widthForItemAtIndexPath indexPath: IndexPath) -> CGFloat
 }
 
 
-public class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
+open class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
     
-    override public var scrollDirection : CBCollectionViewScrollDirection {
-        return CBCollectionViewScrollDirection.Horizontal
+    override open var scrollDirection : CBCollectionViewScrollDirection {
+        return CBCollectionViewScrollDirection.horizontal
     }
     
-    public var delegate: CBCollectionViewDelegateHorizontalListLayout? {
+    open var delegate: CBCollectionViewDelegateHorizontalListLayout? {
         return self.collectionView?.delegate as? CBCollectionViewDelegateHorizontalListLayout
     }
     
-    public var sectionInsets = NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-    public var itemWidth: CGFloat = 100
-    public var itemSpacing: CGFloat = 8
+    open var sectionInsets = EdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    open var itemWidth: CGFloat = 100
+    open var itemSpacing: CGFloat = 8
     
     var cache : [CGRect]! = []
     var contentWidth: CGFloat = 0
     
-    public override func prepareLayout() {
+    open override func prepareLayout() {
         super.prepareLayout()
         cache = []
         
@@ -48,7 +48,7 @@ public class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
         var xPos: CGFloat = sectionInsets.left - self.itemSpacing
         
         for row in 0...numRows-1 {
-            let ip = NSIndexPath._indexPathForItem(row, inSection: 0)
+            let ip = IndexPath._indexPathForItem(row, inSection: 0)
             var height = cv.bounds.height ?? 50
             height = height - sectionInsets.top - sectionInsets.bottom
             
@@ -66,31 +66,31 @@ public class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
         contentWidth = xPos + sectionInsets.right
     }
     
-    var _size = CGSizeZero
-    public override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool {
-        if !CGSizeEqualToSize(newBounds.size, _size) {
+    var _size = CGSize.zero
+    open override func shouldInvalidateLayoutForBoundsChange(_ newBounds: CGRect) -> Bool {
+        if !newBounds.size.equalTo(_size) {
             self._size = newBounds.size
             return true
         }
         return false
     }
     
-    public override func collectionViewContentSize() -> CGSize {
+    open override func collectionViewContentSize() -> CGSize {
         let numberOfSections = self.collectionView!.numberOfSections()
         if numberOfSections == 0{
-            return CGSizeZero
+            return CGSize.zero
         }
         var contentSize = self.collectionView!.bounds.size as CGSize
         contentSize.width = contentWidth
         return  contentSize
     }
     
-    public override func scrollRectForItemAtIndexPath(indexPath: NSIndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
+    open override func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
         return layoutAttributesForItemAtIndexPath(indexPath)?.frame
     }
     
     
-    public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {
+    open override func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CBCollectionViewLayoutAttributes? {
         let attrs = CBCollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         attrs.alpha = 1
         attrs.zIndex = 1000
@@ -102,7 +102,7 @@ public class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
 }
 
 
-public class CBHorizontalCollectionView : CBCollectionView {
+open class CBHorizontalCollectionView : CBCollectionView {
     
     override init() {
         super.init()

@@ -10,20 +10,20 @@ import Foundation
 
 @objc public protocol CBCollectionViewDelegateListLayout: CBCollectionViewDelegate {
     
-    optional func collectionView(collectionView: CBCollectionView,layout collectionViewLayout: CBCollectionViewLayout,
-                                  heightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat
+    @objc optional func collectionView(_ collectionView: CBCollectionView,layout collectionViewLayout: CBCollectionViewLayout,
+                                  heightForItemAtIndexPath indexPath: IndexPath) -> CGFloat
     
-    optional func collectionView(collectionView: CBCollectionView,layout collectionViewLayout: CBCollectionViewLayout,
+    @objc optional func collectionView(_ collectionView: CBCollectionView,layout collectionViewLayout: CBCollectionViewLayout,
                                  interitemSpacingForItemsInSection section: Int) -> CGFloat
     
-    optional func collectionView(collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
+    @objc optional func collectionView(_ collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
                                   heightForHeaderInSection section: Int) -> CGFloat
     
-    optional func collectionView(collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
+    @objc optional func collectionView(_ collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
                                   heightForFooterInSection section: Int) -> CGFloat
     
-    optional func collectionView(collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
-                                  insetsForSectionAtIndex section: Int) -> NSEdgeInsets
+    @objc optional func collectionView(_ collectionView: CBCollectionView, layout collectionViewLayout: CBCollectionViewLayout,
+                                  insetsForSectionAtIndex section: Int) -> EdgeInsets
 
     
 }
@@ -50,23 +50,23 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
     public final var insetSupplementaryViews : Bool = false { didSet{ invalidateLayout() }}
     
     /// Default insets for all sections
-    public final var sectionInsets : NSEdgeInsets = NSEdgeInsetsZero { didSet{ invalidateLayout() }}
+    public final var sectionInsets : EdgeInsets = NSEdgeInsetsZero { didSet{ invalidateLayout() }}
     
-    private var numSections : Int { get { return self.collectionView?.numberOfSections() ?? 0 }}
+    fileprivate var numSections : Int { get { return self.collectionView?.numberOfSections() ?? 0 }}
     
     //  private property and method above.
-    private weak var delegate : CBCollectionViewDelegateListLayout? { get{ return self.collectionView!.delegate as? CBCollectionViewDelegateListLayout }}
+    fileprivate weak var delegate : CBCollectionViewDelegateListLayout? { get{ return self.collectionView!.delegate as? CBCollectionViewDelegateListLayout }}
     
     
-    private var sectionIndexPaths : [[NSIndexPath]] = []
-    private var sectionItemAttributes : [[CBCollectionViewLayoutAttributes]] = []
+    fileprivate var sectionIndexPaths : [[IndexPath]] = []
+    fileprivate var sectionItemAttributes : [[CBCollectionViewLayoutAttributes]] = []
     
-    private var itemAttributes : [NSIndexPath:CBCollectionViewLayoutAttributes] = [:]
-    private var headersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
-    private var footersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
+    fileprivate var itemAttributes : [IndexPath:CBCollectionViewLayoutAttributes] = [:]
+    fileprivate var headersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
+    fileprivate var footersAttributes : [Int:CBCollectionViewLayoutAttributes] = [:]
     
-    private var sectionFrames : [CGRect] = []
-    private var sectionContentFrames : [CGRect] = []
+    fileprivate var sectionFrames : [CGRect] = []
+    fileprivate var sectionContentFrames : [CGRect] = []
     
     override public init() {
         super.init()
@@ -89,7 +89,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
         
         var top : CGFloat = 0.0
         
-        self.sectionItemAttributes = Array(count: numberOfSections, repeatedValue: [])
+        self.sectionItemAttributes = Array(repeating: [], count: numberOfSections)
         
         for section in 0..<numberOfSections {
             
@@ -97,7 +97,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
              * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
              */
             
-            let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSectionAtIndex: section) ?? self.sectionInsets
+            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSectionAtIndex: section) ?? self.sectionInsets
             let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
             
             let itemWidth = self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right
@@ -109,13 +109,13 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
              */
             let heightHeader : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForHeaderInSection: section) ?? self.headerHeight
             if heightHeader > 0 {
-                let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionHeader, withIndexPath: NSIndexPath._indexPathForItem(0, inSection: section))
+                let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionHeader, withIndexPath: IndexPath._indexPathForItem(0, inSection: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                    CGRectMake(sectionInsets.left, top, self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, heightHeader)
-                    : CGRectMake(0, top, self.collectionView!.bounds.size.width, heightHeader)
+                    CGRect(x: sectionInsets.left, y: top, width: self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, height: heightHeader)
+                    : CGRect(x: 0, y: top, width: self.collectionView!.bounds.size.width, height: heightHeader)
                 self.headersAttributes[section] = attributes
-                top = CGRectGetMaxY(attributes.frame)
+                top = attributes.frame.maxY
             }
             
             top += sectionInsets.top
@@ -141,7 +141,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
                 
                 for idx in 0..<itemCount {
                     
-                    let ip = NSIndexPath._indexPathForItem(idx, inSection: section)
+                    let ip = IndexPath._indexPathForItem(idx, inSection: section)
                     allIndexPaths.insert(ip)
                     
                     let attrs = CBCollectionViewLayoutAttributes(forCellWithIndexPath: ip)
@@ -160,13 +160,13 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
             
             let footerHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForFooterInSection: section) ?? self.footerHeight
             if footerHeight > 0 {
-                let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionFooter, withIndexPath: NSIndexPath._indexPathForItem(0, inSection: section))
+                let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionFooter, withIndexPath: IndexPath._indexPathForItem(0, inSection: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                    CGRectMake(sectionInsets.left, top, self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, footerHeight)
-                    : CGRectMake(0, top, self.collectionView!.bounds.size.width, footerHeight)
+                    CGRect(x: sectionInsets.left, y: top, width: self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, height: footerHeight)
+                    : CGRect(x: 0, y: top, width: self.collectionView!.bounds.size.width, height: footerHeight)
                 self.footersAttributes[section] = attributes
-                top = CGRectGetMaxY(attributes.frame)
+                top = attributes.frame.maxY
             }
             top += sectionInsets.bottom
             
@@ -179,28 +179,28 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
     }
     
     override public func collectionViewContentSize() -> CGSize {
-        guard let cv = collectionView else { return CGSizeZero }
+        guard let cv = collectionView else { return CGSize.zero }
         let numberOfSections = self.numSections
-        if numberOfSections == 0 { return CGSizeZero }
+        if numberOfSections == 0 { return CGSize.zero }
         
         var size = CGSize()
         size.width = cv.bounds.width
         size.height = cv.bounds.height
         if let f = self.sectionFrames.last {
-            size.height = CGRectGetMaxY(f)
+            size.height = f.maxY
         }
         return size
     }
     
-    public override func rectForSection(section: Int) -> CGRect {
+    public override func rectForSection(_ section: Int) -> CGRect {
         return sectionFrames[section]
     }
     
     
-    public override func indexPathsForItemsInRect(rect: CGRect) -> Set<NSIndexPath>? {
+    public override func indexPathsForItemsInRect(_ rect: CGRect) -> Set<IndexPath>? {
         //        return nil
         
-        var indexPaths = Set<NSIndexPath>()
+        var indexPaths = Set<IndexPath>()
         guard let cv = self.collectionView else { return nil }
         if rect.isEmpty || self.numSections == 0 { return indexPaths }
         for sectionIndex in 0..<cv.numberOfSections() {
@@ -212,13 +212,13 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
             
             // If the section is completely show, add all the attrs
             if rect.contains(contentFrame) {
-                indexPaths.unionInPlace(sectionIndexPaths[sectionIndex])
+                indexPaths.formUnion(sectionIndexPaths[sectionIndex])
                 continue
             }
             
             for attr in sectionItemAttributes[sectionIndex] {
                 if attr.frame.intersects(rect) {
-                    indexPaths.insert(attr.indexPath)
+                    indexPaths.insert(attr.indexPath as IndexPath)
                 }
             }
         }
@@ -227,7 +227,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
     
     
     
-    public override func layoutAttributesForElementsInRect(rect: CGRect) -> [CBCollectionViewLayoutAttributes]? {
+    public override func layoutAttributesForElementsInRect(_ rect: CGRect) -> [CBCollectionViewLayoutAttributes]? {
         var attrs : [CBCollectionViewLayoutAttributes] = []
         
         guard let cv = self.collectionView else { return nil }
@@ -252,11 +252,11 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
         return attrs
     }
     
-    public override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {
+    public override func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CBCollectionViewLayoutAttributes? {
         return itemAttributes[indexPath]?.copy()
     }
     
-    public override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {
+    public override func layoutAttributesForSupplementaryViewOfKind(_ elementKind: String, atIndexPath indexPath: IndexPath) -> CBCollectionViewLayoutAttributes? {
         
         if elementKind == CBCollectionViewLayoutElementKind.SectionHeader {
             let attrs = self.headersAttributes[indexPath._section]?.copy()
@@ -264,12 +264,12 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
                 
-                var nextHeaderOrigin = CGPoint(x: CGFloat.max, y: CGFloat.max)
+                var nextHeaderOrigin = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude)
                 if let nextHeader = self.headersAttributes[indexPath._section + 1] {
                     nextHeaderOrigin = nextHeader.frame.origin
                 }
                 let topInset = cv.contentInsets.top ?? 0
-                currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - CGRectGetHeight(frame))
+                currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
                 currentAttrs.floating = currentAttrs.frame.origin.y > frame.origin.y
             }
             return attrs
@@ -280,9 +280,9 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
         return nil
     }
     
-    private var _cvSize = CGSizeZero
-    override public func shouldInvalidateLayoutForBoundsChange (newBounds : CGRect) -> Bool {
-        if !CGSizeEqualToSize(newBounds.size, self._cvSize) {
+    fileprivate var _cvSize = CGSize.zero
+    override public func shouldInvalidateLayoutForBoundsChange (_ newBounds : CGRect) -> Bool {
+        if !newBounds.size.equalTo(self._cvSize) {
             self._cvSize = newBounds.size
             return true
         }
@@ -290,9 +290,9 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
     }
     
     
-    public override func scrollRectForItemAtIndexPath(indexPath: NSIndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
+    public override func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItemAtIndexPath(indexPath)?.frame else { return nil }
-        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CBCollectionViewLayoutElementKind.SectionHeader, atIndexPath: NSIndexPath._indexPathForItem(0, inSection: indexPath._section)) {
+        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CBCollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath._indexPathForItem(0, inSection: indexPath._section)) {
             var y = frame.origin.y - attrs.frame.size.height
             var height = frame.size.height + attrs.frame.size.height
             frame.size.height = height
@@ -304,7 +304,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
     
     
     
-    public override func indexPathForNextItemInDirection(direction: CBCollectionViewDirection, afterItemAtIndexPath currentIndexPath: NSIndexPath) -> NSIndexPath? {
+    public override func indexPathForNextItemInDirection(_ direction: CBCollectionViewDirection, afterItemAtIndexPath currentIndexPath: IndexPath) -> IndexPath? {
         guard let collectionView = self.collectionView else { fatalError() }
         
         var index = currentIndexPath._item
@@ -317,16 +317,16 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
         let cellHeight = cellRect.height
         
         switch direction {
-        case .Up, .Left:
+        case .up, .left:
             
             if currentIndexPath._item > 0 {
-                return NSIndexPath._indexPathForItem(currentIndexPath._item - 1, inSection: currentIndexPath._section)
+                return IndexPath._indexPathForItem(currentIndexPath._item - 1, inSection: currentIndexPath._section)
             }
             else if currentIndexPath._section == 0 {
                 return nil
             }
             
-            var ip : NSIndexPath?
+            var ip : IndexPath?
             var section = currentIndexPath._section - 1
             while ip == nil && section >= 0 {
                 if let _ip = self.sectionIndexPaths[section].last {
@@ -337,15 +337,15 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
             }
             return ip
             
-        case .Down, .Right:
+        case .down, .right:
             if currentIndexPath._item < self.sectionIndexPaths[currentIndexPath._section].count - 1 {
-                return NSIndexPath._indexPathForItem(currentIndexPath._item + 1, inSection: currentIndexPath._section)
+                return IndexPath._indexPathForItem(currentIndexPath._item + 1, inSection: currentIndexPath._section)
             }
             else if currentIndexPath._section == numberOfSections - 1 {
                 return nil
             }
             
-            var ip : NSIndexPath?
+            var ip : IndexPath?
             var section = currentIndexPath._section + 1
             while ip == nil && section <= numberOfSections {
                 if let _ip = self.sectionIndexPaths[section].first {

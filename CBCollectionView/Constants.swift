@@ -9,43 +9,43 @@
 import Foundation
 
 
-public typealias CBAnimationCompletion = (finished: Bool)->Void
+public typealias CBAnimationCompletion = (_ finished: Bool)->Void
 
 
 public enum CBCollectionElementCategory : UInt {
-    case Cell
-    case SupplementaryView
+    case cell
+    case supplementaryView
 }
 
 public enum CBCollectionViewScrollPosition {
-    case None
-    case Nearest
-    case Top
-    case Centered
-    case Bottom
+    case none
+    case nearest
+    case top
+    case centered
+    case bottom
 }
 
 enum CBCollectionViewSelectionMethod {
-    case Click
-    case Extending
-    case Multiple
+    case click
+    case extending
+    case multiple
 }
 
 internal enum CBCollectionViewSelectionType {
-    case Single
-    case Extending
-    case Multiple
+    case single
+    case extending
+    case multiple
 }
 
 
 public enum CBCollectionViewScrollDirection {
-    case Vertical
-    case Horizontal    
+    case vertical
+    case horizontal    
 }
 
 public enum CBCollectionViewDirection {
-    case Left
-    case Right
-    case Up
-    case Down
+    case left
+    case right
+    case up
+    case down
 }

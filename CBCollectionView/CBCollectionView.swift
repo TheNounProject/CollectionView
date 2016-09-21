@@ -7,21 +7,41 @@
 //
 
 import Foundation
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l >= r
+  default:
+    return !(lhs < rhs)
+  }
+}
 
 
-public class CBCollectionView : CBScrollView, NSDraggingSource {
+
+open class CBCollectionView : CBScrollView, NSDraggingSource {
     
-    public weak var contentDocumentView : CBCollectionViewDocumentView! {
+    open weak var contentDocumentView : CBCollectionViewDocumentView! {
         return self.documentView as! CBCollectionViewDocumentView
     }
-    public override var mouseDownCanMoveWindow: Bool { return true }
+    open override var mouseDownCanMoveWindow: Bool { return true }
     
     
     
     // MARK: - Data Source & Delegate
-    public weak var delegate : CBCollectionViewDelegate?
-    public weak var dataSource : CBCollectionViewDataSource?
-    private weak var interactionDelegate : CBCollectionViewInteractionDelegate? {
+    open weak var delegate : CBCollectionViewDelegate?
+    open weak var dataSource : CBCollectionViewDataSource?
+    fileprivate weak var interactionDelegate : CBCollectionViewInteractionDelegate? {
         return self.delegate as? CBCollectionViewInteractionDelegate
     }
     
@@ -50,11 +70,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.hasVerticalScroller = true
         self.scrollsDynamically = true
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSScrollViewDidLiveScrollNotification, object: self)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.willBeginScroll(_:)), name: NSScrollViewWillStartLiveScrollNotification, object: self)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSScrollViewDidEndLiveScrollNotification, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(CBCollectionView.didScroll(_:)), name: NSNotification.Name.NSScrollViewDidLiveScroll, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(CBCollectionView.willBeginScroll(_:)), name: NSNotification.Name.NSScrollViewWillStartLiveScroll, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSNotification.Name.NSScrollViewDidEndLiveScroll, object: self)
         
-        self.addSubview(_floatingSupplementaryView, positioned: .Above, relativeTo: self.clipView!)
+        self.addSubview(_floatingSupplementaryView, positioned: .above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
         _floatingSupplementaryView.frame = self.bounds
     }
@@ -62,7 +82,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     deinit {
         self.delegate = nil
         self.dataSource = nil
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
         self._reusableCells.removeAll()
         self._reusableSupplementaryView.removeAll()
         self.contentDocumentView.preparedCellIndex.removeAll()
@@ -79,25 +99,25 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Registering reusable cells
     /*-------------------------------------------------------------------------------*/
     
-    private var _cellClasses : [String:CBCollectionViewCell.Type] = [:]
-    private var _cellNibs : [String:NSNib] = [:]
+    fileprivate var _cellClasses : [String:CBCollectionViewCell.Type] = [:]
+    fileprivate var _cellNibs : [String:NSNib] = [:]
     
-    private var _supplementaryViewClasses : [SupplementaryViewIdentifier:CBCollectionReusableView.Type] = [:]
-    private var _supplementaryViewNibs : [SupplementaryViewIdentifier:NSNib] = [:]
+    fileprivate var _supplementaryViewClasses : [SupplementaryViewIdentifier:CBCollectionReusableView.Type] = [:]
+    fileprivate var _supplementaryViewNibs : [SupplementaryViewIdentifier:NSNib] = [:]
     
-    public func registerClass(cellClass: CBCollectionViewCell.Type!, forCellWithReuseIdentifier identifier: String!) {
-        assert(cellClass.isSubclassOfClass(CBCollectionViewCell), "CBCollectionView: Registered cells views must be subclasses of CBCollectionViewCell")
+    open func registerClass(_ cellClass: CBCollectionViewCell.Type!, forCellWithReuseIdentifier identifier: String!) {
+        assert(cellClass.isSubclass(of: CBCollectionViewCell.self), "CBCollectionView: Registered cells views must be subclasses of CBCollectionViewCell")
         assert(!identifier.isEmpty, "CBCollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = cellClass
         self._cellNibs[identifier] = nil
     }
-    public func registerNib(nib: NSNib!, forCellWithReuseIdentifier identifier: String!) {
+    open func registerNib(_ nib: NSNib!, forCellWithReuseIdentifier identifier: String!) {
         assert(!identifier.isEmpty, "CBCollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = nil
         self._cellNibs[identifier] = nib
     }
-    public func registerClass(viewClass: CBCollectionReusableView.Type!, forSupplementaryViewOfKind kind: String!, withReuseIdentifier identifier: String!) {
-        assert(viewClass.isSubclassOfClass(CBCollectionReusableView), "CBCollectionView: Registered supplementary views must be subclasses of CBCollectionReusableview")
+    open func registerClass(_ viewClass: CBCollectionReusableView.Type!, forSupplementaryViewOfKind kind: String!, withReuseIdentifier identifier: String!) {
+        assert(viewClass.isSubclass(of: CBCollectionReusableView.self), "CBCollectionView: Registered supplementary views must be subclasses of CBCollectionReusableview")
         assert(!identifier.isEmpty, "CBCollectionView: Reuse identifier cannot be an empty or blank string")
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: identifier)
         self._supplementaryViewClasses[id] = viewClass
@@ -105,7 +125,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self._registeredSupplementaryViewKinds.insert(kind)
         self._allSupplementaryViewIdentifiers.insert(id)
     }
-    public func registerNib(nib: NSNib, forSupplementaryViewOfKind kind: String!, withReuseIdentifier identifier: String!) {
+    open func registerNib(_ nib: NSNib, forSupplementaryViewOfKind kind: String!, withReuseIdentifier identifier: String!) {
         assert(!identifier.isEmpty, "CBCollectionView: Reuse identifier cannot be an empty or blank string")
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: identifier)
         self._supplementaryViewClasses[id] = nil
@@ -117,20 +137,22 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     internal var _allSupplementaryViewIdentifiers = Set<SupplementaryViewIdentifier>()
     internal var _registeredSupplementaryViewKinds = Set<String>()
     
-    private func _firstObjectOfClass(aClass: AnyClass, inNib: NSNib) -> NSView? {
+    fileprivate func _firstObjectOfClass(_ aClass: AnyClass, inNib: NSNib) -> NSView? {
         var foundObject: AnyObject? = nil
         var topLevelObjects :NSArray?
-        if inNib.instantiateWithOwner(self, topLevelObjects: &topLevelObjects) {
-            let index = topLevelObjects!.indexOfObjectPassingTest({(obj, idx, stop) -> Bool in
-                if obj.isKindOfClass(aClass) {
-                    stop.memory = true
-                    return true
+        if inNib.instantiate(withOwner: self, topLevelObjects: &topLevelObjects!) {
+            for obj in topLevelObjects! {
+                if let o = obj as? AnyObject, o.isKind(of: aClass) {
+                    foundObject = o
+                    break
                 }
-                return false
-            })
-            if index != NSNotFound {
-                foundObject = topLevelObjects![index]
             }
+//            let index = topLevelObjects!.indexOfObject(passingTest: {(obj, idx, stop) -> Bool in
+//                
+//            })
+//            if index != NSNotFound {
+//                foundObject = topLevelObjects![index]
+//            }
         }
         assert(foundObject != nil, "CBCollectionView: Could not find view of type \(aClass) in nib. Make sure the top level object in the nib is of this type.")
         return foundObject as? NSView
@@ -142,10 +164,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Dequeing reusable cells
     /*-------------------------------------------------------------------------------*/
     
-    private var _reusableCells : [String:Set<CBCollectionViewCell>] = [:]
-    private var _reusableSupplementaryView : [SupplementaryViewIdentifier:[CBCollectionReusableView]] = [:]
+    fileprivate var _reusableCells : [String:Set<CBCollectionViewCell>] = [:]
+    fileprivate var _reusableSupplementaryView : [SupplementaryViewIdentifier:[CBCollectionReusableView]] = [:]
     
-    public final func dequeueReusableCellWithReuseIdentifier(identifier: String, forIndexPath indexPath: NSIndexPath) -> CBCollectionViewCell {
+    public final func dequeueReusableCellWithReuseIdentifier(_ identifier: String, forIndexPath indexPath: IndexPath) -> CBCollectionViewCell {
         
         var cell =  self._reusableCells[identifier]?.first
         if cell == nil {
@@ -167,7 +189,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         return cell!
     }
-    public final func dequeueReusableSupplementaryViewOfKind(elementKind: String, withReuseIdentifier identifier: String, forIndexPath indexPath: NSIndexPath) -> CBCollectionReusableView {
+    public final func dequeueReusableSupplementaryViewOfKind(_ elementKind: String, withReuseIdentifier identifier: String, forIndexPath indexPath: IndexPath) -> CBCollectionReusableView {
         let id = SupplementaryViewIdentifier(kind: elementKind, reuseIdentifier: identifier)
         var view = self._reusableSupplementaryView[id]?.first
         if view == nil {
@@ -189,8 +211,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         return view!
     }
     
-    final func enqueueCellForReuse(item: CBCollectionViewCell) {
-        item.hidden = true
+    final func enqueueCellForReuse(_ item: CBCollectionViewCell) {
+        item.isHidden = true
         item.indexPath = nil
         guard let id = item.reuseIdentifier else { return }
         if self._reusableCells[id] == nil {
@@ -199,8 +221,8 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self._reusableCells[id]?.insert(item)
     }
     
-    final func enqueueSupplementaryViewForReuse(item: CBCollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
-        item.hidden = true
+    final func enqueueSupplementaryViewForReuse(_ item: CBCollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
+        item.isHidden = true
         item.indexPath = nil
         let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: item.reuseIdentifier ?? withIdentifier.reuseIdentifier)
         if self._reusableSupplementaryView[newID] == nil {
@@ -212,10 +234,10 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
     // MARK: - Data
-    private var info : CBCollectionViewInfo!
-    public func numberOfSections() -> Int { return self.info.numberOfSections }
-    public func numberOfItemsInSection(section: Int) -> Int { return self.info.numberOfItemsInSection(section) }
-    public func frameForSectionAtIndexPath(indexPath: NSIndexPath) -> CGRect? {
+    fileprivate var info : CBCollectionViewInfo!
+    open func numberOfSections() -> Int { return self.info.numberOfSections }
+    open func numberOfItemsInSection(_ section: Int) -> Int { return self.info.numberOfItemsInSection(section) }
+    open func frameForSectionAtIndexPath(_ indexPath: IndexPath) -> CGRect? {
         return self.info.sections[indexPath._section]?.frame
     }
     
@@ -223,7 +245,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Floating View
     /*-------------------------------------------------------------------------------*/
     let _floatingSupplementaryView = FloatingSupplementaryView(frame: NSZeroRect)
-    public func addAccessoryView(view: NSView) {
+    open func addAccessoryView(_ view: NSView) {
         self._floatingSupplementaryView.addSubview(view)
     }
     
@@ -232,21 +254,21 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Layout
     /*-------------------------------------------------------------------------------*/
     
-    public var collectionViewLayout : CBCollectionViewLayout! = CBCollectionViewLayout() {
+    open var collectionViewLayout : CBCollectionViewLayout = CBCollectionViewLayout() {
         didSet {
             collectionViewLayout.collectionView = self
-            self.hasHorizontalScroller = collectionViewLayout.scrollDirection == .Horizontal
-            self.hasVerticalScroller = collectionViewLayout.scrollDirection == .Vertical
+            self.hasHorizontalScroller = collectionViewLayout.scrollDirection == .horizontal
+            self.hasVerticalScroller = collectionViewLayout.scrollDirection == .vertical
         }}
     
-    public var contentVisibleRect : CGRect { return self.documentVisibleRect }
-    public override var contentSize: NSSize {
+    open var contentVisibleRect : CGRect { return self.documentVisibleRect }
+    open override var contentSize: NSSize {
         return self.collectionViewLayout.collectionViewContentSize()
     }
-    public var contentOffset : CGPoint {
+    open var contentOffset : CGPoint {
         get{ return self.contentVisibleRect.origin }
         set {
-            self.clipView?.scrollToPoint(newValue)
+            self.clipView?.scroll(to: newValue)
             self.reflectScrolledClipView(self.clipView!)
             self.contentDocumentView.prepareRect(self.contentVisibleRect)
             self.contentDocumentView.preparedRect = self.contentVisibleRect
@@ -254,38 +276,38 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     /// Force layout of all items, not just those in the visible content area (Only applies to reloadData())
-    public var prepareAll : Bool = false
+    open var prepareAll : Bool = false
     
     
     // Used to track positioning during resize/layout
-    var _topIP: NSIndexPath?
+    var _topIP: IndexPath?
     
     // discard the dataSource and delegate data and requery as necessary
-    public func reloadData() {
+    open func reloadData() {
         self.contentDocumentView.reset()
         self.info.recalculate()
         contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
         self.reflectScrolledClipView(self.clipView!)
         
-        self._selectedIndexPaths.intersectInPlace(self.allIndexPaths())
+        self._selectedIndexPaths.formIntersection(self.allIndexPaths())
         self.contentDocumentView.prepareRect(prepareAll
-            ?  CGRect(origin: CGPointZero, size: self.info.contentSize)
+            ?  CGRect(origin: CGPoint.zero, size: self.info.contentSize)
             : self.contentVisibleRect, animated: false)
         
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
     
-    public override func layout() {
+    open override func layout() {
         _floatingSupplementaryView.frame = self.bounds
         super.layout()
         
-        var calc : NSTimeInterval = 0
-        var scroll : NSTimeInterval = 0
-        var prep : NSTimeInterval = 0
+        var calc : TimeInterval = 0
+        var scroll : TimeInterval = 0
+        var prep : TimeInterval = 0
         
         if self.collectionViewLayout.shouldInvalidateLayoutForBoundsChange(self.documentVisibleRect) {
-            var d = NSDate()
+            var d = Date()
             
             let _size = self.info.contentSize
             
@@ -293,14 +315,14 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             calc = d.timeIntervalSinceNow
             
             contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
-            d = NSDate()
-            if self.info.contentSize.height != _size.height, let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.Top) {
+            d = Date()
+            if self.info.contentSize.height != _size.height, let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.top) {
                 let _rect = CGRect(origin: rect.origin, size: self.bounds.size)
                 self.clipView?.scrollRectToVisible(_rect, animated: false, completion: nil)
             }
             self.reflectScrolledClipView(self.clipView!)
             scroll = d.timeIntervalSinceNow
-            d = NSDate()
+            d = Date()
             
             self.contentDocumentView.prepareRect(prepareAll ? contentDocumentView.frame : self.contentVisibleRect, force: true)
             prep = d.timeIntervalSinceNow
@@ -315,18 +337,18 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
      - parameter animated:       If the layout should be animated
      - parameter scrollPosition: Where (if any) the scroll position should be pinned
      */
-    public func relayout(animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .Nearest, completion: CBAnimationCompletion? = nil) {
+    open func relayout(_ animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .nearest, completion: CBAnimationCompletion? = nil) {
         
         var absoluteCellFrames = [CBCollectionReusableView:CGRect]()
         
         for cell in self.contentDocumentView.preparedCellIndex {
-            absoluteCellFrames[cell.1] = self.convertRect(cell.1.frame, fromView: cell.1.superview)
+            absoluteCellFrames[cell.1] = self.convert(cell.1.frame, from: cell.1.superview)
         }
         for cell in self.contentDocumentView.preparedSupplementaryViewIndex {
-            absoluteCellFrames[cell.1] = self.convertRect(cell.1.frame, fromView: cell.1.superview)
+            absoluteCellFrames[cell.1] = self.convert(cell.1.frame, from: cell.1.superview)
         }
     
-        let holdIP : NSIndexPath? = self.indexPathForFirstVisibleItem()
+        let holdIP : IndexPath? = self.indexPathForFirstVisibleItem()
             //?? self.indexPathsForSelectedItems().intersect(self.indexPathsForVisibleItems()).first
 
         self.info.recalculate()
@@ -336,14 +358,14 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         let docFrame = self.contentDocumentView.frame
         contentDocumentView.frame.size = nContentSize
         
-        if scrollPosition != .None, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(ip) {
+        if scrollPosition != .none, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(ip) {
             self._scrollToRect(rect, atPosition: scrollPosition, animated: false, prepare: false, completion: nil)
         }
         self.reflectScrolledClipView(self.clipView!)
         
         for item in absoluteCellFrames {
-            if let attrs = item.0.attributes where attrs.representedElementCategory == CBCollectionElementCategory.SupplementaryView {
-                if let newAttrs = self.layoutAttributesForSupplementaryElementOfKind(attrs.representedElementKind!, atIndexPath: attrs.indexPath) {
+            if let attrs = item.0.attributes , attrs.representedElementCategory == CBCollectionElementCategory.supplementaryView {
+                if let newAttrs = self.layoutAttributesForSupplementaryElementOfKind(attrs.representedElementKind!, atIndexPath: attrs.indexPath as IndexPath) {
                     
                     if newAttrs.floating != attrs.floating {
                         if newAttrs.floating {
@@ -354,21 +376,21 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                         else {
                             item.0.removeFromSuperview()
                             self.contentDocumentView.addSubview(item.0)
-                            item.0.frame = self.contentDocumentView.convertRect(item.1, fromView: self)
+                            item.0.frame = self.contentDocumentView.convert(item.1, from: self)
                         }
                     }
                     else if newAttrs.floating {
                         item.0.frame = item.1
                     }
                     else {
-                        let cFrame = self.contentDocumentView.convertRect(item.1, fromView: self)
+                        let cFrame = self.contentDocumentView.convert(item.1, from: self)
                         item.0.frame = cFrame
                     }
                     continue
                 }
             }
             
-            let cFrame = self.contentDocumentView.convertRect(item.1, fromView: self)
+            let cFrame = self.contentDocumentView.convert(item.1, from: self)
             item.0.frame = cFrame
         }
         
@@ -379,13 +401,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // MARK: - Live Resize
     /*-------------------------------------------------------------------------------*/
-    var _resizeStartBounds : CGRect = CGRectZero
-    public override func viewWillStartLiveResize() {
+    var _resizeStartBounds : CGRect = CGRect.zero
+    open override func viewWillStartLiveResize() {
         _resizeStartBounds = self.contentVisibleRect
         _topIP = indexPathForFirstVisibleItem()
     }
     
-    public override func viewDidEndLiveResize() {
+    open override func viewDidEndLiveResize() {
         _topIP = nil
         self.delegate?.collectionViewDidEndLiveResize?(self)
     }
@@ -394,21 +416,21 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Scroll Handling
     /*-------------------------------------------------------------------------------*/
     
-    public var scrollEnabled = true { didSet { self.clipView?.scrollEnabled = scrollEnabled }}
-    public internal(set) var scrolling : Bool = false
-    private var _previousOffset = CGPointZero
-    private var _offsetMark = CACurrentMediaTime()
+    open var scrollEnabled = true { didSet { self.clipView?.scrollEnabled = scrollEnabled }}
+    open internal(set) var scrolling : Bool = false
+    fileprivate var _previousOffset = CGPoint.zero
+    fileprivate var _offsetMark = CACurrentMediaTime()
     
-    public private(set) var velocity: CGFloat = 0
-    public private(set) var peakVelocityForScroll: CGFloat = 0
+    open fileprivate(set) var velocity: CGFloat = 0
+    open fileprivate(set) var peakVelocityForScroll: CGFloat = 0
     
     var _rectToPrepare : CGRect {
         return prepareAll
-            ?  CGRect(origin: CGPointZero, size: self.info.contentSize)
+            ?  CGRect(origin: CGPoint.zero, size: self.info.contentSize)
             : self.contentVisibleRect.insetBy(dx: 0, dy: -100)
     }
     
-    final func didScroll(notification: NSNotification) {
+    final func didScroll(_ notification: Notification) {
         let rect = _rectToPrepare
         self.contentDocumentView.prepareRect(rect)
 
@@ -422,7 +444,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.delegate?.collectionViewDidScroll?(self)
     }
     
-    final func willBeginScroll(notification: NSNotification) {
+    final func willBeginScroll(_ notification: Notification) {
         self.scrolling = true
         self.delegate?.collectionViewWillBeginScrolling?(self)
         self._previousOffset = self.contentVisibleRect.origin
@@ -430,7 +452,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         self.velocity = 0
     }
     
-    final func didEndScroll(notification: NSNotification) {
+    final func didEndScroll(_ notification: Notification) {
         self.scrolling = false
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
         Swift.print("Peak Velocity: \(self.peakVelocityForScroll)")
@@ -439,13 +461,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
 //        self.contentDocumentView.preparedRect = self.contentVisibleRect
 //        self.contentDocumentView.extendPreparedRect(self.contentVisibleRect.size.height/2)
         
-        if trackSectionHover && NSApp.active, let point = self.window?.convertRectFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSizeZero)).origin {
-            let loc = self.contentDocumentView.convertPoint(point, fromView: nil)
+        if trackSectionHover && NSApp.isActive, let point = self.window?.convertFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSize.zero)).origin {
+            let loc = self.contentDocumentView.convert(point, from: nil)
             self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
         }
     }
 
-    public func indexPathForFirstVisibleItem() -> NSIndexPath? {
+    open func indexPathForFirstVisibleItem() -> IndexPath? {
         if let ip = self.delegate?.collectionViewLayoutAnchor?(self) {
             return ip
         }
@@ -457,17 +479,17 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         visibleRect.size.width -= self.contentInsets.left + self.contentInsets.right
         
         
-        var closest : NSIndexPath?
+        var closest : IndexPath?
         for sectionIndex in 0..<self.info.numberOfSections  {
             guard let section = self.info.sections[sectionIndex] else { continue }
-            if CGRectIsEmpty(section.frame) || !CGRectIntersectsRect(section.frame, visibleRect) { continue }
+            if section.frame.isEmpty || !section.frame.intersects(visibleRect) { continue }
             for item in 0..<section.numberOfItems {
-                let indexPath = NSIndexPath._indexPathForItem(item, inSection: sectionIndex)
+                let indexPath = IndexPath._indexPathForItem(item, inSection: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
-                    if (CGRectContainsRect(visibleRect, attributes.frame)) {
+                    if (visibleRect.contains(attributes.frame)) {
                         return indexPath
                     }
-                    else if closest == nil && CGRectIntersectsRect(visibleRect, attributes.frame) {
+                    else if closest == nil && visibleRect.intersects(attributes.frame) {
                         closest = indexPath
                     }
                 }
@@ -481,7 +503,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // MARK: - Reloading, Inserting & Deleting items
     /*-------------------------------------------------------------------------------*/
-    public func reloadItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
+    open func reloadItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
         
         
         var removals = [ItemUpdate]()
@@ -503,7 +525,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             if animated {
                 attrs?.alpha = 0
             }
-            removals.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .Remove))
+            removals.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .remove))
             
             newCell.indexPath = indexPath
             
@@ -518,28 +540,28 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self.contentDocumentView.preparedCellIndex[indexPath] = newCell
             newCell.viewDidDisplay()
         }
-        self.contentDocumentView.pendingUpdates.appendContentsOf(removals)
+        self.contentDocumentView.pendingUpdates.append(contentsOf: removals)
         if batchUpdating { return }
-        self.relayout(animated, scrollPosition: .None)
+        self.relayout(animated, scrollPosition: .none)
     }
     
     
-    public func insertItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
+    open func insertItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
         
         self.indexPathForHighlightedItem = nil
         
-        var sorted = indexPaths.sort { (ip1, ip2) -> Bool in
+        var sorted = indexPaths.sorted { (ip1, ip2) -> Bool in
             return ip1._item < ip2._item
         }
         
-        var newBySection = [Int:[NSIndexPath]]()
+        var newBySection = [Int:[IndexPath]]()
         
         for ip in sorted {
             if newBySection[ip._section] == nil { newBySection[ip._section] = [ip] }
             else { newBySection[ip._section]?.append(ip) }
         }
         
-        var changeMap = [(newIP: NSIndexPath, cell: CBCollectionViewCell)]()
+        var changeMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
         for s in newBySection {
             let sectionIndex = s.0
             var newIps = s.1
@@ -550,55 +572,55 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             var newIndex = 0
             
             for idx in 0..<cCount {
-                while let nIP = newIps.first where nIP._item == newIndex {
+                while let nIP = newIps.first , nIP._item == newIndex {
                     newIps.removeFirst()
                     newIndex += 1
                 }
                 
-                let old = NSIndexPath._indexPathForItem(idx, inSection: sectionIndex)
-                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(old) {
-                    let new = NSIndexPath._indexPathForItem(newIndex, inSection: sectionIndex)
+                let old = IndexPath._indexPathForItem(idx, inSection: sectionIndex)
+                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: old) {
+                    let new = IndexPath._indexPathForItem(newIndex, inSection: sectionIndex)
                     changeMap.append((newIP: new, cell: cell))
                 }
                 newIndex += 1
             }
         }
         
-        var updatedSelections = Set<NSIndexPath>()
-        var movedSelections = Set<NSIndexPath>()
+        var updatedSelections = Set<IndexPath>()
+        var movedSelections = Set<IndexPath>()
         for change in changeMap {
-            if let ip = change.cell.indexPath where self._selectedIndexPaths.contains(ip) {
-                updatedSelections.insert(ip)
+            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+                updatedSelections.insert(ip as IndexPath)
                 movedSelections.insert(change.newIP)
             }
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         _selectedIndexPaths.removeSet(updatedSelections)
-        _selectedIndexPaths.unionInPlace(movedSelections)
+        _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
 
-        self.relayout(true, scrollPosition: .None)
+        self.relayout(true, scrollPosition: .none)
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
     
     
-    public func deleteItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
+    open func deleteItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
         
         self.indexPathForHighlightedItem = nil
         
-        var bySection = [Int:[NSIndexPath]]()
+        var bySection = [Int:[IndexPath]]()
         
-        var sorted = indexPaths.sort { (ip1, ip2) -> Bool in return ip1._item < ip2._item }
+        var sorted = indexPaths.sorted { (ip1, ip2) -> Bool in return ip1._item < ip2._item }
         for ip in sorted {
             if bySection[ip._section] == nil { bySection[ip._section] = [ip] }
             else { bySection[ip._section]?.append(ip) }
         }
         
         var updates = [ItemUpdate]()
-        var changeMap = [(newIP: NSIndexPath, cell: CBCollectionViewCell)]()
+        var changeMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
         
         for s in bySection {
             let sectionIndex = s.0
@@ -610,30 +632,30 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             var newIndex = 0
             
             for idx in 0..<cCount {
-                if let dIP = removeIPs.first where dIP._item == idx,
-                let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(dIP),
+                if let dIP = removeIPs.first , dIP._item == idx,
+                let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: dIP),
                 let attrs = cell.attributes {
                     removeIPs.removeFirst()
-                    updates.append(ItemUpdate(view: cell, attrs: attrs, type: .Remove))
+                    updates.append(ItemUpdate(view: cell, attrs: attrs, type: .remove))
                     continue
                 }
                 
-                let old = NSIndexPath._indexPathForItem(idx, inSection: sectionIndex)
-                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(old) {
-                    let new = NSIndexPath._indexPathForItem(newIndex, inSection: sectionIndex)
+                let old = IndexPath._indexPathForItem(idx, inSection: sectionIndex)
+                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: old) {
+                    let new = IndexPath._indexPathForItem(newIndex, inSection: sectionIndex)
                     changeMap.append((newIP: new, cell: cell))
                 }
                 newIndex += 1
             }
         }
         
-        self.contentDocumentView.pendingUpdates.appendContentsOf(updates)
+        self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
         
-        var updatedSelections = Set<NSIndexPath>()
-        var movedSelections = Set<NSIndexPath>()
+        var updatedSelections = Set<IndexPath>()
+        var movedSelections = Set<IndexPath>()
         for change in changeMap {
-            if let ip = change.cell.indexPath where self._selectedIndexPaths.contains(ip) {
-                updatedSelections.insert(ip)
+            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+                updatedSelections.insert(ip as IndexPath)
                 movedSelections.insert(change.newIP)
             }
             change.cell.indexPath = change.newIP
@@ -641,23 +663,23 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         
         _selectedIndexPaths.removeSet(updatedSelections)
-        _selectedIndexPaths.unionInPlace(movedSelections)
+        _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
         
-        self.relayout(true, scrollPosition: .None)
+        self.relayout(true, scrollPosition: .none)
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
     
-    public final func deleteSections(indexes: [Int]) {
+    public final func deleteSections(_ indexes: [Int]) {
         
         self.indexPathForHighlightedItem = nil
         
-        var sorted = Set(indexes).sort()
+        var sorted = Set(indexes).sorted()
         
         var updates = [ItemUpdate]()
-        var cellMap = [(newIP: NSIndexPath, cell: CBCollectionViewCell)]()
+        var cellMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
         var viewMap = [(id: SupplementaryViewIdentifier, view: CBCollectionReusableView)]()
         
         let cCount = self.numberOfSections()
@@ -665,7 +687,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         
         // Create a map of the prepared cells
-        var prepared = [Int: (supp: [SupplementaryViewIdentifier], cells: [NSIndexPath])]()
+        var prepared = [Int: (supp: [SupplementaryViewIdentifier], cells: [IndexPath])]()
         for supp in contentDocumentView.preparedSupplementaryViewIndex {
             guard let sec = supp.0.indexPath?._section else { continue }
             if prepared[sec] == nil { prepared[sec] = (supp: [supp.0], cells: []) }
@@ -674,24 +696,24 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         for item in contentDocumentView.preparedCellIndex {
             let sec = item.0._section
             if prepared[sec] == nil { prepared[sec] = (supp: [], cells: [item.0]) }
-            else { prepared[sec]?.cells.append(item.0) }
+            else { prepared[sec]?.cells.append(item.0 as IndexPath) }
         }
         
         
         var newSection = 0
         for sec in 0..<cCount {
-            if let rSec = sorted.first where rSec == sec {
+            if let rSec = sorted.first , rSec == sec {
                 guard let items = prepared[sec] else { continue }
                 for supp in items.supp {
-                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValueForKey(supp),
+                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: supp),
                     let attrs = view.attributes {
-                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .Remove, identifier: supp))
+                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: supp))
                     }
                 }
                 for ip in items.cells {
-                    if let view = contentDocumentView.preparedCellIndex.removeValueForKey(ip),
+                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip),
                         let attrs = view.attributes {
-                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .Remove))
+                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove))
                     }
                 }
                 continue
@@ -699,16 +721,16 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             
             if sec != newSection, let items = prepared[sec] {
                 for supp in items.supp {
-                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValueForKey(supp) {
-                        let ip = NSIndexPath._indexPathForSection(newSection)
+                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: supp) {
+                        let ip = IndexPath._indexPathForSection(newSection)
                         var s = supp
                         s.indexPath = ip
                         viewMap.append((id: s, view: view))
                     }
                 }
                 for ip in items.cells {
-                    if let view = contentDocumentView.preparedCellIndex.removeValueForKey(ip) {
-                        let ip = NSIndexPath._indexPathForItem(ip._item, inSection: newSection)
+                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
+                        let ip = IndexPath._indexPathForItem(ip._item, inSection: newSection)
                         cellMap.append((newIP: ip, cell: view))
                     }
                 }
@@ -716,39 +738,39 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             newSection += 1
         }
         
-        self.contentDocumentView.pendingUpdates.appendContentsOf(updates)
+        self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
         
         for change in viewMap {
             change.view.indexPath = change.id.indexPath
             self.contentDocumentView.preparedSupplementaryViewIndex[change.id] = change.view
         }
         
-        var updatedSelections = Set<NSIndexPath>()
-        var movedSelections = Set<NSIndexPath>()
+        var updatedSelections = Set<IndexPath>()
+        var movedSelections = Set<IndexPath>()
         for change in cellMap {
-            if let ip = change.cell.indexPath where self._selectedIndexPaths.contains(ip) {
-                updatedSelections.insert(ip)
+            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+                updatedSelections.insert(ip as IndexPath)
                 movedSelections.insert(change.newIP)
             }
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         _selectedIndexPaths.removeSet(updatedSelections)
-        _selectedIndexPaths.unionInPlace(movedSelections)
+        _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
         
-        self.relayout(true, scrollPosition: .None)
+        self.relayout(true, scrollPosition: .none)
         self.delegate?.collectionViewDidReloadData?(self)
         
     }
     
-    public final func insertSections(indexes: [Int]) {
+    public final func insertSections(_ indexes: [Int]) {
         
         self.indexPathForHighlightedItem = nil
         
-        var sorted = Set(indexes).sort()
-        var changeMap = [(newIP: NSIndexPath, cell: CBCollectionViewCell)]()
+        var sorted = Set(indexes).sorted()
+        var changeMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
         
         let cCount = self.numberOfSections()
         let nCount = cCount + sorted.count
@@ -757,15 +779,15 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         for sec in 0..<cCount {
             
-            while let nSec = sorted.first where nSec <= sec {
+            while let nSec = sorted.first , nSec <= sec {
                 sorted.removeFirst()
                 newSection += 1
             }
             if newSection != sec {
                 for index in 0..<numberOfItemsInSection(sec) {
-                    let ip = NSIndexPath._indexPathForItem(index, inSection: sec)
-                    if let cell = self.contentDocumentView.preparedCellIndex.removeValueForKey(ip) {
-                        let newIP = NSIndexPath._indexPathForItem(index, inSection: newSection)
+                    let ip = IndexPath._indexPathForItem(index, inSection: sec)
+                    if let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
+                        let newIP = IndexPath._indexPathForItem(index, inSection: newSection)
                         changeMap.append((newIP: newIP, cell: cell))
                     }
                 }
@@ -773,37 +795,37 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             newSection += 1
         }
         
-        var updatedSelections = Set<NSIndexPath>()
-        var movedSelections = Set<NSIndexPath>()
+        var updatedSelections = Set<IndexPath>()
+        var movedSelections = Set<IndexPath>()
         for change in changeMap {
-            if let ip = change.cell.indexPath where self._selectedIndexPaths.contains(ip) {
-                updatedSelections.insert(ip)
+            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+                updatedSelections.insert(ip as IndexPath)
                 movedSelections.insert(change.newIP)
             }
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         _selectedIndexPaths.removeSet(updatedSelections)
-        _selectedIndexPaths.unionInPlace(movedSelections)
+        _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
         
-        self.relayout(true, scrollPosition: .None)
+        self.relayout(true, scrollPosition: .none)
         self.delegate?.collectionViewDidReloadData?(self)
         
     }
     
     
     
-    private var batchUpdating : Bool = false
-    public var animationDuration: NSTimeInterval = 0.4
+    fileprivate var batchUpdating : Bool = false
+    open var animationDuration: TimeInterval = 0.4
 
-    public func performBatchUpdates(updates: (()->Void), completion: CBAnimationCompletion?) {
+    open func performBatchUpdates(_ updates: (()->Void), completion: CBAnimationCompletion?) {
         
         batchUpdating = true
         updates()
         batchUpdating = false
-        self.relayout(true, scrollPosition: .None, completion: completion)
+        self.relayout(true, scrollPosition: .none, completion: completion)
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
@@ -816,7 +838,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Mouse Tracking (section highlight)
     /*-------------------------------------------------------------------------------*/
     
-    public var trackSectionHover : Bool = false {
+    open var trackSectionHover : Bool = false {
         didSet { self.addTracking() }
     }
     var _trackingArea : NSTrackingArea?
@@ -825,22 +847,22 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self.removeTrackingArea(ta)
         }
         if trackSectionHover {
-            _trackingArea = NSTrackingArea(rect: self.bounds, options: [NSTrackingAreaOptions.ActiveInActiveApp, NSTrackingAreaOptions.MouseEnteredAndExited, NSTrackingAreaOptions.MouseMoved], owner: self, userInfo: nil)
+            _trackingArea = NSTrackingArea(rect: self.bounds, options: [NSTrackingAreaOptions.activeInActiveApp, NSTrackingAreaOptions.mouseEnteredAndExited, NSTrackingAreaOptions.mouseMoved], owner: self, userInfo: nil)
             self.addTrackingArea(_trackingArea!)
         }
     }
-    public override func updateTrackingAreas() {
+    open override func updateTrackingAreas() {
         self.addTracking()
     }
     
-    public override func mouseExited(theEvent: NSEvent) {
+    open override func mouseExited(with theEvent: NSEvent) {
         self.delegate?.collectionView?(self, mouseMovedToSection: nil)
     }
     
-    public override func mouseMoved(theEvent: NSEvent) {
-        super.mouseMoved(theEvent)
+    open override func mouseMoved(with theEvent: NSEvent) {
+        super.mouseMoved(with: theEvent)
         if self.scrolling { return }
-        let loc = self.contentDocumentView.convertPoint(theEvent.locationInWindow, fromView: nil)
+        let loc = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
         self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
     }
 
@@ -850,15 +872,15 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Mouse Up/Down
     /*-------------------------------------------------------------------------------*/
     
-    override public var acceptsFirstResponder : Bool { return true }
-    public override func acceptsFirstMouse(theEvent: NSEvent?) -> Bool { return true }
-    public override func becomeFirstResponder() -> Bool {
+    override open var acceptsFirstResponder : Bool { return true }
+    open override func acceptsFirstMouse(for theEvent: NSEvent?) -> Bool { return true }
+    open override func becomeFirstResponder() -> Bool {
         super.becomeFirstResponder()
         self.delegate?.collectionView?(self, didChangeFirstResponderStatus: true)
         return true
     }
     
-    public override func resignFirstResponder() -> Bool {
+    open override func resignFirstResponder() -> Bool {
         super.resignFirstResponder()
         self.delegate?.collectionView?(self, didChangeFirstResponderStatus: false)
         return true
@@ -874,18 +896,18 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     //        }
     //    }
     
-    var mouseDownIP: NSIndexPath?
-    public override func mouseDown(theEvent: NSEvent) {
+    var mouseDownIP: IndexPath?
+    open override func mouseDown(with theEvent: NSEvent) {
         
         self.mouseDownIP = nil
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
-            if view == self.clipView || view.isDescendantOf(self) { self.window?.makeFirstResponder(self) }
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
+            if view == self.clipView || view.isDescendant(of: self) { self.window?.makeFirstResponder(self) }
             return
         }
         self.window?.makeFirstResponder(self)
         //        self.nextResponder?.mouseDown(theEvent)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
-        let point = self.contentView.convertPoint(theEvent.locationInWindow, fromView: nil)
+        let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
         self.mouseDownIP = self.indexPathForItemAtPoint(point)
         self.delegate?.collectionView?(self, mouseDownInItemAtIndexPath: self.mouseDownIP, withEvent: theEvent)
     }
@@ -893,7 +915,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
     
-    public override func mouseUp(theEvent: NSEvent) {
+    open override func mouseUp(with theEvent: NSEvent) {
         //        super.mouseUp(theEvent)
         
         if self.draggedIPs.count > 0 {
@@ -901,11 +923,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             return
         }
         
-        let point = self.contentView.convertPoint(theEvent.locationInWindow, fromView: nil)
+        let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
         let indexPath = self.indexPathForItemAtPoint(point)
         self.delegate?.collectionView?(self, mouseUpInItemAtIndexPath: indexPath, withEvent: theEvent)
         
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false && view.isDescendantOf(self._floatingSupplementaryView) == false {
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false && view.isDescendant(of: self._floatingSupplementaryView) == false {
             if view == self.clipView { self.window?.makeFirstResponder(self) }
             return
         }
@@ -914,17 +936,17 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self._deselectAllItems(true, notify: true)
         }
         
-        guard let ip = indexPath where ip == mouseDownIP else { return }
+        guard let ip = indexPath , ip == mouseDownIP else { return }
         
-        if theEvent.modifierFlags.contains(NSEventModifierFlags.ControlKeyMask) {
-            self.rightMouseDown(theEvent)
+        if theEvent.modifierFlags.contains(NSEventModifierFlags.control) {
+            self.rightMouseDown(with: theEvent)
             return
         }
-        else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask) {
-            self._selectItemAtIndexPath(ip, atScrollPosition: .Nearest, animated: true, selectionType: .Extending)
+        else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.shift) {
+            self._selectItemAtIndexPath(ip, atScrollPosition: .nearest, animated: true, selectionType: .extending)
             return
         }
-        else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.CommandKeyMask) {
+        else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.command) {
             if self._selectedIndexPaths.contains(ip) {
                 if self._selectedIndexPaths.count == 1 { return }
                 self._deselectItemAtIndexPath(ip, animated: true, notifyDelegate: true)
@@ -946,39 +968,39 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self._deselectItemAtIndexPath(ip, animated: true, notifyDelegate: true)
             return
         }
-        self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: theEvent)
+        self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .none, withEvent: theEvent)
     }
     
-    public override func rightMouseDown(theEvent: NSEvent) {
-        super.rightMouseDown(theEvent)
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) where view.isDescendantOf(self.contentDocumentView) == false {
+    open override func rightMouseDown(with theEvent: NSEvent) {
+        super.rightMouseDown(with: theEvent)
+        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
             return
         }
         
-        let point = self.contentView.convertPoint(theEvent.locationInWindow, fromView: nil)
+        let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
         if let indexPath = self.indexPathForItemAtPoint(point) {
             self.delegate?.collectionView?(self, didRightClickItemAtIndexPath: indexPath, withEvent: theEvent)
         }
     }
     
-    final func moveSelectionInDirection(direction: CBCollectionViewDirection, extendSelection: Bool) {
+    final func moveSelectionInDirection(_ direction: CBCollectionViewDirection, extendSelection: Bool) {
         guard let indexPath = (extendSelection ? _lastSelection : _firstSelection) ?? self._selectedIndexPaths.first else { return }
         if let moveTo = self.collectionViewLayout.indexPathForNextItemInDirection(direction, afterItemAtIndexPath: indexPath) {
-            if let move = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: moveTo, withEvent: NSApp.currentEvent) where move != true { return }
-            self._selectItemAtIndexPath(moveTo, atScrollPosition: .Nearest, animated: true, selectionType: extendSelection ? .Extending : .Single)
+            if let move = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: moveTo, withEvent: NSApp.currentEvent) , move != true { return }
+            self._selectItemAtIndexPath(moveTo, atScrollPosition: .nearest, animated: true, selectionType: extendSelection ? .extending : .single)
         }
     }
     
-    public var keySelectInterval: NSTimeInterval = 0.08
-    var lastEventTime : NSTimeInterval?
-    public private(set) var repeatKey : Bool = false
+    open var keySelectInterval: TimeInterval = 0.08
+    var lastEventTime : TimeInterval?
+    open fileprivate(set) var repeatKey : Bool = false
     
-    public override func keyDown(theEvent: NSEvent) {
-        repeatKey = theEvent.ARepeat
+    open override func keyDown(with theEvent: NSEvent) {
+        repeatKey = theEvent.isARepeat
         if Set([123,124,125,126]).contains(theEvent.keyCode) {
             
-            if theEvent.ARepeat && keySelectInterval > 0 {
-                if let t = lastEventTime where (CACurrentMediaTime() - t) < keySelectInterval {
+            if theEvent.isARepeat && keySelectInterval > 0 {
+                if let t = lastEventTime , (CACurrentMediaTime() - t) < keySelectInterval {
                     //                    Swift.print(CACurrentMediaTime() - t)
                     return
                 }
@@ -987,35 +1009,35 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             else {
                 lastEventTime = nil
             }
-            let extend = multiSelect || theEvent.modifierFlags.contains(NSEventModifierFlags.ShiftKeyMask)
+            let extend = multiSelect || theEvent.modifierFlags.contains(NSEventModifierFlags.shift)
             if theEvent.keyCode == 123 { self.moveSelectionLeft(extend) }
             else if theEvent.keyCode == 124 { self.moveSelectionRight(extend) }
             else if theEvent.keyCode == 125 { self.moveSelectionDown(extend) }
             else if theEvent.keyCode == 126 { self.moveSelectionUp(extend) }
         }
         else {
-            super.keyDown(theEvent)
+            super.keyDown(with: theEvent)
             //            super.interpretKeyEvents([theEvent])
         }
     }
-    public override func keyUp(theEvent: NSEvent) {
-        super.keyUp(theEvent)
+    open override func keyUp(with theEvent: NSEvent) {
+        super.keyUp(with: theEvent)
         self.repeatKey = false
     }
     
     
     
-    public func moveSelectionLeft(extendSelection: Bool) {
-        self.moveSelectionInDirection(.Left, extendSelection: extendSelection)
+    open func moveSelectionLeft(_ extendSelection: Bool) {
+        self.moveSelectionInDirection(.left, extendSelection: extendSelection)
     }
-    public func moveSelectionRight(extendSelection: Bool) {
-        self.moveSelectionInDirection(.Right, extendSelection: extendSelection)
+    open func moveSelectionRight(_ extendSelection: Bool) {
+        self.moveSelectionInDirection(.right, extendSelection: extendSelection)
     }
-    public func moveSelectionUp(extendSelection: Bool) {
-        self.moveSelectionInDirection(.Up, extendSelection: extendSelection)
+    open func moveSelectionUp(_ extendSelection: Bool) {
+        self.moveSelectionInDirection(.up, extendSelection: extendSelection)
     }
-    public func moveSelectionDown(extendSelection: Bool) {
-        self.moveSelectionInDirection(.Down, extendSelection: extendSelection)
+    open func moveSelectionDown(_ extendSelection: Bool) {
+        self.moveSelectionInDirection(.down, extendSelection: extendSelection)
     }
     
     
@@ -1023,16 +1045,16 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // MARK: - Selection options
     /*-------------------------------------------------------------------------------*/
-    public var allowsSelection: Bool = true
+    open var allowsSelection: Bool = true
     
     /// Clicking items always extends the selection, selecting again deselects
-    public var multiSelect: Bool = false
+    open var multiSelect: Bool = false
     
     /// allows the selection of multiple items via modifier keys (command & shift)
-    public var allowsMultipleSelection: Bool = true
+    open var allowsMultipleSelection: Bool = true
     
     /// If true, clicking empty space will deselect all items
-    public var allowsEmptySelection: Bool = true
+    open var allowsEmptySelection: Bool = true
     
     
     
@@ -1043,22 +1065,22 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
   
     // Select
-    private var _firstSelection : NSIndexPath?
-    private var _lastSelection : NSIndexPath?
-    var _selectedIndexPaths = Set<NSIndexPath>()
+    fileprivate var _firstSelection : IndexPath?
+    fileprivate var _lastSelection : IndexPath?
+    var _selectedIndexPaths = Set<IndexPath>()
     
     // this ensures that only one item can be highlighted at a time
     // Mouse tracking is inconsistent when doing programatic scrolling
-    public internal(set) var indexPathForHighlightedItem: NSIndexPath? {
+    open internal(set) var indexPathForHighlightedItem: IndexPath? {
         didSet {
             //            Swift.print("New: \(indexPathForHighlightedItem)  OLD: \(oldValue)")
             if oldValue == indexPathForHighlightedItem { return }
-            if let ip = oldValue, let cell = self.cellForItemAtIndexPath(ip) where cell.highlighted {
+            if let ip = oldValue, let cell = self.cellForItemAtIndexPath(ip) , cell.highlighted {
                 cell.setHighlighted(false, animated: true)
             }
         }
     }
-    public func highlightItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool) {
+    open func highlightItemAtIndexPath(_ indexPath: IndexPath?, animated: Bool) {
         
         guard let ip = indexPath else {
             self.indexPathForHighlightedItem = nil
@@ -1069,35 +1091,35 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     
-    public final func indexPathsForSelectedItems() -> Set<NSIndexPath> { return _selectedIndexPaths }
-    public final func sortedIndexPathsForSelectedItems() -> [NSIndexPath] {
-        return indexPathsForSelectedItems().sort { (ip1, ip2) -> Bool in
+    public final func indexPathsForSelectedItems() -> Set<IndexPath> { return _selectedIndexPaths }
+    public final func sortedIndexPathsForSelectedItems() -> [IndexPath] {
+        return indexPathsForSelectedItems().sorted { (ip1, ip2) -> Bool in
             let before =  ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
             return before
         }
     }
     
-    public final func itemAtIndexPathIsSelected(indexPath: NSIndexPath) -> Bool {
+    public final func itemAtIndexPathIsSelected(_ indexPath: IndexPath) -> Bool {
         return _selectedIndexPaths.contains(indexPath)
     }
     
     
     
-    public func selectAllItems(animated: Bool = true) {
-        self.selectItemsAtIndexPaths(Array(self.contentDocumentView.preparedCellIndex.keys), animated: animated)
+    open func selectAllItems(_ animated: Bool = true) {
+        self.selectItemsAtIndexPaths(Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath], animated: animated)
 //        _selectedIndexPaths = Set(self.allIndexPaths())
     }
-    public func selectItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
-        for ip in indexPaths { self._selectItemAtIndexPath(ip, animated: animated, scrollPosition: .None, withEvent: nil, notifyDelegate: false) }
+    open func selectItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
+        for ip in indexPaths { self._selectItemAtIndexPath(ip, animated: animated, scrollPosition: .none, withEvent: nil, notifyDelegate: false) }
         if let ip = indexPaths.last {
             self.delegate?.collectionView?(self, didSelectItemAtIndexPath: ip)
         }
     }
-    public func selectItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .None) {
+    open func selectItemAtIndexPath(_ indexPath: IndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .none) {
         self._selectItemAtIndexPath(indexPath, animated: animated, scrollPosition: scrollPosition, withEvent: nil, notifyDelegate: false)
     }
     
-    private func _selectItemAtIndexPath(indexPath: NSIndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .None, withEvent event: NSEvent?, notifyDelegate: Bool = true) {
+    fileprivate func _selectItemAtIndexPath(_ indexPath: IndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .none, withEvent event: NSEvent?, notifyDelegate: Bool = true) {
         guard let indexPath = indexPath else {
             self.deselectAllItems(animated)
             return
@@ -1106,7 +1128,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         if indexPath._section >= self.info.numberOfSections || indexPath._item >= self.info.numberOfItemsInSection(indexPath._section) { return }
         
         if !self.allowsSelection { return }
-        if let shouldSelect = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: indexPath, withEvent: event) where !shouldSelect { return }
+        if let shouldSelect = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: indexPath, withEvent: event) , !shouldSelect { return }
         
         if self.allowsMultipleSelection == false {
             self._selectedIndexPaths.remove(indexPath)
@@ -1123,7 +1145,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
             self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
         }
         
-        if scrollPosition != .None {
+        if scrollPosition != .none {
             self.scrollToItemAtIndexPath(indexPath, atScrollPosition: scrollPosition, animated: animated, completion: nil)
         }
     }
@@ -1133,18 +1155,18 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // MARK: Multi Select
     /*-------------------------------------------------------------------------------*/
-    final func _selectItemAtIndexPath(indexPath: NSIndexPath,
+    final func _selectItemAtIndexPath(_ indexPath: IndexPath,
                                       atScrollPosition: CBCollectionViewScrollPosition,
                                       animated: Bool,
                                       selectionType: CBCollectionViewSelectionType) {
         
-        var indexesToSelect = Set<NSIndexPath>()
+        var indexesToSelect = Set<IndexPath>()
         
-        if selectionType == .Single || !self.allowsMultipleSelection {
+        if selectionType == .single || !self.allowsMultipleSelection {
             indexesToSelect.insert(indexPath)
         }
-        else if selectionType == .Multiple {
-            indexesToSelect.unionInPlace(self._selectedIndexPaths)
+        else if selectionType == .multiple {
+            indexesToSelect.formUnion(self._selectedIndexPaths)
             if indexesToSelect.contains(indexPath) {
                 indexesToSelect.remove(indexPath)
             }
@@ -1155,21 +1177,21 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         else {
             let firstIndex = self._firstSelection
             if let index = firstIndex {
-                let order = index.compare(indexPath)
-                var nextIndex : NSIndexPath? = firstIndex
+                let order = (index as NSIndexPath).compare(indexPath)
+                var nextIndex : IndexPath? = firstIndex
                 
                 while (nextIndex != nil && nextIndex! != indexPath) {
                     indexesToSelect.insert(nextIndex!)
-                    if order == NSComparisonResult.OrderedAscending {
+                    if order == ComparisonResult.orderedAscending {
                         nextIndex = self.indexPathForSelectableIndexPathAfter(nextIndex!)
                     }
-                    else if order == .OrderedDescending {
+                    else if order == .orderedDescending {
                         nextIndex = self.indexPathForSelectableIndexPathBefore(nextIndex!)
                     }
                 }
             }
             else {
-                indexesToSelect.insert(NSIndexPath.Zero)
+                indexesToSelect.insert(IndexPath.Zero)
             }
             indexesToSelect.insert(indexPath)
         }
@@ -1183,12 +1205,12 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         let finalSelect = indexesToSelect.remove(indexPath)
         for ip in indexesToSelect {
-            self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: false)
+            self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: false)
         }
         
         self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated, completion: nil)
         if let ip = finalSelect {
-            self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .None, withEvent: nil, notifyDelegate: true)
+            self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: true)
         }
         
         //        self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
@@ -1198,18 +1220,18 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // MARK: - Deselect
     /*-------------------------------------------------------------------------------*/
-    public func deselectItemsAtIndexPaths(indexPaths: [NSIndexPath], animated: Bool) {
+    open func deselectItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
         for ip in indexPaths { self._deselectItemAtIndexPath(ip, animated: animated, notifyDelegate: false) }
     }
-    public func deselectAllItems(animated: Bool = false) {
+    open func deselectAllItems(_ animated: Bool = false) {
         self._deselectAllItems(animated, notify: false)
     }
     
-    final func _deselectAllItems(animated: Bool, notify: Bool) {
+    final func _deselectAllItems(_ animated: Bool, notify: Bool) {
         var anIP = self._selectedIndexPaths.first
         self._lastSelection = nil
         
-        var ips = self._selectedIndexPaths.intersect(Set(self.indexPathsForVisibleItems()))
+        var ips = self._selectedIndexPaths.intersection(Set(self.indexPathsForVisibleItems()))
         
         for ip in ips { self._deselectItemAtIndexPath(ip, animated: animated, notifyDelegate: false) }
         self._selectedIndexPaths.removeAll()
@@ -1218,12 +1240,12 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     
-    public func deselectItemAtIndexPath(indexPath: NSIndexPath, animated: Bool) {
+    open func deselectItemAtIndexPath(_ indexPath: IndexPath, animated: Bool) {
         self._deselectItemAtIndexPath(indexPath, animated: animated, notifyDelegate: false)
     }
     
-    final func _deselectItemAtIndexPath(indexPath: NSIndexPath, animated: Bool, notifyDelegate : Bool = true) {
-        if let deselect = self.delegate?.collectionView?(self, shouldDeselectItemAtIndexPath: indexPath) where !deselect { return }
+    final func _deselectItemAtIndexPath(_ indexPath: IndexPath, animated: Bool, notifyDelegate : Bool = true) {
+        if let deselect = self.delegate?.collectionView?(self, shouldDeselectItemAtIndexPath: indexPath) , !deselect { return }
         contentDocumentView.preparedCellIndex[indexPath]?.setSelected(false, animated: true)
         self._selectedIndexPaths.remove(indexPath)
         if notifyDelegate {
@@ -1235,31 +1257,31 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     // MARK: - Internal
     /*-------------------------------------------------------------------------------*/
-    final func validateIndexPath(indexPath: NSIndexPath) -> Bool {
+    final func validateIndexPath(_ indexPath: IndexPath) -> Bool {
         if self.info.sections[indexPath._section] == nil { return false }
         return indexPath._section < self.info.numberOfSections && indexPath._item < self.info.sections[indexPath._section]!.numberOfItems
     }
     
-    final func indexPathForSelectableIndexPathBefore(indexPath: NSIndexPath) -> NSIndexPath?{
+    final func indexPathForSelectableIndexPathBefore(_ indexPath: IndexPath) -> IndexPath?{
         if (indexPath._item - 1 >= 0) {
-            return NSIndexPath._indexPathForItem(indexPath._item - 1, inSection: indexPath._section)
+            return IndexPath._indexPathForItem(indexPath._item - 1, inSection: indexPath._section)
         }
         else if indexPath._section - 1 >= 0 && self.info.numberOfSections > 0 {
             let numberOfItems = self.info.sections[indexPath._section - 1]!.numberOfItems;
-            let newIndexPath = NSIndexPath._indexPathForItem(numberOfItems - 1, inSection: indexPath._section - 1)
+            let newIndexPath = IndexPath._indexPathForItem(numberOfItems - 1, inSection: indexPath._section - 1)
             if self.validateIndexPath(newIndexPath) { return newIndexPath }
         }
         return nil;
     }
     
-    final func indexPathForSelectableIndexPathAfter(indexPath: NSIndexPath) -> NSIndexPath? {
+    final func indexPathForSelectableIndexPathAfter(_ indexPath: IndexPath) -> IndexPath? {
         if (indexPath._item + 1 >= self.info.sections[indexPath._section]?.numberOfItems) {
             // Jump up to the next section
-            let newIndexPath = NSIndexPath._indexPathForItem(0, inSection: indexPath._section+1)
+            let newIndexPath = IndexPath._indexPathForItem(0, inSection: indexPath._section+1)
             if self.validateIndexPath(newIndexPath) { return newIndexPath; }
         }
         else {
-            return NSIndexPath._indexPathForItem(indexPath._item + 1, inSection: indexPath._section)
+            return IndexPath._indexPathForItem(indexPath._item + 1, inSection: indexPath._section)
         }
         return nil;
     }
@@ -1268,13 +1290,13 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Layout Information
     /*-------------------------------------------------------------------------------*/
     
-    public final func frameForSection(section: Int) -> CGRect? {
+    public final func frameForSection(_ section: Int) -> CGRect? {
         return self.info.sections[section]?.frame
     }
-    public final func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? {
+    public final func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CBCollectionViewLayoutAttributes? {
         return self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
     }
-    public final func layoutAttributesForSupplementaryElementOfKind(kind: String, atIndexPath indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes?  {
+    public final func layoutAttributesForSupplementaryElementOfKind(_ kind: String, atIndexPath indexPath: IndexPath) -> CBCollectionViewLayoutAttributes?  {
         return self.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(kind, atIndexPath: indexPath)
     }
     
@@ -1282,17 +1304,17 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Cells & Index Paths
     /*-------------------------------------------------------------------------------*/
     
-    internal final func allIndexPaths() -> Set<NSIndexPath> { return self.info.allIndexPaths }
+    internal final func allIndexPaths() -> Set<IndexPath> { return self.info.allIndexPaths as Set<IndexPath> }
     
     
     
     
     // Visible
     public final func visibleCells() -> [CBCollectionViewCell]  { return Array( self.contentDocumentView.preparedCellIndex.values) }
-    public final func indexPathsForVisibleItems() -> [NSIndexPath]  { return Array(self.contentDocumentView.preparedCellIndex.keys) }
+    public final func indexPathsForVisibleItems() -> [IndexPath]  { return Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath] }
     
     // Checking visiblility
-    public final func itemAtIndexPathIsVisible(indexPath: NSIndexPath) -> Bool {
+    public final func itemAtIndexPathIsVisible(_ indexPath: IndexPath) -> Bool {
         if let frame = self.contentDocumentView.preparedCellIndex[indexPath]?.frame {
             return self.contentVisibleRect.intersects(frame)
         }
@@ -1300,20 +1322,20 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     // IP & Cell
-    public final func cellForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewCell?  { return self.contentDocumentView.preparedCellIndex[indexPath] }
-    public final func indexPathForCell(cell: CBCollectionViewCell) -> NSIndexPath?  { return cell.indexPath }
+    public final func cellForItemAtIndexPath(_ indexPath: IndexPath) -> CBCollectionViewCell?  { return self.contentDocumentView.preparedCellIndex[indexPath] }
+    public final func indexPathForCell(_ cell: CBCollectionViewCell) -> IndexPath?  { return cell.indexPath as IndexPath? }
     
     // IP By Location
-    public func indexPathForItemAtPoint(point: CGPoint) -> NSIndexPath?  {
+    open func indexPathForItemAtPoint(_ point: CGPoint) -> IndexPath?  {
         if self.info.numberOfSections == 0 { return nil }
         for sectionIndex in 0..<self.info.numberOfSections {
             guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
-            if !CGRectContainsPoint(sectionInfo.frame, point) || sectionInfo.numberOfItems == 0 { continue }
+            if !sectionInfo.frame.contains(point) || sectionInfo.numberOfItems == 0 { continue }
             
             for itemIndex in 0...sectionInfo.numberOfItems - 1 {
-                let indexPath = NSIndexPath._indexPathForItem(itemIndex, inSection: sectionIndex)
+                let indexPath = IndexPath._indexPathForItem(itemIndex, inSection: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
-                    if CGRectContainsPoint(attributes.frame, point) {
+                    if attributes.frame.contains(point) {
                         return indexPath;
                     }
                 }
@@ -1321,17 +1343,17 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         return nil;
     }
-    public func indexPathsForItemsInRect(rect: CGRect) -> Set<NSIndexPath> {
+    open func indexPathsForItemsInRect(_ rect: CGRect) -> Set<IndexPath> {
         if let providedIndexPaths = self.collectionViewLayout.indexPathsForItemsInRect(rect) { return providedIndexPaths }
-        if CGRectEqualToRect(rect, CGRectZero) || self.info.numberOfSections == 0 { return [] }
-        var indexPaths = Set<NSIndexPath>()
+        if rect.equalTo(CGRect.zero) || self.info.numberOfSections == 0 { return [] }
+        var indexPaths = Set<IndexPath>()
         for sectionIndex in 0...self.info.numberOfSections - 1 {
             guard let section = self.info.sections[sectionIndex] else { continue }
-            if CGRectIsEmpty(section.frame) || !CGRectIntersectsRect(section.frame, rect) { continue }
+            if section.frame.isEmpty || !section.frame.intersects(rect) { continue }
             for item in 0...section.numberOfItems - 1 {
-                let indexPath = NSIndexPath._indexPathForItem(item, inSection: sectionIndex)
+                let indexPath = IndexPath._indexPathForItem(item, inSection: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
-                    if (CGRectIntersectsRect(attributes.frame, rect)) {
+                    if (attributes.frame.intersects(rect)) {
                         indexPaths.insert(indexPath)
                     }
                 }
@@ -1341,7 +1363,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     // Rect for item
-    internal final func rectForItemAtIndexPath(indexPath: NSIndexPath) -> CGRect? {
+    internal final func rectForItemAtIndexPath(_ indexPath: IndexPath) -> CGRect? {
         if indexPath._section < self.info.numberOfSections {
             let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath);
             return attributes?.frame;
@@ -1353,35 +1375,35 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     // MARK: - Supplementary Views & Index Paths
     /*-------------------------------------------------------------------------------*/
     
-    public final func indexPathForSectionAtPoint(point: CGPoint) -> NSIndexPath? {
+    public final func indexPathForSectionAtPoint(_ point: CGPoint) -> IndexPath? {
         for sectionIndex in 0..<self.info.numberOfSections {
             guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
             var frame = sectionInfo.frame
             frame.origin.x = 0
             frame.size.width = self.bounds.size.width
-            if CGRectContainsPoint(frame, point) {
-                return NSIndexPath._indexPathForItem(0, inSection: sectionIndex)
+            if frame.contains(point) {
+                return IndexPath._indexPathForItem(0, inSection: sectionIndex)
             }
         }
         return nil
     }
     
-    public final func indexPathForSupplementaryView(view: CBCollectionReusableView) -> NSIndexPath? { return view.indexPath }
+    public final func indexPathForSupplementaryView(_ view: CBCollectionReusableView) -> IndexPath? { return view.indexPath as IndexPath? }
     
-    public final func viewForSupplementaryViewOfKind(kind: String, atIndexPath: NSIndexPath) -> CBCollectionReusableView? {
+    public final func viewForSupplementaryViewOfKind(_ kind: String, atIndexPath: IndexPath) -> CBCollectionReusableView? {
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: atIndexPath)
         return self.contentDocumentView.preparedSupplementaryViewIndex[id]
     }
     
-    internal final func _identifiersForSupplementaryViewsInRect(rect: CGRect) -> Set<SupplementaryViewIdentifier> {
+    internal final func _identifiersForSupplementaryViewsInRect(_ rect: CGRect) -> Set<SupplementaryViewIdentifier> {
         var visibleIdentifiers = Set<SupplementaryViewIdentifier>()
-        if CGRectEqualToRect(rect, CGRectZero) { return [] }
+        if rect.equalTo(CGRect.zero) { return [] }
         for sectionInfo in self.info.sections {
-            if !CGRectIntersectsRect(sectionInfo.1.frame, rect) { continue }
+            if !sectionInfo.1.frame.intersects(rect) { continue }
             for kind in self._registeredSupplementaryViewKinds {
-                let ip = NSIndexPath._indexPathForItem(0, inSection: sectionInfo.1.section)
+                let ip = IndexPath._indexPathForItem(0, inSection: sectionInfo.1.section)
                 if let attrs = self.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(kind, atIndexPath: ip) {
-                    if CGRectIntersectsRect(attrs.frame, rect) {
+                    if attrs.frame.intersects(rect) {
                         visibleIdentifiers.insert(SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: ip))
                     }
                 }
@@ -1393,69 +1415,69 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
     // MARK: - Programatic Scrolling
-    public func scrollToItemAtIndexPath(indexPath: NSIndexPath, atScrollPosition scrollPosition: CBCollectionViewScrollPosition, animated: Bool, completion: CBAnimationCompletion?) {
+    open func scrollToItemAtIndexPath(_ indexPath: IndexPath, atScrollPosition scrollPosition: CBCollectionViewScrollPosition, animated: Bool, completion: CBAnimationCompletion?) {
         if self.info.numberOfItemsInSection(indexPath._section) < indexPath._item { return }
-        if let shouldScroll = self.delegate?.collectionView?(self, shouldScrollToItemAtIndexPath: indexPath) where shouldScroll != true {
-            completion?(finished: false)
+        if let shouldScroll = self.delegate?.collectionView?(self, shouldScrollToItemAtIndexPath: indexPath) , shouldScroll != true {
+            completion?(false)
             return
         }
         
         guard let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(indexPath, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(indexPath) else {
-            completion?(finished: false)
+            completion?(false)
             return
         }
         
         self.scrollToRect(rect, atPosition: scrollPosition, animated: animated, completion: { fin in
-            completion?(finished: fin)
+            completion?(fin)
             self.delegate?.collectionView?(self, didScrollToItemAtIndexPath: indexPath)
         })
     }
     
-    public func scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, completion: CBAnimationCompletion?) {
+    open func scrollToRect(_ aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, completion: CBAnimationCompletion?) {
         self._scrollToRect(aRect, atPosition: atPosition, animated: animated, prepare: true, completion: completion)
     }
     
-    public func _scrollToRect(aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, prepare: Bool, completion: CBAnimationCompletion?) {
+    open func _scrollToRect(_ aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, prepare: Bool, completion: CBAnimationCompletion?) {
         var rect = aRect
         
         let visibleRect = self.contentVisibleRect
         switch atPosition {
-        case .Top:
+        case .top:
             // make the top of our rect flush with the top of the visible bounds
-            rect.size.height = CGRectGetHeight(visibleRect) - contentInsets.top;
+            rect.size.height = visibleRect.height - contentInsets.top;
             rect.origin.y = aRect.origin.y - contentInsets.top;
             break;
-        case .Centered:
+        case .centered:
             // TODO
             rect.size.height = self.bounds.size.height;
-            rect.origin.y += (CGRectGetHeight(visibleRect) / 2.0) - CGRectGetHeight(rect);
+            rect.origin.y += (visibleRect.height / 2.0) - rect.height;
             break;
-        case .Bottom:
+        case .bottom:
             // make the bottom of our rect flush with the bottom of the visible bounds
-            rect.size.height = CGRectGetHeight(visibleRect);
-            rect.origin.y -= CGRectGetHeight(visibleRect) - contentInsets.top;
+            rect.size.height = visibleRect.height;
+            rect.origin.y -= visibleRect.height - contentInsets.top;
             break;
-        case .None:
+        case .none:
             // no scroll needed
-            completion?(finished: true)
+            completion?(true)
             return;
-        case .Nearest:
+        case .nearest:
             if visibleRect.contains(rect) {
-                completion?(finished: true)
+                completion?(true)
                 return
             }
             
             if rect.origin.y < visibleRect.origin.y {
                 rect = visibleRect.offsetBy(dx: 0, dy: rect.origin.y - visibleRect.origin.y - self.contentInsets.top)
             }
-            else if CGRectGetMaxY(rect) >  CGRectGetMaxY(visibleRect) {
-                rect = visibleRect.offsetBy(dx: 0, dy: CGRectGetMaxY(rect) - CGRectGetMaxY(visibleRect) + self.contentInsets.top)
+            else if rect.maxY >  visibleRect.maxY {
+                rect = visibleRect.offsetBy(dx: 0, dy: rect.maxY - visibleRect.maxY + self.contentInsets.top)
             }
             // We just pass the cell's frame onto the scroll view. It calculates this for us.
             break;
         }
         if prepare {
-            self.contentDocumentView.prepareRect(CGRectUnion(rect, visibleRect), force: false)
+            self.contentDocumentView.prepareRect(rect.union(visibleRect), force: false)
         }
         self.clipView?.scrollRectToVisible(rect, animated: animated, completion: completion)
     }
@@ -1464,12 +1486,12 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
     // MARK: - Dragging Source
-    var draggedIPs : [NSIndexPath] = []
+    var draggedIPs : [IndexPath] = []
     
-    public final func indexPathsForDraggingItems() -> [NSIndexPath] { return draggedIPs }
+    public final func indexPathsForDraggingItems() -> [IndexPath] { return draggedIPs }
     
-    override public func mouseDragged(theEvent: NSEvent) {
-        super.mouseDragged(theEvent)
+    override open func mouseDragged(with theEvent: NSEvent) {
+        super.mouseDragged(with: theEvent)
         self.window?.makeFirstResponder(self)
         self.draggedIPs = []
         var items : [NSDraggingItem] = []
@@ -1478,7 +1500,7 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         
         if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAtIndexPath: mouseDownIP!, withEvent: theEvent) != true { return }
         
-        let ips = self.indexPathsForSelectedItems().sort { (ip1, ip2) -> Bool in
+        let ips = self.indexPathsForSelectedItems().sorted { (ip1, ip2) -> Bool in
             let before = ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
             return before
         }
@@ -1500,13 +1522,12 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                 // The frame of the cell in relation to the document. This is where the dragging
                 // image should start.
                 
-                let originalFrame = UnsafeMutablePointer<CGRect>.alloc(1)
-                let oFrame = self.convertRect( rect,
-                                               fromView: self.documentView as? NSView
-                )
-                originalFrame.initialize(oFrame)
+//                UnsafeMutablePointer<CGRect>
+                let originalFrame = UnsafeMutablePointer<CGRect>.allocate(capacity: 1)
+                let oFrame = self.convert( rect, from: self.documentView)
+                originalFrame.initialize(to: oFrame)
                 self.dataSource?.collectionView?(self, dragRectForItemAtIndexPath: ip, withStartingRect: originalFrame)
-                let frame = originalFrame.memory
+                let frame = originalFrame.pointee
                 
                 self.draggedIPs.append(ip)
                 let item = NSDraggingItem(pasteboardWriter: writer)
@@ -1517,12 +1538,11 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
                         
                         var image = self.dataSource?.collectionView?(self, dragContentsForItemAtIndexPath: ip)
                         if image == nil, let cell = self.cellForItemAtIndexPath(ip) {
-                            image = NSImage(data: cell.dataWithPDFInsideRect(cell.bounds))
+                            image = NSImage(data: cell.dataWithPDF(inside: cell.bounds))
                         }
-                        let comp = NSDraggingImageComponent()
-                        
+                        let comp = NSDraggingImageComponent(key: NSDraggingImageComponentIconKey)
                         comp.contents = image
-                        comp.frame = CGRect(origin: CGPointZero, size: frame.size)
+                        comp.frame = CGRect(origin: CGPoint.zero, size: frame.size)
                         return [comp]
                     }
                 }
@@ -1532,52 +1552,52 @@ public class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         
         if items.count > 0 {
-            let session = self.beginDraggingSessionWithItems(items, event: theEvent, source: self)
+            let session = self.beginDraggingSession(with: items, event: theEvent, source: self)
             if items.count > 1 {
-                session.draggingFormation = .Pile
+                session.draggingFormation = .pile
             }
         }
     }
     
-    public func draggingSession(session: NSDraggingSession, sourceOperationMaskForDraggingContext context: NSDraggingContext) -> NSDragOperation {
-        if context == NSDraggingContext.OutsideApplication { return .Copy }
-        return .Move
+    open func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+        if context == NSDraggingContext.outsideApplication { return .copy }
+        return .move
     }
     
-    public func draggingSession(session: NSDraggingSession, willBeginAtPoint screenPoint: NSPoint) {
+    open func draggingSession(_ session: NSDraggingSession, willBeginAt screenPoint: NSPoint) {
         self.interactionDelegate?.collectionView?(self, draggingSession: session, willBeginAtPoint: screenPoint)
     }
     
-    public func draggingSession(session: NSDraggingSession, movedToPoint screenPoint: NSPoint) {
+    open func draggingSession(_ session: NSDraggingSession, movedTo screenPoint: NSPoint) {
         self.interactionDelegate?.collectionView?(self, draggingSession: session, didMoveToPoint: screenPoint)
     }
     
-    public func draggingSession(session: NSDraggingSession, endedAtPoint screenPoint: NSPoint, operation: NSDragOperation) {
+    open func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
 //        self.mouseDownIP = nil
         self.interactionDelegate?.collectionView?(self, draggingSession: session, enedAtPoint: screenPoint, withOperation: operation, draggedIndexPaths: draggedIPs)
     }
     
     
     // MARK: - Draggng Destination
-    public override func draggingEntered(sender: NSDraggingInfo) -> NSDragOperation {
+    open override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
         if let operation = self.interactionDelegate?.collectionView?(self, dragEntered: sender) {
             return operation
         }
-        return .None
+        return NSDragOperation()
     }
-    public override func draggingExited(sender: NSDraggingInfo?) {
+    open override func draggingExited(_ sender: NSDraggingInfo?) {
         self.interactionDelegate?.collectionView?(self, dragExited: sender)
     }
-    public override func draggingEnded(sender: NSDraggingInfo?) {
+    open override func draggingEnded(_ sender: NSDraggingInfo?) {
         self.interactionDelegate?.collectionView?(self, dragEnded: sender)
     }
-    public override func draggingUpdated(sender: NSDraggingInfo) -> NSDragOperation {
+    open override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
         if let operation = self.interactionDelegate?.collectionView?(self, dragUpdated: sender) {
             return operation
         }
         return sender.draggingSourceOperationMask()
     }
-    public override func performDragOperation(sender: NSDraggingInfo) -> Bool {
+    open override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         if let perform = self.interactionDelegate?.collectionView?(self, performDragOperation: sender) {
             return perform
         }

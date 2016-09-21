@@ -9,43 +9,43 @@
 import Foundation
 
 
-public class CBCollectionViewLayoutAttributes {
-    public var frame: CGRect = CGRectZero
-    public var center: CGPoint {
+open class CBCollectionViewLayoutAttributes {
+    open var frame: CGRect = CGRect.zero
+    open var center: CGPoint {
         get { return CGPoint(x: frame.origin.x + frame.size.width/2, y: frame.origin.y + frame.size.height/2) }
         set { self.frame.origin = CGPoint(x: center.x - frame.size.width/2, y: center.y - frame.size.height/2) }
     }
-    public var size: CGSize {
+    open var size: CGSize {
         get { return self.frame.size }
         set { self.frame.size = size }
     }
-    public var bounds: CGRect {
-        get { return CGRect(origin: CGPointZero, size: self.frame.size) }
+    open var bounds: CGRect {
+        get { return CGRect(origin: CGPoint.zero, size: self.frame.size) }
         set { self.frame.size = bounds.size }
     }
-    public var alpha: CGFloat = 1
-    public var zIndex: CGFloat = 0
-    public var hidden: Bool = false
-    public var floating: Bool = false
+    open var alpha: CGFloat = 1
+    open var zIndex: CGFloat = 0
+    open var hidden: Bool = false
+    open var floating: Bool = false
     
-    public let indexPath: NSIndexPath
-    public let representedElementCategory: CBCollectionElementCategory
-    public let representedElementKind: String?
+    open let indexPath: IndexPath
+    open let representedElementCategory: CBCollectionElementCategory
+    open let representedElementKind: String?
     
-    public init(forCellWithIndexPath indexPath: NSIndexPath) {
-        self.representedElementCategory = .Cell
+    public init(forCellWithIndexPath indexPath: IndexPath) {
+        self.representedElementCategory = .cell
         self.representedElementKind = nil
         self.zIndex = 1
         self.indexPath = indexPath
     }
-    public init(forSupplementaryViewOfKind elementKind: String, withIndexPath indexPath: NSIndexPath) {
-        self.representedElementCategory = .SupplementaryView
+    public init(forSupplementaryViewOfKind elementKind: String, withIndexPath indexPath: IndexPath) {
+        self.representedElementCategory = .supplementaryView
         self.representedElementKind = elementKind
         self.zIndex = 1000
         self.indexPath = indexPath
     }
     
-    public var desciption : String {
+    open var desciption : String {
         var str = "CBCollectionViewLayoutAttributes-"
         str += " IP: \(self.indexPath._section)-\(self.indexPath._item) "
         str += " Frame: \(self.frame)"
@@ -56,7 +56,7 @@ public class CBCollectionViewLayoutAttributes {
     
     func copy() -> CBCollectionViewLayoutAttributes {
         var attrs : CBCollectionViewLayoutAttributes!
-        if self.representedElementCategory == .Cell {
+        if self.representedElementCategory == .cell {
             attrs = CBCollectionViewLayoutAttributes(forCellWithIndexPath: self.indexPath)
         }
         else {
@@ -68,9 +68,9 @@ public class CBCollectionViewLayoutAttributes {
         attrs.hidden = self.hidden
         return attrs
     }
-    internal func copyWithIndexPath(newIndexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes {
+    internal func copyWithIndexPath(_ newIndexPath: IndexPath) -> CBCollectionViewLayoutAttributes {
         var attrs : CBCollectionViewLayoutAttributes!
-        if self.representedElementCategory == .Cell {
+        if self.representedElementCategory == .cell {
             attrs = CBCollectionViewLayoutAttributes(forCellWithIndexPath: newIndexPath)
         }
         else {

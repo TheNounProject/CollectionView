@@ -10,18 +10,18 @@ import Foundation
 import CBCollectionView
 
 
-public class CBCollectionViewController : NSViewController, CBCollectionViewDataSource, CBCollectionViewDelegate {
+open class CBCollectionViewController : NSViewController, CBCollectionViewDataSource, CBCollectionViewDelegate {
     
-    public let collectionView = CBCollectionView()
+    open let collectionView = CBCollectionView()
     
-    public override func loadView() {
+    open override func loadView() {
         if self.nibName != nil { super.loadView() }
         else {
-            self.view = NSView(frame: NSRect(origin: CGPointZero, size: CGSize(width: 100, height: 100)))
+            self.view = NSView(frame: NSRect(origin: CGPoint.zero, size: CGSize(width: 100, height: 100)))
         }
     }
     
-    override public func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         
         let layout = CBCollectionViewListLayout()
@@ -35,42 +35,42 @@ public class CBCollectionViewController : NSViewController, CBCollectionViewData
         collectionView.delegate = self
     }
     
-    public func adjustContentInsets(insets: NSEdgeInsets) {
+    open func adjustContentInsets(_ insets: EdgeInsets) {
         
-        self.adjustConstraint(.Top, value: insets.top)
-        self.adjustConstraint(.Left, value: insets.left)
-        self.adjustConstraint(.Right, value: insets.right)
-        self.adjustConstraint(.Bottom, value: insets.bottom)
+        self.adjustConstraint(.top, value: insets.top)
+        self.adjustConstraint(.left, value: insets.left)
+        self.adjustConstraint(.right, value: insets.right)
+        self.adjustConstraint(.bottom, value: insets.bottom)
         
     }
     
     // Must be .Top, .Right, .Bottom, or .Left
-    public func adjustConstraint(attribute: NSLayoutAttribute, value: CGFloat?) {
+    open func adjustConstraint(_ attribute: NSLayoutAttribute, value: CGFloat?) {
         var constraint: NSLayoutConstraint?
         for constraint in self.self.view.constraints {
             if (constraint.secondAttribute == attribute && (constraint.secondItem as? CBCollectionView) == collectionView)
             || (constraint.firstAttribute == attribute && (constraint.firstItem as? CBCollectionView) == collectionView) {
                 if let val = value {
                     constraint.constant = val
-                    constraint.active = true
+                    constraint.isActive = true
                 }
                 else {
-                    constraint.active = false
+                    constraint.isActive = false
                 }
                 return
             }
         }
     }
     
-    public func numberOfSectionsInCollectionView(collectionView: CBCollectionView) -> Int {
+    open func numberOfSectionsInCollectionView(_ collectionView: CBCollectionView) -> Int {
         return 0
     }
     
-    public func collectionView(collectionView: CBCollectionView, numberOfItemsInSection section: Int) -> Int {
+    open func collectionView(_ collectionView: CBCollectionView, numberOfItemsInSection section: Int) -> Int {
         return 0
     }
     
-    public func collectionView(collectionView: CBCollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> CBCollectionViewCell! {
+    open func collectionView(_ collectionView: CBCollectionView, cellForItemAtIndexPath indexPath: IndexPath) -> CBCollectionViewCell! {
         assertionFailure("CBCollectionViewController must implement collectionView:cellForItemAtIndexPath:")
         return CBCollectionViewCell()
     }

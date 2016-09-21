@@ -9,22 +9,22 @@
 import Foundation
 
 
-public class CBScrollView : NSScrollView {
+open class CBScrollView : NSScrollView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         self.swapClipView()
     }
-    public override var flipped : Bool { return true }
+    open override var isFlipped : Bool { return true }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.swapClipView()
     }
-    public var clipView : CBClipView? {
+    open var clipView : CBClipView? {
         return self.contentView as? CBClipView
     }
     
     func swapClipView() {
-        if self.contentView.isKindOfClass(CBClipView) { return }
+        if self.contentView.isKind(of: CBClipView.self) { return }
         let docView = self.documentView
         let clipView = CBClipView(frame: self.contentView.frame)
         clipView.drawsBackground = self.drawsBackground
@@ -34,8 +34,8 @@ public class CBScrollView : NSScrollView {
 }
 
 class FloatingSupplementaryView : NSView {
-    override var flipped : Bool { return true }
-    internal override func hitTest(aPoint: NSPoint) -> NSView? {
+    override var isFlipped : Bool { return true }
+    internal override func hitTest(_ aPoint: NSPoint) -> NSView? {
         for view in self.subviews {
             if view.frame.contains(aPoint){
                 return super.hitTest(aPoint)

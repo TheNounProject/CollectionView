@@ -9,28 +9,28 @@
 import Foundation
 
 
-public class CBCollectionViewLayout : NSObject {
+open class CBCollectionViewLayout : NSObject {
     
-    public internal(set) weak var collectionView: CBCollectionView?
-    public var scrollDirection : CBCollectionViewScrollDirection { return .Vertical }
+    open internal(set) weak var collectionView: CBCollectionView?
+    open var scrollDirection : CBCollectionViewScrollDirection { return .vertical }
     
-    public func invalidateLayout() { }
-    public func prepareLayout() { }
-    public var pinHeadersToTop: Bool = true
-    var allIndexPaths = Set<NSIndexPath>()
+    open func invalidateLayout() { }
+    open func prepareLayout() { }
+    open var pinHeadersToTop: Bool = true
+    var allIndexPaths = Set<IndexPath>()
     
-    public func layoutAttributesForElementsInRect(rect: CGRect) -> [CBCollectionViewLayoutAttributes]? { return nil } // return an array layout attributes instances for all the views in the given rect
-    public func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? { return nil }
-    public func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> CBCollectionViewLayoutAttributes? { return nil }
-    public func scrollRectForItemAtIndexPath(indexPath: NSIndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? { return nil }
-    public func indexPathsForItemsInRect(rect: CGRect) -> Set<NSIndexPath>? { return nil }
+    open func layoutAttributesForElementsInRect(_ rect: CGRect) -> [CBCollectionViewLayoutAttributes]? { return nil } // return an array layout attributes instances for all the views in the given rect
+    open func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CBCollectionViewLayoutAttributes? { return nil }
+    open func layoutAttributesForSupplementaryViewOfKind(_ elementKind: String, atIndexPath indexPath: IndexPath) -> CBCollectionViewLayoutAttributes? { return nil }
+    open func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? { return nil }
+    open func indexPathsForItemsInRect(_ rect: CGRect) -> Set<IndexPath>? { return nil }
     
-    public func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool { return true }  // return YES to cause the collection view to requery the layout for geometry information
+    open func shouldInvalidateLayoutForBoundsChange(_ newBounds: CGRect) -> Bool { return true }  // return YES to cause the collection view to requery the layout for geometry information
     
     // Subclasses must override this method and use it to return the width and height of the collection view’s content. These values represent the width and height of all the content, not just the content that is currently visible. The collection view uses this information to configure its own content size to facilitate scrolling.
-    public func collectionViewContentSize() -> CGSize { return CGSizeZero }
+    open func collectionViewContentSize() -> CGSize { return CGSize.zero }
     
-    public func rectForSection(section: Int) -> CGRect { return CGRectZero }
+    open func rectForSection(_ section: Int) -> CGRect { return CGRect.zero }
     
-    public func indexPathForNextItemInDirection(direction: CBCollectionViewDirection, afterItemAtIndexPath currentIndexPath: NSIndexPath) -> NSIndexPath? { return currentIndexPath }
+    open func indexPathForNextItemInDirection(_ direction: CBCollectionViewDirection, afterItemAtIndexPath currentIndexPath: IndexPath) -> IndexPath? { return currentIndexPath }
 }

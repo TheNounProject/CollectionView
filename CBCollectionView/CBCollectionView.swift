@@ -139,9 +139,9 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     
     fileprivate func _firstObjectOfClass(_ aClass: AnyClass, inNib: NSNib) -> NSView? {
         var foundObject: AnyObject? = nil
-        var topLevelObjects :NSArray?
-        if inNib.instantiate(withOwner: self, topLevelObjects: &topLevelObjects!) {
-            for obj in topLevelObjects! {
+        var topLevelObjects = NSArray()
+        if inNib.instantiate(withOwner: self, topLevelObjects: &topLevelObjects) {
+            for obj in topLevelObjects {
                 if let o = obj as? AnyObject, o.isKind(of: aClass) {
                     foundObject = o
                     break

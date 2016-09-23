@@ -64,15 +64,10 @@ open class CBClipView : NSClipView {
     
     lazy var displayLink : CVDisplayLink = {
         
-        let linkCallback : CVDisplayLinkOutputCallback = {(displayLink: CVDisplayLink,
-            _ inNow: UnsafePointer<CVTimeStamp>,
-            _ inOutputTime: UnsafePointer<CVTimeStamp>,
-            _ flagsIn: CVOptionFlags,
-            _ flagsOut: UnsafeMutablePointer<CVOptionFlags>,
-            _ displayLinkContext: UnsafeMutableRawPointer) -> CVReturn in
+        var linkCallback : CVDisplayLinkOutputCallback = {( displayLink, _, _, _, _, displayLinkContext) -> CVReturn in
             unsafeBitCast(displayLinkContext, to: CBClipView.self).updateOrigin()
             return kCVReturnSuccess
-        } as! CVDisplayLinkOutputCallback
+        }
         
         var link : CVDisplayLink?
         CVDisplayLinkCreateWithActiveCGDisplays(&link)

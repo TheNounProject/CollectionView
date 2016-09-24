@@ -7,15 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A24A61A9D4A4BE040C4A7E0A /* libPods-CBCollectionViewTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1966F9F26D5254A44A775B4B /* libPods-CBCollectionViewTests.a */; };
 		DE316FAD1CC72ABC00F763E6 /* CBClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* CBClipView.swift */; };
 		DE82E9571D78B6E700346B9E /* CBScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82E9561D78B6E700346B9E /* CBScrollView.swift */; };
 		DE82E9591D78B78300346B9E /* CBCollectionViewLayoutAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82E9581D78B78300346B9E /* CBCollectionViewLayoutAttributes.swift */; };
 		DE82E95C1D78BF9300346B9E /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82E95B1D78BF9300346B9E /* Protocols.swift */; };
 		DE82E95E1D78BFC900346B9E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82E95D1D78BFC900346B9E /* Constants.swift */; };
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */; };
-		DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */; };
 		DEA6BA631D52E00900B3EF24 /* CBCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA6BA621D52E00900B3EF24 /* CBCollectionViewController.swift */; };
 		DEE3B5831D243A9900AD34F1 /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
 		DEE3B5851D246CB100AD34F1 /* CBCollectionViewListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE3B5841D246CB100AD34F1 /* CBCollectionViewListLayout.swift */; };
@@ -28,16 +25,6 @@
 		DEF14BA01CBDD83B00553CEF /* CBCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072091CAC7FF000AD0E37 /* CBCollectionView.swift */; };
 		DEF14BA11CBDD83B00553CEF /* CBCollectionViewDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90720A1CAC7FF000AD0E37 /* CBCollectionViewDocumentView.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		DE9071F51CAC7FD800AD0E37 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DE9071E01CAC7FD800AD0E37 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DE9071E81CAC7FD800AD0E37;
-			remoteInfo = CBCollectionView;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1966F9F26D5254A44A775B4B /* libPods-CBCollectionViewTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-CBCollectionViewTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -55,9 +42,6 @@
 		DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CBCollectionView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCollectionView.h; sourceTree = "<group>"; };
 		DE9071EE1CAC7FD800AD0E37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		DE9071F31CAC7FD800AD0E37 /* CBCollectionViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CBCollectionViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CBCollectionViewTests.swift; sourceTree = "<group>"; };
-		DE9071FA1CAC7FD800AD0E37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DE9072031CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewColumnLayout.swift; sourceTree = "<group>"; };
 		DE9072041CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewHorizontalLayout.swift; sourceTree = "<group>"; };
 		DE9072051CAC7FF000AD0E37 /* CBCollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CBCollectionViewLayout.swift; sourceTree = "<group>"; };
@@ -78,15 +62,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DE9071F01CAC7FD800AD0E37 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DE9071F41CAC7FD800AD0E37 /* CBCollectionView.framework in Frameworks */,
-				A24A61A9D4A4BE040C4A7E0A /* libPods-CBCollectionViewTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,7 +105,6 @@
 			isa = PBXGroup;
 			children = (
 				DE9071EB1CAC7FD800AD0E37 /* CBCollectionView */,
-				DE9071F71CAC7FD800AD0E37 /* CBCollectionViewTests */,
 				DE9071EA1CAC7FD800AD0E37 /* Products */,
 				D5362258CB5B0860171CF4CF /* Pods */,
 				2B54715A1BAF66E7D215AF89 /* Frameworks */,
@@ -141,7 +115,6 @@
 			isa = PBXGroup;
 			children = (
 				DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */,
-				DE9071F31CAC7FD800AD0E37 /* CBCollectionViewTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -167,15 +140,6 @@
 				DE9071EE1CAC7FD800AD0E37 /* Info.plist */,
 			);
 			path = CBCollectionView;
-			sourceTree = "<group>";
-		};
-		DE9071F71CAC7FD800AD0E37 /* CBCollectionViewTests */ = {
-			isa = PBXGroup;
-			children = (
-				DE9071F81CAC7FD800AD0E37 /* CBCollectionViewTests.swift */,
-				DE9071FA1CAC7FD800AD0E37 /* Info.plist */,
-			);
-			path = CBCollectionViewTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,27 +174,6 @@
 			productReference = DE9071E91CAC7FD800AD0E37 /* CBCollectionView.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		DE9071F21CAC7FD800AD0E37 /* CBCollectionViewTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DE9072001CAC7FD800AD0E37 /* Build configuration list for PBXNativeTarget "CBCollectionViewTests" */;
-			buildPhases = (
-				0BB613CE4767F5E9A83D47DE /* Check Pods Manifest.lock */,
-				DE9071EF1CAC7FD800AD0E37 /* Sources */,
-				DE9071F01CAC7FD800AD0E37 /* Frameworks */,
-				DE9071F11CAC7FD800AD0E37 /* Resources */,
-				F219A58AA890BCB8A9C6B80D /* Embed Pods Frameworks */,
-				3717E451733FC5366F7F7D72 /* Copy Pods Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				DE9071F61CAC7FD800AD0E37 /* PBXTargetDependency */,
-			);
-			name = CBCollectionViewTests;
-			productName = CBCollectionViewTests;
-			productReference = DE9071F31CAC7FD800AD0E37 /* CBCollectionViewTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -242,10 +185,6 @@
 				ORGANIZATIONNAME = "Noun Project";
 				TargetAttributes = {
 					DE9071E81CAC7FD800AD0E37 = {
-						CreatedOnToolsVersion = 7.2.1;
-						LastSwiftMigration = 0800;
-					};
-					DE9071F21CAC7FD800AD0E37 = {
 						CreatedOnToolsVersion = 7.2.1;
 						LastSwiftMigration = 0800;
 					};
@@ -264,7 +203,6 @@
 			projectRoot = "";
 			targets = (
 				DE9071E81CAC7FD800AD0E37 /* CBCollectionView */,
-				DE9071F21CAC7FD800AD0E37 /* CBCollectionViewTests */,
 			);
 		};
 /* End PBXProject section */
@@ -277,62 +215,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DE9071F11CAC7FD800AD0E37 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		0BB613CE4767F5E9A83D47DE /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		3717E451733FC5366F7F7D72 /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CBCollectionViewTests/Pods-CBCollectionViewTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F219A58AA890BCB8A9C6B80D /* Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-CBCollectionViewTests/Pods-CBCollectionViewTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DE9071E41CAC7FD800AD0E37 /* Sources */ = {
@@ -358,23 +241,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DE9071EF1CAC7FD800AD0E37 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DE9071F91CAC7FD800AD0E37 /* CBCollectionViewTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		DE9071F61CAC7FD800AD0E37 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DE9071E81CAC7FD800AD0E37 /* CBCollectionView */;
-			targetProxy = DE9071F51CAC7FD800AD0E37 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		DE9071FB1CAC7FD800AD0E37 /* Debug */ = {
@@ -511,32 +378,6 @@
 			};
 			name = Release;
 		};
-		DE9072011CAC7FD800AD0E37 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = D3D59CF95F26A3F10F366F97 /* Pods-CBCollectionViewTests.debug.xcconfig */;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = CBCollectionViewTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = thenounproject.CBCollectionViewTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-			};
-			name = Debug;
-		};
-		DE9072021CAC7FD800AD0E37 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = DFB5645491B0AF5CA579AE5E /* Pods-CBCollectionViewTests.release.xcconfig */;
-			buildSettings = {
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = CBCollectionViewTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = thenounproject.CBCollectionViewTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -554,15 +395,6 @@
 			buildConfigurations = (
 				DE9071FE1CAC7FD800AD0E37 /* Debug */,
 				DE9071FF1CAC7FD800AD0E37 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DE9072001CAC7FD800AD0E37 /* Build configuration list for PBXNativeTarget "CBCollectionViewTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DE9072011CAC7FD800AD0E37 /* Debug */,
-				DE9072021CAC7FD800AD0E37 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

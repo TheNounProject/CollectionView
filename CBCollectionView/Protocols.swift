@@ -14,7 +14,7 @@ import Foundation
 @objc public protocol CBCollectionViewDataSource {
     func numberOfSectionsInCollectionView(_ collectionView: CBCollectionView) -> Int
     func collectionView(_ collectionView: CBCollectionView, numberOfItemsInSection section: Int) -> Int
-    func collectionView(_ collectionView: CBCollectionView, cellForItemAtIndexPath indexPath: IndexPath) -> CBCollectionViewCell!
+    func collectionView(_ collectionView: CBCollectionView, cellForItemAtIndexPath indexPath: IndexPath) -> CBCollectionViewCell
     @objc optional func collectionView(_ collectionView: CBCollectionView, viewForSupplementaryElementOfKind kind: String, forIndexPath indexPath: IndexPath) -> CBCollectionReusableView
     @objc optional func collectionView(_ collectionView: CBCollectionView, pasteboardWriterForItemAtIndexPath indexPath: IndexPath) -> NSPasteboardWriting?
     @objc optional func collectionView(_ collectionView: CBCollectionView, dragContentsForItemAtIndexPath indexPath: IndexPath) -> NSImage?

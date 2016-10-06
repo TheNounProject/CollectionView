@@ -31,7 +31,7 @@ fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 open class CBCollectionView : CBScrollView, NSDraggingSource {
     
-    open weak var contentDocumentView : CBCollectionViewDocumentView! {
+    public var contentDocumentView : CBCollectionViewDocumentView {
         return self.documentView as! CBCollectionViewDocumentView
     }
     open override var mouseDownCanMoveWindow: Bool { return true }
@@ -105,18 +105,18 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     fileprivate var _supplementaryViewClasses : [SupplementaryViewIdentifier:CBCollectionReusableView.Type] = [:]
     fileprivate var _supplementaryViewNibs : [SupplementaryViewIdentifier:NSNib] = [:]
     
-    open func registerClass(_ cellClass: CBCollectionViewCell.Type!, forCellWithReuseIdentifier identifier: String!) {
+    open func registerClass(_ cellClass: CBCollectionViewCell.Type, forCellWithReuseIdentifier identifier: String) {
         assert(cellClass.isSubclass(of: CBCollectionViewCell.self), "CBCollectionView: Registered cells views must be subclasses of CBCollectionViewCell")
         assert(!identifier.isEmpty, "CBCollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = cellClass
         self._cellNibs[identifier] = nil
     }
-    open func registerNib(_ nib: NSNib!, forCellWithReuseIdentifier identifier: String!) {
+    open func registerNib(_ nib: NSNib, forCellWithReuseIdentifier identifier: String) {
         assert(!identifier.isEmpty, "CBCollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = nil
         self._cellNibs[identifier] = nib
     }
-    open func registerClass(_ viewClass: CBCollectionReusableView.Type!, forSupplementaryViewOfKind kind: String!, withReuseIdentifier identifier: String!) {
+    open func registerClass(_ viewClass: CBCollectionReusableView.Type, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {
         assert(viewClass.isSubclass(of: CBCollectionReusableView.self), "CBCollectionView: Registered supplementary views must be subclasses of CBCollectionReusableview")
         assert(!identifier.isEmpty, "CBCollectionView: Reuse identifier cannot be an empty or blank string")
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: identifier)
@@ -125,7 +125,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         self._registeredSupplementaryViewKinds.insert(kind)
         self._allSupplementaryViewIdentifiers.insert(id)
     }
-    open func registerNib(_ nib: NSNib, forSupplementaryViewOfKind kind: String!, withReuseIdentifier identifier: String!) {
+    open func registerNib(_ nib: NSNib, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {
         assert(!identifier.isEmpty, "CBCollectionView: Reuse identifier cannot be an empty or blank string")
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: identifier)
         self._supplementaryViewClasses[id] = nil
@@ -147,12 +147,6 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
                     break
                 }
             }
-//            let index = topLevelObjects!.indexOfObject(passingTest: {(obj, idx, stop) -> Bool in
-//                
-//            })
-//            if index != NSNotFound {
-//                foundObject = topLevelObjects![index]
-//            }
         }
         assert(foundObject != nil, "CBCollectionView: Could not find view of type \(aClass) in nib. Make sure the top level object in the nib is of this type.")
         return foundObject as? NSView
@@ -1180,13 +1174,13 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
                 let order = (index as NSIndexPath).compare(indexPath)
                 var nextIndex : IndexPath? = firstIndex
                 
-                while (nextIndex != nil && nextIndex! != indexPath) {
-                    indexesToSelect.insert(nextIndex!)
+                while let idx = nextIndex, idx != indexPath {
+                    indexesToSelect.insert(idx)
                     if order == ComparisonResult.orderedAscending {
-                        nextIndex = self.indexPathForSelectableIndexPathAfter(nextIndex!)
+                        nextIndex = self.indexPathForSelectableIndexPathAfter(idx)
                     }
                     else if order == .orderedDescending {
-                        nextIndex = self.indexPathForSelectableIndexPathBefore(nextIndex!)
+                        nextIndex = self.indexPathForSelectableIndexPathBefore(idx)
                     }
                 }
             }
@@ -1496,9 +1490,9 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         self.draggedIPs = []
         var items : [NSDraggingItem] = []
         
-        if mouseDownIP == nil { return }
+        guard let mouseDown = mouseDownIP else { return }
         
-        if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAtIndexPath: mouseDownIP!, withEvent: theEvent) != true { return }
+        if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAtIndexPath: mouseDown, withEvent: theEvent) != true { return }
         
         let ips = self.indexPathsForSelectedItems().sorted { (ip1, ip2) -> Bool in
             let before = ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
@@ -1509,9 +1503,9 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             
             let selections = self.indexPathsForSelectedItems()
             if selections.count == 0 { return }
-            else if selections.count == 1 && mouseDownIP != ip, let mIP = mouseDownIP {
+            else if selections.count == 1 && mouseDown != ip {
                 self.deselectItemAtIndexPath(ip, animated: true)
-                ip = mIP
+                ip = mouseDown
                 self.selectItemAtIndexPath(ip, animated: true)
             }
             

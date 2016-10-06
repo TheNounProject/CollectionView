@@ -36,8 +36,8 @@ public extension IndexPath {
 
 struct SupplementaryViewIdentifier: Hashable {
     var indexPath: IndexPath?
-    var kind: String!
-    var reuseIdentifier : String!
+    var kind: String
+    var reuseIdentifier : String
     
     var hashValue: Int {
         if let ip = self.indexPath {

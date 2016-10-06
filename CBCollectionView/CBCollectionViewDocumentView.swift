@@ -18,9 +18,9 @@ internal struct ItemUpdate {
         case update
     }
     
-    let view : CBCollectionReusableView!
-    let attrs : CBCollectionViewLayoutAttributes!
-    let type : Type!
+    let view : CBCollectionReusableView
+    let attrs : CBCollectionViewLayoutAttributes
+    let type : Type
     var identifier : SupplementaryViewIdentifier?
     
     init(view: CBCollectionReusableView, attrs: CBCollectionViewLayoutAttributes, type: Type, identifier: SupplementaryViewIdentifier? = nil) {
@@ -38,7 +38,7 @@ final public class CBCollectionViewDocumentView : NSView {
     public override var isFlipped : Bool { return true }
 //    var isCompatibleWithResponsiveScrolling : Bool { return true }
     
-    fileprivate weak var collectionView : CBCollectionView! {
+    fileprivate var collectionView : CBCollectionView {
         return self.superview!.superview as! CBCollectionView
     }
     

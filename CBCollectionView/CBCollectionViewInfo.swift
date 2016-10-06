@@ -18,7 +18,7 @@ internal struct CBCollectionViewSectionInfo {
 
 internal final class CBCollectionViewInfo {
     
-    private weak var collectionView : CBCollectionView!
+    private let collectionView : CBCollectionView
     private(set) var numberOfSections : Int = 0
     private(set) var sections : [Int: CBCollectionViewSectionInfo] = [:]
     private(set) var contentSize: CGSize = CGSize.zero

@@ -35,10 +35,6 @@ open class CBCollectionViewController : NSViewController, CBCollectionViewDataSo
         collectionView.delegate = self
     }
     
-    deinit {
-        Swift.print("Deinit CBCollectionViewController")
-    }
-    
     open func adjustContentInsets(_ insets: EdgeInsets) {
         
         self.adjustConstraint(.top, value: insets.top)

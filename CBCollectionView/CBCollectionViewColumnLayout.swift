@@ -186,7 +186,6 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         for section in 0..<numberOfSections {
             let colCount = self.columnsInSection(section)
             
-            
             /*
             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
             */

@@ -100,7 +100,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
             let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSectionAtIndex: section) ?? self.sectionInsets
             let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
             
-            let itemWidth = self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right
+            let itemWidth = self.collectionView!.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right
             var sectionFrame: CGRect = CGRect(x: sectionInsets.left, y: top, width: itemWidth, height: 0)
             
             
@@ -184,7 +184,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
         if numberOfSections == 0 { return CGSize.zero }
         
         var size = CGSize()
-        size.width = cv.bounds.width
+        size.width = cv.contentVisibleRect.size.width
         size.height = cv.bounds.height
         if let f = self.sectionFrames.last {
             size.height = f.maxY

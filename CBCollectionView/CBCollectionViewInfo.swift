@@ -105,8 +105,9 @@ internal final class CBCollectionViewInfo {
             size = frame.size;
         }
         let collectionViewSize = self.collectionView.frame.size;
+        
         size.height = max(size.height, collectionViewSize.height - collectionView.contentInsets.top - collectionView.contentInsets.bottom)
-        size.width = max(size.width, collectionViewSize.width - collectionView.contentInsets.left - collectionView.contentInsets.right)
+        size.width = max(size.width, self.collectionView.contentVisibleRect.size.width - collectionView.contentInsets.left - collectionView.contentInsets.right)
         return size
     }
     

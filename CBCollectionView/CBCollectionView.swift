@@ -74,6 +74,8 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         NotificationCenter.default.addObserver(self, selector: #selector(CBCollectionView.willBeginScroll(_:)), name: NSNotification.Name.NSScrollViewWillStartLiveScroll, object: self)
         NotificationCenter.default.addObserver(self, selector: #selector(CBCollectionView.didEndScroll(_:)), name: NSNotification.Name.NSScrollViewDidEndLiveScroll, object: self)
         
+        // NSNotification.Name.NSPreferredScrollerStyleDidChange
+        
         self.addSubview(_floatingSupplementaryView, positioned: .above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
         _floatingSupplementaryView.frame = self.bounds
@@ -92,6 +94,12 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
 
+    open override var scrollerStyle: NSScrollerStyle {
+        didSet {
+            Swift.print("Scroller Style changed")
+            self.relayout(false)
+        }
+    }
     
     
     

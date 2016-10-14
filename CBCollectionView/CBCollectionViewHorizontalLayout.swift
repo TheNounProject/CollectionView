@@ -29,7 +29,7 @@ open class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
     open var itemWidth: CGFloat = 100
     open var itemSpacing: CGFloat = 8
     
-    var cache : [CGRect]! = []
+    var cache : [CGRect] = []
     var contentWidth: CGFloat = 0
     
     open override func prepareLayout() {

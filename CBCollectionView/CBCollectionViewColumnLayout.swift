@@ -134,7 +134,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     //  private property and method above.
     fileprivate weak var delegate : CBCollectionViewDelegateColumnLayout? { get{ return self.collectionView!.delegate as? CBCollectionViewDelegateColumnLayout }}
     
-    fileprivate var columnHeights : [[CGFloat]]! = []
+    fileprivate var columnHeights : [[CGFloat]] = []
     fileprivate var sectionItemAttributes : [[CBCollectionViewLayoutAttributes]] = []
     fileprivate var sectionColumnAttributes : [Int : [[CBCollectionViewLayoutAttributes]]] = [:]
     fileprivate var allItemAttributes : [CBCollectionViewLayoutAttributes] = []
@@ -153,7 +153,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     
     func itemWidthInSectionAtIndex (_ section : NSInteger) -> CGFloat {
         let colCount = self.delegate?.collectionView?(self.collectionView!, layout: self, numberOfColumnsInSection: section) ?? self.columnCount
-        var insets : EdgeInsets!
+        var insets : EdgeInsets
         if let sectionInsets = self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAtIndex: section){
             insets = sectionInsets
         }else{
@@ -422,37 +422,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         }
         return index
     }
-    
-    
-//    func changesInRect(newRect: CGRect, oldRect: CGRect) -> (new: [CBCollectionViewLayoutAttributes], remove: [CBCollectionViewLayoutAttributes]) {
-//        var new : [CBCollectionViewLayoutAttributes] = []
-//        var remove : [CBCollectionViewLayoutAttributes] = []
-//        
-//        let union = newRect.union(oldRect)
-//        
-//        guard let cv = self.collectionView else { return (new, remove) }
-//        
-//        if CGRectEqualToRect(union, CGRectZero) || cv.numberOfSections() == 0 { return (new, remove) }
-//        for sectionIndex in 0...cv.numberOfSections() - 1 {
-//            guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
-//            if CGRectIsEmpty(sectionFrame) || !CGRectIntersectsRect(sectionFrame, union) { continue }
-//            
-//            for attr in sectionItemAttributes[sectionIndex] {
-//                let inNew = attr.frame.intersects(newRect)
-//                let inOld = attr.frame.intersects(oldRect)
-//                
-//                if inNew && !inOld {
-//                    new.append(attr)
-//                }
-//                else if inOld && !inNew {
-//                    remove.append(attr)
-//                }
-//            }
-//        }
-//        return (new, remove)
-//    }
 
-    
     
     open override func indexPathsForItemsInRect(_ rect: CGRect) -> Set<IndexPath>? {
 //        return nil

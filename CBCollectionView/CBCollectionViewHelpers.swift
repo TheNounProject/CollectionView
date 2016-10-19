@@ -13,16 +13,24 @@ import Foundation
 
 
 public extension IndexPath {
+    
+    public static func `for`(item: Int = 0, section: Int) -> IndexPath {
+        return IndexPath(indexes: [section, item])
+    }
+    
+    /*
     public static func _indexPathForItem(_ item: Int, inSection section: Int) -> IndexPath {
-        return IndexPath(index: section).appending(item)
+        return IndexPath(indexes: [section, item])
+        // return IndexPath(index: section).appending(item)
     }
     public static func _indexPathForSection(_ section: Int) -> IndexPath {
-        return IndexPath(index: section).appending(0)
+        return IndexPath(indexes: [section, 0])
+        // return IndexPath(index: section).appending(0)
     }
-    public static var Zero : IndexPath { return IndexPath._indexPathForItem(0, inSection: 0) }
+ */
+    public static var Zero : IndexPath { return IndexPath.for(item: 0, section: 0) }
     public var _item: Int { return self[1] }
     public var _section: Int { return self[0] }
-    
     
     public static func inRange(_ range: CountableRange<Int>, section: Int) -> [IndexPath] {
         var ips = [IndexPath]()

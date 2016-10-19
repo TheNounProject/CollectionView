@@ -18,7 +18,7 @@ internal struct CBCollectionViewSectionInfo {
 
 internal final class CBCollectionViewInfo {
     
-    private let collectionView : CBCollectionView
+    private unowned let collectionView : CBCollectionView
     private(set) var numberOfSections : Int = 0
     private(set) var sections : [Int: CBCollectionViewSectionInfo] = [:]
     private(set) var contentSize: CGSize = CGSize.zero
@@ -40,7 +40,7 @@ internal final class CBCollectionViewInfo {
         var totalNumberOfItems = 0
         self.numberOfSections = self.collectionView.dataSource?.numberOfSectionsInCollectionView(self.collectionView) ?? 0
         if self.numberOfSections > 0 {
-            for sIndex in 0...self.numberOfSections - 1 {
+            for sIndex in 0..<self.numberOfSections {
                 let itemCount = self.collectionView.dataSource?.collectionView(self.collectionView, numberOfItemsInSection: sIndex) ?? 0
                 totalNumberOfItems += itemCount
                 self.sections[sIndex] = CBCollectionViewSectionInfo(section: sIndex, frame: CGRect.zero, numberOfItems: itemCount)
@@ -51,11 +51,10 @@ internal final class CBCollectionViewInfo {
         }
         
         self.collectionView.collectionViewLayout.prepareLayout()
-        
         if self.sections.count == 0 { return }
-        self.allIndexPaths = self.collectionView.collectionViewLayout.allIndexPaths as Set<IndexPath>
-        for sIndex in 0...self.numberOfSections - 1 {
-            let section = self.sections[sIndex];
+        
+        self.allIndexPaths = self.collectionView.collectionViewLayout.allIndexPaths
+        for sIndex in 0..<self.numberOfSections {
             
             // We're running through all of the items just to find the total size of each section.
             // Although this might seem like a waste, remember that this is only performed each time the
@@ -73,10 +72,11 @@ internal final class CBCollectionViewInfo {
                 continue
             }
             
-            if section?.numberOfItems == 0 { continue }
+            let section = self.sections[sIndex];
+            if sections[sIndex]?.numberOfItems == 0 { continue }
             
             var sectionFrame = CGRect.null;
-            for itemIndex in 0...section!.numberOfItems - 1 {
+            for itemIndex in 0..<section!.numberOfItems {
                 let indexPath = IndexPath._indexPathForItem(itemIndex, inSection: sIndex)
                 allIndexPaths.insert(indexPath)
                 if let attributes = layout.layoutAttributesForItemAtIndexPath(indexPath) {
@@ -88,7 +88,6 @@ internal final class CBCollectionViewInfo {
                     sectionFrame = sectionFrame.union(attributes.frame)
                 }
             }
-            
             self.sections[sIndex]?.frame =  sectionFrame
         }
         self.contentSize = self.calculateContentSize()

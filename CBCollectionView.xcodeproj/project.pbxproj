@@ -14,7 +14,6 @@
 		DE82E95E1D78BFC900346B9E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82E95D1D78BFC900346B9E /* Constants.swift */; };
 		DE9071ED1CAC7FD800AD0E37 /* CBCollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CBCollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DEA6BA631D52E00900B3EF24 /* CBCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA6BA621D52E00900B3EF24 /* CBCollectionViewController.swift */; };
-		DEE3B5831D243A9900AD34F1 /* CBCollectionViewGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE57F41E1CBC915A00F9E23C /* CBCollectionViewGridLayout.swift */; };
 		DEE3B5851D246CB100AD34F1 /* CBCollectionViewListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE3B5841D246CB100AD34F1 /* CBCollectionViewListLayout.swift */; };
 		DEF14B991CBDD83B00553CEF /* CBCollectionViewColumnLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072031CAC7FF000AD0E37 /* CBCollectionViewColumnLayout.swift */; };
 		DEF14B9B1CBDD83B00553CEF /* CBCollectionViewHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072041CAC7FF000AD0E37 /* CBCollectionViewHorizontalLayout.swift */; };
@@ -223,7 +222,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE82E95C1D78BF9300346B9E /* Protocols.swift in Sources */,
-				DEE3B5831D243A9900AD34F1 /* CBCollectionViewGridLayout.swift in Sources */,
 				DEE3B5851D246CB100AD34F1 /* CBCollectionViewListLayout.swift in Sources */,
 				DEF14B9E1CBDD83B00553CEF /* CBCollectionViewCells.swift in Sources */,
 				DEF14B9B1CBDD83B00553CEF /* CBCollectionViewHorizontalLayout.swift in Sources */,

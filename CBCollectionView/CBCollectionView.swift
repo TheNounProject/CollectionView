@@ -7,27 +7,6 @@
 //
 
 import Foundation
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
-
-fileprivate func >= <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l >= r
-  default:
-    return !(lhs < rhs)
-  }
-}
-
-
 
 open class CBCollectionView : CBScrollView, NSDraggingSource {
     
@@ -304,31 +283,18 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         _floatingSupplementaryView.frame = self.bounds
         super.layout()
         
-        var calc : TimeInterval = 0
-        var scroll : TimeInterval = 0
-        var prep : TimeInterval = 0
-        
         if self.collectionViewLayout.shouldInvalidateLayoutForBoundsChange(self.documentVisibleRect) {
-            var d = Date()
-            
             let _size = self.info.contentSize
             
             self.info.recalculate()
-            calc = d.timeIntervalSinceNow
             
             contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
-            d = Date()
             if self.info.contentSize.height != _size.height, let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.top) {
                 let _rect = CGRect(origin: rect.origin, size: self.bounds.size)
-                self.clipView?.scrollRectToVisible(_rect, animated: false, completion: nil)
+                _ = self.clipView?.scrollRectToVisible(_rect, animated: false, completion: nil)
             }
             self.reflectScrolledClipView(self.clipView!)
-            scroll = d.timeIntervalSinceNow
-            d = Date()
-            
             self.contentDocumentView.prepareRect(prepareAll ? contentDocumentView.frame : self.contentVisibleRect, force: true)
-            prep = d.timeIntervalSinceNow
-            //            Swift.print("Calc: \(calc)  Scroll: \(scroll)  prep: \(prep)")
         }
     }
     
@@ -354,10 +320,8 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             //?? self.indexPathsForSelectedItems().intersect(self.indexPathsForVisibleItems()).first
 
         self.info.recalculate()
-        var vRect = self.contentVisibleRect
-        
+       
         let nContentSize = self.info.contentSize
-        let docFrame = self.contentDocumentView.frame
         contentDocumentView.frame.size = nContentSize
         
         if scrollPosition != .none, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(ip) {
@@ -436,10 +400,10 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         let rect = _rectToPrepare
         self.contentDocumentView.prepareRect(rect)
 
-        var _prev = self._previousOffset
+        let _prev = self._previousOffset
         self._previousOffset = self.contentVisibleRect.origin
         let delta = _prev.y - self._previousOffset.y
-        var timeOffset = CGFloat(CACurrentMediaTime() - _offsetMark)
+        // var timeOffset = CGFloat(CACurrentMediaTime() - _offsetMark)
         self.velocity = delta
         self.peakVelocityForScroll = max(abs(peakVelocityForScroll), abs(self.velocity))
         self._offsetMark = CACurrentMediaTime()
@@ -486,7 +450,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             guard let section = self.info.sections[sectionIndex] else { continue }
             if section.frame.isEmpty || !section.frame.intersects(visibleRect) { continue }
             for item in 0..<section.numberOfItems {
-                let indexPath = IndexPath._indexPathForItem(item, inSection: sectionIndex)
+                let indexPath = IndexPath.for(item:item, section: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
                     if (visibleRect.contains(attributes.frame)) {
                         return indexPath
@@ -514,14 +478,13 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
                 debugPrint("Not reloading cell because it is not visible")
                 return
             }
-            let oldFrame = cell.frame
             guard let newCell = self.dataSource?.collectionView(self, cellForItemAtIndexPath: indexPath) else {
                 debugPrint("For some reason collection view tried to load cells without a data source")
                 return
             }
             assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
             
-            var attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
+            let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
             attrs?.frame = cell.frame
             
             if animated {
@@ -552,7 +515,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         
         self.indexPathForHighlightedItem = nil
         
-        var sorted = indexPaths.sorted { (ip1, ip2) -> Bool in
+        let sorted = indexPaths.sorted { (ip1, ip2) -> Bool in
             return ip1._item < ip2._item
         }
         
@@ -569,7 +532,6 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             var newIps = s.1
             
             let cCount = self.numberOfItemsInSection(sectionIndex)
-            let nCount = cCount + newIps.count
             
             var newIndex = 0
             
@@ -579,9 +541,9 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
                     newIndex += 1
                 }
                 
-                let old = IndexPath._indexPathForItem(idx, inSection: sectionIndex)
+                let old = IndexPath.for(item:idx, section: sectionIndex)
                 if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: old) {
-                    let new = IndexPath._indexPathForItem(newIndex, inSection: sectionIndex)
+                    let new = IndexPath.for(item:newIndex, section: sectionIndex)
                     changeMap.append((newIP: new, cell: cell))
                 }
                 newIndex += 1
@@ -598,7 +560,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
-        _selectedIndexPaths.removeSet(updatedSelections)
+        _ = _selectedIndexPaths.removeSet(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
@@ -615,7 +577,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         
         var bySection = [Int:[IndexPath]]()
         
-        var sorted = indexPaths.sorted { (ip1, ip2) -> Bool in return ip1._item < ip2._item }
+        let sorted = indexPaths.sorted { (ip1, ip2) -> Bool in return ip1._item < ip2._item }
         for ip in sorted {
             if bySection[ip._section] == nil { bySection[ip._section] = [ip] }
             else { bySection[ip._section]?.append(ip) }
@@ -629,7 +591,6 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             var removeIPs = s.1
             
             let cCount = self.numberOfItemsInSection(sectionIndex)
-            let nCount = cCount - removeIPs.count
     
             var newIndex = 0
             
@@ -642,9 +603,9 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
                     continue
                 }
                 
-                let old = IndexPath._indexPathForItem(idx, inSection: sectionIndex)
+                let old = IndexPath.for(item:idx, section: sectionIndex)
                 if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: old) {
-                    let new = IndexPath._indexPathForItem(newIndex, inSection: sectionIndex)
+                    let new = IndexPath.for(item:newIndex, section: sectionIndex)
                     changeMap.append((newIP: new, cell: cell))
                 }
                 newIndex += 1
@@ -664,7 +625,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         
-        _selectedIndexPaths.removeSet(updatedSelections)
+        _ = _selectedIndexPaths.removeSet(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
@@ -678,15 +639,13 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         
         self.indexPathForHighlightedItem = nil
         
-        var sorted = Set(indexes).sorted()
+        let sorted = Set(indexes).sorted()
         
         var updates = [ItemUpdate]()
         var cellMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
         var viewMap = [(id: SupplementaryViewIdentifier, view: CBCollectionReusableView)]()
         
         let cCount = self.numberOfSections()
-        let nCount = cCount - sorted.count
-        
         
         // Create a map of the prepared cells
         var prepared = [Int: (supp: [SupplementaryViewIdentifier], cells: [IndexPath])]()
@@ -724,7 +683,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             if sec != newSection, let items = prepared[sec] {
                 for supp in items.supp {
                     if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: supp) {
-                        let ip = IndexPath._indexPathForSection(newSection)
+                        let ip = IndexPath.for(section:newSection)
                         var s = supp
                         s.indexPath = ip
                         viewMap.append((id: s, view: view))
@@ -732,7 +691,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
                 }
                 for ip in items.cells {
                     if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
-                        let ip = IndexPath._indexPathForItem(ip._item, inSection: newSection)
+                        let ip = IndexPath.for(item: ip._item, section: newSection)
                         cellMap.append((newIP: ip, cell: view))
                     }
                 }
@@ -757,7 +716,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
-        _selectedIndexPaths.removeSet(updatedSelections)
+        _ = _selectedIndexPaths.removeSet(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
@@ -775,8 +734,6 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         var changeMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
         
         let cCount = self.numberOfSections()
-        let nCount = cCount + sorted.count
-        
         var newSection = 0
         
         for sec in 0..<cCount {
@@ -787,9 +744,9 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             }
             if newSection != sec {
                 for index in 0..<numberOfItemsInSection(sec) {
-                    let ip = IndexPath._indexPathForItem(index, inSection: sec)
+                    let ip = IndexPath.for(item:index, section: sec)
                     if let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
-                        let newIP = IndexPath._indexPathForItem(index, inSection: newSection)
+                        let newIP = IndexPath.for(item:index, section: newSection)
                         changeMap.append((newIP: newIP, cell: cell))
                     }
                 }
@@ -807,7 +764,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
-        _selectedIndexPaths.removeSet(updatedSelections)
+        _ = _selectedIndexPaths.removeSet(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
@@ -1201,7 +1158,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         
         if !multiSelect {
             var deselectIndexes = self._selectedIndexPaths
-            deselectIndexes.removeSet(indexesToSelect)
+            _ = deselectIndexes.removeSet(indexesToSelect)
             self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
         }
         
@@ -1230,10 +1187,10 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     final func _deselectAllItems(_ animated: Bool, notify: Bool) {
-        var anIP = self._selectedIndexPaths.first
+        let anIP = self._selectedIndexPaths.first
         self._lastSelection = nil
         
-        var ips = self._selectedIndexPaths.intersection(Set(self.indexPathsForVisibleItems()))
+        let ips = self._selectedIndexPaths.intersection(Set(self.indexPathsForVisibleItems()))
         
         for ip in ips { self._deselectItemAtIndexPath(ip, animated: animated, notifyDelegate: false) }
         self._selectedIndexPaths.removeAll()
@@ -1266,24 +1223,24 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     
     final func indexPathForSelectableIndexPathBefore(_ indexPath: IndexPath) -> IndexPath?{
         if (indexPath._item - 1 >= 0) {
-            return IndexPath._indexPathForItem(indexPath._item - 1, inSection: indexPath._section)
+            return IndexPath.for(item: indexPath._item - 1, section: indexPath._section)
         }
         else if indexPath._section - 1 >= 0 && self.info.numberOfSections > 0 {
             let numberOfItems = self.info.sections[indexPath._section - 1]!.numberOfItems;
-            let newIndexPath = IndexPath._indexPathForItem(numberOfItems - 1, inSection: indexPath._section - 1)
+            let newIndexPath = IndexPath.for(item: numberOfItems - 1, section: indexPath._section - 1)
             if self.validateIndexPath(newIndexPath) { return newIndexPath }
         }
         return nil;
     }
     
     final func indexPathForSelectableIndexPathAfter(_ indexPath: IndexPath) -> IndexPath? {
-        if (indexPath._item + 1 >= self.info.sections[indexPath._section]?.numberOfItems) {
+        if indexPath._item + 1 >= numberOfItemsInSection(indexPath._section) {
             // Jump up to the next section
-            let newIndexPath = IndexPath._indexPathForItem(0, inSection: indexPath._section+1)
+            let newIndexPath = IndexPath.for(item:0, section: indexPath._section+1)
             if self.validateIndexPath(newIndexPath) { return newIndexPath; }
         }
         else {
-            return IndexPath._indexPathForItem(indexPath._item + 1, inSection: indexPath._section)
+            return IndexPath.for(item: indexPath._item + 1, section: indexPath._section)
         }
         return nil;
     }
@@ -1335,7 +1292,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             if !sectionInfo.frame.contains(point) || sectionInfo.numberOfItems == 0 { continue }
             
             for itemIndex in 0...sectionInfo.numberOfItems - 1 {
-                let indexPath = IndexPath._indexPathForItem(itemIndex, inSection: sectionIndex)
+                let indexPath = IndexPath.for(item:itemIndex, section: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
                     if attributes.frame.contains(point) {
                         return indexPath;
@@ -1353,7 +1310,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             guard let section = self.info.sections[sectionIndex] else { continue }
             if section.frame.isEmpty || !section.frame.intersects(rect) { continue }
             for item in 0...section.numberOfItems - 1 {
-                let indexPath = IndexPath._indexPathForItem(item, inSection: sectionIndex)
+                let indexPath = IndexPath.for(item:item, section: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
                     if (attributes.frame.intersects(rect)) {
                         indexPaths.insert(indexPath)
@@ -1384,7 +1341,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             frame.origin.x = 0
             frame.size.width = self.bounds.size.width
             if frame.contains(point) {
-                return IndexPath._indexPathForItem(0, inSection: sectionIndex)
+                return IndexPath.for(item:0, section: sectionIndex)
             }
         }
         return nil
@@ -1403,7 +1360,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         for sectionInfo in self.info.sections {
             if !sectionInfo.1.frame.intersects(rect) { continue }
             for kind in self._registeredSupplementaryViewKinds {
-                let ip = IndexPath._indexPathForItem(0, inSection: sectionInfo.1.section)
+                let ip = IndexPath.for(item:0, section: sectionInfo.1.section)
                 if let attrs = self.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(kind, atIndexPath: ip) {
                     if attrs.frame.intersects(rect) {
                         visibleIdentifiers.insert(SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: ip))

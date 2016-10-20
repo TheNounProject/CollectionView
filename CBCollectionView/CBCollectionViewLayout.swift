@@ -11,6 +11,7 @@ import Foundation
 
 open class CBCollectionViewLayout : NSObject {
     
+    // This is set internally when the layout is set on the CollectionView
     open internal(set) weak var collectionView: CBCollectionView?
     open var scrollDirection : CBCollectionViewScrollDirection { return .vertical }
     

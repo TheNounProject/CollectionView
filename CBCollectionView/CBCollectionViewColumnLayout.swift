@@ -205,7 +205,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             */
             let heightHeader : CGFloat = self.delegate?.collectionView?(_collectionView, layout: self, heightForHeaderInSection: section) ?? self.headerHeight
             if heightHeader > 0 {
-                let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionHeader, withIndexPath: IndexPath._indexPathForSection(section))
+                let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionHeader, withIndexPath: IndexPath.for(section:section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
                      CGRect(x: sectionInsets.left, y: top, width: _collectionView.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, height: heightHeader)
@@ -228,7 +228,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             
             // Item will be put into shortest column.
             for idx in 0..<itemCount {
-                let indexPath = IndexPath._indexPathForItem(idx, inSection: section)
+                let indexPath = IndexPath.for(item:idx, section: section)
                 sIndexPaths.insert(indexPath)
                 allIndexPaths.insert(indexPath)
                 
@@ -268,7 +268,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             
             let footerHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForFooterInSection: section) ?? self.footerHeight
             if footerHeight > 0 {
-                let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionFooter, withIndexPath: IndexPath._indexPathForItem(0, inSection: section))
+                let attributes = CBCollectionViewLayoutAttributes(forSupplementaryViewOfKind: CBCollectionViewLayoutElementKind.SectionFooter, withIndexPath: IndexPath.for(item:0, section: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
                     CGRect(x: sectionInsets.left, y: top, width: _collectionView.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, height: footerHeight)
@@ -347,7 +347,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
                     if let nextHeader = self.headersAttributes[indexPath._section + 1] {
                         nextHeaderOrigin = nextHeader.frame.origin
                     }
-                    let topInset = cv.contentInsets.top ?? 0
+                    let topInset = cv.contentInsets.top 
                     currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
                     currentAttrs.floating = currentAttrs.frame.origin.y > frame.origin.y
                 }
@@ -371,9 +371,9 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
     
     open override func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItemAtIndexPath(indexPath)?.frame else { return nil }
-        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CBCollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath._indexPathForItem(0, inSection: indexPath._section)) {
-            var y = frame.origin.y - attrs.frame.size.height
-            var height = frame.size.height + attrs.frame.size.height
+        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CBCollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath.for(item:0, section: indexPath._section)) {
+            let y = frame.origin.y - attrs.frame.size.height
+            let height = frame.size.height + attrs.frame.size.height
             frame.size.height = height
             frame.origin.y = y
         }
@@ -484,7 +484,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
 //                for r in start...end {
 //                    let item = columns.count * r + c
 //                    if item < itemCount {
-//                        indexPaths.insert(NSIndexPath._indexPathForItem(item, inSection: sectionIndex))
+//                        indexPaths.insert(NSIndexPath.for(item:item, section: sectionIndex))
 //                    }
 //                }
 //            }
@@ -502,28 +502,20 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
         let numberOfSections = collectionView.numberOfSections()
         let numberOfItemsInSection = collectionView.numberOfItemsInSection(currentIndexPath._section)
         
-        guard let cellRect = collectionView.rectForItemAtIndexPath(currentIndexPath) else { return nil }
-        let cellHeight = cellRect.height
+        guard collectionView.rectForItemAtIndexPath(currentIndexPath) != nil else { return nil }
         
         switch direction {
         case .up:
-//            let columns = sectionColumnAttributes[currentIndexPath._section]
-            
             guard let cAttrs = collectionView.layoutAttributesForItemAtIndexPath(currentIndexPath),
                 let columns = sectionColumnAttributes[section] else { return nil }
             
             let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
-            
-            let left = cAttrs.frame.minX
-            let right = cAttrs.frame.maxX
             
             for column in columns {
                 if let first = column.first {
                     // This is the first item in the column -> Check the previous section
                     if first.indexPath == currentIndexPath {
                         guard let pColumns = sectionColumnAttributes[section - 1] else { return nil }
-                        
-                        var last : IndexPath?
                         for col in pColumns.reversed() {
                             if let pFirst = col.first {
                                 let flat = CGRect(x: pFirst.frame.origin.x, y: 0, width: pFirst.frame.size.width, height: 50)
@@ -550,24 +542,6 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             }
             return nil
             
-            
-//            var point = cellRect.origin
-//            point.y = point.y - cellHeight
-//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-//                return indexPath
-//            }
-//            point.y = point.y - cellHeight
-//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-//                return indexPath
-//            }
-//            
-//            point.y = point.y - cellHeight
-//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-//                return indexPath
-//            } else {
-//                return currentIndexPath
-//            }
-            
         case .down:
             
             
@@ -576,16 +550,12 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             
             let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
             
-            let left = cAttrs.frame.minX
-            let right = cAttrs.frame.maxX
-            
             for column in columns {
                 if let first = column.first {
                     // This is the last item in the column -> Check the previous section
                     if column.last?.indexPath == currentIndexPath {
                         guard let pColumns = sectionColumnAttributes[section + 1] else { return nil }
                         
-                        var last : IndexPath?
                         for col in pColumns {
                             if let pFirst = col.first {
                                 let flat = CGRect(x: pFirst.frame.origin.x, y: 0, width: pFirst.frame.size.width, height: 50)
@@ -612,25 +582,6 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             }
             return nil
             
-            
-            
-//            var point = cellRect.origin
-//            point.y = point.y + cellHeight
-//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-//                return indexPath
-//            }
-//            point.y = point.y + cellHeight
-//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-//                return indexPath
-//            }
-//            
-//            point.y = point.y + cellHeight
-//            if let indexPath = collectionView.indexPathForItemAtPoint(point) {
-//                return indexPath
-//            } else {
-//                return currentIndexPath
-//            }
-            
         case .left:
             if section == 0 && index == 0 {
                 return currentIndexPath
@@ -641,7 +592,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
                 section = section - 1
                 index = collectionView.numberOfItemsInSection(currentIndexPath._section - 1) - 1
             }
-            return IndexPath._indexPathForItem(index, inSection: section)
+            return IndexPath.for(item:index, section: section)
         case .right :
             if section == numberOfSections - 1 && index == numberOfItemsInSection - 1 {
                 return currentIndexPath
@@ -652,7 +603,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
                 section = section + 1
                 index = 0
             }
-            return IndexPath._indexPathForItem(index, inSection: section)
+            return IndexPath.for(item:index, section: section)
         }
     }
     

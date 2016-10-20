@@ -46,7 +46,6 @@ open class CBCollectionViewController : NSViewController, CBCollectionViewDataSo
     
     // Must be .Top, .Right, .Bottom, or .Left
     open func adjustConstraint(_ attribute: NSLayoutAttribute, value: CGFloat?) {
-        var constraint: NSLayoutConstraint?
         for constraint in self.self.view.constraints {
             if (constraint.secondAttribute == attribute && (constraint.secondItem as? CBCollectionView) == collectionView)
             || (constraint.firstAttribute == attribute && (constraint.firstItem as? CBCollectionView) == collectionView) {

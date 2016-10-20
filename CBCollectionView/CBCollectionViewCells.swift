@@ -7,27 +7,6 @@
 //
 
 import Foundation
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
-
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
-
-
 
 
 open class CBCollectionReusableView : NSView {
@@ -79,7 +58,7 @@ open class CBCollectionReusableView : NSView {
     
     open override func updateLayer() {
         self.layer?.backgroundColor = self.backgroundColor?.cgColor
-        if self.layer?.cornerRadius > 0 {
+        if let c = self.layer?.cornerRadius, c > 0 {
             let l = CALayer()
             l.backgroundColor = NSColor.white.cgColor
             l.frame = self.bounds

@@ -12,7 +12,7 @@ import Foundation
 public typealias CBAnimationCompletion = (_ finished: Bool)->Void
 
 
-public enum CBCollectionElementCategory : UInt {
+public enum CBCollectionElementCategory {
     case cell
     case supplementaryView
 }

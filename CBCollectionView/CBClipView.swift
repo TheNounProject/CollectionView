@@ -91,13 +91,13 @@ open class CBClipView : NSClipView {
     }
     
     var manualScroll = false
-    open func scrollRectToVisible(_ aRect: NSRect, animated: Bool) -> Bool {
+    @discardableResult open func scrollRectToVisible(_ aRect: NSRect, animated: Bool) -> Bool {
         manualScroll = true
         self.shouldAnimateOriginChange = animated
         return super.scrollToVisible(aRect)
     }
     
-    open func scrollRectToVisible(_ rect: CGRect, animated: Bool, completion: CBAnimationCompletion?) -> Bool {
+    @discardableResult open func scrollRectToVisible(_ rect: CGRect, animated: Bool, completion: CBAnimationCompletion?) -> Bool {
         manualScroll = true
         self.completionBlock = completion
         let success = self.scrollRectToVisible(rect, animated: animated)

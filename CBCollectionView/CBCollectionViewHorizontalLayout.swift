@@ -48,8 +48,8 @@ open class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
         var xPos: CGFloat = sectionInsets.left - self.itemSpacing
         
         for row in 0...numRows-1 {
-            let ip = IndexPath._indexPathForItem(row, inSection: 0)
-            var height = cv.bounds.height ?? 50
+            let ip = IndexPath.for(item: row, section: 0)
+            var height = cv.bounds.height 
             height = height - sectionInsets.top - sectionInsets.bottom
             
             let width = self.delegate?.collectionView?(cv, layout: self, widthForItemAtIndexPath: ip) ?? itemWidth

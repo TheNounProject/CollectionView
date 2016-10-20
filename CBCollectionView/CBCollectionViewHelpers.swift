@@ -17,17 +17,7 @@ public extension IndexPath {
     public static func `for`(item: Int = 0, section: Int) -> IndexPath {
         return IndexPath(indexes: [section, item])
     }
-    
-    /*
-    public static func _indexPathForItem(_ item: Int, inSection section: Int) -> IndexPath {
-        return IndexPath(indexes: [section, item])
-        // return IndexPath(index: section).appending(item)
-    }
-    public static func _indexPathForSection(_ section: Int) -> IndexPath {
-        return IndexPath(indexes: [section, 0])
-        // return IndexPath(index: section).appending(0)
-    }
- */
+
     public static var Zero : IndexPath { return IndexPath.for(item: 0, section: 0) }
     public var _item: Int { return self[1] }
     public var _section: Int { return self[0] }
@@ -35,7 +25,7 @@ public extension IndexPath {
     public static func inRange(_ range: CountableRange<Int>, section: Int) -> [IndexPath] {
         var ips = [IndexPath]()
         for idx in range {
-            ips.append(IndexPath._indexPathForItem(idx, inSection: section))
+            ips.append(IndexPath.for(item: idx, section: section))
         }
         return ips
     }
@@ -163,7 +153,7 @@ public extension NSView {
      - parameter insets: Insets to apply to the constraints for Top, Right, Bottom, and Left.
      - returns: The Top, Right, Bottom, and Top constraint added to the view.
      */
-    func addConstraintsToMatchParent(_ insets: EdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
+    @discardableResult func addConstraintsToMatchParent(_ insets: EdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
         if let sv = self.superview {
             let top = NSLayoutConstraint(item: self, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: sv, attribute: NSLayoutAttribute.top, multiplier: 1, constant: insets == nil ? 0 : insets!.top)
             let right = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.right, multiplier: 1, constant: insets?.right ?? 0)

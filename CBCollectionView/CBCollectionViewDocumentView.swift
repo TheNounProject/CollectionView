@@ -111,9 +111,6 @@ final public class CBCollectionViewDocumentView : NSView {
             return
         }
         
-        var date = Date()
-        let previousPrepared = self.preparedRect
-        
         let supps = self.layoutSupplementaryViewsInRect(_rect, animated: animated, forceAll: force)
         let items = self.layoutItemsInRect(_rect, animated: animated, forceAll: force)
         let sRect = supps.rect
@@ -179,7 +176,7 @@ final public class CBCollectionViewDocumentView : NSView {
         for ip in inserted {
             guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip) else { continue }
             guard let cell = preparedCellIndex[ip] ?? self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAtIndexPath: ip) else {
-                "For some reason collection view tried to load cells without a data source"
+                debugPrint("For some reason collection view tried to load cells without a data source")
                 continue
             }
             assert(cell.collectionView != nil, "Attemp to load cell without using deque")

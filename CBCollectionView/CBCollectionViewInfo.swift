@@ -29,12 +29,12 @@ internal final class CBCollectionViewInfo {
         self.collectionView = collectionView
     }
     
-    final func numberOfItemsInSection(_ section: Int) -> Int {
+    func numberOfItemsInSection(_ section: Int) -> Int {
         if let count = sections[section]?.numberOfItems { return count }
         return 0
     }
     
-    final func recalculate() {
+    func recalculate() {
         
         let layout = self.collectionView.collectionViewLayout
         var totalNumberOfItems = 0
@@ -77,14 +77,14 @@ internal final class CBCollectionViewInfo {
             
             var sectionFrame = CGRect.null;
             for itemIndex in 0..<section!.numberOfItems {
-                let indexPath = IndexPath._indexPathForItem(itemIndex, inSection: sIndex)
+                let indexPath = IndexPath.for(item:itemIndex, section: sIndex)
                 allIndexPaths.insert(indexPath)
                 if let attributes = layout.layoutAttributesForItemAtIndexPath(indexPath) {
                     sectionFrame = sectionFrame.union(attributes.frame);
                 }
             }
             for identifier in self.collectionView._allSupplementaryViewIdentifiers {
-                if let attributes = layout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: IndexPath._indexPathForItem(0, inSection: sIndex)) {
+                if let attributes = layout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: IndexPath.for(item:0, section: sIndex)) {
                     sectionFrame = sectionFrame.union(attributes.frame)
                 }
             }
@@ -94,7 +94,7 @@ internal final class CBCollectionViewInfo {
     }
     
     
-    final fileprivate func calculateContentSize() -> CGSize {
+    private func calculateContentSize() -> CGSize {
         var size = self.collectionView.collectionViewLayout.collectionViewContentSize()
         if (CGSize.zero.equalTo(size)) {
             var frame = CGRect.null;

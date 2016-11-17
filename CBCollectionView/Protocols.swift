@@ -22,6 +22,7 @@ import Foundation
 }
 @objc public protocol CBCollectionViewDelegate {
     
+    @objc optional func collectionViewWillReloadData(_ collectionView: CBCollectionView)
     @objc optional func collectionViewDidReloadData(_ collectionView: CBCollectionView)
     @objc optional func collectionView(_ collectionView: CBCollectionView, didChangeFirstResponderStatus firstResponder: Bool)
     

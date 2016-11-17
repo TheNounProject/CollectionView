@@ -196,7 +196,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
             
             let contentWidth = _collectionView.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right
             let spaceColumCount = CGFloat(colCount-1)
-            let itemWidth = (contentWidth - (spaceColumCount*colSpacing)) / CGFloat(colCount)
+            let itemWidth = round((contentWidth - (spaceColumCount*colSpacing)) / CGFloat(colCount))
             _itemWidth = itemWidth
             
             var sectionRect: CGRect = CGRect(x: sectionInsets.left, y: top, width: contentWidth, height: 0)
@@ -233,7 +233,7 @@ open class CBCollectionViewColumnLayout : CBCollectionViewLayout {
                 allIndexPaths.insert(indexPath)
                 
                 let columnIndex = self.nextColumnIndexForItem(indexPath)
-                let xOffset = sectionInsets.left + (itemWidth + colSpacing) * CGFloat(columnIndex)
+                let xOffset = sectionInsets.left + round((itemWidth + colSpacing) * CGFloat(columnIndex))
                 let yOffset = self.columnHeights[section][columnIndex]
                 var itemHeight : CGFloat = 0
                 let aSize = self.delegate?.collectionView?(_collectionView, layout: self, aspectRatioForItemAtIndexPath: indexPath)

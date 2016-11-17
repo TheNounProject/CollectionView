@@ -36,6 +36,8 @@ internal final class CBCollectionViewInfo {
     
     func recalculate() {
         
+        self.collectionView.delegate?.collectionViewWillReloadData?(self.collectionView)
+        
         let layout = self.collectionView.collectionViewLayout
         var totalNumberOfItems = 0
         self.numberOfSections = self.collectionView.dataSource?.numberOfSectionsInCollectionView(self.collectionView) ?? 0

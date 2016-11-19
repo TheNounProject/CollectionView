@@ -249,6 +249,8 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     open var contentOffset : CGPoint {
         get{ return self.contentVisibleRect.origin }
         set {
+            self.scrollEnabled = true
+            self.clipView?.shouldAnimateOriginChange = false
             self.clipView?.scroll(to: newValue)
             self.reflectScrolledClipView(self.clipView!)
             self.contentDocumentView.prepareRect(self.contentVisibleRect)

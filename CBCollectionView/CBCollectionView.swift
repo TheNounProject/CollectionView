@@ -1064,18 +1064,18 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         return _selectedIndexPaths.contains(indexPath)
     }
     
-    
-    
     open func selectAllItems(_ animated: Bool = true) {
         self.selectItemsAtIndexPaths(Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath], animated: animated)
-//        _selectedIndexPaths = Set(self.allIndexPaths())
     }
+
     open func selectItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
         for ip in indexPaths { self._selectItemAtIndexPath(ip, animated: animated, scrollPosition: .none, withEvent: nil, notifyDelegate: false) }
-        if let ip = indexPaths.last {
-            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: ip)
-        }
+        //        if let ip = indexPaths.last {
+        //            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: ip)
+        //        }
     }
+    
+    
     open func selectItemAtIndexPath(_ indexPath: IndexPath?, animated: Bool, scrollPosition: CBCollectionViewScrollPosition = .none) {
         self._selectItemAtIndexPath(indexPath, animated: animated, scrollPosition: scrollPosition, withEvent: nil, notifyDelegate: false)
     }

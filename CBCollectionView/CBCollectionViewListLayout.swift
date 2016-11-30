@@ -341,7 +341,7 @@ public final class CBCollectionViewListLayout : CBCollectionViewLayout  {
             
             var ip : IndexPath?
             var section = currentIndexPath._section + 1
-            while ip == nil && section <= numberOfSections {
+            while ip == nil && section < numberOfSections {
                 if let _ip = self.sectionIndexPaths[section].first {
                     ip = _ip
                     break

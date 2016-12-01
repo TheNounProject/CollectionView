@@ -25,7 +25,6 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     
-    
     // MARK: - Intialization
     /*-------------------------------------------------------------------------------*/
     
@@ -80,7 +79,13 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         }
     }
     
+    open override var wantsUpdateLayer: Bool { return true }
     
+    open override func updateLayer() {
+        super.updateLayer()
+        super.wantsUpdateLayer
+        self.layer?.backgroundColor = self.drawsBackground ? self.backgroundColor.cgColor : nil
+    }
     
     
     // MARK: - Registering reusable cells
@@ -423,7 +428,6 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     final func didEndScroll(_ notification: Notification) {
         self.scrolling = false
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
-        Swift.print("Peak Velocity: \(self.peakVelocityForScroll)")
         self.velocity = 0
         self.peakVelocityForScroll = 0
 //        self.contentDocumentView.preparedRect = self.contentVisibleRect

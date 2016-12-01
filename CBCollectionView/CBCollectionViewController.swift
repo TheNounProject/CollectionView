@@ -12,7 +12,7 @@ import CBCollectionView
 
 open class CBCollectionViewController : NSViewController, CBCollectionViewDataSource, CBCollectionViewDelegate {
     
-    open let collectionView = CBCollectionView()
+    public let collectionView = CBCollectionView()
     
     open override func loadView() {
         if self.nibName != nil { super.loadView() }
@@ -46,7 +46,7 @@ open class CBCollectionViewController : NSViewController, CBCollectionViewDataSo
     
     // Must be .Top, .Right, .Bottom, or .Left
     open func adjustConstraint(_ attribute: NSLayoutAttribute, value: CGFloat?) {
-        for constraint in self.self.view.constraints {
+        for constraint in self.view.constraints {
             if (constraint.secondAttribute == attribute && (constraint.secondItem as? CBCollectionView) == collectionView)
             || (constraint.firstAttribute == attribute && (constraint.firstItem as? CBCollectionView) == collectionView) {
                 if let val = value {

@@ -39,6 +39,8 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     func setup() {
+        
+//        self.acceptsTouchEvents = true
         collectionViewLayout.collectionView = self
         self.info = CBCollectionViewInfo(collectionView: self)
         self.wantsLayer = true
@@ -254,7 +256,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     open var contentOffset : CGPoint {
         get{ return self.contentVisibleRect.origin }
         set {
-            self.scrollEnabled = true
+            self.isScrollEnabled = true
             self.clipView?.shouldAnimateOriginChange = false
             self.clipView?.scroll(to: newValue)
             self.reflectScrolledClipView(self.clipView!)
@@ -385,17 +387,37 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         self.delegate?.collectionViewDidEndLiveResize?(self)
     }
     
+//    open override func touchesEnded(with event: NSEvent) {
+//        super.touchesEnded(with: event)
+//        if self.isScrolling {
+//            Swift.print(" ended: \(event)")
+//        }
+//        
+//    }
+    
     
     // MARK: - Scroll Handling
     /*-------------------------------------------------------------------------------*/
+    override open class func isCompatibleWithResponsiveScrolling() -> Bool { return true }
     
-    open var scrollEnabled = true { didSet { self.clipView?.scrollEnabled = scrollEnabled }}
-    open internal(set) var scrolling : Bool = false
+//    open override func scrollWheel(with event: NSEvent) {
+//        if !self.isScrollEnabled { return }
+//        super.scrollWheel(with: event)
+//        
+//        let phase = event.phase
+//        let mPhase = event.momentumPhase
+//        
+//        Swift.print("P: \(phase)  M: \(mPhase)")
+//    }
+    
+    open var isScrollEnabled = true { didSet { self.clipView?.scrollEnabled = isScrollEnabled }}
+    open internal(set) var isScrolling : Bool = false
+    
     fileprivate var _previousOffset = CGPoint.zero
     fileprivate var _offsetMark = CACurrentMediaTime()
     
-    open fileprivate(set) var velocity: CGFloat = 0
-    open fileprivate(set) var peakVelocityForScroll: CGFloat = 0
+    open fileprivate(set) var scrollVelocity = CGPoint.zero
+    open fileprivate(set) var peakScrollVelocity = CGPoint.zero
     
     var _rectToPrepare : CGRect {
         return prepareAll
@@ -406,30 +428,37 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     final func didScroll(_ notification: Notification) {
         let rect = _rectToPrepare
         self.contentDocumentView.prepareRect(rect)
-
+        
         let _prev = self._previousOffset
         self._previousOffset = self.contentVisibleRect.origin
-        let delta = _prev.y - self._previousOffset.y
-        // var timeOffset = CGFloat(CACurrentMediaTime() - _offsetMark)
-        self.velocity = delta
-        self.peakVelocityForScroll = max(abs(peakVelocityForScroll), abs(self.velocity))
+        let deltaY = _prev.y - self._previousOffset.y
+        let deltaX = _prev.x - self._previousOffset.x
+        
+        self.scrollVelocity = CGPoint(x: deltaX, y: deltaY)
+        
+//        Swift.print("Did scroll : \(self.contentOffset)")
+        
+        self.peakScrollVelocity = peakScrollVelocity.maxVelocity(self.scrollVelocity)
         self._offsetMark = CACurrentMediaTime()
         self.delegate?.collectionViewDidScroll?(self)
     }
     
     final func willBeginScroll(_ notification: Notification) {
-        self.scrolling = true
+        self.isScrolling = true
         self.delegate?.collectionViewWillBeginScrolling?(self)
         self._previousOffset = self.contentVisibleRect.origin
-        self.peakVelocityForScroll = 0
-        self.velocity = 0
+        self.peakScrollVelocity = CGPoint.zero
+        self.scrollVelocity = CGPoint.zero
     }
     
     final func didEndScroll(_ notification: Notification) {
-        self.scrolling = false
+        self.isScrolling = false
+        
+//        Swift.print("End scroll : \(self.contentOffset)")
+        
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
-        self.velocity = 0
-        self.peakVelocityForScroll = 0
+        self.scrollVelocity = CGPoint.zero
+        self.peakScrollVelocity = CGPoint.zero
 //        self.contentDocumentView.preparedRect = self.contentVisibleRect
 //        self.contentDocumentView.extendPreparedRect(self.contentVisibleRect.size.height/2)
         
@@ -826,7 +855,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     
     open override func mouseMoved(with theEvent: NSEvent) {
         super.mouseMoved(with: theEvent)
-        if self.scrolling { return }
+        if self.isScrolling { return }
         let loc = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
         self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
     }

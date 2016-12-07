@@ -36,10 +36,24 @@ internal struct ItemUpdate {
 final public class CBCollectionViewDocumentView : NSView {
 
     public override var isFlipped : Bool { return true }
-//    var isCompatibleWithResponsiveScrolling : Bool { return true }
+    
+//    override public class func isCompatibleWithResponsiveScrolling() -> Bool { return true }
     
     fileprivate var collectionView : CBCollectionView {
         return self.superview!.superview as! CBCollectionView
+    }
+    
+    public override func adjustScroll(_ newVisible: NSRect) -> NSRect {
+//        super.adjustScroll(newVisible)
+//        if self.collectionView.isScrolling == false {
+//            
+//        }
+//        var rect = newVisible
+//        rect.origin.x = 5 * rect.origin.x.truncatingRemainder(dividingBy: 5)
+//        rect.origin.y = 5 * rect.origin.y.truncatingRemainder(dividingBy: 5)
+        
+//        Swift.print("Adjust scroll: \(rect)")
+        return newVisible
     }
     
     var preparedRect = CGRect.zero

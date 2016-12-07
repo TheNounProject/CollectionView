@@ -107,6 +107,23 @@ open class CBClipView : NSClipView {
         return success
     }
     
+//    open override func wantsScrollEventsForSwipeTracking(on axis: NSEventGestureAxis) -> Bool {
+//        return true
+//    }
+//    
+//    open override func wantsForwardedScrollEvents(for axis: NSEventGestureAxis) -> Bool {
+//        return true
+//    }
+//    
+//    open override func beginGesture(with event: NSEvent) {
+//        Swift.print("Begin gesture")
+//        super.beginGesture(with: event)
+//    }
+//    open override func endGesture(with event: NSEvent) {
+//        Swift.print("End gesture")
+//        super.endGesture(with: event)
+//    }
+    
     func finishedScrolling(_ success: Bool) {
         self.completionBlock?(success)
         self.completionBlock = nil;
@@ -177,14 +194,14 @@ open class CBClipView : NSClipView {
     
     func beginScrolling() {
         if CVDisplayLinkIsRunning(self.displayLink) { return }
-        (self.scrollView as? CBCollectionView)?.scrolling = true
+        (self.scrollView as? CBCollectionView)?.isScrolling = true
         CVDisplayLinkStart(self.displayLink)
     }
     
     func endScrolling() {
         manualScroll = false
         if !CVDisplayLinkIsRunning(self.displayLink) { return }
-        (self.scrollView as? CBCollectionView)?.scrolling = false
+        (self.scrollView as? CBCollectionView)?.isScrolling = false
         CVDisplayLinkStop(self.displayLink)
     }
     

@@ -104,12 +104,12 @@ open class CBCollectionViewHorizontalListLayout : CBCollectionViewLayout {
 
 open class CBHorizontalCollectionView : CBCollectionView {
     
-    override init() {
+    override public init() {
         super.init()
         self.hasVerticalScroller = false
         self.hasHorizontalScroller = false
     }
-    required public  init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.hasVerticalScroller = false
         self.hasHorizontalScroller = false

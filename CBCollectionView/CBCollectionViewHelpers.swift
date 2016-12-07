@@ -90,6 +90,25 @@ extension CGPoint {
         return CGPoint(x: round(self.x), y: round(self.y))
     }
     
+    public var maxAbsVelocity : CGFloat {
+        return max(abs(self.x), abs(self.y))
+    }
+    
+    func maxVelocity(_ other: CGPoint) -> CGPoint {
+        let _x = abs(self.x) > abs(other.x) ? self.x : other.x
+        let _y = abs(self.y) > abs(other.y) ? self.y : other.y
+        return CGPoint(x: _x, y: _y)
+    }
+    
+    func maxXY(_ other: CGPoint) -> CGPoint {
+        return CGPoint(x: max(self.x, other.x), y: max(self.y, other.y))
+    }
+    func maxX(_ other: CGPoint) -> CGPoint {
+        return CGPoint(x: max(self.x, other.x), y: self.y)
+    }
+    func maxY(_ other: CGPoint) -> CGPoint {
+        return CGPoint(x: self.x, y: max(self.y, other.y))
+    }
 }
 
 extension CGRect {

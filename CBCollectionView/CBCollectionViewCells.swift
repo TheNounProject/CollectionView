@@ -162,13 +162,16 @@ open class CBCollectionViewCell : CBCollectionReusableView {
     
     override open func mouseEntered(with theEvent: NSEvent) {
         
+        // Validate self and the event
+        guard let cv = self.collectionView, let ip = self.indexPath else { return }
+        guard theEvent.type == NSEventType.mouseEntered && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
+        
+        // Make sure the event is inside self
         guard let window = self.window else { return }
         let mLoc = window.convertFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSize.zero)).origin
         if !self.bounds.contains(self.convert(mLoc, from: nil)) { return }
         
-        guard let cv = self.collectionView, let ip = self.indexPath else { return }
-        guard theEvent.type == NSEventType.mouseEntered && (theEvent.trackingArea?.owner as? CBCollectionViewCell) == self else { return }
-        
+        // Ignore the event if an interaction enabled view is over this cell
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {
             if view.isDescendant(of: self) {
                 if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAtIndexPath: ip) , h == false { return }

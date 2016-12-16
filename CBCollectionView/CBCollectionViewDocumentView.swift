@@ -182,7 +182,8 @@ final public class CBCollectionViewDocumentView : NSView {
                     self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
                 }
                 else {
-                    
+                    let edge = self.visibleRect.origin.x > removedRect.origin.x ? CGRectEdge.minXEdge : CGRectEdge.maxXEdge
+                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
                 }
             }
         }
@@ -320,12 +321,13 @@ final public class CBCollectionViewDocumentView : NSView {
         
         
         if animated && !animating {
+            let _animDuration = self.collectionView.animationDuration
             let mDelay = DispatchTime.now() + Double(Int64(0.01 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
             self.animating = true
             DispatchQueue.main.asyncAfter(deadline: mDelay, execute: {
                 var removals = [ItemUpdate]()
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                    context.duration = self.collectionView.animationDuration
+                    context.duration = _animDuration
                     context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
                     
                     for item in _updates {

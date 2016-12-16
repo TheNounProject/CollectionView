@@ -91,17 +91,25 @@ open class CBClipView : NSClipView {
     }
     
     var manualScroll = false
-    @discardableResult open func scrollRectToVisible(_ aRect: NSRect, animated: Bool) -> Bool {
-        manualScroll = true
-        self.shouldAnimateOriginChange = animated
-        return super.scrollToVisible(aRect)
-    }
+//    @discardableResult open func scrollRectToVisible(_ aRect: NSRect, animated: Bool) -> Bool {
+//        manualScroll = true
+//        self.shouldAnimateOriginChange = animated
+//        return super.scrollToVisible(aRect)
+//    }
     
-    @discardableResult open func scrollRectToVisible(_ rect: CGRect, animated: Bool, completion: CBAnimationCompletion?) -> Bool {
+    @discardableResult open func scrollRectToVisible(_ rect: CGRect, animated: Bool, completion: CBAnimationCompletion? = nil) -> Bool {
         manualScroll = true
+        shouldAnimateOriginChange = animated
+        if animated == false {
+            
+            // Calculate the point to scroll to to get make the rect visible
+            self.scroll(to: rect.origin)
+            return true
+        }
+        
         self.completionBlock = completion
-        let success = self.scrollRectToVisible(rect, animated: animated)
-        if !animated || !success {
+        let success = super.scrollToVisible(rect)
+        if !success {
             self.finishedScrolling(success)
         }
         return success
@@ -123,6 +131,12 @@ open class CBClipView : NSClipView {
 //        Swift.print("End gesture")
 //        super.endGesture(with: event)
 //    }
+    
+    open override func animation(forKey key: String) -> Any? {
+        let anim = super.animation(forKey: key)
+        Swift.print("Animation for: \(key): \(anim)")
+        return anim
+    }
     
     func finishedScrolling(_ success: Bool) {
         self.completionBlock?(success)
@@ -169,21 +183,22 @@ open class CBClipView : NSClipView {
         DispatchQueue.main.async { 
             super.scroll(to: o)
             
-            if let cv = self.scrollView as? CBCollectionView {
-                cv.delegate?.collectionViewDidScroll?(cv)
-            }
+//            if let cv = self.scrollView as? CBCollectionView {
+//                cv.delegate?.collectionViewDidScroll?(cv)
+//            }
             // Make this call so that we can force an update of the scroller positions.
             self.scrollView.reflectScrolledClipView(self)
+            NotificationCenter.default.post(name: Notification.Name.NSScrollViewDidLiveScroll, object: self.scrollView)
         }
         
-//        NSNotificationCenter.defaultCenter().postNotificationName(NSScrollViewDidLiveScrollNotification, object: self, userInfo: nil)
+          //.postNotificationName(NSScrollViewDidLiveScrollNotification, object: self, userInfo: nil)
         
         if ((fabs(o.x - lastOrigin.x) < 0.1 && fabs(o.y - lastOrigin.y) < 0.1)) {
             self.endScrolling()
             
             // Make sure we always finish out the animation with the actual coordinates
             DispatchQueue.main.async(execute: { 
-                self.scroll(to: o)
+                self.scroll(to: self.destinationOrigin)
                 self.finishedScrolling(true)
                 if let cv = self.scrollView as? CBCollectionView {
                     cv.delegate?.collectionViewDidEndScrolling?(cv, animated: true)

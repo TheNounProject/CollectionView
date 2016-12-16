@@ -12,18 +12,24 @@ import Foundation
 open class CBCollectionViewLayout : NSObject {
     
     // This is set internally when the layout is set on the CollectionView
-    open internal(set) weak var collectionView: CBCollectionView?
+    open internal(set) weak var collectionView: CBCollectionView? { didSet { prepare() }}
     open var scrollDirection : CBCollectionViewScrollDirection { return .vertical }
+    
+    
+    /// Called when the collection view is set to do any initialization setup
+    open func prepare() { }
     
     open func invalidateLayout() { }
     open func prepareLayout() { }
     open var pinHeadersToTop: Bool = true
-    var allIndexPaths = Set<IndexPath>()
+    public var allIndexPaths = Set<IndexPath>()
     
     open func layoutAttributesForElementsInRect(_ rect: CGRect) -> [CBCollectionViewLayoutAttributes]? { return nil } // return an array layout attributes instances for all the views in the given rect
     open func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CBCollectionViewLayoutAttributes? { return nil }
     open func layoutAttributesForSupplementaryViewOfKind(_ elementKind: String, atIndexPath indexPath: IndexPath) -> CBCollectionViewLayoutAttributes? { return nil }
-    open func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? { return nil }
+    open func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CBCollectionViewScrollPosition) -> CGRect? {
+        return self.layoutAttributesForItemAtIndexPath(indexPath)?.frame
+    }
     open func indexPathsForItemsInRect(_ rect: CGRect) -> Set<IndexPath>? { return nil }
     
     open func shouldInvalidateLayoutForBoundsChange(_ newBounds: CGRect) -> Bool { return true }  // return YES to cause the collection view to requery the layout for geometry information

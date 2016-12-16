@@ -298,7 +298,8 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             self.info.recalculate()
             
             contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
-            if self.info.contentSize.height != _size.height, let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.top) {
+            //self.info.contentSize.height != _size.height,
+            if let ip = _topIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CBCollectionViewScrollPosition.top) {
                 let _rect = CGRect(origin: rect.origin, size: self.bounds.size)
                 _ = self.clipView?.scrollRectToVisible(_rect, animated: false, completion: nil)
             }
@@ -436,7 +437,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         
         self.scrollVelocity = CGPoint(x: deltaX, y: deltaY)
         
-//        Swift.print("Did scroll : \(self.contentOffset)")
+        Swift.print("Did scroll : \(self.contentOffset)")
         
         self.peakScrollVelocity = peakScrollVelocity.maxVelocity(self.scrollVelocity)
         self._offsetMark = CACurrentMediaTime()
@@ -475,10 +476,9 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         
         var visibleRect = self.contentVisibleRect //.insetBy(dx: self.contentInsets.left + self.contentInsets.right, dy: self.contentInsets.top + self.contentInsets.bottom)
         visibleRect.origin.y += self.contentInsets.top
-        visibleRect.origin.x += self.contentInsets.top
-        visibleRect.size.height -= self.contentInsets.top + self.contentInsets.bottom
-        visibleRect.size.width -= self.contentInsets.left + self.contentInsets.right
-        
+        visibleRect.origin.x += self.contentInsets.left
+        visibleRect.size.height -= (self.contentInsets.top + self.contentInsets.bottom)
+        visibleRect.size.width -= (self.contentInsets.left + self.contentInsets.right)
         
         var closest : IndexPath?
         for sectionIndex in 0..<self.info.numberOfSections  {
@@ -955,7 +955,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             return
         }
         
-        if !self.multiSelect {
+        if self.selectionMode != .multi {
             self._deselectAllItems(true, notify: false)
         }
         else if self.itemAtIndexPathIsSelected(ip) {
@@ -1003,7 +1003,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             else {
                 lastEventTime = nil
             }
-            let extend = multiSelect || theEvent.modifierFlags.contains(NSEventModifierFlags.shift)
+            let extend = selectionMode == .multi || theEvent.modifierFlags.contains(NSEventModifierFlags.shift)
             if theEvent.keyCode == 123 { self.moveSelectionLeft(extend) }
             else if theEvent.keyCode == 124 { self.moveSelectionRight(extend) }
             else if theEvent.keyCode == 125 { self.moveSelectionDown(extend) }
@@ -1041,8 +1041,18 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     /*-------------------------------------------------------------------------------*/
     open var allowsSelection: Bool = true
     
-    /// Clicking items always extends the selection, selecting again deselects
-    open var multiSelect: Bool = false
+    
+    /// How clicking an item is handled
+    ///
+    /// - normal: Clicking an item selects the item and deselects others (given no modifier keys are used)
+    /// - multi: Clicking an item will add it to the selection, clicking again will deselect it
+    public enum SelectionMode {
+        case normal
+        case multi
+    }
+    
+    /// Determines what happens when an item is clicked
+    open var selectionMode: SelectionMode = .normal
     
     /// allows the selection of multiple items via modifier keys (command & shift)
     open var allowsMultipleSelection: Bool = true
@@ -1131,7 +1141,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         
         self.cellForItemAtIndexPath(indexPath)?.setSelected(true, animated: animated)
         self._selectedIndexPaths.insert(indexPath)
-        if (multiSelect && event != nil) || self._selectedIndexPaths.count == 1 {
+        if (selectionMode == .multi && event != nil) || self._selectedIndexPaths.count == 1 {
             self._firstSelection = indexPath
         }
         self._lastSelection = indexPath
@@ -1191,7 +1201,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         }
         
         
-        if !multiSelect {
+        if selectionMode != .multi {
             var deselectIndexes = self._selectedIndexPaths
             _ = deselectIndexes.removeSet(indexesToSelect)
             self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
@@ -1407,7 +1417,6 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     
-    
     // MARK: - Programatic Scrolling
     open func scrollToItemAtIndexPath(_ indexPath: IndexPath, atScrollPosition scrollPosition: CBCollectionViewScrollPosition, animated: Bool, completion: CBAnimationCompletion?) {
         if self.info.numberOfItemsInSection(indexPath._section) < indexPath._item { return }
@@ -1432,7 +1441,14 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     }
     
     open func _scrollToRect(_ aRect: CGRect, atPosition: CBCollectionViewScrollPosition, animated: Bool, prepare: Bool, completion: CBAnimationCompletion?) {
-        var rect = aRect
+        var rect = aRect.intersection(self.contentDocumentView.frame)
+        
+        if rect.isEmpty {
+            completion?(false)
+            return
+        }
+        
+        let scrollDirection = collectionViewLayout.scrollDirection
         
         let visibleRect = self.contentVisibleRect
         switch atPosition {
@@ -1443,8 +1459,13 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             break;
         case .centered:
             // TODO
-            rect.size.height = self.bounds.size.height;
-            rect.origin.y += (visibleRect.height / 2.0) - rect.height;
+            if self.collectionViewLayout.scrollDirection == .vertical {
+                rect.origin.x = 0
+                rect.origin.y = rect.center.y - (visibleRect.size.height/2)
+            }
+            else {
+                rect.size.width = self.bounds.size.width
+            }
             break;
         case .bottom:
             // make the bottom of our rect flush with the bottom of the visible bounds
@@ -1467,9 +1488,20 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
             else if rect.maxY >  visibleRect.maxY {
                 rect = visibleRect.offsetBy(dx: 0, dy: rect.maxY - visibleRect.maxY + self.contentInsets.top)
             }
+            
             // We just pass the cell's frame onto the scroll view. It calculates this for us.
             break;
         }
+        
+        if scrollDirection == .vertical {
+            rect.origin.x = contentInsets.left
+            rect.size.width = contentSize.width
+        }
+        else {
+//            rect.size.
+            rect.size.height = self.contentSize.height
+        }
+        
         if prepare {
             self.contentDocumentView.prepareRect(rect.union(visibleRect), force: false)
         }

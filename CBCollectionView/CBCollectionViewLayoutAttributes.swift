@@ -54,7 +54,7 @@ open class CBCollectionViewLayoutAttributes {
         return str
     }
     
-    func copy() -> CBCollectionViewLayoutAttributes {
+    public func copy() -> CBCollectionViewLayoutAttributes {
         var attrs : CBCollectionViewLayoutAttributes!
         if self.representedElementCategory == .cell {
             attrs = CBCollectionViewLayoutAttributes(forCellWithIndexPath: self.indexPath)

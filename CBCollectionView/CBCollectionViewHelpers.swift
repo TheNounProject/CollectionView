@@ -143,23 +143,23 @@ func CGRectSubtract(_ rect1: CGRect, rect2: CGRect, edge: CGRectEdge) -> CGRect 
     if rect2.isEmpty { return rect1 }
     if !rect1.intersects(rect2) { return rect1 }
     
-    if edge == .maxXEdge {
+    switch edge {
+    case .minXEdge:
+        let origin = CGPoint(x: rect2.maxX, y: rect1.origin.y)
+        let size = CGSize(width: rect1.maxX - origin.x , height: rect1.size.height)
+        return CGRect(origin: origin, size: size)
         
+    case .maxXEdge:
+        return CGRect(origin: rect1.origin, size: CGSize(width: rect2.origin.x - rect1.origin.x, height: rect1.size.height))
         
-    }
-    else if edge == .minXEdge {
-        
-    }
-    else if edge == .minYEdge {
+    case .minYEdge:
         let origin = CGPoint(x: rect1.origin.x, y: rect2.maxY)
         let size = CGSize(width: rect1.size.width, height: rect1.maxY - origin.y)
         return CGRect(origin: origin, size: size)
+        
+    case .maxYEdge:
+        return CGRect(origin: rect1.origin, size: CGSize(width: rect1.size.width, height: rect2.origin.y - rect1.origin.y))
     }
-    else if edge == .maxYEdge {
-         return CGRect(origin: rect1.origin, size: CGSize(width: rect1.size.width, height: rect2.origin.y - rect1.origin.y))
-    }
-    
-    return rect1
 }
 
 

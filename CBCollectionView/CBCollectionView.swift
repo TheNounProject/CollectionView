@@ -890,14 +890,27 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     //        }
     //    }
     
+    
+    private func acceptClickEvent(_ event: NSEvent) -> Bool {
+        if let view = self.window?.contentView?.hitTest(event.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
+            if view == self.clipView || view.isDescendant(of: self) { self.window?.makeFirstResponder(self) }
+            return false
+        }
+        return true
+    }
+    
     var mouseDownIP: IndexPath?
     open override func mouseDown(with theEvent: NSEvent) {
         
         self.mouseDownIP = nil
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
-            if view == self.clipView || view.isDescendant(of: self) { self.window?.makeFirstResponder(self) }
+        guard acceptClickEvent(theEvent) else {
             return
         }
+        
+//        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
+//            if view == self.clipView || view.isDescendant(of: self) { self.window?.makeFirstResponder(self) }
+//            return
+//        }
         self.window?.makeFirstResponder(self)
         //        self.nextResponder?.mouseDown(theEvent)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
@@ -921,10 +934,12 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         let indexPath = self.indexPathForItemAtPoint(point)
         self.delegate?.collectionView?(self, mouseUpInItemAtIndexPath: indexPath, withEvent: theEvent)
         
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false && view.isDescendant(of: self._floatingSupplementaryView) == false {
-            if view == self.clipView { self.window?.makeFirstResponder(self) }
-            return
-        }
+        guard self.acceptClickEvent(theEvent) else { return }
+        
+//        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false && view.isDescendant(of: self._floatingSupplementaryView) == false {
+//            if view == self.clipView { self.window?.makeFirstResponder(self) }
+//            return
+//        }
         
         if mouseDownIP == nil && allowsEmptySelection {
             self._deselectAllItems(true, notify: true)
@@ -967,9 +982,12 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     
     open override func rightMouseDown(with theEvent: NSEvent) {
         super.rightMouseDown(with: theEvent)
-        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
-            return
-        }
+        
+        guard self.acceptClickEvent(theEvent) else { return }
+        
+//        if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
+//            return
+//        }
         
         let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
         if let indexPath = self.indexPathForItemAtPoint(point) {
@@ -1523,6 +1541,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         var items : [NSDraggingItem] = []
         
         guard let mouseDown = mouseDownIP else { return }
+        guard self.acceptClickEvent(theEvent) else { return }
         
         if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAtIndexPath: mouseDown, withEvent: theEvent) != true { return }
         

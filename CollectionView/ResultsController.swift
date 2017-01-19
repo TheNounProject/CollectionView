@@ -42,7 +42,7 @@ public protocol ResultsController {
     var delegate : ResultsControllerDelegate? { get set }
     
     func numberOfSections() -> Int
-    func numberOfObjects(in sections: Int) -> Int
+    func numberOfObjects(in section: Int) -> Int
     
     // MARK: - Getting Items
     /*-------------------------------------------------------------------------------*/

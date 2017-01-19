@@ -1030,7 +1030,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 self._deselectItemAtIndexPath(ip, animated: true, notifyDelegate: true)
             }
             else {
-                self._selectItemAtIndexPath(ip, animated: true, withEvent: theEvent, notifyDelegate: true)
+                self._selectItem(at: ip, animated: true, withEvent: theEvent, notifyDelegate: true)
             }
             return
         }
@@ -1046,7 +1046,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._deselectItemAtIndexPath(ip, animated: true, notifyDelegate: true)
             return
         }
-        self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .none, withEvent: theEvent)
+        self._selectItem(at: ip, animated: true, scrollPosition: .none, withEvent: theEvent)
     }
     
     open override func rightMouseDown(with theEvent: NSEvent) {
@@ -1195,22 +1195,22 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open func selectAllItems(_ animated: Bool = true) {
-        self.selectItemsAtIndexPaths(Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath], animated: animated)
+        self.selectItems(at: Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath], animated: animated)
     }
 
-    open func selectItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
-        for ip in indexPaths { self._selectItemAtIndexPath(ip, animated: animated, scrollPosition: .none, withEvent: nil, notifyDelegate: false) }
+    open func selectItems(at indexPaths: [IndexPath], animated: Bool) {
+        for ip in indexPaths { self._selectItem(at: ip, animated: animated, scrollPosition: .none, withEvent: nil, notifyDelegate: false) }
         //        if let ip = indexPaths.last {
         //            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: ip)
         //        }
     }
     
     
-    open func selectItemAtIndexPath(_ indexPath: IndexPath?, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) {
-        self._selectItemAtIndexPath(indexPath, animated: animated, scrollPosition: scrollPosition, withEvent: nil, notifyDelegate: false)
+    open func selectItem(at indexPath: IndexPath?, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) {
+        self._selectItem(at: indexPath, animated: animated, scrollPosition: scrollPosition, withEvent: nil, notifyDelegate: false)
     }
     
-    fileprivate func _selectItemAtIndexPath(_ indexPath: IndexPath?, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none, withEvent event: NSEvent?, notifyDelegate: Bool = true) {
+    fileprivate func _selectItem(at indexPath: IndexPath?, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none, withEvent event: NSEvent?, notifyDelegate: Bool = true) {
         guard let indexPath = indexPath else {
             self.deselectAllItems(animated)
             return
@@ -1296,12 +1296,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         let finalSelect = indexesToSelect.remove(indexPath)
         for ip in indexesToSelect {
-            self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: false)
+            self._selectItem(at: ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: false)
         }
         
         self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated, completion: nil)
         if let ip = finalSelect {
-            self._selectItemAtIndexPath(ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: true)
+            self._selectItem(at: ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: true)
         }
         
         //        self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
@@ -1634,7 +1634,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             else if selections.count == 1 && mouseDown != ip {
                 self.deselectItemAtIndexPath(ip, animated: true)
                 ip = mouseDown
-                self.selectItemAtIndexPath(ip, animated: true)
+                self.selectItem(at: ip, animated: true)
             }
             
             

@@ -212,11 +212,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return self._section(for: sectionIndexPath)
     }
     
-    public func object(for sectionIndexPath: IndexPath) -> Any? {
+    public final func object(for sectionIndexPath: IndexPath) -> Any? {
         return self._object(for: sectionIndexPath)
     }
-    public func object(at indexPath: IndexPath) -> NSManagedObject? {
-        return self._item(at: indexPath)
+    public final func object(at indexPath: IndexPath) -> NSManagedObject? {
+        return self._object(at: indexPath)
     }
     
     
@@ -226,11 +226,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return self._sections.object(at: sectionIndexPath._section)
     }
     
-    private func _object(for sectionIndexPath: IndexPath) -> Section? {
+    public func _object(for sectionIndexPath: IndexPath) -> Section? {
         return self._sections.object(at: sectionIndexPath._section)?._object
     }
     
-    public func _item(at indexPath: IndexPath) -> Element? {
+    public func _object(at indexPath: IndexPath) -> Element? {
         return self._sections.object(at: indexPath._section)?._objects.object(at: indexPath._item)
     }
     

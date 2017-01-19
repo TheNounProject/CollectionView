@@ -219,6 +219,14 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         self._reusableSupplementaryView[newID]?.append(item)
     }
     
+    final func _loadCell(at indexPath: IndexPath) -> CBCollectionViewCell? {
+        guard let cell = self.contentDocumentView.preparedCellIndex[indexPath] ?? self.dataSource?.collectionView(self, cellForItemAtIndexPath: indexPath) else {
+            debugPrint("For some reason collection view tried to load cells without a data source")
+            return nil
+        }
+        assert(cell.collectionView != nil, "Attemp to load cell without using deque")
+        return cell
+    }
     
     
     // MARK: - Data
@@ -410,17 +418,10 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     /*-------------------------------------------------------------------------------*/
     override open class func isCompatibleWithResponsiveScrolling() -> Bool { return true }
     
-//    open override func scrollWheel(with event: NSEvent) {
-//        if !self.isScrollEnabled { return }
-//        super.scrollWheel(with: event)
-//        
-//        let phase = event.phase
-//        let mPhase = event.momentumPhase
-//        
-//        Swift.print("P: \(phase)  M: \(mPhase)")
-//    }
-    
-    open var isScrollEnabled = true { didSet { self.clipView?.scrollEnabled = isScrollEnabled }}
+    open var isScrollEnabled : Bool {
+        set { self.clipView?.scrollEnabled = newValue }
+        get { return self.clipView?.scrollEnabled ?? true }
+    }
     open internal(set) var isScrolling : Bool = false
     
     fileprivate var _previousOffset = CGPoint.zero
@@ -511,10 +512,164 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     
     
     
-    // MARK: - Reloading, Inserting & Deleting items
+    // MARK: - Manipulating Sections
     /*-------------------------------------------------------------------------------*/
-    open func reloadItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
+    
+    
+    public func reloadSections(_ sections: IndexSet, animated: Bool) {
         
+    }
+    
+    public func insertSections(_ sections: IndexSet, animated: Bool) {
+        self.indexPathForHighlightedItem = nil
+        
+        var sections = sections
+        var changeMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
+        
+        let cCount = self.numberOfSections()
+        var newSection = 0
+        
+        for sec in 0..<cCount {
+            
+            while let nSec = sections.first , nSec <= sec {
+                sections.remove(nSec)
+                newSection += 1
+            }
+            if newSection != sec {
+                for index in 0..<numberOfItemsInSection(sec) {
+                    let ip = IndexPath.for(item:index, section: sec)
+                    if let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
+                        let newIP = IndexPath.for(item:index, section: newSection)
+                        changeMap.append((newIP: newIP, cell: cell))
+                    }
+                }
+            }
+            newSection += 1
+        }
+        
+        var updatedSelections = Set<IndexPath>()
+        var movedSelections = Set<IndexPath>()
+        for change in changeMap {
+            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+                updatedSelections.insert(ip as IndexPath)
+                movedSelections.insert(change.newIP)
+            }
+            change.cell.indexPath = change.newIP
+            self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
+        }
+        _ = _selectedIndexPaths.removeSet(updatedSelections)
+        _selectedIndexPaths.formUnion(movedSelections)
+        
+        if batchUpdating { return }
+        
+        self.relayout(true, scrollPosition: .none)
+        self.delegate?.collectionViewDidReloadData?(self)
+    }
+    
+    
+    
+    
+    public func moveSection(_ section: Int, to newSection: Int, animated: Bool) {
+        self.deleteSections(IndexSet(integer: section), animated: animated)
+        self.insertSections(IndexSet(integer: section), animated: animated)
+    }
+    
+    
+    public func deleteSections(_ sections: IndexSet, animated: Bool) {
+        self.indexPathForHighlightedItem = nil
+        
+        var updates = [ItemUpdate]()
+        var cellMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
+        var viewMap = [(id: SupplementaryViewIdentifier, view: CBCollectionReusableView)]()
+        
+        let cCount = self.numberOfSections()
+        
+        // Create a map of the prepared cells
+        var prepared = [Int: (supp: [SupplementaryViewIdentifier], cells: [IndexPath])]()
+        for supp in contentDocumentView.preparedSupplementaryViewIndex {
+            guard let sec = supp.0.indexPath?._section else { continue }
+            if prepared[sec] == nil { prepared[sec] = (supp: [supp.0], cells: []) }
+            else { prepared[sec]?.supp.append(supp.0) }
+        }
+        for item in contentDocumentView.preparedCellIndex {
+            let sec = item.0._section
+            if prepared[sec] == nil { prepared[sec] = (supp: [], cells: [item.0]) }
+            else { prepared[sec]?.cells.append(item.0 as IndexPath) }
+        }
+        
+        
+        var newSection = 0
+        for sec in 0..<cCount {
+            if let rSec = sections.first , rSec == sec {
+                guard let items = prepared[sec] else { continue }
+                for supp in items.supp {
+                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: supp),
+                        let attrs = view.attributes {
+                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: supp))
+                    }
+                }
+                for ip in items.cells {
+                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip),
+                        let attrs = view.attributes {
+                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove))
+                    }
+                }
+                continue
+            }
+            
+            if sec != newSection, let items = prepared[sec] {
+                for supp in items.supp {
+                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: supp) {
+                        let ip = IndexPath.for(section:newSection)
+                        var s = supp
+                        s.indexPath = ip
+                        viewMap.append((id: s, view: view))
+                    }
+                }
+                for ip in items.cells {
+                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
+                        let ip = IndexPath.for(item: ip._item, section: newSection)
+                        cellMap.append((newIP: ip, cell: view))
+                    }
+                }
+            }
+            newSection += 1
+        }
+        
+        self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
+        
+        for change in viewMap {
+            change.view.indexPath = change.id.indexPath
+            self.contentDocumentView.preparedSupplementaryViewIndex[change.id] = change.view
+        }
+        
+        var updatedSelections = Set<IndexPath>()
+        var movedSelections = Set<IndexPath>()
+        for change in cellMap {
+            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+                updatedSelections.insert(ip as IndexPath)
+                movedSelections.insert(change.newIP)
+            }
+            change.cell.indexPath = change.newIP
+            self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
+        }
+        _ = _selectedIndexPaths.removeSet(updatedSelections)
+        _selectedIndexPaths.formUnion(movedSelections)
+        
+        if batchUpdating { return }
+        
+        self.relayout(true, scrollPosition: .none)
+        self.delegate?.collectionViewDidReloadData?(self)
+
+    }
+    
+
+    
+    
+    // MARK: - Manipulating items
+    /*-------------------------------------------------------------------------------*/
+    
+    public func reloadItems(at indexPaths: [IndexPath], animated: Bool) {
         
         var removals = [ItemUpdate]()
         for indexPath in indexPaths {
@@ -553,9 +708,10 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         if batchUpdating { return }
         self.relayout(animated, scrollPosition: .none)
     }
+
     
     
-    open func insertItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
+    public func insertItems(at indexPaths: [IndexPath], animated: Bool) {
         
         self.indexPathForHighlightedItem = nil
         
@@ -608,14 +764,57 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
-
+        
         self.relayout(true, scrollPosition: .none)
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
+
     
     
-    open func deleteItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
+    public func moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath, animated: Bool) {
+        
+        guard let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(destinationIndexPath) else { return }
+        
+        guard self.contentDocumentView.preparedCellIndex[indexPath] != nil || self.contentVisibleRect.intersects(attrs.frame) else {
+            debugPrint("Not processing item move because the item is and will not be visible.")
+            return
+        }
+        
+        guard let cell = self._loadCell(at: destinationIndexPath) else {
+            return
+        }
+        
+        if animated {
+            attrs.alpha = 0
+        }
+        let update = ItemUpdate(view: cell, attrs: cell.attributes!, type: .update)
+        
+        cell.indexPath = indexPath
+        
+    
+        cell.applyLayoutAttributes(attrs, animated: false)
+        
+        if cell.superview == nil {
+            self.contentDocumentView.addSubview(cell)
+        }
+        cell.selected = self._selectedIndexPaths.contains(indexPath)
+        
+        self.contentDocumentView.preparedCellIndex[indexPath] = cell
+        cell.viewDidDisplay()
+        
+        self.contentDocumentView.pendingUpdates.append(update)
+        if batchUpdating { return }
+        self.relayout(animated, scrollPosition: .none)
+        
+    }
+    
+    
+
+    
+    
+    
+    public func deleteItems(at indexPaths: [IndexPath], animated: Bool) {
         
         self.indexPathForHighlightedItem = nil
         
@@ -678,146 +877,7 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
-    
-    public final func deleteSections(_ indexes: [Int]) {
-        
-        self.indexPathForHighlightedItem = nil
-        
-        let sorted = Set(indexes).sorted()
-        
-        var updates = [ItemUpdate]()
-        var cellMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
-        var viewMap = [(id: SupplementaryViewIdentifier, view: CBCollectionReusableView)]()
-        
-        let cCount = self.numberOfSections()
-        
-        // Create a map of the prepared cells
-        var prepared = [Int: (supp: [SupplementaryViewIdentifier], cells: [IndexPath])]()
-        for supp in contentDocumentView.preparedSupplementaryViewIndex {
-            guard let sec = supp.0.indexPath?._section else { continue }
-            if prepared[sec] == nil { prepared[sec] = (supp: [supp.0], cells: []) }
-            else { prepared[sec]?.supp.append(supp.0) }
-        }
-        for item in contentDocumentView.preparedCellIndex {
-            let sec = item.0._section
-            if prepared[sec] == nil { prepared[sec] = (supp: [], cells: [item.0]) }
-            else { prepared[sec]?.cells.append(item.0 as IndexPath) }
-        }
-        
-        
-        var newSection = 0
-        for sec in 0..<cCount {
-            if let rSec = sorted.first , rSec == sec {
-                guard let items = prepared[sec] else { continue }
-                for supp in items.supp {
-                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: supp),
-                    let attrs = view.attributes {
-                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: supp))
-                    }
-                }
-                for ip in items.cells {
-                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip),
-                        let attrs = view.attributes {
-                        updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove))
-                    }
-                }
-                continue
-            }
-            
-            if sec != newSection, let items = prepared[sec] {
-                for supp in items.supp {
-                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: supp) {
-                        let ip = IndexPath.for(section:newSection)
-                        var s = supp
-                        s.indexPath = ip
-                        viewMap.append((id: s, view: view))
-                    }
-                }
-                for ip in items.cells {
-                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
-                        let ip = IndexPath.for(item: ip._item, section: newSection)
-                        cellMap.append((newIP: ip, cell: view))
-                    }
-                }
-            }
-            newSection += 1
-        }
-        
-        self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
-        
-        for change in viewMap {
-            change.view.indexPath = change.id.indexPath
-            self.contentDocumentView.preparedSupplementaryViewIndex[change.id] = change.view
-        }
-        
-        var updatedSelections = Set<IndexPath>()
-        var movedSelections = Set<IndexPath>()
-        for change in cellMap {
-            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
-                updatedSelections.insert(ip as IndexPath)
-                movedSelections.insert(change.newIP)
-            }
-            change.cell.indexPath = change.newIP
-            self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
-        }
-        _ = _selectedIndexPaths.removeSet(updatedSelections)
-        _selectedIndexPaths.formUnion(movedSelections)
-        
-        if batchUpdating { return }
-        
-        self.relayout(true, scrollPosition: .none)
-        self.delegate?.collectionViewDidReloadData?(self)
-        
-    }
-    
-    public final func insertSections(_ indexes: [Int]) {
-        
-        self.indexPathForHighlightedItem = nil
-        
-        var sorted = Set(indexes).sorted()
-        var changeMap = [(newIP: IndexPath, cell: CBCollectionViewCell)]()
-        
-        let cCount = self.numberOfSections()
-        var newSection = 0
-        
-        for sec in 0..<cCount {
-            
-            while let nSec = sorted.first , nSec <= sec {
-                sorted.removeFirst()
-                newSection += 1
-            }
-            if newSection != sec {
-                for index in 0..<numberOfItemsInSection(sec) {
-                    let ip = IndexPath.for(item:index, section: sec)
-                    if let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
-                        let newIP = IndexPath.for(item:index, section: newSection)
-                        changeMap.append((newIP: newIP, cell: cell))
-                    }
-                }
-            }
-            newSection += 1
-        }
-        
-        var updatedSelections = Set<IndexPath>()
-        var movedSelections = Set<IndexPath>()
-        for change in changeMap {
-            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
-                updatedSelections.insert(ip as IndexPath)
-                movedSelections.insert(change.newIP)
-            }
-            change.cell.indexPath = change.newIP
-            self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
-        }
-        _ = _selectedIndexPaths.removeSet(updatedSelections)
-        _selectedIndexPaths.formUnion(movedSelections)
-        
-        if batchUpdating { return }
-        
-        self.relayout(true, scrollPosition: .none)
-        self.delegate?.collectionViewDidReloadData?(self)
-        
-    }
-    
+
     
     
     fileprivate var batchUpdating : Bool = false
@@ -1343,6 +1403,14 @@ open class CBCollectionView : CBScrollView, NSDraggingSource {
     // Visible
     public final func visibleCells() -> [CBCollectionViewCell]  { return Array( self.contentDocumentView.preparedCellIndex.values) }
     public final func indexPathsForVisibleItems() -> [IndexPath]  { return Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath] }
+    
+    
+//    final func isItemVisible(at indexPath: IndexPath) -> Bool {
+//        guard let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) else {
+//            return false
+//        }
+//        self.contentVisibleRect.intersects(attrs.frame)
+//    }
     
     // Checking visiblility
     public final func itemAtIndexPathIsVisible(_ indexPath: IndexPath) -> Bool {

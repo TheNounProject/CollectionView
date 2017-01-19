@@ -21,13 +21,23 @@ public extension IndexPath {
     public static var Zero : IndexPath { return IndexPath.for(item: 0, section: 0) }
     public var _item: Int { return self[1] }
     public var _section: Int { return self[0] }
-    
     public static func inRange(_ range: CountableRange<Int>, section: Int) -> [IndexPath] {
         var ips = [IndexPath]()
         for idx in range {
             ips.append(IndexPath.for(item: idx, section: section))
         }
         return ips
+    }
+    
+    var sectionCopy : IndexPath {
+        return IndexPath.for(item: 0, section: self._section)
+    }
+    
+    func copy(item: Int) -> IndexPath {
+        return IndexPath.for(item: item, section: self._section)
+    }
+    func copy(section: Int) -> IndexPath {
+        return IndexPath.for(item: self._item, section: section)
     }
 }
 

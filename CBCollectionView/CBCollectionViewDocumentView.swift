@@ -31,7 +31,21 @@ internal struct ItemUpdate {
     }
 }
 
-
+class SectionInfo : Hashable {
+    let id = UUID()
+    var index: Int = 0
+    var _cellMap = [CBCollectionViewCell:Int]()
+    var _cells = [CBCollectionViewCell]()
+    
+    
+    // Hashable
+    var hashValue: Int { return id.hashValue }
+    static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    
+}
 
 final public class CBCollectionViewDocumentView : NSView {
 
@@ -57,8 +71,16 @@ final public class CBCollectionViewDocumentView : NSView {
     }
     
     var preparedRect = CGRect.zero
-    var preparedCellIndex : [IndexPath:CBCollectionViewCell] = [:]
-    var preparedSupplementaryViewIndex : [SupplementaryViewIdentifier:CBCollectionReusableView] = [:]
+    
+    
+//    var _cellMap = [CBCollectionViewCell:SectionInfo]()
+//    var _cellMap : [CBCollectionViewCell:Int]
+//    var _sectionMap : [SectionInfo:Int]
+//    var _sections = [SectionInfo]()
+    
+    
+    var preparedCellIndex = [IndexPath:CBCollectionViewCell]()
+    var preparedSupplementaryViewIndex = [SupplementaryViewIdentifier:CBCollectionReusableView]()
     
     func reset() {
         

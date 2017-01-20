@@ -238,7 +238,7 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
              */
             
             var contentRect: CGRect = CGRect(x: sectionInsets.left, y: top, width: contentWidth, height: 0)
-            let itemCount = self.collectionView!.numberOfItemsInSection(section)
+            let itemCount = self.collectionView!.numberOfItems(in: section)
             var sectionAttrs :[CollectionViewLayoutAttributes] = []
             var sectionIPs = Set<IndexPath>()
             
@@ -416,7 +416,7 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
         if rect.equalTo(CGRect.zero) || cv.numberOfSections() == 0 { return indexPaths }
         for sectionIndex in 0..<cv.numberOfSections() {
             
-            if cv.numberOfItemsInSection(sectionIndex) == 0 { continue }
+            if cv.numberOfItems(in: sectionIndex) == 0 { continue }
             
             let frame = sections[sectionIndex].contentRect
             if frame.isEmpty || !frame.intersects(rect) { continue }
@@ -512,8 +512,8 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
     
     
     public override func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
-        guard var frame = self.layoutAttributesForItemAtIndexPath(indexPath)?.frame else { return nil }
-        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath.for(item:0, section: indexPath._section)) {
+        guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
+        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath.for(item:0, section: indexPath._section)) {
             let y = frame.origin.y - attrs.frame.size.height
             let height = frame.size.height + attrs.frame.size.height
             frame.size.height = height
@@ -532,7 +532,7 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
         var section = currentIndexPath._section
         
         let numberOfSections = collectionView.numberOfSections()
-        let numberOfItemsInSection = collectionView.numberOfItemsInSection(currentIndexPath._section)
+        let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
         
         guard let cellRect = collectionView.rectForItemAtIndexPath(currentIndexPath) else { return nil }
         // let cellHeight = cellRect.height
@@ -541,7 +541,7 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
         case .up:
             //            let columns = sectionColumnAttributes[currentIndexPath._section]
             
-            guard let cAttrs = collectionView.layoutAttributesForItemAtIndexPath(currentIndexPath),
+            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath),
                 let rows = sectionRowAttributes[section] else { return nil }
             
             let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
@@ -586,7 +586,7 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
         case .down:
             /*
             
-            guard let cAttrs = collectionView.layoutAttributesForItemAtIndexPath(currentIndexPath),
+            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath),
                 let columns = sectionColumnAttributes[section] else { return nil }
             
             let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
@@ -637,7 +637,7 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
                 index = index - 1
             } else {
                 section = section - 1
-                index = collectionView.numberOfItemsInSection(currentIndexPath._section - 1) - 1
+                index = collectionView.numberOfItems(in: currentIndexPath._section - 1) - 1
             }
             return IndexPath.for(item:index, section: section)
         case .right :

@@ -39,8 +39,6 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         let childRequest = NSFetchRequest<Child>(entityName: "Child")
         let parentRequest = NSFetchRequest<Parent>(entityName: "Parent")
         
-        print(childRequest.entityName)
-        
         childRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
         parentRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
         
@@ -106,13 +104,15 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         return resultsController.numberOfObjects(in: section)
     }
     
-    func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, forIndexPath indexPath: IndexPath) -> CollectionReusableView {
+    func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView {
         
-        let view = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "BasicHeaderView", forIndexPath: indexPath) as! BasicHeaderView
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "BasicHeaderView", for: indexPath) as! BasicHeaderView
         
         let str = resultsController.sectionName(forSectionAt: indexPath)
+        view.titleLabel.font = NSFont.boldSystemFont(ofSize: 14)
         view.titleLabel.stringValue = str
         
+        view.titleInset = 16
         view.drawBorder = true
         view.accessoryButton.setIcon(.add, animated: false)
         view.delegate = self
@@ -131,6 +131,21 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         if NSApp.currentEvent?.modifierFlags.contains(.option) == true {
             section.managedObjectContext?.delete(section)
         }
+        else if NSApp.currentEvent?.modifierFlags.contains(.shift) == true {
+            
+            let newParent = Parent.create()
+            var order = section.displayOrder.intValue
+            newParent.displayOrder = NSNumber(value: order)
+            
+            order += 1
+            for idx in ip._section..<resultsController.numberOfSections() {
+                if let p = resultsController.object(for: IndexPath.for(section: idx)) as? Parent {
+                    p.displayOrder = NSNumber(value: order)
+                    
+                }
+                order += 1
+            }
+        }
         else {
             _ = section.createChild()
         }
@@ -138,16 +153,24 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         
     }
     
-    func collectionView(_ collectionView: CollectionView, cellForItemAtIndexPath indexPath: IndexPath) -> CollectionViewCell {
+    func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
         
         
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("ListCell", forIndexPath: indexPath) as! ListCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ListCell", for: indexPath) as! ListCell
         cell.restingBackgroundColor = NSColor(white: 0.98, alpha: 1)
         cell.highlightedBackgroundColor = NSColor(white: 0.95, alpha: 1)
         cell.selectedBackgroundColor = NSColor(white: 0.95, alpha: 1)
+       
+        if !cell.reused {
+            cell.inset = 16
+            cell.style = .basic
+            cell.titleLabel.font = NSFont.systemFont(ofSize: 12, weight: NSFontWeightThin)
+            
+        }
         
         let child = resultsController.object(at: indexPath) as! Child
-        cell.titleLabel.stringValue = child.displayDescription
+
+        cell.titleLabel.stringValue = "\(indexPath._item) - \(child.displayDescription)"
         
         return cell
         
@@ -155,33 +178,84 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
     
     
     func delete(_ sender: Any?) {
-        for ip in collectionView.indexPathsForSelectedItems() {
+        for ip in collectionView.indexPathsForSelectedItems {
             if let item = resultsController.object(at: ip) {
                 item.managedObjectContext?.delete(item)
             }
         }
     }
     
-    func collectionView(_ collectionView: CollectionView, didSelectItemAtIndexPath indexPath: IndexPath) {
+    func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        if let event = NSApp.currentEvent {
-            if event.modifierFlags.contains(.control) {
-                if indexPath._item > 0 {
-                    let newIP = IndexPath.for(item: indexPath._item - 1, section: indexPath._section)
-                    collectionView.moveItem(at: indexPath, to: newIP, animated: true)
-                }
-            }
-            else if event.modifierFlags.contains(.option) {
-                if indexPath._item < collectionView.numberOfItemsInSection(indexPath._section) - 1 {
-                    let newIP = IndexPath.for(item: indexPath._item + 1, section: indexPath._section)
-                    collectionView.moveItem(at: indexPath, to: newIP, animated: true)
-                }
-            }
-        }
+        
+        
     }
     
     
+    var _rightClicked : IndexPath?
+    func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath, withEvent: NSEvent) {
+        _rightClicked = nil
+        guard self.resultsController.object(at: indexPath) is Child,
+            let cell = collectionView.cellForItem(at: indexPath) else {
+            return
+        }
+        _rightClicked = indexPath
+        
+        let menu = NSMenu()
+        menu.autoenablesItems = false
+        let upItem = menu.addItem(withTitle: "Move Up", action: #selector(moveItemUp(_:)), keyEquivalent: "")
+        let downItem = menu.addItem(withTitle: "Move Down", action: #selector(moveItemDown(_:)), keyEquivalent: "")
+
+        upItem.isEnabled = indexPath._item > 0
+        downItem.isEnabled = indexPath._item < collectionView.numberOfItems(in: indexPath._section) - 1
+        
+        let loc = cell.convert(withEvent.locationInWindow, from: nil)
+        menu.popUp(positioning: nil, at: loc, in: cell)
+    }
     
+    
+    func moveItemUp(_ sender: Any?) {
+        
+        guard let indexPath = _rightClicked,
+            let child = self.resultsController.object(at: indexPath) as? Child else {
+            return
+        }
+        
+        guard indexPath._item > 0 else {
+            print("Cannot move item up - it is already first")
+            return
+        }
+        let newIP = IndexPath.for(item: indexPath._item - 1, section: indexPath._section)
+        if let previous = self.resultsController.object(at: newIP) as? Child {
+            let temp = child.displayOrder
+            child.displayOrder = previous.displayOrder
+            previous.displayOrder = temp
+        }
+    }
+
+    func moveItemDown(_ sender: Any?) {
+        
+        guard let indexPath = _rightClicked,
+            let child = self.resultsController.object(at: indexPath) as? Child else {
+                return
+        }
+        
+        guard indexPath._item < collectionView.numberOfItems(in: indexPath._section) - 1 else {
+            print("Cannot move item down - it is already last")
+            return
+        }
+        let newIP = IndexPath.for(item: indexPath._item + 1, section: indexPath._section)
+        if let previous = self.resultsController.object(at: newIP) as? Child {
+            let temp = child.displayOrder
+            child.displayOrder = previous.displayOrder
+            previous.displayOrder = temp
+        }
+
+        
+    }
+
+
+
     // MARK: - ResultsController
     /*-------------------------------------------------------------------------------*/
     
@@ -192,6 +266,7 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
     
     var _sectionInserts = IndexSet()
     var _sectionDeletes = IndexSet()
+    var _sectionUpdates = IndexSet()
     var _sectionMoves = [Int: Int]()
     
     func controllerWillChangeContent(controller: ResultsController) {
@@ -199,6 +274,8 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         _deletes.removeAll()
         _updates.removeAll()
         _moves.removeAll()
+        _sectionInserts.removeAll()
+        _sectionDeletes.removeAll()
     }
     
     func controller(_ controller: ResultsController, didChangeObject object: NSManagedObject, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
@@ -225,7 +302,7 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
             _sectionDeletes.insert(indexPath!._section)
             
         case .update:
-//            _sectionUpdates.insert(indexPath!._section)
+            _sectionUpdates.insert(indexPath!._section)
             break;
             
         case let .move(newIndexPath):
@@ -244,10 +321,15 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
             self.collectionView.deleteSections(_sectionDeletes, animated: true)
             self.collectionView.insertSections(_sectionInserts, animated: true)
             
+            self.collectionView.reloadSupplementaryViews(in: _sectionUpdates, animated: true)
+            
             self.collectionView.insertItems(at: Array(_inserts), animated: true)
             self.collectionView.deleteItems(at: Array(_deletes), animated: true)
-            self.collectionView.reloadItems(at: Array(_updates), animated: true)
+//            self.collectionView.reloadItems(at: Array(_updates), animated: true)
             
+            for move in _moves {
+                self.collectionView.moveItem(at: move.key, to: move.value, animated: true)
+            }
             
         }, completion: nil)
         

@@ -87,10 +87,10 @@ struct ContextChange<Object:NSManagedObject>: CustomStringConvertible {
     var deleted = Set<Object>()
     
     var description: String {
-        var str = "Context changes for \(Object.className())\n "
-        + "updated: \(updated.count)\n"
+        var str = "Context changes for \(Object.className())\n"
+        + "Updated: \(updated.count)\n"
         + "Inserted: \(inserted.count)\n"
-        + "deleted: \(deleted.count)"
+        + "Deleted: \(deleted.count)"
         return str
     }
     

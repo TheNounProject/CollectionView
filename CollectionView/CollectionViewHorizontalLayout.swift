@@ -42,7 +42,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         assert(numSections <= 1, "Horizontal collection view cannot have more than 1 section")
         
         if numSections == 0 { return }
-        let numRows = cv.numberOfItemsInSection(0)
+        let numRows = cv.numberOfItems(in: 0)
         if numRows == 0 { return }
         
         var xPos: CGFloat = sectionInsets.left - self.itemSpacing
@@ -67,7 +67,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     }
     
     var _size = CGSize.zero
-    open override func shouldInvalidateLayoutForBoundsChange(_ newBounds: CGRect) -> Bool {
+    open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         if !newBounds.size.equalTo(_size) {
             self._size = newBounds.size
             return true
@@ -75,7 +75,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         return false
     }
     
-    open override func collectionViewContentSize() -> CGSize {
+    open override var collectionViewContentSize : CGSize {
         let numberOfSections = self.collectionView!.numberOfSections()
         if numberOfSections == 0{
             return CGSize.zero
@@ -85,12 +85,12 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         return  contentSize
     }
     
-    open override func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
-        return layoutAttributesForItemAtIndexPath(indexPath)?.frame
+    open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
+        return layoutAttributesForItem(at: indexPath)?.frame
     }
     
     
-    open override func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    open override func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         let attrs = CollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         attrs.alpha = 1
         attrs.zIndex = 1000

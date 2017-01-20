@@ -174,7 +174,7 @@ open class CollectionViewCell : CollectionReusableView {
         // Ignore the event if an interaction enabled view is over this cell
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {
             if view.isDescendant(of: self) {
-                if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAtIndexPath: ip) , h == false { return }
+                if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAt: ip) , h == false { return }
                 super.mouseEntered(with: theEvent)
                 self.setHighlighted(true, animated: true)
             }

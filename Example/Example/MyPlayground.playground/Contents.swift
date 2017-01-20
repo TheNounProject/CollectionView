@@ -1,6 +1,6 @@
 ////: Playground - noun: a place where people can play
 //
-//import Cocoa
+import Cocoa
 //
 //var str = "Hello, playground"
 //
@@ -68,3 +68,16 @@
 //Person(name: "John").groupValue()
 //Shoe(size: 6).groupValue()
 //Shoe(size: 8).groupValue()
+
+
+
+
+var indexSet = IndexSet()
+indexSet.insert(1)
+indexSet.insert(5)
+indexSet.insert(8)
+debugPrint(indexSet)
+
+for idx in indexSet {
+    print(idx)
+}

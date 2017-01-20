@@ -29,7 +29,7 @@ internal final class CollectionViewInfo {
         self.collectionView = collectionView
     }
     
-    func numberOfItemsInSection(_ section: Int) -> Int {
+    func numberOfItems(in section: Int) -> Int {
         if let count = sections[section]?.numberOfItems { return count }
         return 0
     }
@@ -81,12 +81,12 @@ internal final class CollectionViewInfo {
             for itemIndex in 0..<section!.numberOfItems {
                 let indexPath = IndexPath.for(item:itemIndex, section: sIndex)
                 allIndexPaths.insert(indexPath)
-                if let attributes = layout.layoutAttributesForItemAtIndexPath(indexPath) {
+                if let attributes = layout.layoutAttributesForItem(at: indexPath) {
                     sectionFrame = sectionFrame.union(attributes.frame);
                 }
             }
             for identifier in self.collectionView._allSupplementaryViewIdentifiers {
-                if let attributes = layout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: IndexPath.for(item:0, section: sIndex)) {
+                if let attributes = layout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: IndexPath.for(item:0, section: sIndex)) {
                     sectionFrame = sectionFrame.union(attributes.frame)
                 }
             }
@@ -97,7 +97,7 @@ internal final class CollectionViewInfo {
     
     
     private func calculateContentSize() -> CGSize {
-        var size = self.collectionView.collectionViewLayout.collectionViewContentSize()
+        var size = self.collectionView.collectionViewLayout.collectionViewContentSize
         if (CGSize.zero.equalTo(size)) {
             var frame = CGRect.null;
             for section in self.sections {

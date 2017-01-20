@@ -58,6 +58,12 @@ struct SupplementaryViewIdentifier: Hashable {
         self.reuseIdentifier = reuseIdentifier
         self.indexPath = indexPath
     }
+    
+    func copy(with indexPath: IndexPath) -> SupplementaryViewIdentifier {
+        var s = self
+        s.indexPath = indexPath
+        return s
+    }
 }
 
 func ==(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {

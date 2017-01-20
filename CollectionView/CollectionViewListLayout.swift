@@ -127,7 +127,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
              */
             
             var contentRect: CGRect = CGRect(x: sectionInsets.left, y: top, width: itemWidth, height: 0)
-            let itemCount = self.collectionView!.numberOfItemsInSection(section)
+            let itemCount = self.collectionView!.numberOfItems(in: section)
             
             // Add the ip and attr arrays for the section, they are filled in below
             self.sectionIndexPaths.append([])
@@ -178,7 +178,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         }
     }
     
-    override public func collectionViewContentSize() -> CGSize {
+    override open var collectionViewContentSize : CGSize {
         guard let cv = collectionView else { return CGSize.zero }
         let numberOfSections = self.numSections
         if numberOfSections == 0 { return CGSize.zero }
@@ -192,12 +192,12 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         return size
     }
     
-    public override func rectForSection(_ section: Int) -> CGRect {
+    open override func rectForSection(_ section: Int) -> CGRect {
         return sectionFrames[section]
     }
     
     
-    public override func indexPathsForItemsInRect(_ rect: CGRect) -> Set<IndexPath>? {
+    open override func indexPathsForItems(in rect: CGRect) -> Set<IndexPath>? {
         //        return nil
         
         var indexPaths = Set<IndexPath>()
@@ -205,7 +205,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         if rect.isEmpty || self.numSections == 0 { return indexPaths }
         for sectionIndex in 0..<cv.numberOfSections() {
             
-            if cv.numberOfItemsInSection(sectionIndex) == 0 { continue }
+            if cv.numberOfItems(in: sectionIndex) == 0 { continue }
             
             let contentFrame = sectionContentFrames[sectionIndex]
             if contentFrame.isEmpty || !contentFrame.intersects(rect) { continue }
@@ -227,7 +227,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     
     
-    public override func layoutAttributesForElementsInRect(_ rect: CGRect) -> [CollectionViewLayoutAttributes]? {
+    open override func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes]? {
         var attrs : [CollectionViewLayoutAttributes] = []
         
         guard let cv = self.collectionView else { return nil }
@@ -252,11 +252,11 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         return attrs
     }
     
-    public override func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    public override func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         return itemAttributes[indexPath]?.copy()
     }
     
-    public override func layoutAttributesForSupplementaryViewOfKind(_ elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    public override func layoutAttributesForSupplementaryView(ofKind elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         
         if elementKind == CollectionViewLayoutElementKind.SectionHeader {
             let attrs = self.headersAttributes[indexPath._section]?.copy()
@@ -281,7 +281,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     }
     
     fileprivate var _cvSize = CGSize.zero
-    override public func shouldInvalidateLayoutForBoundsChange (_ newBounds : CGRect) -> Bool {
+    override public func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
         if !newBounds.size.equalTo(self._cvSize) {
             self._cvSize = newBounds.size
             return true
@@ -290,9 +290,9 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     }
     
     
-    public override func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
-        guard var frame = self.layoutAttributesForItemAtIndexPath(indexPath)?.frame else { return nil }
-        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath.for(item:0, section: indexPath._section)) {
+    public override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
+        guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
+        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath.for(item:0, section: indexPath._section)) {
             let y = frame.origin.y - attrs.frame.size.height
             let height = frame.size.height + attrs.frame.size.height
             frame.size.height = height
@@ -304,11 +304,11 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     
     
-    public override func indexPathForNextItemInDirection(_ direction: CollectionViewDirection, afterItemAtIndexPath currentIndexPath: IndexPath) -> IndexPath? {
+    public override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
         guard let collectionView = self.collectionView else { fatalError() }
         
         let numberOfSections = self.numSections
-        guard collectionView.rectForItemAtIndexPath(currentIndexPath) != nil else { return nil }
+        guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }
         
         switch direction {
         case .up, .left:

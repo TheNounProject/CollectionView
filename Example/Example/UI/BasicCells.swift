@@ -78,7 +78,7 @@ final class BasicHeaderView : CollectionReusableView {
     }
     
     class func register(_ collectionView: CollectionView) {
-        collectionView.registerClass(BasicHeaderView.self, forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, withReuseIdentifier: "BasicHeaderView")
+        collectionView.register(class: BasicHeaderView.self, forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, withReuseIdentifier: "BasicHeaderView")
     }
     
     override func draw(_ dirtyRect: NSRect) {

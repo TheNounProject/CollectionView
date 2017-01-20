@@ -25,7 +25,7 @@ import Foundation
      - returns: The height for the item
      */
     @objc optional func collectionView (_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
-        heightForItemAtIndexPath indexPath: IndexPath) -> CGFloat
+        heightForItemAt indexPath: IndexPath) -> CGFloat
     
     /**
      The aspect ration for the item at the given indexPath (Priority 1). Width and height must be greater than 0.
@@ -37,31 +37,31 @@ import Foundation
      - returns: The aspect ration for the item
      */
     @objc optional func collectionView (_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
-        aspectRatioForItemAtIndexPath indexPath: IndexPath) -> CGSize
+        aspectRatioForItemAt indexPath: IndexPath) -> CGSize
     
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        heightForHeaderInSection section: NSInteger) -> CGFloat
+        heightForHeaderInSection section: Int) -> CGFloat
     
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        heightForFooterInSection section: NSInteger) -> CGFloat
+        heightForFooterInSection section: Int) -> CGFloat
     
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
         numberOfColumnsInSection section: Int) -> Int
     
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        insetForSectionAtIndex section: NSInteger) -> EdgeInsets
+        insetForSectionAt section: NSInteger) -> EdgeInsets
     
     // Between to items in the same column
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        minimumInteritemSpacingForSectionAtIndex section: NSInteger) -> CGFloat
+        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat
     
     @objc optional func collectionview(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        minimumColumnSpacingForSectionAtIndex section: NSInteger) -> CGFloat
+        minimumColumnSpacingForSectionAt section: Int) -> CGFloat
     
 }
 
 
-public enum CollectionViewLayoutItemRenderDirection : NSInteger {
+public enum CollectionViewLayoutItemRenderDirection {
     case shortestFirst
     case leftToRight
     case rightToLeft
@@ -154,7 +154,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     func itemWidthInSectionAtIndex (_ section : NSInteger) -> CGFloat {
         let colCount = self.delegate?.collectionView?(self.collectionView!, layout: self, numberOfColumnsInSection: section) ?? self.columnCount
         var insets : EdgeInsets
-        if let sectionInsets = self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAtIndex: section){
+        if let sectionInsets = self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAt: section){
             insets = sectionInsets
         }else{
             insets = self.sectionInset
@@ -190,9 +190,9 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
             */
 //            let colCount = self.columnsInSection(section)
-            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(_collectionView, layout: self, insetForSectionAtIndex: section) ?? self.sectionInset
-            let itemSpacing : CGFloat = self.delegate?.collectionView?(_collectionView, layout: self, minimumInteritemSpacingForSectionAtIndex: section) ?? self.minimumInteritemSpacing
-            let colSpacing = self.delegate?.collectionview?(_collectionView, layout: self, minimumColumnSpacingForSectionAtIndex: section) ?? self.minimumColumnSpacing
+            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(_collectionView, layout: self, insetForSectionAt: section) ?? self.sectionInset
+            let itemSpacing : CGFloat = self.delegate?.collectionView?(_collectionView, layout: self, minimumInteritemSpacingForSectionAt: section) ?? self.minimumInteritemSpacing
+            let colSpacing = self.delegate?.collectionview?(_collectionView, layout: self, minimumColumnSpacingForSectionAt: section) ?? self.minimumColumnSpacing
             
             let contentWidth = _collectionView.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right
             let spaceColumCount = CGFloat(colCount-1)
@@ -222,7 +222,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             /*
             * 3. Section items
             */
-            let itemCount = _collectionView.numberOfItemsInSection(section)
+            let itemCount = _collectionView.numberOfItems(in: section)
             var itemAttributes :[CollectionViewLayoutAttributes] = []
             sectionColumnAttributes[section] = [Array](repeating: [], count: colCount)
             
@@ -236,17 +236,17 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                 let xOffset = sectionInsets.left + round((itemWidth + colSpacing) * CGFloat(columnIndex))
                 let yOffset = self.columnHeights[section][columnIndex]
                 var itemHeight : CGFloat = 0
-                let aSize = self.delegate?.collectionView?(_collectionView, layout: self, aspectRatioForItemAtIndexPath: indexPath)
+                let aSize = self.delegate?.collectionView?(_collectionView, layout: self, aspectRatioForItemAt: indexPath)
                 if aSize != nil && aSize!.width != 0 && aSize!.height != 0 {
                     let h = aSize!.height * (itemWidth/aSize!.width)
                     itemHeight = floor(h)
                     
-                    if let addHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForItemAtIndexPath: indexPath) {
+                    if let addHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForItemAt: indexPath) {
                         itemHeight += addHeight
                     }
                 }
                 else {
-                    itemHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForItemAtIndexPath: indexPath) ?? self.defaultItemHeight
+                    itemHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForItemAt: indexPath) ?? self.defaultItemHeight
                 }
                 
                 let attributes = CollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
@@ -285,7 +285,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         }
     }
     
-    override open func collectionViewContentSize() -> CGSize {
+    override open var collectionViewContentSize : CGSize {
         guard let cv = collectionView else { return CGSize.zero }
         let numberOfSections = cv.numberOfSections()
         if numberOfSections == 0{ return CGSize.zero }
@@ -301,7 +301,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         return sectionFrames[section] ?? CGRect.zero
     }
     
-    open override func layoutAttributesForElementsInRect(_ rect: CGRect) -> [CollectionViewLayoutAttributes]? {
+    open override func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes]? {
         var attrs : [CollectionViewLayoutAttributes] = []
         
         guard let cv = self.collectionView else { return nil }
@@ -323,14 +323,14 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         return attrs
     }
     
-    open override func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    open override func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         if indexPath._section >= self.sectionItemAttributes.count{ return nil }
         if indexPath._item >= self.sectionItemAttributes[indexPath._section].count{ return nil }
         let list = self.sectionItemAttributes[indexPath._section]
         return list[indexPath._item].copy()
     }
     
-    open override func layoutAttributesForSupplementaryViewOfKind(_ elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    open override func layoutAttributesForSupplementaryView(ofKind elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         
         if elementKind == CollectionViewLayoutElementKind.SectionHeader {
             let attrs = self.headersAttributes[indexPath._section]?.copy()
@@ -360,7 +360,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         return nil
     }
     
-    override open func shouldInvalidateLayoutForBoundsChange (_ newBounds : CGRect) -> Bool {
+    override open func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
         if !newBounds.size.equalTo(self._cvSize) {
             self._cvSize = newBounds.size
             return true
@@ -369,9 +369,9 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     }
     
     
-    open override func scrollRectForItemAtIndexPath(_ indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
-        guard var frame = self.layoutAttributesForItemAtIndexPath(indexPath)?.frame else { return nil }
-        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryViewOfKind(CollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath.for(item:0, section: indexPath._section)) {
+    open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
+        guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
+        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath.for(item:0, section: indexPath._section)) {
             let y = frame.origin.y - attrs.frame.size.height
             let height = frame.size.height + attrs.frame.size.height
             frame.size.height = height
@@ -424,7 +424,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     }
 
     
-    open override func indexPathsForItemsInRect(_ rect: CGRect) -> Set<IndexPath>? {
+    open override func indexPathsForItems(in rect: CGRect) -> Set<IndexPath>? {
 //        return nil
         
         var indexPaths = Set<IndexPath>()
@@ -432,7 +432,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         if rect.equalTo(CGRect.zero) || cv.numberOfSections() == 0 { return indexPaths }
         for sectionIndex in 0...cv.numberOfSections() - 1 {
             
-            if cv.numberOfItemsInSection(sectionIndex) == 0 { continue }
+            if cv.numberOfItems(in: sectionIndex) == 0 { continue }
             
             guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
             if sectionFrame.isEmpty || !sectionFrame.intersects(rect) { continue }
@@ -465,7 +465,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
 //            
 //            var start = -1
 //            var end = -1
-//            let itemCount = cv.numberOfItemsInSection(sectionIndex)
+//            let itemCount = cv.numberOfItems(in: sectionIndex)
 //            
 //            let maxY = CGRectGetMaxY(rect)
 //            for row in 0...firstColumn.count - 1 {
@@ -493,20 +493,20 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         return indexPaths
     }
     
-    open override func indexPathForNextItemInDirection(_ direction: CollectionViewDirection, afterItemAtIndexPath currentIndexPath: IndexPath) -> IndexPath? {
+    open override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
         guard let collectionView = self.collectionView else { fatalError() }
         
         var index = currentIndexPath._item
         var section = currentIndexPath._section
         
         let numberOfSections = collectionView.numberOfSections()
-        let numberOfItemsInSection = collectionView.numberOfItemsInSection(currentIndexPath._section)
+        let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
         
-        guard collectionView.rectForItemAtIndexPath(currentIndexPath) != nil else { return nil }
+        guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }
         
         switch direction {
         case .up:
-            guard let cAttrs = collectionView.layoutAttributesForItemAtIndexPath(currentIndexPath),
+            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath),
                 let columns = sectionColumnAttributes[section] else { return nil }
             
             let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
@@ -545,7 +545,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         case .down:
             
             
-            guard let cAttrs = collectionView.layoutAttributesForItemAtIndexPath(currentIndexPath),
+            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath),
                 let columns = sectionColumnAttributes[section] else { return nil }
             
             let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
@@ -590,7 +590,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                 index = index - 1
             } else {
                 section = section - 1
-                index = collectionView.numberOfItemsInSection(currentIndexPath._section - 1) - 1
+                index = collectionView.numberOfItems(in: currentIndexPath._section - 1) - 1
             }
             return IndexPath.for(item:index, section: section)
         case .right :

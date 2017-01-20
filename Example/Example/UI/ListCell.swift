@@ -32,7 +32,9 @@ class ListCell : CollectionViewCell {
     
     let titleLabel = NSTextField(frame: NSZeroRect)
     
-    var inset : CGFloat = 12
+    private var _needsLayout = true
+    var inset : CGFloat = 12 { didSet { _needsLayout = inset != oldValue || _needsLayout }}
+        
 //    override var wantsUpdateLayer: Bool { return seperatorStyle == SeperatorStyle.None }
     
     lazy var detailLabel : NSTextField = {
@@ -54,7 +56,7 @@ class ListCell : CollectionViewCell {
         return iv
     }()
     
-    var imageSize: CGSize = CGSize.zero
+        var imageSize: CGSize = CGSize.zero { didSet { _needsLayout = imageSize != oldValue || _needsLayout }}
     var seperatorStyle: SeperatorStyle = .default
     var seperatorColor : NSColor = NSColor(white: 0, alpha: 0.05)
     var seperatorWidth: CGFloat = 2
@@ -95,7 +97,7 @@ class ListCell : CollectionViewCell {
      var disableHighlight : Bool = false
     
     class func register(_ collectionView: CollectionView) {
-        collectionView.registerClass(ListCell.self, forCellWithReuseIdentifier: "ListCell")
+        collectionView.register(class: ListCell.self, forCellWithReuseIdentifier: "ListCell")
     }
     
     
@@ -147,7 +149,7 @@ class ListCell : CollectionViewCell {
     
     var style : Style = .basic {
         didSet {
-            if style == oldValue { return }
+            if style == oldValue && !_needsLayout { return }
             self.setupForStyle(style)
         }
     }

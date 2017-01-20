@@ -87,14 +87,14 @@ final public class CollectionViewDocumentView : NSView {
         for cell in preparedCellIndex {
             cell.1.removeFromSuperview()
             self.collectionView.enqueueCellForReuse(cell.1)
-            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell.1, forItemAtIndexPath: cell.0)
+            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell.1, forItemAt: cell.0)
         }
         preparedCellIndex.removeAll()
         for view in preparedSupplementaryViewIndex {
             view.1.removeFromSuperview()
             let id = view.0
             self.collectionView.enqueueSupplementaryViewForReuse(view.1, withIdentifier: id)
-            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view.1, forElementOfKind: id.kind, atIndexPath: id.indexPath!)
+            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view.1, ofElementKind: id.kind, at: id.indexPath!)
         }
         
         for v in self.subviews {
@@ -129,7 +129,7 @@ final public class CollectionViewDocumentView : NSView {
             
             for id in self.preparedSupplementaryViewIndex {
                 let view = id.1
-                guard let ip = id.0.indexPath, let attrs = self.collectionView.layoutAttributesForSupplementaryElementOfKind(id.0.kind, atIndexPath: ip) else { continue }
+                guard let ip = id.0.indexPath, let attrs = self.collectionView.layoutAttributesForSupplementaryElement(ofKind: id.0.kind, atIndexPath: ip) else { continue }
                 if attrs.floating == true {
                     if view.superview != self.collectionView._floatingSupplementaryView {
                         view.removeFromSuperview()
@@ -174,25 +174,25 @@ final public class CollectionViewDocumentView : NSView {
         var updates = [ItemUpdate]()
         
         let oldIPs = Set(self.preparedCellIndex.keys)
-        var inserted = self.collectionView.indexPathsForItemsInRect(rect)
+        var inserted = self.collectionView.indexPathsForItems(in: rect)
         let removed = oldIPs.removingSet(inserted)
         let updated = inserted.removeSet(oldIPs)
         
         if !extending {
             var removedRect = CGRect.zero
             for ip in removed {
-                if let cell = self.collectionView.cellForItemAtIndexPath(ip) {
+                if let cell = self.collectionView.cellForItem(at: ip) {
                     if removedRect.isEmpty { removedRect = cell.frame }
                     else { removedRect = removedRect.union(cell.frame) }
                     
                     self.preparedCellIndex[ip] = nil
                     cell.layer?.zPosition = 0
-                    if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItemAtIndexPath(ip) ?? cell.attributes {
+                    if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
                         updates.append(ItemUpdate(view: cell, attrs: attrs, type: .remove))
                     }
                     else {
                         self.collectionView.enqueueCellForReuse(cell)
-                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: ip)
+                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: ip)
                     }
                 }
             }
@@ -211,8 +211,8 @@ final public class CollectionViewDocumentView : NSView {
         }
         
         for ip in inserted {
-            guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip) else { continue }
-            guard let cell = preparedCellIndex[ip] ?? self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAtIndexPath: ip) else {
+            guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItem(at: ip) else { continue }
+            guard let cell = preparedCellIndex[ip] ?? self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAt: ip) else {
                 debugPrint("For some reason collection view tried to load cells without a data source")
                 continue
             }
@@ -223,7 +223,7 @@ final public class CollectionViewDocumentView : NSView {
             cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
             _rect = _rect.union(attrs.frame.insetBy(dx: -1, dy: -1) )
             
-            self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAtIndexPath: ip)
+            self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAt: ip)
             if cell.superview == nil {
                 self.addSubview(cell)
             }
@@ -239,7 +239,7 @@ final public class CollectionViewDocumentView : NSView {
 
         if forceAll {
             for ip in updated {
-                if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItemAtIndexPath(ip),
+                if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItem(at: ip),
                 let cell = preparedCellIndex[ip] {
                     _rect = _rect.union(attrs.frame)
                     updates.append(ItemUpdate(view: cell, attrs: attrs, type: .update))
@@ -257,7 +257,7 @@ final public class CollectionViewDocumentView : NSView {
         var updates = [ItemUpdate]()
         
         let oldIdentifiers = Set(self.preparedSupplementaryViewIndex.keys)
-        var inserted = self.collectionView._identifiersForSupplementaryViewsInRect(rect)
+        var inserted = self.collectionView._identifiersForSupplementaryViews(in: rect)
         let removed = oldIdentifiers.removingSet(inserted)
         let updated = inserted.removeSet(oldIdentifiers)
         
@@ -267,11 +267,11 @@ final public class CollectionViewDocumentView : NSView {
                     self.preparedSupplementaryViewIndex[identifier] = nil
                     view.layer?.zPosition = -100
                     
-                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: identifier.indexPath!) {
+                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!) {
                         updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: identifier))
                     }
                     else {
-                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, forElementOfKind: identifier.kind, atIndexPath: identifier.indexPath!)
+                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, ofElementKind: identifier.kind, at: identifier.indexPath!)
                         self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
                     }
                 }
@@ -280,15 +280,15 @@ final public class CollectionViewDocumentView : NSView {
         
         for identifier in inserted {
             
-            if let view = self.preparedSupplementaryViewIndex[identifier] ?? self.collectionView.dataSource?.collectionView?(self.collectionView, viewForSupplementaryElementOfKind: identifier.kind, forIndexPath: identifier.indexPath!) {
+            if let view = self.preparedSupplementaryViewIndex[identifier] ?? self.collectionView.dataSource?.collectionView?(self.collectionView, viewForSupplementaryElementOfKind: identifier.kind, at: identifier.indexPath!) {
                 
                 assert(view.collectionView != nil, "Attempt to insert a view without using deque:")
                 
-                guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(identifier.kind, atIndexPath: identifier.indexPath!)
+                guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!)
                     else { continue }
                 _rect = _rect.union(attrs.frame)
                 
-                self.collectionView.delegate?.collectionView?(self.collectionView, willDisplaySupplementaryView: view, forElementKind: identifier.kind, atIndexPath: identifier.indexPath!)
+                self.collectionView.delegate?.collectionView?(self.collectionView, willDisplaySupplementaryView: view, ofElementKind: identifier.kind, at: identifier.indexPath!)
                 if view.superview == nil {
                     if attrs.floating == true {
                         self.collectionView._floatingSupplementaryView.addSubview(view)
@@ -311,7 +311,7 @@ final public class CollectionViewDocumentView : NSView {
         
         for id in updated {
             if let view = preparedSupplementaryViewIndex[id],
-                let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(id.kind, atIndexPath: id.indexPath!) {
+                let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: id.kind, atIndexPath: id.indexPath!) {
                 _rect = _rect.union(attrs.frame)
                 
                 if attrs.floating == true {
@@ -405,11 +405,11 @@ final public class CollectionViewDocumentView : NSView {
     }
     fileprivate func removeItem(_ item: ItemUpdate) {
         if let cell = item.view as? CollectionViewCell {
-            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAtIndexPath: cell.indexPath!)
+            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: cell.indexPath!)
             self.collectionView.enqueueCellForReuse(cell)
         }
         else if let id = item.identifier {
-            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: item.view, forElementOfKind: id.kind, atIndexPath: id.indexPath!)
+            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: item.view, ofElementKind: id.kind, at: id.indexPath!)
             self.collectionView.enqueueSupplementaryViewForReuse(item.view, withIdentifier: id)
         }
         else {

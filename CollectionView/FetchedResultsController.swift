@@ -237,7 +237,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 
                 if let sec = object.value(forKey: keyPath) as? Section {
                     if let existing = unordered[sec] {
-                        existing.insert(object)
+                        _ = existing.insert(object)
                     }
                     else {
                         unordered[sec] = FetchedResultsControllerSection(value: sec, objects: [object])

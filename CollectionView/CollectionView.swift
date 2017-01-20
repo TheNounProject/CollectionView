@@ -85,7 +85,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     open override func updateLayer() {
         super.updateLayer()
-        super.wantsUpdateLayer
         self.layer?.backgroundColor = self.drawsBackground ? self.backgroundColor.cgColor : nil
     }
     
@@ -99,18 +98,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
     fileprivate var _supplementaryViewClasses : [SupplementaryViewIdentifier:CollectionReusableView.Type] = [:]
     fileprivate var _supplementaryViewNibs : [SupplementaryViewIdentifier:NSNib] = [:]
     
-    open func registerClass(_ cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String) {
+    public func register(class cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String) {
         assert(cellClass.isSubclass(of: CollectionViewCell.self), "CollectionView: Registered cells views must be subclasses of CollectionViewCell")
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = cellClass
         self._cellNibs[identifier] = nil
     }
-    open func registerNib(_ nib: NSNib, forCellWithReuseIdentifier identifier: String) {
+    public func register(nib: NSNib, forCellWithReuseIdentifier identifier: String) {
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = nil
         self._cellNibs[identifier] = nib
     }
-    open func registerClass(_ viewClass: CollectionReusableView.Type, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {
+    public func register(class viewClass: CollectionReusableView.Type, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {
         assert(viewClass.isSubclass(of: CollectionReusableView.self), "CollectionView: Registered supplementary views must be subclasses of CollectionReusableview")
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: identifier)
@@ -119,12 +118,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._registeredSupplementaryViewKinds.insert(kind)
         self._allSupplementaryViewIdentifiers.insert(id)
     }
-    open func registerNib(_ nib: NSNib, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {
+    public func register(nib: NSNib, forSupplementaryViewOfKind elementKind: String, withReuseIdentifier identifier: String) {
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
-        let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: identifier)
+        let id = SupplementaryViewIdentifier(kind: elementKind, reuseIdentifier: identifier)
         self._supplementaryViewClasses[id] = nil
         self._supplementaryViewNibs[id] = nib
-        self._registeredSupplementaryViewKinds.insert(kind)
+        self._registeredSupplementaryViewKinds.insert(elementKind)
         self._allSupplementaryViewIdentifiers.insert(id)
     }
     
@@ -147,15 +146,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     
-    
-    
     // MARK: - Dequeing reusable cells
     /*-------------------------------------------------------------------------------*/
     
     fileprivate var _reusableCells : [String:Set<CollectionViewCell>] = [:]
     fileprivate var _reusableSupplementaryView : [SupplementaryViewIdentifier:[CollectionReusableView]] = [:]
     
-    public final func dequeueReusableCellWithReuseIdentifier(_ identifier: String, forIndexPath indexPath: IndexPath) -> CollectionViewCell {
+    public final func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> CollectionViewCell {
         
         var cell =  self._reusableCells[identifier]?.first
         if cell == nil {
@@ -177,7 +174,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         return cell!
     }
-    public final func dequeueReusableSupplementaryViewOfKind(_ elementKind: String, withReuseIdentifier identifier: String, forIndexPath indexPath: IndexPath) -> CollectionReusableView {
+    public final func dequeueReusableSupplementaryView(ofKind elementKind: String, withReuseIdentifier identifier: String, for indexPath: IndexPath) -> CollectionReusableView {
         let id = SupplementaryViewIdentifier(kind: elementKind, reuseIdentifier: identifier)
         var view = self._reusableSupplementaryView[id]?.first
         if view == nil {
@@ -209,18 +206,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._reusableCells[id]?.insert(item)
     }
     
-    final func enqueueSupplementaryViewForReuse(_ item: CollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
-        item.isHidden = true
-        item.indexPath = nil
-        let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: item.reuseIdentifier ?? withIdentifier.reuseIdentifier)
+    final func enqueueSupplementaryViewForReuse(_ view: CollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
+        view.isHidden = true
+        view.indexPath = nil
+        let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: view.reuseIdentifier ?? withIdentifier.reuseIdentifier)
         if self._reusableSupplementaryView[newID] == nil {
             self._reusableSupplementaryView[newID] = []
         }
-        self._reusableSupplementaryView[newID]?.append(item)
+        self._reusableSupplementaryView[newID]?.append(view)
     }
     
     final func _loadCell(at indexPath: IndexPath) -> CollectionViewCell? {
-        guard let cell = self.contentDocumentView.preparedCellIndex[indexPath] ?? self.dataSource?.collectionView(self, cellForItemAtIndexPath: indexPath) else {
+        guard let cell = self.contentDocumentView.preparedCellIndex[indexPath] ?? self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
             debugPrint("For some reason collection view tried to load cells without a data source")
             return nil
         }
@@ -228,12 +225,21 @@ open class CollectionView : ScrollView, NSDraggingSource {
         return cell
     }
     
+    final func _loadSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionReusableView? {
+        guard let view = self.supplementaryView(forElementKind: elementKind, at: indexPath) ?? self.dataSource?.collectionView?(self, viewForSupplementaryElementOfKind: elementKind, at: indexPath) else {
+            debugPrint("For some reason collection view tried to load views without a data source")
+            return nil
+        }
+        assert(view.collectionView != nil, "Attemp to load cell without using deque")
+        return view
+    }
+    
     
     // MARK: - Data
     fileprivate var info : CollectionViewInfo!
     open func numberOfSections() -> Int { return self.info.numberOfSections }
-    open func numberOfItemsInSection(_ section: Int) -> Int { return self.info.numberOfItemsInSection(section) }
-    open func frameForSectionAtIndexPath(_ indexPath: IndexPath) -> CGRect? {
+    open func numberOfItems(in section: Int) -> Int { return self.info.numberOfItems(in: section) }
+    open func frameForSection(at indexPath: IndexPath) -> CGRect? {
         return self.info.sections[indexPath._section]?.frame
     }
     
@@ -259,7 +265,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     open var contentVisibleRect : CGRect { return self.documentVisibleRect }
     open override var contentSize: NSSize {
-        return self.collectionViewLayout.collectionViewContentSize()
+        return self.collectionViewLayout.collectionViewContentSize
     }
     open var contentOffset : CGPoint {
         get{ return self.contentVisibleRect.origin }
@@ -284,7 +290,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     open func reloadData() {
         self.contentDocumentView.reset()
         self.info.recalculate()
-        contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
+        contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize
         self.reflectScrolledClipView(self.clipView!)
         
         self._selectedIndexPaths.formIntersection(self.allIndexPaths())
@@ -300,14 +306,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
         _floatingSupplementaryView.frame = self.bounds
         super.layout()
         
-        if self.collectionViewLayout.shouldInvalidateLayoutForBoundsChange(self.documentVisibleRect) {
+        if self.collectionViewLayout.shouldInvalidateLayout(forBoundsChange: self.documentVisibleRect) {
             let _size = self.info.contentSize
             
             self.info.recalculate()
             
-            contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize()
+            contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize
             //self.info.contentSize.height != _size.height,
-            if let ip = _topIP, var rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: CollectionViewScrollPosition.top) {
+            if let ip = _topIP, var rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: CollectionViewScrollPosition.top) {
                 
                 if self.collectionViewLayout.scrollDirection == .vertical {
                     rect = CGRect(origin: rect.origin, size: self.bounds.size)
@@ -343,7 +349,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             absoluteCellFrames[cell.1] = self.convert(cell.1.frame, from: cell.1.superview)
         }
     
-        let holdIP : IndexPath? = self.indexPathForFirstVisibleItem()
+        let holdIP : IndexPath? = self.indexPathForFirstVisibleItem
             //?? self.indexPathsForSelectedItems().intersect(self.indexPathsForVisibleItems()).first
 
         self.info.recalculate()
@@ -351,14 +357,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
         let nContentSize = self.info.contentSize
         contentDocumentView.frame.size = nContentSize
         
-        if scrollPosition != .none, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(ip, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(ip) {
+        if scrollPosition != .none, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {
             self._scrollToRect(rect, atPosition: scrollPosition, animated: false, prepare: false, completion: nil)
         }
         self.reflectScrolledClipView(self.clipView!)
         
         for item in absoluteCellFrames {
             if let attrs = item.0.attributes , attrs.representedElementCategory == CollectionElementCategory.supplementaryView {
-                if let newAttrs = self.layoutAttributesForSupplementaryElementOfKind(attrs.representedElementKind!, atIndexPath: attrs.indexPath as IndexPath) {
+                if let newAttrs = self.layoutAttributesForSupplementaryElement(ofKind: attrs.representedElementKind!, atIndexPath: attrs.indexPath as IndexPath) {
                     
                     if newAttrs.floating != attrs.floating {
                         if newAttrs.floating {
@@ -397,7 +403,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     var _resizeStartBounds : CGRect = CGRect.zero
     open override func viewWillStartLiveResize() {
         _resizeStartBounds = self.contentVisibleRect
-        _topIP = indexPathForFirstVisibleItem()
+        _topIP = indexPathForFirstVisibleItem
     }
     
     open override func viewDidEndLiveResize() {
@@ -475,11 +481,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         if trackSectionHover && NSApp.isActive, let point = self.window?.convertFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSize.zero)).origin {
             let loc = self.contentDocumentView.convert(point, from: nil)
-            self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
+            self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSection(at: loc))
         }
     }
 
-    open func indexPathForFirstVisibleItem() -> IndexPath? {
+    open var indexPathForFirstVisibleItem : IndexPath? {
         if let ip = self.delegate?.collectionViewLayoutAnchor?(self) {
             return ip
         }
@@ -496,7 +502,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             if section.frame.isEmpty || !section.frame.intersects(visibleRect) { continue }
             for item in 0..<section.numberOfItems {
                 let indexPath = IndexPath.for(item:item, section: sectionIndex)
-                if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
+                if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
                     if (visibleRect.contains(attributes.frame)) {
                         return indexPath
                     }
@@ -511,45 +517,98 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     
-    
     // MARK: - Manipulating Sections
     /*-------------------------------------------------------------------------------*/
     
-    
-    public func reloadSections(_ sections: IndexSet, animated: Bool) {
+    public func reloadSupplementaryViews(in sections: IndexSet, animated: Bool) {
         
+        var prepared = [Int: [(id: SupplementaryViewIdentifier, view: CollectionReusableView)]]()
+        
+        
+        
+        for supp in contentDocumentView.preparedSupplementaryViewIndex {
+            guard let sec = supp.0.indexPath?._section, sections.contains(sec) else { continue }
+            if prepared[sec] == nil { prepared[sec] = [(supp.key, supp.value)] }
+            else { prepared[sec]?.append((supp.key, supp.value)) }
+        }
+        
+        var updates = [ItemUpdate]()
+        
+        for item in prepared {
+            let sec = item.key
+            
+            for viewRef in item.value {
+                let id = viewRef.id
+                let oldView = viewRef.view
+                
+                contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: id)
+                updates.append(ItemUpdate(view: oldView, attrs: oldView.attributes!, type: .remove, identifier: id))
+            }
+            
+        }
+        self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
     }
     
     public func insertSections(_ sections: IndexSet, animated: Bool) {
         self.indexPathForHighlightedItem = nil
         
         var sections = sections
-        var changeMap = [(newIP: IndexPath, cell: CollectionViewCell)]()
+        
+//        var updates = [ItemUpdate]()
+        var cellMap = [(newIP: IndexPath, cell: CollectionViewCell)]()
+        var viewMap = [(id: SupplementaryViewIdentifier, view: CollectionReusableView)]()
         
         let cCount = self.numberOfSections()
         var newSection = 0
         
+        // Create a map of the prepared cells
+        var prepared = [Int: (supp: [SupplementaryViewIdentifier], cells: [IndexPath])]()
+        for supp in contentDocumentView.preparedSupplementaryViewIndex {
+            guard let sec = supp.0.indexPath?._section else { continue }
+            if prepared[sec] == nil { prepared[sec] = (supp: [supp.0], cells: []) }
+            else { prepared[sec]?.supp.append(supp.0) }
+        }
+        for item in contentDocumentView.preparedCellIndex {
+            let sec = item.0._section
+            if prepared[sec] == nil { prepared[sec] = (supp: [], cells: [item.0]) }
+            else { prepared[sec]?.cells.append(item.0 as IndexPath) }
+        }
+        
         for sec in 0..<cCount {
-            
             while let nSec = sections.first , nSec <= sec {
                 sections.remove(nSec)
                 newSection += 1
+                // Inserting a new section, this should happen automatically
             }
-            if newSection != sec {
-                for index in 0..<numberOfItemsInSection(sec) {
-                    let ip = IndexPath.for(item:index, section: sec)
-                    if let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
-                        let newIP = IndexPath.for(item:index, section: newSection)
-                        changeMap.append((newIP: newIP, cell: cell))
+            
+            if newSection != sec, let items = prepared[sec] {
+                // This section has changed to newSection, update related items
+                for supp in items.supp {
+                    if let view = contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: supp) {
+                        let ip = IndexPath.for(section:newSection)
+                        var s = supp.copy(with: ip)
+                        viewMap.append((id: s, view: view))
+                    }
+                }
+                
+                for ip in items.cells {
+                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
+                        let ip = IndexPath.for(item: ip._item, section: newSection)
+                        cellMap.append((newIP: ip, cell: view))
                     }
                 }
             }
             newSection += 1
         }
         
+        for change in viewMap {
+            change.view.indexPath = change.id.indexPath
+            self.contentDocumentView.preparedSupplementaryViewIndex[change.id] = change.view
+        }
+        
         var updatedSelections = Set<IndexPath>()
         var movedSelections = Set<IndexPath>()
-        for change in changeMap {
+        for change in cellMap {
             if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
                 updatedSelections.insert(ip as IndexPath)
                 movedSelections.insert(change.newIP)
@@ -566,14 +625,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
-    
-    
-    
     public func moveSection(_ section: Int, to newSection: Int, animated: Bool) {
         self.deleteSections(IndexSet(integer: section), animated: animated)
         self.insertSections(IndexSet(integer: section), animated: animated)
     }
-    
     
     public func deleteSections(_ sections: IndexSet, animated: Bool) {
         self.indexPathForHighlightedItem = nil
@@ -663,7 +718,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     }
     
-
     
     
     // MARK: - Manipulating items
@@ -673,17 +727,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var removals = [ItemUpdate]()
         for indexPath in indexPaths {
-            guard let cell = self.cellForItemAtIndexPath(indexPath) else {
+            guard let cell = self.cellForItem(at: indexPath) else {
                 debugPrint("Not reloading cell because it is not visible")
                 return
             }
-            guard let newCell = self.dataSource?.collectionView(self, cellForItemAtIndexPath: indexPath) else {
+            guard let newCell = self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
                 debugPrint("For some reason collection view tried to load cells without a data source")
                 return
             }
             assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
             
-            let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
+            let attrs = self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
             attrs?.frame = cell.frame
             
             if animated {
@@ -709,8 +763,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.relayout(animated, scrollPosition: .none)
     }
 
-    
-    
     public func insertItems(at indexPaths: [IndexPath], animated: Bool) {
         
         self.indexPathForHighlightedItem = nil
@@ -731,7 +783,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             let sectionIndex = s.0
             var newIps = s.1
             
-            let cCount = self.numberOfItemsInSection(sectionIndex)
+            let cCount = self.numberOfItems(in: sectionIndex)
             
             var newIndex = 0
             
@@ -769,50 +821,40 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.delegate?.collectionViewDidReloadData?(self)
     }
     
-
-    
-    
     public func moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath, animated: Bool) {
         
-        guard let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(destinationIndexPath) else { return }
+        guard let attrs = self.collectionViewLayout.layoutAttributesForItem(at: destinationIndexPath) else { return }
         
-        guard self.contentDocumentView.preparedCellIndex[indexPath] != nil || self.contentVisibleRect.intersects(attrs.frame) else {
-            debugPrint("Not processing item move because the item is and will not be visible.")
-            return
+        if self.contentDocumentView.preparedCellIndex[indexPath] != nil || self.contentVisibleRect.intersects(attrs.frame) {
+            guard let cell = self._loadCell(at: destinationIndexPath) else {
+                return
+            }
+            
+            if animated && cell.isHidden {
+                attrs.alpha = 0
+            }
+            let update = ItemUpdate(view: cell, attrs: cell.attributes!, type: .update)
+            
+            cell.indexPath = indexPath
+            cell.applyLayoutAttributes(attrs, animated: false)
+            
+            if cell.superview == nil {
+                self.contentDocumentView.addSubview(cell)
+            }
+            cell.selected = self._selectedIndexPaths.contains(indexPath)
+            
+            self.contentDocumentView.preparedCellIndex[indexPath] = cell
+            cell.viewDidDisplay()
+            self.contentDocumentView.pendingUpdates.append(update)
+        }
+        else {
+            debugPrint("Move did not require cell action because the item is not and will not be visible.")
         }
         
-        guard let cell = self._loadCell(at: destinationIndexPath) else {
-            return
-        }
-        
-        if animated {
-            attrs.alpha = 0
-        }
-        let update = ItemUpdate(view: cell, attrs: cell.attributes!, type: .update)
-        
-        cell.indexPath = indexPath
-        
-    
-        cell.applyLayoutAttributes(attrs, animated: false)
-        
-        if cell.superview == nil {
-            self.contentDocumentView.addSubview(cell)
-        }
-        cell.selected = self._selectedIndexPaths.contains(indexPath)
-        
-        self.contentDocumentView.preparedCellIndex[indexPath] = cell
-        cell.viewDidDisplay()
-        
-        self.contentDocumentView.pendingUpdates.append(update)
         if batchUpdating { return }
         self.relayout(animated, scrollPosition: .none)
         
     }
-    
-    
-
-    
-    
     
     public func deleteItems(at indexPaths: [IndexPath], animated: Bool) {
         
@@ -833,7 +875,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             let sectionIndex = s.0
             var removeIPs = s.1
             
-            let cCount = self.numberOfItemsInSection(sectionIndex)
+            let cCount = self.numberOfItems(in: sectionIndex)
     
             var newIndex = 0
             
@@ -879,7 +921,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
 
     
-    
+    // MARK: - Batch Updates
+    /*-------------------------------------------------------------------------------*/
     fileprivate var batchUpdating : Bool = false
     open var animationDuration: TimeInterval = 0.4
 
@@ -891,10 +934,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.relayout(true, scrollPosition: .none, completion: completion)
         self.delegate?.collectionViewDidReloadData?(self)
     }
-    
-    
-    
-    
     
 
     
@@ -926,7 +965,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         super.mouseMoved(with: theEvent)
         if self.isScrolling { return }
         let loc = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
-        self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSectionAtPoint(loc))
+        self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSection(at: loc))
     }
 
     
@@ -948,7 +987,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.delegate?.collectionView?(self, didChangeFirstResponderStatus: false)
         return true
     }
-    
     
     
     //    public override func pressureChangeWithEvent(event: NSEvent) {
@@ -984,11 +1022,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
         //        self.nextResponder?.mouseDown(theEvent)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
         let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
-        self.mouseDownIP = self.indexPathForItemAtPoint(point)
-        self.delegate?.collectionView?(self, mouseDownInItemAtIndexPath: self.mouseDownIP, withEvent: theEvent)
+        self.mouseDownIP = self.indexPathForItem(at: point)
+        self.delegate?.collectionView?(self, mouseDownInItemAt: self.mouseDownIP, withEvent: theEvent)
     }
-    
-    
     
     
     open override func mouseUp(with theEvent: NSEvent) {
@@ -1000,8 +1036,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         
         let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
-        let indexPath = self.indexPathForItemAtPoint(point)
-        self.delegate?.collectionView?(self, mouseUpInItemAtIndexPath: indexPath, withEvent: theEvent)
+        let indexPath = self.indexPathForItem(at: point)
+        self.delegate?.collectionView?(self, mouseUpInItemAt: indexPath, withEvent: theEvent)
         
         guard self.acceptClickEvent(theEvent) else { return }
         
@@ -1021,13 +1057,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.shift) {
-            self._selectItemAtIndexPath(ip, atScrollPosition: .nearest, animated: true, selectionType: .extending)
+            self._selectItem(at: ip, atScrollPosition: .nearest, animated: true, selectionType: .extending)
             return
         }
         else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.command) {
             if self._selectedIndexPaths.contains(ip) {
                 if self._selectedIndexPaths.count == 1 { return }
-                self._deselectItemAtIndexPath(ip, animated: true, notifyDelegate: true)
+                self._deselectItem(at: ip, animated: true, notifyDelegate: true)
             }
             else {
                 self._selectItem(at: ip, animated: true, withEvent: theEvent, notifyDelegate: true)
@@ -1035,7 +1071,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         else if theEvent.clickCount == 2 {
-            self.delegate?.collectionView?(self, didDoubleClickItemAtIndexPath: ip, withEvent: theEvent)
+            self.delegate?.collectionView?(self, didDoubleClickItemAt: ip, withEvent: theEvent)
             return
         }
         
@@ -1043,7 +1079,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._deselectAllItems(true, notify: false)
         }
         else if self.itemAtIndexPathIsSelected(ip) {
-            self._deselectItemAtIndexPath(ip, animated: true, notifyDelegate: true)
+            self._deselectItem(at: ip, animated: true, notifyDelegate: true)
             return
         }
         self._selectItem(at: ip, animated: true, scrollPosition: .none, withEvent: theEvent)
@@ -1059,16 +1095,16 @@ open class CollectionView : ScrollView, NSDraggingSource {
 //        }
         
         let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
-        if let indexPath = self.indexPathForItemAtPoint(point) {
-            self.delegate?.collectionView?(self, didRightClickItemAtIndexPath: indexPath, withEvent: theEvent)
+        if let indexPath = self.indexPathForItem(at: point) {
+            self.delegate?.collectionView?(self, didRightClickItemAt: indexPath, withEvent: theEvent)
         }
     }
     
     final func moveSelectionInDirection(_ direction: CollectionViewDirection, extendSelection: Bool) {
         guard let indexPath = (extendSelection ? _lastSelection : _firstSelection) ?? self._selectedIndexPaths.first else { return }
-        if let moveTo = self.collectionViewLayout.indexPathForNextItemInDirection(direction, afterItemAtIndexPath: indexPath) {
-            if let move = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: moveTo, withEvent: NSApp.currentEvent) , move != true { return }
-            self._selectItemAtIndexPath(moveTo, atScrollPosition: .nearest, animated: true, selectionType: extendSelection ? .extending : .single)
+        if let moveTo = self.collectionViewLayout.indexPathForNextItem(moving: direction, from: indexPath) {
+            if let move = self.delegate?.collectionView?(self, shouldSelectItemAt: moveTo, withEvent: NSApp.currentEvent) , move != true { return }
+            self._selectItem(at: moveTo, atScrollPosition: .nearest, animated: true, selectionType: extendSelection ? .extending : .single)
         }
     }
     
@@ -1105,7 +1141,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         super.keyUp(with: theEvent)
         self.repeatKey = false
     }
-    
     
     
     open func moveSelectionLeft(_ extendSelection: Bool) {
@@ -1166,25 +1201,25 @@ open class CollectionView : ScrollView, NSDraggingSource {
         didSet {
             //            Swift.print("New: \(indexPathForHighlightedItem)  OLD: \(oldValue)")
             if oldValue == indexPathForHighlightedItem { return }
-            if let ip = oldValue, let cell = self.cellForItemAtIndexPath(ip) , cell.highlighted {
+            if let ip = oldValue, let cell = self.cellForItem(at: ip) , cell.highlighted {
                 cell.setHighlighted(false, animated: true)
             }
         }
     }
-    open func highlightItemAtIndexPath(_ indexPath: IndexPath?, animated: Bool) {
+    open func highlightItem(at indexPath: IndexPath?, animated: Bool) {
         
         guard let ip = indexPath else {
             self.indexPathForHighlightedItem = nil
             return
         }
-        if let cell = self.cellForItemAtIndexPath(ip) {
+        if let cell = self.cellForItem(at: ip) {
             cell.setHighlighted(true, animated: animated)
         }
     }
     
-    public final func indexPathsForSelectedItems() -> Set<IndexPath> { return _selectedIndexPaths }
-    public final func sortedIndexPathsForSelectedItems() -> [IndexPath] {
-        return indexPathsForSelectedItems().sorted { (ip1, ip2) -> Bool in
+    public final var indexPathsForSelectedItems : Set<IndexPath> { return _selectedIndexPaths }
+    public final var sortedIndexPathsForSelectedItems : [IndexPath] {
+        return indexPathsForSelectedItems.sorted { (ip1, ip2) -> Bool in
             let before =  ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
             return before
         }
@@ -1200,9 +1235,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     open func selectItems(at indexPaths: [IndexPath], animated: Bool) {
         for ip in indexPaths { self._selectItem(at: ip, animated: animated, scrollPosition: .none, withEvent: nil, notifyDelegate: false) }
-        //        if let ip = indexPaths.last {
-        //            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: ip)
-        //        }
     }
     
     
@@ -1216,28 +1248,28 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         
-        if indexPath._section >= self.info.numberOfSections || indexPath._item >= self.info.numberOfItemsInSection(indexPath._section) { return }
+        if indexPath._section >= self.info.numberOfSections || indexPath._item >= self.info.numberOfItems(in: indexPath._section) { return }
         
         if !self.allowsSelection { return }
-        if let shouldSelect = self.delegate?.collectionView?(self, shouldSelectItemAtIndexPath: indexPath, withEvent: event) , !shouldSelect { return }
+        if let shouldSelect = self.delegate?.collectionView?(self, shouldSelectItemAt: indexPath, withEvent: event) , !shouldSelect { return }
         
         if self.allowsMultipleSelection == false {
             self._selectedIndexPaths.remove(indexPath)
             self.deselectAllItems()
         }
         
-        self.cellForItemAtIndexPath(indexPath)?.setSelected(true, animated: animated)
+        self.cellForItem(at: indexPath)?.setSelected(true, animated: animated)
         self._selectedIndexPaths.insert(indexPath)
         if (selectionMode == .multi && event != nil) || self._selectedIndexPaths.count == 1 {
             self._firstSelection = indexPath
         }
         self._lastSelection = indexPath
         if notifyDelegate {
-            self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
+            self.delegate?.collectionView?(self, didSelectItemAt: indexPath)
         }
         
         if scrollPosition != .none {
-            self.scrollToItemAtIndexPath(indexPath, atScrollPosition: scrollPosition, animated: animated, completion: nil)
+            self.scrollToItem(at: indexPath, atScrollPosition: scrollPosition, animated: animated, completion: nil)
         }
     }
     
@@ -1246,7 +1278,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // MARK: Multi Select
     /*-------------------------------------------------------------------------------*/
-    final func _selectItemAtIndexPath(_ indexPath: IndexPath,
+    final func _selectItem(at indexPath: IndexPath,
                                       atScrollPosition: CollectionViewScrollPosition,
                                       animated: Bool,
                                       selectionType: CollectionViewSelectionType) {
@@ -1274,10 +1306,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 while let idx = nextIndex, idx != indexPath {
                     indexesToSelect.insert(idx)
                     if order == ComparisonResult.orderedAscending {
-                        nextIndex = self.indexPathForSelectableIndexPathAfter(idx)
+                        nextIndex = self.indexPathForSelectableItem(after: idx)
                     }
                     else if order == .orderedDescending {
-                        nextIndex = self.indexPathForSelectableIndexPathBefore(idx)
+                        nextIndex = self.indexPathForSelectableItem(before: idx)
                     }
                 }
             }
@@ -1291,7 +1323,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         if selectionMode != .multi {
             var deselectIndexes = self._selectedIndexPaths
             _ = deselectIndexes.removeSet(indexesToSelect)
-            self.deselectItemsAtIndexPaths(Array(deselectIndexes), animated: true)
+            self.deselectItems(at: Array(deselectIndexes), animated: true)
         }
         
         let finalSelect = indexesToSelect.remove(indexPath)
@@ -1299,20 +1331,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._selectItem(at: ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: false)
         }
         
-        self.scrollToItemAtIndexPath(indexPath, atScrollPosition: atScrollPosition, animated: animated, completion: nil)
+        self.scrollToItem(at: indexPath, atScrollPosition: atScrollPosition, animated: animated, completion: nil)
         if let ip = finalSelect {
             self._selectItem(at: ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: true)
         }
         
-        //        self.delegate?.collectionView?(self, didSelectItemAtIndexPath: indexPath)
         self._lastSelection = indexPath
     }
     
     
     // MARK: - Deselect
     /*-------------------------------------------------------------------------------*/
-    open func deselectItemsAtIndexPaths(_ indexPaths: [IndexPath], animated: Bool) {
-        for ip in indexPaths { self._deselectItemAtIndexPath(ip, animated: animated, notifyDelegate: false) }
+    open func deselectItems(at indexPaths: [IndexPath], animated: Bool) {
+        for ip in indexPaths { self._deselectItem(at: ip, animated: animated, notifyDelegate: false) }
     }
     open func deselectAllItems(_ animated: Bool = false) {
         self._deselectAllItems(animated, notify: false)
@@ -1322,25 +1353,25 @@ open class CollectionView : ScrollView, NSDraggingSource {
         let anIP = self._selectedIndexPaths.first
         self._lastSelection = nil
         
-        let ips = self._selectedIndexPaths.intersection(Set(self.indexPathsForVisibleItems()))
+        let ips = self._selectedIndexPaths.intersection(Set(self.indexPathsForVisibleItems))
         
-        for ip in ips { self._deselectItemAtIndexPath(ip, animated: animated, notifyDelegate: false) }
+        for ip in ips { self._deselectItem(at: ip, animated: animated, notifyDelegate: false) }
         self._selectedIndexPaths.removeAll()
         if notify, let ip = anIP {
-            self.delegate?.collectionView?(self, didDeselectItemAtIndexPath: ip)
+            self.delegate?.collectionView?(self, didDeselectItemAt: ip)
         }
     }
     
-    open func deselectItemAtIndexPath(_ indexPath: IndexPath, animated: Bool) {
-        self._deselectItemAtIndexPath(indexPath, animated: animated, notifyDelegate: false)
+    open func deselectItem(at indexPath: IndexPath, animated: Bool) {
+        self._deselectItem(at: indexPath, animated: animated, notifyDelegate: false)
     }
     
-    final func _deselectItemAtIndexPath(_ indexPath: IndexPath, animated: Bool, notifyDelegate : Bool = true) {
-        if let deselect = self.delegate?.collectionView?(self, shouldDeselectItemAtIndexPath: indexPath) , !deselect { return }
+    final func _deselectItem(at indexPath: IndexPath, animated: Bool, notifyDelegate : Bool = true) {
+        if let deselect = self.delegate?.collectionView?(self, shouldDeselectItemAt: indexPath) , !deselect { return }
         contentDocumentView.preparedCellIndex[indexPath]?.setSelected(false, animated: true)
         self._selectedIndexPaths.remove(indexPath)
         if notifyDelegate {
-            self.delegate?.collectionView?(self, didDeselectItemAtIndexPath: indexPath)
+            self.delegate?.collectionView?(self, didDeselectItemAt: indexPath)
         }
     }
     
@@ -1353,7 +1384,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         return indexPath._section < self.info.numberOfSections && indexPath._item < self.info.sections[indexPath._section]!.numberOfItems
     }
     
-    final func indexPathForSelectableIndexPathBefore(_ indexPath: IndexPath) -> IndexPath?{
+    final func indexPathForSelectableItem(before indexPath: IndexPath) -> IndexPath?{
         if (indexPath._item - 1 >= 0) {
             return IndexPath.for(item: indexPath._item - 1, section: indexPath._section)
         }
@@ -1365,8 +1396,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         return nil;
     }
     
-    final func indexPathForSelectableIndexPathAfter(_ indexPath: IndexPath) -> IndexPath? {
-        if indexPath._item + 1 >= numberOfItemsInSection(indexPath._section) {
+    final func indexPathForSelectableItem(after indexPath: IndexPath) -> IndexPath? {
+        if indexPath._item + 1 >= numberOfItems(in: indexPath._section) {
             // Jump up to the next section
             let newIndexPath = IndexPath.for(item:0, section: indexPath._section+1)
             if self.validateIndexPath(newIndexPath) { return newIndexPath; }
@@ -1384,11 +1415,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public final func frameForSection(_ section: Int) -> CGRect? {
         return self.info.sections[section]?.frame
     }
-    public final func layoutAttributesForItemAtIndexPath(_ indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
-        return self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath)
+    public final func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+        return self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
     }
-    public final func layoutAttributesForSupplementaryElementOfKind(_ kind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes?  {
-        return self.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(kind, atIndexPath: indexPath)
+    public final func layoutAttributesForSupplementaryElement(ofKind kind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes?  {
+        return self.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: kind, atIndexPath: indexPath)
     }
     
     
@@ -1398,15 +1429,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
     internal final func allIndexPaths() -> Set<IndexPath> { return self.info.allIndexPaths as Set<IndexPath> }
     
     
-    
-    
     // Visible
-    public final func visibleCells() -> [CollectionViewCell]  { return Array( self.contentDocumentView.preparedCellIndex.values) }
-    public final func indexPathsForVisibleItems() -> [IndexPath]  { return Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath] }
+    public final var visibleCells : [CollectionViewCell]  { return Array( self.contentDocumentView.preparedCellIndex.values) }
+    public final var indexPathsForVisibleItems : [IndexPath]  { return Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath] }
     
     
 //    final func isItemVisible(at indexPath: IndexPath) -> Bool {
-//        guard let attrs = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) else {
+//        guard let attrs = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) else {
 //            return false
 //        }
 //        self.contentVisibleRect.intersects(attrs.frame)
@@ -1421,11 +1450,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     // IP & Cell
-    public final func cellForItemAtIndexPath(_ indexPath: IndexPath) -> CollectionViewCell?  { return self.contentDocumentView.preparedCellIndex[indexPath] }
-    public final func indexPathForCell(_ cell: CollectionViewCell) -> IndexPath?  { return cell.indexPath as IndexPath? }
+    public final func cellForItem(at indexPath: IndexPath) -> CollectionViewCell?  { return self.contentDocumentView.preparedCellIndex[indexPath] }
+    public final func indexPath(for cell: CollectionViewCell) -> IndexPath?  { return cell.indexPath as IndexPath? }
     
     // IP By Location
-    open func indexPathForItemAtPoint(_ point: CGPoint) -> IndexPath?  {
+    open func indexPathForItem(at point: CGPoint) -> IndexPath?  {
         if self.info.numberOfSections == 0 { return nil }
         for sectionIndex in 0..<self.info.numberOfSections {
             guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
@@ -1433,7 +1462,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             for itemIndex in 0...sectionInfo.numberOfItems - 1 {
                 let indexPath = IndexPath.for(item:itemIndex, section: sectionIndex)
-                if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
+                if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
                     if attributes.frame.contains(point) {
                         return indexPath;
                     }
@@ -1442,8 +1471,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         return nil;
     }
-    open func indexPathsForItemsInRect(_ rect: CGRect) -> Set<IndexPath> {
-        if let providedIndexPaths = self.collectionViewLayout.indexPathsForItemsInRect(rect) { return providedIndexPaths }
+    open func indexPathsForItems(in rect: CGRect) -> Set<IndexPath> {
+        if let providedIndexPaths = self.collectionViewLayout.indexPathsForItems(in: rect) { return providedIndexPaths }
         if rect.equalTo(CGRect.zero) || self.info.numberOfSections == 0 { return [] }
         var indexPaths = Set<IndexPath>()
         for sectionIndex in 0...self.info.numberOfSections - 1 {
@@ -1451,7 +1480,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             if section.frame.isEmpty || !section.frame.intersects(rect) { continue }
             for item in 0...section.numberOfItems - 1 {
                 let indexPath = IndexPath.for(item:item, section: sectionIndex)
-                if let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath) {
+                if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
                     if (attributes.frame.intersects(rect)) {
                         indexPaths.insert(indexPath)
                     }
@@ -1462,9 +1491,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     // Rect for item
-    internal final func rectForItemAtIndexPath(_ indexPath: IndexPath) -> CGRect? {
+    internal final func rectForItem(at indexPath: IndexPath) -> CGRect? {
         if indexPath._section < self.info.numberOfSections {
-            let attributes = self.collectionViewLayout.layoutAttributesForItemAtIndexPath(indexPath);
+            let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath);
             return attributes?.frame;
         }
         return nil
@@ -1474,7 +1503,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Supplementary Views & Index Paths
     /*-------------------------------------------------------------------------------*/
     
-    public final func indexPathForSectionAtPoint(_ point: CGPoint) -> IndexPath? {
+    public final func indexPathForSection(at point: CGPoint) -> IndexPath? {
         for sectionIndex in 0..<self.info.numberOfSections {
             guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
             var frame = sectionInfo.frame
@@ -1489,19 +1518,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     public final func indexPathForSupplementaryView(_ view: CollectionReusableView) -> IndexPath? { return view.indexPath as IndexPath? }
     
-    public final func viewForSupplementaryViewOfKind(_ kind: String, atIndexPath: IndexPath) -> CollectionReusableView? {
-        let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: atIndexPath)
+    public final func supplementaryView(forElementKind kind: String, at indexPath: IndexPath) -> CollectionReusableView? {
+        let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: indexPath)
         return self.contentDocumentView.preparedSupplementaryViewIndex[id]
     }
     
-    internal final func _identifiersForSupplementaryViewsInRect(_ rect: CGRect) -> Set<SupplementaryViewIdentifier> {
+    internal final func _identifiersForSupplementaryViews(in rect: CGRect) -> Set<SupplementaryViewIdentifier> {
         var visibleIdentifiers = Set<SupplementaryViewIdentifier>()
         if rect.equalTo(CGRect.zero) { return [] }
         for sectionInfo in self.info.sections {
             if !sectionInfo.1.frame.intersects(rect) { continue }
             for kind in self._registeredSupplementaryViewKinds {
                 let ip = IndexPath.for(item:0, section: sectionInfo.1.section)
-                if let attrs = self.collectionViewLayout.layoutAttributesForSupplementaryViewOfKind(kind, atIndexPath: ip) {
+                if let attrs = self.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: kind, atIndexPath: ip) {
                     if attrs.frame.intersects(rect) {
                         visibleIdentifiers.insert(SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: ip))
                     }
@@ -1512,22 +1541,23 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     
-    // MARK: - Programatic Scrolling
-    open func scrollToItemAtIndexPath(_ indexPath: IndexPath, atScrollPosition scrollPosition: CollectionViewScrollPosition, animated: Bool, completion: AnimationCompletion?) {
-        if self.info.numberOfItemsInSection(indexPath._section) < indexPath._item { return }
-        if let shouldScroll = self.delegate?.collectionView?(self, shouldScrollToItemAtIndexPath: indexPath) , shouldScroll != true {
+    // MARK: - Programatic Scrollin
+    /*-------------------------------------------------------------------------------*/
+    open func scrollToItem(at indexPath: IndexPath, atScrollPosition scrollPosition: CollectionViewScrollPosition, animated: Bool, completion: AnimationCompletion?) {
+        if self.info.numberOfItems(in: indexPath._section) < indexPath._item { return }
+        if let shouldScroll = self.delegate?.collectionView?(self, shouldScrollToItemAt: indexPath) , shouldScroll != true {
             completion?(false)
             return
         }
         
-        guard let rect = self.collectionViewLayout.scrollRectForItemAtIndexPath(indexPath, atPosition: scrollPosition) ?? self.rectForItemAtIndexPath(indexPath) else {
+        guard let rect = self.collectionViewLayout.scrollRectForItem(at: indexPath, atPosition: scrollPosition) ?? self.rectForItem(at: indexPath) else {
             completion?(false)
             return
         }
         
         self.scrollToRect(rect, atPosition: scrollPosition, animated: animated, completion: { fin in
             completion?(fin)
-            self.delegate?.collectionView?(self, didScrollToItemAtIndexPath: indexPath)
+            self.delegate?.collectionView?(self, didScrollToItemAt: indexPath)
         })
     }
     
@@ -1609,7 +1639,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Dragging Source
     var draggedIPs : [IndexPath] = []
     
-    public final func indexPathsForDraggingItems() -> [IndexPath] { return draggedIPs }
+    public var indexPathsForDraggingItems : [IndexPath] {
+        return draggedIPs
+    }
     
     override open func mouseDragged(with theEvent: NSEvent) {
         super.mouseDragged(with: theEvent)
@@ -1620,27 +1652,24 @@ open class CollectionView : ScrollView, NSDraggingSource {
         guard let mouseDown = mouseDownIP else { return }
         guard self.acceptClickEvent(theEvent) else { return }
         
-        if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAtIndexPath: mouseDown, withEvent: theEvent) != true { return }
+        if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAt: mouseDown, withEvent: theEvent) != true { return }
         
-        let ips = self.indexPathsForSelectedItems().sorted { (ip1, ip2) -> Bool in
-            let before = ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
-            return before
-        }
+        let ips = self.sortedIndexPathsForSelectedItems
         for indexPath in ips {
             var ip = indexPath
             
-            let selections = self.indexPathsForSelectedItems()
+            let selections = self.indexPathsForSelectedItems
             if selections.count == 0 { return }
             else if selections.count == 1 && mouseDown != ip {
-                self.deselectItemAtIndexPath(ip, animated: true)
+                self.deselectItem(at: ip, animated: true)
                 ip = mouseDown
                 self.selectItem(at: ip, animated: true)
             }
             
             
-            if let writer = self.dataSource?.collectionView?(self, pasteboardWriterForItemAtIndexPath: ip) {
-//                let cell = self.cellForItemAtIndexPath(ip) as? AssetCell
-                guard let rect = self.rectForItemAtIndexPath(ip) else { continue }
+            if let writer = self.dataSource?.collectionView?(self, pasteboardWriterForItemAt: ip) {
+//                let cell = self.cellForItem(at: ip) as? AssetCell
+                guard let rect = self.rectForItem(at: ip) else { continue }
                 // The frame of the cell in relation to the document. This is where the dragging
                 // image should start.
                 
@@ -1648,7 +1677,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 let originalFrame = UnsafeMutablePointer<CGRect>.allocate(capacity: 1)
                 let oFrame = self.convert( rect, from: self.documentView)
                 originalFrame.initialize(to: oFrame)
-                self.dataSource?.collectionView?(self, dragRectForItemAtIndexPath: ip, withStartingRect: originalFrame)
+                self.dataSource?.collectionView?(self, dragRectForItemAt: ip, withStartingRect: originalFrame)
                 let frame = originalFrame.pointee
                 
                 self.draggedIPs.append(ip)
@@ -1658,8 +1687,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 if self.itemAtIndexPathIsVisible(ip) {
                     item.imageComponentsProvider = { () -> [NSDraggingImageComponent] in
                         
-                        var image = self.dataSource?.collectionView?(self, dragContentsForItemAtIndexPath: ip)
-                        if image == nil, let cell = self.cellForItemAtIndexPath(ip) {
+                        var image = self.dataSource?.collectionView?(self, dragContentsForItemAt: ip)
+                        if image == nil, let cell = self.cellForItem(at: ip) {
                             image = NSImage(data: cell.dataWithPDF(inside: cell.bounds))
                         }
                         let comp = NSDraggingImageComponent(key: NSDraggingImageComponentIconKey)
@@ -1687,16 +1716,16 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open func draggingSession(_ session: NSDraggingSession, willBeginAt screenPoint: NSPoint) {
-        self.interactionDelegate?.collectionView?(self, draggingSession: session, willBeginAtPoint: screenPoint)
+        self.interactionDelegate?.collectionView?(self, draggingSession: session, willBeginAt: screenPoint)
     }
     
     open func draggingSession(_ session: NSDraggingSession, movedTo screenPoint: NSPoint) {
-        self.interactionDelegate?.collectionView?(self, draggingSession: session, didMoveToPoint: screenPoint)
+        self.interactionDelegate?.collectionView?(self, draggingSession: session, didMoveTo: screenPoint)
     }
     
     open func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
 //        self.mouseDownIP = nil
-        self.interactionDelegate?.collectionView?(self, draggingSession: session, enedAtPoint: screenPoint, withOperation: operation, draggedIndexPaths: draggedIPs)
+        self.interactionDelegate?.collectionView?(self, draggingSession: session, didEndAt: screenPoint, with: operation, draggedIndexPaths: draggedIPs)
     }
     
     

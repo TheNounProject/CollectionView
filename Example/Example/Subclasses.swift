@@ -13,6 +13,12 @@ import CollectionView
 
 let formatter : DateFormatter = {
     let df = DateFormatter()
+    df.dateFormat = "MM-dd-yyyy mm:ss"
+    return df
+}()
+
+let minuteFormatter : DateFormatter = {
+    let df = DateFormatter()
     df.dateFormat = "MM-dd-yyyy mm"
     return df
 }()
@@ -24,27 +30,30 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     @NSManaged var created: Date
     @NSManaged var displayOrder : NSNumber
     
-    static func create() {
+    static func create() -> Parent {
         
         let moc = AppDelegate.current.managedObjectContext
-        
-        let req = NSFetchRequest<NSNumber>(entityName: "Parent")
-        let count = try! moc.count(for: req)
+        let req = NSFetchRequest<Parent>(entityName: "Parent")
+        req.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
+        req.fetchLimit = 1
+        let _order = try! moc.fetch(req).first?.displayOrder.intValue ?? -1
         
         let new = NSEntityDescription.insertNewObject(forEntityName: "Parent", into: moc) as! Parent
-        new.displayOrder = NSNumber(value: count)
+        new.displayOrder = NSNumber(value: _order + 1)
         new.created = Date()
         new.createChild()
-        AppDelegate.current.saveAction(nil)
+        return new
     }
     
     func createChild() {
         let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: self.managedObjectContext!) as! Child
-        child.displayOrder = NSNumber(value: self.children.count)
+        
+        let order = self.children.sorted(using: [NSSortDescriptor(key: "displayOrder", ascending: true)]).last?.displayOrder.intValue ?? -1
+        child.displayOrder = NSNumber(value: order + 1)
+        
         child.created = Date()
         child.parent = self
-        child.minute = formatter.string(from: Date())
-        AppDelegate.current.saveAction(nil)
+        child.minute = minuteFormatter.string(from: Date())
     }
     
     var displayDescription: String {

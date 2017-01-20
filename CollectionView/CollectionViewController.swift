@@ -7,8 +7,6 @@
 //
 
 import Foundation
-import CollectionView
-
 
 open class CollectionViewController : NSViewController, CollectionViewDataSource, CollectionViewDelegate {
     
@@ -69,8 +67,8 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
         return 0
     }
     
-    open func collectionView(_ collectionView: CollectionView, cellForItemAtIndexPath indexPath: IndexPath) -> CollectionViewCell! {
-        assertionFailure("CollectionViewController must implement collectionView:cellForItemAtIndexPath:")
+    open func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
+        assertionFailure("CollectionViewController must implement collectionView:cellForItemAt:")
         return CollectionViewCell()
     }
 }

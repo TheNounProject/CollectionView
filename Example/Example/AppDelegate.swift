@@ -25,7 +25,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     static var current : AppDelegate {
         return NSApp.delegate as! AppDelegate
     }
-
+    
     // MARK: - Core Data stack
 
     lazy var applicationDocumentsDirectory: Foundation.URL = {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D12b" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -91,7 +91,7 @@
                                         </menuItem>
                                         <menuItem title="Save…" keyEquivalent="s" id="pxx-59-PXV">
                                             <connections>
-                                                <action selector="saveDocument:" target="Ady-hI-5gd" id="teZ-XB-qJY"/>
+                                                <action selector="saveAction:" target="Ady-hI-5gd" id="dcB-ck-ORz"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Save As…" keyEquivalent="S" id="Bw7-FT-i3A">
@@ -677,7 +677,7 @@ CA
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="196" y="240" width="480" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
-                        <toolbar key="toolbar" implicitIdentifier="FBFA0BE3-0CC9-4009-B001-C74B96BDCF54" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="ogy-G7-wJb">
+                        <toolbar key="toolbar" implicitIdentifier="FBFA0BE3-0CC9-4009-B001-C74B96BDCF54" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="small" id="ogy-G7-wJb">
                             <allowedToolbarItems>
                                 <toolbarItem implicitItemIdentifier="7FE72B4A-CF4A-441A-9EE0-15AC4B421977" label="Group By" paletteLabel="Group By" id="bce-Cx-PvD">
                                     <nil key="toolTip"/>
@@ -699,7 +699,7 @@ CA
                                     </connections>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="8PW-2V-wnW"/>
-                                <toolbarItem implicitItemIdentifier="B311110E-E359-4047-881D-00A3B52B368D" label="Parent" paletteLabel="Parent" tag="-1" image="NSAddTemplate" id="uwP-s3-z6H">
+                                <toolbarItem implicitItemIdentifier="B311110E-E359-4047-881D-00A3B52B368D" label="Parent" paletteLabel="Parent" tag="-1" image="add" id="uwP-s3-z6H">
                                     <connections>
                                         <action selector="addParent:" target="Oky-zY-oP4" id="O8l-pb-Grd"/>
                                     </connections>
@@ -767,6 +767,6 @@ CA
         </scene>
     </scenes>
     <resources>
-        <image name="NSAddTemplate" width="11" height="11"/>
+        <image name="add" width="16" height="16"/>
     </resources>
 </document>

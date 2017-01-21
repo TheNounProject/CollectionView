@@ -80,103 +80,43 @@ public enum ResultsControllerChangeType {
 }
 
 
-struct ContextChange<Object:NSManagedObject>: CustomStringConvertible {
+
+
+/// A set of changes for an entity with with mappings to original Indexes
+struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: CustomStringConvertible {
     
     var inserted = Set<Object>()
-    var updated = Set<Object>()
-    var deleted = Set<Object>()
+    var updated = IndexedSet<Index, Object>()
+    var deleted = IndexedSet<Index, Object>()
     
     var description: String {
         var str = "Context changes for \(Object.className())\n"
-        + "Updated: \(updated.count)\n"
-        + "Inserted: \(inserted.count)\n"
-        + "Deleted: \(deleted.count)"
+            + "* Updated: \(updated.count)\n"
+            + "* Inserted: \(inserted.count)\n"
+            + "* Deleted: \(deleted.count)"
         return str
     }
     
-    
     init() { }
     
-    init(notification: Notification) {
-        guard let info = notification.userInfo else {
-            return
-        }
-        
-        if let updated = info[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
-            for obj in updated {
-                if let o = obj as? Object {
-                    self.updated.insert(o)
-                }
-            }
-        }
-        if let inserted = info[NSInsertedObjectsKey] as? Set<NSManagedObject> {
-            for obj in inserted {
-                if let o = obj as? Object {
-                    self.inserted.insert(o)
-                }
-            }
-        }
-        
-        var deleted = (info[NSDeletedObjectsKey] as? Set<NSManagedObject>) ?? Set<NSManagedObject>()
-        if let invalidated = info[NSInvalidatedObjectsKey] as? Set<NSManagedObject> {
-            deleted = deleted.union(invalidated)
-        }
-        for obj in deleted {
-            if let o = obj as? Object {
-                self.deleted.insert(o)
-            }
-        }
+    mutating func add(inserted object: Object) {
+        inserted.insert(object)
     }
     
-//    static func allFrom(_ notification: Notification) -> [String:ContextChange<NSManagedObject>] {
-//        
-//        var result = [String: ContextChange<NSManagedObject>]()
-//        guard let info = notification.userInfo else {
-//            return result
-//        }
-//        
-//        if let updated = info[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
-//            for obj in updated {
-//                if result[obj.className] == nil {
-//                    result[obj.className] = ContextChange<NSManagedObject>(updated: obj)
-//                }
-//                else {
-//                    result[obj.className]?.updated.insert(obj)
-//                }
-//            }
-//        }
-//        if let inserted = info[NSInsertedObjectsKey] as? Set<NSManagedObject> {
-//            for obj in inserted {
-//                if result[obj.className] == nil {
-//                    result[obj.className] = ContextChange<NSManagedObject>(inserted: obj)
-//                }
-//                else {
-//                    result[obj.className]?.inserted.insert(obj)
-//                }
-//            }
-//        }
-//        //        let refreshed = info[NSRefreshedObjectsKey] as? Set<NSManagedObject>
-//        
-//        var deleted = (info[NSDeletedObjectsKey] as? Set<NSManagedObject>) ?? Set<NSManagedObject>()
-//        if let invalidated = info[NSInvalidatedObjectsKey] as? Set<NSManagedObject> {
-//            deleted = deleted.union(invalidated)
-//        }
-//        for obj in deleted {
-//            if result[obj.className] == nil {
-//                result[obj.className] = ContextChange<NSManagedObject>(deleted: obj)
-//            }
-//            else {
-//                result[obj.className]?.deleted.insert(obj)
-//            }
-//        }
-//        
-//        return result
-//    }
+    mutating func add(updated object: Object, for index: Index) {
+        self.updated.insert(object, for: index)
+    }
+    
+    mutating func add(deleted object: Object, for index: Index) {
+        self.deleted.insert(object, for: index)
+    }
     
     
-
-
-    
+    mutating func reset() {
+        self.inserted.removeAll()
+        self.deleted.removeAll()
+        self.updated.removeAll()
+    }
 }
 
 

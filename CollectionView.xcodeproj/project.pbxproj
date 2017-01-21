@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2DC5161E329CA000EBC234 /* IndexedSet.swift */; };
 		1C6E50851E2D9C2A00C85946 /* ResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50821E2D9C2A00C85946 /* ResultsController.swift */; };
 		1C6E50861E2D9C2A00C85946 /* ResultsControllerHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */; };
 		1C6E50981E2DD0CE00C85946 /* FetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */; };
@@ -30,6 +31,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1C2DC5161E329CA000EBC234 /* IndexedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedSet.swift; sourceTree = "<group>"; };
 		1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelationalResultsController.swift; sourceTree = "<group>"; };
 		1C6E50821E2D9C2A00C85946 /* ResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsController.swift; sourceTree = "<group>"; };
 		1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsControllerHelpers.swift; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 				1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */,
 				1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */,
 				1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */,
+				1C2DC5161E329CA000EBC234 /* IndexedSet.swift */,
 			);
 			name = ResultsController;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 				DE82E9571D78B6E700346B9E /* ScrollView.swift in Sources */,
 				DEF14B9F1CBDD83B00553CEF /* CollectionViewInfo.swift in Sources */,
 				DEF14B991CBDD83B00553CEF /* CollectionViewColumnLayout.swift in Sources */,
+				1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */,
 				DE82E9591D78B78300346B9E /* CollectionViewLayoutAttributes.swift in Sources */,
 				1C6E50981E2DD0CE00C85946 /* FetchedResultsController.swift in Sources */,
 				DEF14BA11CBDD83B00553CEF /* CollectionViewDocumentView.swift in Sources */,

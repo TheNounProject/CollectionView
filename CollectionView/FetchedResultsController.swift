@@ -78,7 +78,10 @@ public class FetchedResultsControllerSection<ValueType: SectionRepresentable, El
     }
     
     func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor] = []) -> Int {
-        let start = _objects.insert(object, using: [])
+        
+        
+        
+        let start = _objects.insert(object, using: sortDescriptors)
         for idx in start..<objects.count {
             _map[_objects[idx]] = idx
         }
@@ -121,7 +124,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     internal var _sectionMap = [Int:IndexPath]() // Key is hash value of section object, 0 is ungrouped
     
     internal var _fetchedObjects = [Element]()
-    internal var _fetchedSections = [Section]()
+    internal var _fetchedSections = OrderedSet<Section>()
     
     internal var _sections = [FetchedResultsControllerSection<Section, Element>]()
     

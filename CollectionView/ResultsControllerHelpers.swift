@@ -45,9 +45,6 @@ public extension Array where Element: AnyObject {
     mutating public func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor]) -> Int {
         if sortDescriptors.count > 0 {
             for (idx, element) in self.enumerated() {
-                
-//                print("\(object.value(forKey: "displayOrder"))   ---  \(object.value(forKey: "displayOrder"))")
-                
                 if sortDescriptors.compare(object, to: element) == .orderedAscending {
                     self.insert(object, at: idx)
                     return idx
@@ -71,11 +68,9 @@ public extension Array where Element:NSSortDescriptor {
             guard let key = sortDesc.key else { continue }
             let v1 = anObject.value(forKeyPath: key)
             let v2 = otherObject.value(forKeyPath: key)
-            print("1: \(v1)   2: \(v2)")
             if v1 == nil && v2 == nil {
                 continue
             }
-            
             let res = sortDesc.compare(anObject, to: otherObject)
             if res == .orderedSame { continue }
             return res

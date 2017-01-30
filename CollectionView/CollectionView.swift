@@ -98,6 +98,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     fileprivate var _supplementaryViewClasses : [SupplementaryViewIdentifier:CollectionReusableView.Type] = [:]
     fileprivate var _supplementaryViewNibs : [SupplementaryViewIdentifier:NSNib] = [:]
     
+    
     public func register(class cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String) {
         assert(cellClass.isSubclass(of: CollectionViewCell.self), "CollectionView: Registered cells views must be subclasses of CollectionViewCell")
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
@@ -313,7 +314,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize
             //self.info.contentSize.height != _size.height,
-            if let ip = _topIP, var rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: CollectionViewScrollPosition.top) {
+            if let ip = _topIP, var rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: CollectionViewScrollPosition.leading) {
                 
                 if self.collectionViewLayout.scrollDirection == .vertical {
                     rect = CGRect(origin: rect.origin, size: self.bounds.size)
@@ -358,7 +359,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         contentDocumentView.frame.size = nContentSize
         
         if scrollPosition != .none, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {
-            self._scrollToRect(rect, atPosition: scrollPosition, animated: false, prepare: false, completion: nil)
+            self._scrollRect(rect, to: scrollPosition, animated: false, prepare: false, completion: nil)
         }
         self.reflectScrolledClipView(self.clipView!)
         
@@ -1269,7 +1270,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         
         if scrollPosition != .none {
-            self.scrollToItem(at: indexPath, atScrollPosition: scrollPosition, animated: animated, completion: nil)
+            self.scrollItem(at: indexPath, to: scrollPosition, animated: animated, completion: nil)
         }
     }
     
@@ -1331,7 +1332,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._selectItem(at: ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: false)
         }
         
-        self.scrollToItem(at: indexPath, atScrollPosition: atScrollPosition, animated: animated, completion: nil)
+        self.scrollItem(at: indexPath, to: atScrollPosition, animated: animated, completion: nil)
         if let ip = finalSelect {
             self._selectItem(at: ip, animated: true, scrollPosition: .none, withEvent: nil, notifyDelegate: true)
         }
@@ -1543,7 +1544,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // MARK: - Programatic Scrollin
     /*-------------------------------------------------------------------------------*/
-    open func scrollToItem(at indexPath: IndexPath, atScrollPosition scrollPosition: CollectionViewScrollPosition, animated: Bool, completion: AnimationCompletion?) {
+    open func scrollItem(at indexPath: IndexPath, to scrollPosition: CollectionViewScrollPosition, animated: Bool, completion: AnimationCompletion?) {
         if self.info.numberOfItems(in: indexPath._section) < indexPath._item { return }
         if let shouldScroll = self.delegate?.collectionView?(self, shouldScrollToItemAt: indexPath) , shouldScroll != true {
             completion?(false)
@@ -1555,17 +1556,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         
-        self.scrollToRect(rect, atPosition: scrollPosition, animated: animated, completion: { fin in
+        self.scrollRect(rect, to: scrollPosition, animated: animated, completion: { fin in
             completion?(fin)
             self.delegate?.collectionView?(self, didScrollToItemAt: indexPath)
         })
     }
     
-    open func scrollToRect(_ aRect: CGRect, atPosition: CollectionViewScrollPosition, animated: Bool, completion: AnimationCompletion?) {
-        self._scrollToRect(aRect, atPosition: atPosition, animated: animated, prepare: true, completion: completion)
+    open func scrollRect(_ aRect: CGRect, to scrollPosition: CollectionViewScrollPosition, animated: Bool, completion: AnimationCompletion?) {
+        self._scrollRect(aRect, to: scrollPosition, animated: animated, prepare: true, completion: completion)
     }
     
-    open func _scrollToRect(_ aRect: CGRect, atPosition: CollectionViewScrollPosition, animated: Bool, prepare: Bool, completion: AnimationCompletion?) {
+    open func _scrollRect(_ aRect: CGRect, to scrollPosition: CollectionViewScrollPosition, animated: Bool, prepare: Bool, completion: AnimationCompletion?) {
         var rect = aRect.intersection(self.contentDocumentView.frame)
         
         if rect.isEmpty {
@@ -1576,8 +1577,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         let scrollDirection = collectionViewLayout.scrollDirection
         
         let visibleRect = self.contentVisibleRect
-        switch atPosition {
-        case .top:
+        switch scrollPosition {
+        case .leading:
             // make the top of our rect flush with the top of the visible bounds
             rect.size.height = visibleRect.height - contentInsets.top;
             rect.origin.y = aRect.origin.y - contentInsets.top;
@@ -1592,7 +1593,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 rect.size.width = self.bounds.size.width
             }
             break;
-        case .bottom:
+        case .trailing:
             // make the bottom of our rect flush with the bottom of the visible bounds
             rect.size.height = visibleRect.height;
             rect.origin.y -= visibleRect.height - contentInsets.top;

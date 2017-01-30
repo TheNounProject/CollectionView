@@ -20,9 +20,9 @@ public enum CollectionElementCategory {
 public enum CollectionViewScrollPosition {
     case none
     case nearest
-    case top
+    case leading
     case centered
-    case bottom
+    case trailing
 }
 
 enum CollectionViewSelectionMethod {

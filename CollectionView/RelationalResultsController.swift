@@ -115,14 +115,16 @@ fileprivate struct UpdateContext<Section: NSManagedObject, Element:NSManagedObje
         inserted.removeAll()
         deleted.removeAll()
         updated.removeAll()
+        moved.removeAll()
         insertedSections.removeAll()
         deletedSections.removeAll()
         updatedSections.removeAll()
+        movedSections.removeAll()
     }
     
     var description: String {
-        return "Context Items: \(deleted.count) Deleted, \(inserted.count) Inserted, \(updated.count) Updated\n"
-        + "Context Sections: \(insertedSections.count) Inserted, \(deletedSections.count) Deleted \(updatedSections.count) Updated"
+        return "Context Items: \(deleted.count) Deleted, \(inserted.count) Inserted, \(updated.count) Updated, \(moved.count) Moved\n"
+        + "Context Sections: \(insertedSections.count) Inserted, \(deletedSections.count) Deleted \(updatedSections.count) Updated, \(movedSections.count) Moved"
     }
 }
 
@@ -168,7 +170,7 @@ class RelationalResultsControllerSection<Section: NSManagedObject, Element: NSMa
         for idx in start..<objects.count {
             _map[_objects[idx]] = idx
         }
-        print(_map)
+//        print(_map)
         return start
     }
     func remove(_ object: Element) -> Int? {
@@ -224,7 +226,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
 //    internal var allObjects = Set<Element>()
     
     internal var _fetchedObjects = [Element]()
-    internal var _fetchedSections = [Section]()
+    internal var _fetchedSections = OrderedSet<Section>()
     
     private var _sections = [SectionWrapper]()
     
@@ -340,6 +342,14 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         var unordered = [Section : SectionWrapper]()
         var orphans = [Element]()
         
+        if let sectionRQ = self.sectionFetchRequest {
+            for s in try managedObjectContext.fetch(sectionRQ) {
+                if unordered[s] == nil {
+                    unordered[s] = SectionWrapper(object: s, objects: [])
+                }
+            }
+        }
+        
         for object in _objects {
             
             if let parent = object.value(forKey: sectionKeyPath) as? Section {
@@ -358,15 +368,34 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
         }
         
-        if let sectionRQ = self.sectionFetchRequest {
-            for s in try managedObjectContext.fetch(sectionRQ) {
-                if unordered[s] == nil {
-                    unordered[s] = SectionWrapper(object: s, objects: [])
+        func printSectionOrder() {
+            var keys = [String]()
+            for s in self.sectionFetchRequest?.sortDescriptors ?? [] {
+                if let k = s.key {
+                    keys.append(k)
                 }
+                
+            }
+            
+            guard keys.count > 0 else {
+                print("No sort descriptor keys to print")
+                return
+            }
+            
+            var str = "Section Order:\n"
+            
+            
+            for s in self._fetchedSections {
+                var oStr = ""
+                for k in keys {
+                    oStr += "\(k): \(s.value(forKey: k))  "
+                }
+                str += oStr
             }
         }
         
-        self._fetchedSections = unordered.keys.sorted(using: sectionFetchRequest?.sortDescriptors ?? [])
+        self._fetchedSections = OrderedSet<Section>(elements:  unordered.keys)
+        self._fetchedSections.sort(using: self.sectionFetchRequest?.sortDescriptors ?? [])
         
         var _tempSections = [SectionWrapper]()
         for (idx, s) in self._fetchedSections.enumerated() {
@@ -376,7 +405,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             _tempSections.append(sec)
         }
         
-        if orphans.count < 0 {
+        if orphans.count > 0 {
             self._sectionMap[0] = IndexPath.for(section: _tempSections.count)
             _tempSections.append(SectionWrapper(object: nil, objects: orphans.sorted(using: fetchRequest.sortDescriptors ?? [])))
         }
@@ -490,6 +519,40 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             return
         }
         
+        
+        // Deleted
+        var deleted = (info[NSDeletedObjectsKey] as? Set<NSManagedObject>) ?? Set<NSManagedObject>()
+        if let invalidated = info[NSInvalidatedObjectsKey] as? Set<NSManagedObject> {
+            deleted = deleted.union(invalidated)
+        }
+        for obj in deleted {
+            if let o = obj as? Element, let ip = self.indexPath(for: o) {
+                objects.add(deleted: o, for: ip)
+            }
+            else if let o = obj as? Section, let ip = self.indexPath(for: o) {
+                sections.add(deleted: o, for: ip)
+            }
+        }
+        
+        
+        // Inserted
+        if let inserted = info[NSInsertedObjectsKey] as? Set<NSManagedObject> {
+            for obj in inserted {
+                if let o = obj as? Element, o.entity == fetchRequest.entity {
+                    if fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: 0) == true {
+                        objects.add(inserted: o)
+                    }
+                }
+                else if let o = obj as? Section,
+                    let sectionRQ = self.sectionFetchRequest,
+                    o.entity == sectionRQ.entity,
+                    (sectionRQ.predicate == nil || sectionRQ.predicate?.evaluate(with: o) == true) {
+                    sections.add(inserted: o)
+                }
+            }
+        }
+
+        
         // Updated
         if let updated = info[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
             for obj in updated {
@@ -524,7 +587,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     let _ip = self.indexPath(for: o)
                     let match = fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true
                     
-                    if let ip = _ip {
+                    if let ip = _ip, sections.deleted.contains(ip.sectionCopy) == false {
                         if !match { objects.add(deleted: o, for: ip) }
                         else { objects.add(updated: o, for: ip) }
                     }
@@ -532,37 +595,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                         objects.add(inserted: o)
                     }
                 }
-            }
-        }
-        
-        // Inserted
-        if let inserted = info[NSInsertedObjectsKey] as? Set<NSManagedObject> {
-            for obj in inserted {
-                if let o = obj as? Element, o.entity == fetchRequest.entity {
-                    if fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: 0) == true {
-                        objects.add(inserted: o)
-                    }
-                }
-                else if let o = obj as? Section,
-                    let sectionRQ = self.sectionFetchRequest,
-                    o.entity == sectionRQ.entity,
-                    (sectionRQ.predicate == nil || sectionRQ.predicate?.evaluate(with: o) == true) {
-                    sections.add(inserted: o)
-                }
-            }
-        }
-        
-        // Deleted
-        var deleted = (info[NSDeletedObjectsKey] as? Set<NSManagedObject>) ?? Set<NSManagedObject>()
-        if let invalidated = info[NSInvalidatedObjectsKey] as? Set<NSManagedObject> {
-            deleted = deleted.union(invalidated)
-        }
-        for obj in deleted {
-            if let o = obj as? Element, let ip = self.indexPath(for: o) {
-                objects.add(deleted: o, for: ip)
-            }
-            else if let o = obj as? Section, let ip = self.indexPath(for: o) {
-                sections.add(deleted: o, for: ip)
             }
         }
         
@@ -585,7 +617,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             let section = self._sections[ip._section]
             context.deleted(section, at: ip.sectionCopy)
             
-//            context.add(section: section, old: ip, new: nil)
             for obj in section._objects {
                 _objectMap[obj] = nil
             }
@@ -609,7 +640,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 _sectionMap[_sections[idx].hashValue] = IndexPath.for(section: idx)
             }
             context.inserted(s, at: ip)
-//            context.add(section: s, old: nil, new: ip)
         }
     }
     
@@ -619,7 +649,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         
         _sectionMap[section?.hashValue ?? 0] = nil
         _sections.remove(at: ip._section)
-        _fetchedSections.remove(at: ip._section)
+        if section != nil {
+            _fetchedSections.remove(at: ip._section)
+        }
         
         for idx in ip._section..<_sections.count {
             _sectionMap[_sections[idx].hashValue] = IndexPath.for(section: idx)
@@ -707,7 +739,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             }
             
             context.updated(object, at: cIP, to: newIP)
-//            context.add(object: object, old: cIP, new: newIP)
         }
     }
     
@@ -776,8 +807,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             let section = self._sections[oldIP._section]
             _ = section.remove(object)
             context.deleted(object, at: oldIP)
-//            context.add(object: object, old: oldIP, new: nil)
-            
+
             if section.objects.count == 0 {
                 
                 // If the section object matches the section predicat, keep it.

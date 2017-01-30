@@ -28,12 +28,12 @@ import Foundation
     
     @objc optional func collectionView(_ collectionView: CollectionView, mouseMovedToSection indexPath: IndexPath?)
     
-    @objc optional func collectionView(_ collectionView: CollectionView, mouseDownInItemAt indexPath: IndexPath?, withEvent: NSEvent)
-    @objc optional func collectionView(_ collectionView: CollectionView, mouseUpInItemAt indexPath: IndexPath?, withEvent: NSEvent)
+    @objc optional func collectionView(_ collectionView: CollectionView, mouseDownInItemAt indexPath: IndexPath?, with event: NSEvent)
+    @objc optional func collectionView(_ collectionView: CollectionView, mouseUpInItemAt indexPath: IndexPath?, with event: NSEvent)
     
     @objc optional func collectionView(_ collectionView: CollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool
     
-    @objc optional func collectionView(_ collectionView: CollectionView, shouldSelectItemAt indexPath: IndexPath, withEvent: NSEvent?) -> Bool
+    @objc optional func collectionView(_ collectionView: CollectionView, shouldSelectItemAt indexPath: IndexPath, with event: NSEvent?) -> Bool
     @objc optional func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath)
     
     @objc optional func collectionView(_ collectionView: CollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool
@@ -41,8 +41,8 @@ import Foundation
     
     @objc optional func collectionView(_ collectionView: CollectionView, didChangePressure pressure: CGFloat, forItemAt indexPath: IndexPath)
     
-    @objc optional func collectionView(_ collectionView: CollectionView, didDoubleClickItemAt indexPath: IndexPath, withEvent: NSEvent)
-    @objc optional func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath, withEvent: NSEvent)
+    @objc optional func collectionView(_ collectionView: CollectionView, didDoubleClickItemAt indexPath: IndexPath, with event: NSEvent)
+    @objc optional func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath, with event: NSEvent)
     
     @objc optional func collectionView(_ collectionView: CollectionView, shouldScrollToItemAt indexPath: IndexPath) -> Bool
     @objc optional func collectionViewLayoutAnchor(_ collectionView: CollectionView) -> IndexPath?
@@ -61,7 +61,7 @@ import Foundation
 }
 
 @objc public protocol CollectionViewInteractionDelegate : CollectionViewDelegate {
-    @objc optional func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, withEvent event: NSEvent) ->Bool
+    @objc optional func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, with event: NSEvent) ->Bool
     @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, willBeginAt point: NSPoint)
     @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, didEndAt screenPoint: NSPoint, with operation: NSDragOperation, draggedIndexPaths: [IndexPath])
     @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, didMoveTo point: NSPoint)

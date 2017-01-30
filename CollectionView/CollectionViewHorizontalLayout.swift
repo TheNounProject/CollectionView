@@ -11,7 +11,7 @@ import Foundation
 
 @objc public protocol CollectionViewDelegateHorizontalListLayout: CollectionViewDelegate {
     @objc optional func collectionView (_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
-        widthForItemAtIndexPath indexPath: IndexPath) -> CGFloat
+        widthForItemAt indexPath: IndexPath) -> CGFloat
 }
 
 
@@ -52,7 +52,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
             var height = cv.bounds.height 
             height = height - sectionInsets.top - sectionInsets.bottom
             
-            let width = self.delegate?.collectionView?(cv, layout: self, widthForItemAtIndexPath: ip) ?? itemWidth
+            let width = self.delegate?.collectionView?(cv, layout: self, widthForItemAt: ip) ?? itemWidth
             
             var x = xPos
             x += self.itemSpacing

@@ -9,9 +9,8 @@
 import Cocoa
 import CollectionView
 
-class ViewController: NSViewController, ResultsControllerDelegate, CollectionViewDelegate, CollectionViewDataSource, BasicHeaderDelegate{
+class ViewController: CollectionViewController, ResultsControllerDelegate, BasicHeaderDelegate, CollectionViewDelegateColumnLayout {
 
-    @IBOutlet weak var collectionView: CollectionView!
     var relational: Bool = false
     
     let fetchedResultsController = FetchedResultsController<String, Child>(context: AppDelegate.current.managedObjectContext)
@@ -21,6 +20,10 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
     var resultsController : ResultsController {
         return relational ? relationalResultsController : fetchedResultsController
     }
+    
+    
+    var listLayout = CollectionViewListLayout()
+    var gridLayout = CollectionViewColumnLayout()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,8 +42,14 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         let childRequest = NSFetchRequest<Child>(entityName: "Child")
         let parentRequest = NSFetchRequest<Parent>(entityName: "Parent")
         
-        childRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
-        parentRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
+        childRequest.sortDescriptors = [
+            NSSortDescriptor(key: "displayOrder", ascending: true),
+            NSSortDescriptor(key: "created", ascending: false)
+        ]
+        parentRequest.sortDescriptors = [
+            NSSortDescriptor(key: "displayOrder", ascending: true),
+            NSSortDescriptor(key: "created", ascending: false)
+        ]
         
         relationalResultsController.sectionKeyPath = "parent"
         relationalResultsController.fetchRequest = childRequest
@@ -49,16 +58,27 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        let layout = CollectionViewListLayout()
-        layout.itemHeight = 36
-        layout.headerHeight = 36
-        collectionView.collectionViewLayout = layout
+        listLayout.itemHeight = 36
+        listLayout.headerHeight = 36
         
+        gridLayout.headerHeight = 36
+        gridLayout.defaultItemHeight = 80
+        
+        collectionView.collectionViewLayout = listLayout
+        
+        collectionView.register(nib: NSNib(nibNamed: "GridCell", bundle: nil)!, forCellWithReuseIdentifier: "GridCell")
         ListCell.register(collectionView)
         BasicHeaderView.register(collectionView)
         
         collectionView.reloadData()
     }
+    
+    
+    
+    
+    
+    // MARK: - Actions
+    /*-------------------------------------------------------------------------------*/
     
     @IBAction func toggleGroupStyle(_ sender: AnyObject?) {
         relational = !relational
@@ -71,9 +91,27 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
     }
     
     
-    @IBAction func addParent(_ sender: AnyObject?) {
-        Parent.create()
+    @IBAction func addChild(_ sender: AnyObject?) {
+        _ = Child.createOrphan()
     }
+    
+    @IBAction func addParent(_ sender: AnyObject?) {
+        _ = Parent.create()
+    }
+    
+    
+    
+    @IBAction func toggleLayout(_ sender: AnyObject?) {
+        
+        if self.collectionView.collectionViewLayout is CollectionViewListLayout {
+            self.collectionView.collectionViewLayout = self.gridLayout
+        }
+        else {
+            self.collectionView.collectionViewLayout = self.listLayout
+        }
+        self.collectionView.reloadData()
+    }
+    
     
     @IBAction func refresh(_ sender: AnyObject?) {
         do {
@@ -95,34 +133,17 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
     
     
     
-    func numberOfSectionsInCollectionView(_ collectionView: CollectionView) -> Int {
-        return resultsController.numberOfSections()
+    
+    func delete(_ sender: Any?) {
+        for ip in collectionView.indexPathsForSelectedItems {
+            if let item = resultsController.object(at: ip) {
+                item.managedObjectContext?.delete(item)
+            }
+        }
     }
     
     
-    func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
-        return resultsController.numberOfObjects(in: section)
-    }
-    
-    func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView {
-        
-        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "BasicHeaderView", for: indexPath) as! BasicHeaderView
-        
-        let str = resultsController.sectionName(forSectionAt: indexPath)
-        view.titleLabel.font = NSFont.boldSystemFont(ofSize: 14)
-        view.titleLabel.stringValue = str
-        
-        view.titleInset = 16
-        view.drawBorder = true
-        view.accessoryButton.setIcon(.add, animated: false)
-        view.delegate = self
-        view.accessoryButton.isHidden = !relational
-        
-        return view
-    }
-    
-
-    
+    // Basic Header View delegate (+ button)
     func basicHeaderView(_ view: BasicHeaderView, didSelectButton button: IconButton) {
         
         guard let ip = collectionView.indexPathForSupplementaryView(view) else { return }
@@ -149,11 +170,59 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         else {
             _ = section.createChild()
         }
-        
-        
     }
     
-    func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
+
+    
+    
+    
+    
+    
+    // MARK: - Collection View Data Source
+    /*-------------------------------------------------------------------------------*/
+    
+    override func numberOfSectionsInCollectionView(_ collectionView: CollectionView) -> Int {
+        return resultsController.numberOfSections()
+    }
+    
+    override func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
+        return resultsController.numberOfObjects(in: section)
+    }
+    
+    func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView {
+        
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "BasicHeaderView", for: indexPath) as! BasicHeaderView
+        
+        let str = resultsController.sectionName(forSectionAt: indexPath)
+        view.titleLabel.font = NSFont.boldSystemFont(ofSize: 14)
+        view.titleLabel.stringValue = str
+        
+        view.titleInset = 16
+        view.drawBorder = true
+        view.accessoryButton.setIcon(.add, animated: false)
+        view.delegate = self
+        view.accessoryButton.isHidden = !relational || relationalResultsController.object(for: indexPath) == nil
+        
+        return view
+    }
+    
+    override func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
+        
+        
+        let child = resultsController.object(at: indexPath) as! Child
+        
+        if collectionView.collectionViewLayout is CollectionViewColumnLayout {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GridCell", for: indexPath) as! GridCell
+            
+            if !cell.reused {
+                cell.layer?.cornerRadius = 3
+            }
+            cell.badgeLabel.stringValue = "\(indexPath._item)"
+            cell.titleLabel.stringValue = "Child \(child.displayOrder)"
+            cell.detailLabel.stringValue = child.dateString
+            return cell
+        }
         
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ListCell", for: indexPath) as! ListCell
@@ -168,7 +237,7 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
             
         }
         
-        let child = resultsController.object(at: indexPath) as! Child
+        
 
         cell.titleLabel.stringValue = "\(indexPath._item) - \(child.displayDescription)"
         
@@ -177,13 +246,23 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
     }
     
     
-    func delete(_ sender: Any?) {
-        for ip in collectionView.indexPathsForSelectedItems {
-            if let item = resultsController.object(at: ip) {
-                item.managedObjectContext?.delete(item)
-            }
-        }
+    
+    // MARK: - Layout Delegate
+    /*-------------------------------------------------------------------------------*/
+    
+    
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, numberOfColumnsInSection section: Int) -> Int {
+        let f = Float(self.view.frame.size.width/150)
+        return Int(floor(f))
     }
+    
+//    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, aspectRatioForItemAt indexPath: IndexPath) -> CGSize {
+//        return CGSize(width: 1, height: 1)
+//    }
+    
+
+    // MARK: - Collection View Delegate
+    /*-------------------------------------------------------------------------------*/
     
     func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath) {
         
@@ -250,9 +329,8 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
             child.displayOrder = previous.displayOrder
             previous.displayOrder = temp
         }
-
-        
     }
+    
 
 
 
@@ -276,6 +354,8 @@ class ViewController: NSViewController, ResultsControllerDelegate, CollectionVie
         _moves.removeAll()
         _sectionInserts.removeAll()
         _sectionDeletes.removeAll()
+        _sectionMoves.removeAll()
+        _sectionUpdates.removeAll()
     }
     
     func controller(_ controller: ResultsController, didChangeObject object: NSManagedObject, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {

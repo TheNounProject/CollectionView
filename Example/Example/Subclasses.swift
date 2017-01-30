@@ -30,9 +30,9 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     @NSManaged var created: Date
     @NSManaged var displayOrder : NSNumber
     
-    static func create() -> Parent {
+    static func create(in moc : NSManagedObjectContext? = nil) -> Parent {
         
-        let moc = AppDelegate.current.managedObjectContext
+        let moc = moc ?? AppDelegate.current.managedObjectContext
         let req = NSFetchRequest<Parent>(entityName: "Parent")
         req.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
         req.fetchLimit = 1
@@ -64,7 +64,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
 
 class Child : NSManagedObject, CustomDisplayStringConvertible {
     
-    @NSManaged var parent : Parent
+    @NSManaged var parent : Parent?
     @NSManaged var created: Date
     @NSManaged var minute: String
     @NSManaged var displayOrder : NSNumber
@@ -73,5 +73,19 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         return "Child \(displayOrder) - \(formatter.string(from: created))"
     }
     
+    var dateString : String {
+        return formatter.string(from: created)
+    }
+    
+    
+    static func createOrphan(in moc : NSManagedObjectContext? = nil) {      
+        
+        let moc = moc ?? AppDelegate.current.managedObjectContext
+        let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: moc) as! Child
+        
+        child.displayOrder = NSNumber(value: 0)
+        child.created = Date()
+        child.minute = minuteFormatter.string(from: Date())
+    }
     
 }

@@ -11,7 +11,7 @@ import Foundation
 @objc public protocol CollectionViewDelegateListLayout: CollectionViewDelegate {
     
     @objc optional func collectionView(_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
-                                  heightForItemAtIndexPath indexPath: IndexPath) -> CGFloat
+                                  heightForItemAt indexPath: IndexPath) -> CGFloat
     
     @objc optional func collectionView(_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
                                  interitemSpacingForItemsInSection section: Int) -> CGFloat
@@ -145,7 +145,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
                     allIndexPaths.insert(ip)
                     
                     let attrs = CollectionViewLayoutAttributes(forCellWithIndexPath: ip)
-                    let rowHeight : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAtIndexPath: ip) ?? self.itemHeight
+                    let rowHeight : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAt: ip) ?? self.itemHeight
                     attrs.frame = NSRect(x: xPos, y: yPos, width: itemWidth, height: rowHeight)
                     newTop = yPos + rowHeight
                     yPos = newTop + rowSpacing

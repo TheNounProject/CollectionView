@@ -98,6 +98,7 @@ open class ClipView : NSClipView {
 //    }
     
     @discardableResult open func scrollRectToVisible(_ rect: CGRect, animated: Bool, completion: AnimationCompletion? = nil) -> Bool {
+        
         manualScroll = true
         shouldAnimateOriginChange = animated
         if animated == false {

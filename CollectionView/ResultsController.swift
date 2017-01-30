@@ -54,7 +54,6 @@ public protocol ResultsController {
     func sectionName(forSectionAt indexPath :IndexPath) -> String
     
     func performFetch() throws
-    
 }
 
 
@@ -90,10 +89,10 @@ struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: CustomStringCon
     var deleted = IndexedSet<Index, Object>()
     
     var description: String {
-        var str = "Context changes for \(Object.className())\n"
-            + "* Updated: \(updated.count)\n"
-            + "* Inserted: \(inserted.count)\n"
-            + "* Deleted: \(deleted.count)"
+        var str = "Change Set \(Object.className()):"
+        + " \(updated.count) Updated, "
+        + " \(inserted.count) Inserted, "
+        + " \(deleted.count) Deleted"
         return str
     }
     

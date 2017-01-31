@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D30a" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -60,9 +60,14 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="File" id="bib-Uj-vzu">
                                     <items>
-                                        <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
+                                        <menuItem title="New Child" keyEquivalent="n" id="Was-JA-tGl">
                                             <connections>
-                                                <action selector="newDocument:" target="Ady-hI-5gd" id="4Si-XN-c54"/>
+                                                <action selector="addChild:" target="Ady-hI-5gd" id="k4E-gV-okV"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="New Parent" keyEquivalent="N" id="2Z1-QW-MHS">
+                                            <connections>
+                                                <action selector="addParent:" target="Ady-hI-5gd" id="Cvb-uy-UQL"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Open…" keyEquivalent="o" id="IAo-SY-fd9">
@@ -423,7 +428,12 @@ CA
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="e2Z-Hr-0Xp"/>
-                                        <menuItem title="Toggle Layout" keyEquivalent="g" id="4la-wO-7S9">
+                                        <menuItem title="Toggle Grouping" keyEquivalent="g" id="9EX-Wa-sFx">
+                                            <connections>
+                                                <action selector="toggleGroupStyle:" target="Ady-hI-5gd" id="yjH-PM-VLT"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Toggle Layout" keyEquivalent="l" id="4la-wO-7S9">
                                             <connections>
                                                 <action selector="toggleLayout:" target="Ady-hI-5gd" id="2KC-SY-mAO"/>
                                             </connections>
@@ -532,7 +542,7 @@ CA
                                         </segmentedCell>
                                     </segmentedControl>
                                     <connections>
-                                        <action selector="toggleGroupStyle:" target="Oky-zY-oP4" id="DoZ-BP-Pyr"/>
+                                        <action selector="groupSelectorChanged:" target="Oky-zY-oP4" id="35q-h0-HcE"/>
                                     </connections>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="8PW-2V-wnW"/>
@@ -560,6 +570,7 @@ CA
                     </connections>
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <userDefaultsController representsSharedInstance="YES" id="w2R-hn-3U6"/>
             </objects>
             <point key="canvasLocation" x="75" y="250"/>
         </scene>

@@ -13,7 +13,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
 
     var relational: Bool = false
     
-    let fetchedResultsController = FetchedResultsController<String, Child>(context: AppDelegate.current.managedObjectContext)
+    let fetchedResultsController = FetchedResultsController<NSNumber, Child>(context: AppDelegate.current.managedObjectContext)
     let relationalResultsController = RelationalResultsController<Parent, Child>(context: AppDelegate.current.managedObjectContext, sectionKeyPath: "parent")
     
     
@@ -33,7 +33,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         let creationSort = NSSortDescriptor(key: "created", ascending: true)
         
         req.sortDescriptors = [creationSort]
-        fetchedResultsController.sectionKeyPath = "minute"
+        fetchedResultsController.sectionKeyPath = "second"
         fetchedResultsController.fetchRequest = req
         fetchedResultsController.delegate = self
         
@@ -80,7 +80,24 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     // MARK: - Actions
     /*-------------------------------------------------------------------------------*/
     
+    
     @IBAction func toggleGroupStyle(_ sender: AnyObject?) {
+        
+        guard let selector = self.view.window?.toolbar?.items.first?.view as? NSSegmentedControl else {
+            return
+        }
+        selector.selectedSegment = selector.selectedSegment == 0 ? 1 : 0
+        groupSelectorChanged(sender)
+    }
+    
+    @IBAction func groupSelectorChanged(_ sender: Any?) {
+        guard let selector = self.view.window?.toolbar?.items.first?.view as? NSSegmentedControl else {
+            return
+        }
+        
+        let r = selector.selectedSegment == 1
+        guard r != relational else { return }
+        
         relational = !relational
         try? resultsController.performFetch()
         
@@ -88,6 +105,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         self.relationalResultsController.delegate = relational ? self : nil
         
         self.collectionView.reloadData()
+        
     }
     
     
@@ -98,7 +116,6 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     @IBAction func addParent(_ sender: AnyObject?) {
         _ = Parent.create()
     }
-    
     
     
     @IBAction func toggleLayout(_ sender: AnyObject?) {
@@ -130,9 +147,6 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     @IBAction func reload(_ sender: AnyObject?) {
         collectionView.reloadData()
     }
-    
-    
-    
     
     func delete(_ sender: Any?) {
         for ip in collectionView.indexPathsForSelectedItems {
@@ -218,8 +232,8 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             if !cell.reused {
                 cell.layer?.cornerRadius = 3
             }
-            cell.badgeLabel.stringValue = "\(indexPath._item)"
-            cell.titleLabel.stringValue = "Child \(child.displayOrder)"
+            cell.badgeLabel.stringValue = "\(child.displayOrder)"
+            cell.titleLabel.stringValue = "Child \(child.idString)"
             cell.detailLabel.stringValue = child.dateString
             return cell
         }
@@ -272,8 +286,12 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     
     
     var _rightClicked : IndexPath?
-    func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath, withEvent: NSEvent) {
+    func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath, with event: NSEvent) {
+        
+        guard self.relational else { return }
+        
         _rightClicked = nil
+        
         guard self.resultsController.object(at: indexPath) is Child,
             let cell = collectionView.cellForItem(at: indexPath) else {
             return
@@ -282,53 +300,50 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         let menu = NSMenu()
         menu.autoenablesItems = false
-        let upItem = menu.addItem(withTitle: "Move Up", action: #selector(moveItemUp(_:)), keyEquivalent: "")
-        let downItem = menu.addItem(withTitle: "Move Down", action: #selector(moveItemDown(_:)), keyEquivalent: "")
-
-        upItem.isEnabled = indexPath._item > 0
-        downItem.isEnabled = indexPath._item < collectionView.numberOfItems(in: indexPath._section) - 1
+        let left = menu.addItem(withTitle: "Move Left", action: #selector(moveItemLeft(_:)), keyEquivalent: "")
+        let right = menu.addItem(withTitle: "Move Right", action: #selector(moveItemRight(_:)), keyEquivalent: "")
+        let up = menu.addItem(withTitle: "Move Up", action: #selector(moveItemUp(_:)), keyEquivalent: "")
+        let down = menu.addItem(withTitle: "Move Down", action: #selector(moveItemDown(_:)), keyEquivalent: "")
         
-        let loc = cell.convert(withEvent.locationInWindow, from: nil)
+        // upItem.isEnabled = indexPath._item > 0
+        // downItem.isEnabled = indexPath._item < collectionView.numberOfItems(in: indexPath._section) - 1
+        
+        let loc = cell.convert(event.locationInWindow, from: nil)
         menu.popUp(positioning: nil, at: loc, in: cell)
     }
     
     
-    func moveItemUp(_ sender: Any?) {
-        
-        guard let indexPath = _rightClicked,
-            let child = self.resultsController.object(at: indexPath) as? Child else {
-            return
-        }
-        
-        guard indexPath._item > 0 else {
-            print("Cannot move item up - it is already first")
-            return
-        }
-        let newIP = IndexPath.for(item: indexPath._item - 1, section: indexPath._section)
-        if let previous = self.resultsController.object(at: newIP) as? Child {
-            let temp = child.displayOrder
-            child.displayOrder = previous.displayOrder
-            previous.displayOrder = temp
-        }
-    }
-
-    func moveItemDown(_ sender: Any?) {
-        
+    func moveItemLeft(_ sender: Any?) { moveItem(in: .left) }
+    func moveItemRight(_ sender: Any?) { moveItem(in: .right) }
+    func moveItemUp(_ sender: Any?) { self.moveItem(in: .up) }
+    func moveItemDown(_ sender: Any?) { moveItem(in: .down) }
+    
+    
+    func moveItem(in direction : CollectionViewDirection) {
         guard let indexPath = _rightClicked,
             let child = self.resultsController.object(at: indexPath) as? Child else {
                 return
         }
         
-        guard indexPath._item < collectionView.numberOfItems(in: indexPath._section) - 1 else {
-            print("Cannot move item down - it is already last")
+        guard let next = collectionView.collectionViewLayout.indexPathForNextItem(moving: direction, from: indexPath) else {
+            print("Cannot move item \(direction)")
             return
         }
-        let newIP = IndexPath.for(item: indexPath._item + 1, section: indexPath._section)
-        if let previous = self.resultsController.object(at: newIP) as? Child {
-            let temp = child.displayOrder
-            child.displayOrder = previous.displayOrder
-            previous.displayOrder = temp
+        
+        if let previous = self.resultsController.object(at: next) as? Child {
+            if next._section != indexPath._section {
+                let tParent = child.parent
+                child.parent = previous.parent
+                previous.parent = tParent
+            }
+            else {
+                let temp = child.displayOrder
+                child.displayOrder = previous.displayOrder
+                previous.displayOrder = temp
+            }
         }
+        
+        
     }
     
 
@@ -360,6 +375,8 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     
     func controller(_ controller: ResultsController, didChangeObject object: NSManagedObject, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
         
+        
+        print("\(changeType)")
         switch changeType {
         case .delete:
             _deletes.insert(indexPath!)
@@ -400,16 +417,15 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             
             self.collectionView.deleteSections(_sectionDeletes, animated: true)
             self.collectionView.insertSections(_sectionInserts, animated: true)
-            
             self.collectionView.reloadSupplementaryViews(in: _sectionUpdates, animated: true)
             
             self.collectionView.insertItems(at: Array(_inserts), animated: true)
             self.collectionView.deleteItems(at: Array(_deletes), animated: true)
-//            self.collectionView.reloadItems(at: Array(_updates), animated: true)
             
             for move in _moves {
                 self.collectionView.moveItem(at: move.key, to: move.value, animated: true)
             }
+            // self.collectionView.reloadItems(at: Array(_updates), animated: true)
             
         }, completion: nil)
         

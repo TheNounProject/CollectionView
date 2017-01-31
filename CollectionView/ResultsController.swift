@@ -37,6 +37,22 @@ extension NSNumber : CustomDisplayStringConvertible {
     public var displayDescription: String { return "\(self)" }
 }
 
+extension Int : CustomDisplayStringConvertible {
+    public var displayDescription: String {
+        return "\(self)"
+    }
+}
+
+extension NSNumber : Comparable {
+    public static func ==(lhs: NSNumber, rhs: NSNumber) -> Bool {
+        return lhs.compare(rhs) == .orderedSame
+    }
+    
+    public static func <(lhs: NSNumber, rhs: NSNumber) -> Bool {
+        return lhs.compare(rhs) == .orderedAscending
+    }
+}
+
 
 public protocol ResultsController {
     

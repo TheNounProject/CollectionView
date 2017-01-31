@@ -18,9 +18,10 @@
 		1C6E50AB1E31311300C85946 /* CollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6E50AA1E31311300C85946 /* CollectionView.framework */; };
 		1C6E50AC1E31311300C85946 /* CollectionView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6E50AA1E31311300C85946 /* CollectionView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1C9FCBA21D08B02300DDF9D7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9FCBA11D08B02300DDF9D7 /* AppDelegate.swift */; };
-		1C9FCBA41D08B02300DDF9D7 /* to.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9FCBA31D08B02300DDF9D7 /* to.swift */; };
+		1C9FCBA41D08B02300DDF9D7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C9FCBA31D08B02300DDF9D7 /* ViewController.swift */; };
 		1C9FCBA61D08B02300DDF9D7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C9FCBA51D08B02300DDF9D7 /* Assets.xcassets */; };
 		1C9FCBA91D08B02300DDF9D7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C9FCBA71D08B02300DDF9D7 /* Main.storyboard */; };
+		DE941D121E402683001B2638 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE941D111E402683001B2638 /* Helpers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,10 +51,11 @@
 		1C6E50AA1E31311300C85946 /* CollectionView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CollectionView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C9FCB9E1D08B02300DDF9D7 /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C9FCBA11D08B02300DDF9D7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1C9FCBA31D08B02300DDF9D7 /* to.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = to.swift; sourceTree = "<group>"; };
+		1C9FCBA31D08B02300DDF9D7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1C9FCBA51D08B02300DDF9D7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1C9FCBA81D08B02300DDF9D7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1C9FCBAA1D08B02300DDF9D7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DE941D111E402683001B2638 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				1C6E508F1E2DBD9E00C85946 /* BasicCells.swift */,
+				DE941D111E402683001B2638 /* Helpers.swift */,
 				1C6E50901E2DBD9E00C85946 /* CBIconButton.swift */,
 				1C6E50911E2DBD9E00C85946 /* ConstraintExtensions.swift */,
 				1C6E50921E2DBD9E00C85946 /* ListCell.swift */,
@@ -102,7 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				1C9FCBA11D08B02300DDF9D7 /* AppDelegate.swift */,
-				1C9FCBA31D08B02300DDF9D7 /* to.swift */,
+				1C9FCBA31D08B02300DDF9D7 /* ViewController.swift */,
 				1C6E508B1E2DB99200C85946 /* Subclasses.swift */,
 				1C6E50891E2DB99200C85946 /* ResultsController.xcdatamodeld */,
 				1C6E50881E2DA6C300C85946 /* MyPlayground.playground */,
@@ -187,8 +190,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C6E50951E2DBD9E00C85946 /* ConstraintExtensions.swift in Sources */,
-				1C9FCBA41D08B02300DDF9D7 /* to.swift in Sources */,
+				1C9FCBA41D08B02300DDF9D7 /* ViewController.swift in Sources */,
 				1C6E50931E2DBD9E00C85946 /* BasicCells.swift in Sources */,
+				DE941D121E402683001B2638 /* Helpers.swift in Sources */,
 				1C9FCBA21D08B02300DDF9D7 /* AppDelegate.swift in Sources */,
 				1C6E508C1E2DB99200C85946 /* ResultsController.xcdatamodeld in Sources */,
 				1C6E50961E2DBD9E00C85946 /* ListCell.swift in Sources */,

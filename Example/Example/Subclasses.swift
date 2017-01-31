@@ -17,7 +17,7 @@ let formatter : DateFormatter = {
     return df
 }()
 
-let minuteFormatter : DateFormatter = {
+let dateGroupFormatter : DateFormatter = {
     let df = DateFormatter()
     df.dateFormat = "MM-dd-yyyy mm"
     return df
@@ -46,14 +46,11 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     }
     
     func createChild() {
-        let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: self.managedObjectContext!) as! Child
+        let child = Child.createOrphan(in: self.managedObjectContext)
         
         let order = self.children.sorted(using: [NSSortDescriptor(key: "displayOrder", ascending: true)]).last?.displayOrder.intValue ?? -1
         child.displayOrder = NSNumber(value: order + 1)
-        
-        child.created = Date()
         child.parent = self
-        child.minute = minuteFormatter.string(from: Date())
     }
     
     var displayDescription: String {
@@ -66,7 +63,8 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
     
     @NSManaged var parent : Parent?
     @NSManaged var created: Date
-    @NSManaged var minute: String
+    @NSManaged var group: String
+    @NSManaged var second: NSNumber
     @NSManaged var displayOrder : NSNumber
     
     var displayDescription: String {
@@ -77,15 +75,32 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         return formatter.string(from: created)
     }
     
-    
-    static func createOrphan(in moc : NSManagedObjectContext? = nil) {      
+    static func createOrphan(in moc : NSManagedObjectContext? = nil) -> Child {
         
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: moc) as! Child
         
         child.displayOrder = NSNumber(value: 0)
-        child.created = Date()
-        child.minute = minuteFormatter.string(from: Date())
+        
+        let d = Date()
+        child.created = d
+        
+        let s = Calendar.current.component(.second, from: d)
+        child.second = NSNumber(value: Int(s/6))
+        child.group = dateGroupFormatter.string(from: Date())
+        
+        
+        return child
     }
     
+}
+
+
+extension NSManagedObject {
+    
+    var idString : String {
+        let str = self.objectID.uriRepresentation().lastPathComponent
+        if self.objectID.isTemporaryID { return str.sub(from: -3) }
+        return self.objectID.uriRepresentation().lastPathComponent
+    }
 }

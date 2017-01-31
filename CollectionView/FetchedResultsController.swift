@@ -257,7 +257,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             var sorted = unordered.values.sorted(by: { (r1, r2) -> Bool in
                 let o1 = r1.objects[0]
                 let o2 = r2.objects[0]
-                return true
+//                return true
                 return sortDesc.compare(o1, to: o2) != .orderedDescending
             })
             
@@ -389,14 +389,14 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                     
                     // Same group
                     if sectionValue == currentSection._value {
-                        newIP = newIP.copy(item: currentSection.insert(object, using: sort))
+                        newIP = newIP.copy(withItem: currentSection.insert(object, using: sort))
                         _objectMap[object] = currentSection.hashValue
                     }
                         
                         // Moved to another section
                     else if let newSip = self.indexPath(for: sectionValue),
                         let newSection = self._section(for: newSip) {
-                        newIP = newIP.copy(item: newSection.insert(object, using: sort))
+                        newIP = newIP.copy(withItem: newSection.insert(object, using: sort))
                         _objectMap[object] = newSection.hashValue
                     }
                         
@@ -404,7 +404,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                     else {
                         // The section value doesn't exist yet, the section will be inserted
                         let sec = FetchedResultsControllerSection<Section, Element>(value: sectionValue, objects: [object])
-                        newIP = newIP.copy(item: self._sections.count)
+                        newIP = newIP.copy(withItem: self._sections.count)
                         self._sections.append(sec)
                         _sectionMap[sectionValue?.hashValue ?? 0] = newIP.sectionCopy
                         _objectMap[object] = sec.hashValue
@@ -412,7 +412,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 }
                 else {
                     // No key path, just one section
-                    newIP = newIP.copy(item: currentSection.insert(object, using: sort))
+                    newIP = newIP.copy(withItem: currentSection.insert(object, using: sort))
                     _objectMap[object] = currentSection.hashValue
                 }
                 
@@ -434,8 +434,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             _ = section.remove(object)
             context.addObject(object, oldIP: oldIP, newIP: nil)
             _objectMap[object] = nil
-            
-            
             
             
             if section.objects.count == 0 {
@@ -465,7 +463,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 
                 if let newSip = self.indexPath(for: sectionValue),
                     let newSection = self._section(for: newSip) {
-                    newIP = newIP.copy(item: newSection.insert(object, using: sort))
+                    newIP = newIP.copy(withItem: newSection.insert(object, using: sort))
                     _objectMap[object] = newSection.hashValue
                 }
                 else {
@@ -479,7 +477,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             }
             else if let section = self._sections.first {
                 // No key path, just one section
-                newIP = newIP.copy(item: section.insert(object, using: sort))
+                newIP = newIP.copy(withItem: section.insert(object, using: sort))
                 _objectMap[object] = section.hashValue
             }
             else {

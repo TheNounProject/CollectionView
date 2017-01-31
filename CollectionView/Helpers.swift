@@ -33,11 +33,18 @@ public extension IndexPath {
         return IndexPath.for(item: 0, section: self._section)
     }
     
-    func copy(item: Int) -> IndexPath {
+    func copy(withItem item: Int) -> IndexPath {
         return IndexPath.for(item: item, section: self._section)
     }
-    func copy(section: Int) -> IndexPath {
+    func copy(withSection section: Int) -> IndexPath {
         return IndexPath.for(item: self._item, section: section)
+    }
+    
+    func adjustingItem(_ by: Int = 1) -> IndexPath {
+        return IndexPath.for(item: self._item + by, section: section)
+    }
+    func adjustingSection(_ by: Int = 1) -> IndexPath {
+        return IndexPath.for(item: self._item, section: section + by)
     }
 }
 
@@ -71,7 +78,27 @@ func ==(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> B
 }
 
 
+extension Comparable {
+    
+    
+    func compare(_ other: Self) -> ComparisonResult {
+        if self == other { return .orderedSame }
+        if self < other { return .orderedAscending }
+        return .orderedDescending
+    }
+    
+    
+}
+
+
+
 extension Set {
+    
+    
+    mutating func removeOne() -> Element? {
+        guard self.count > 0 else { return nil }
+        return self.removeFirst()
+    }
     
     /**
      Remove elements shared by both sets, returning the removed items

@@ -10,8 +10,28 @@
 import Foundation
 
 
+extension Set {
+  
+    mutating func insertOverwrite(_ element: Element) {
+        self.remove(element)
+        self.insert(element)
+    }
+    
+    mutating func formUnionOverwrite<S : Sequence where S.Iterator.Element == Element>(_ other: S) {
+        self.subtracting(other)
+        self.formUnion(other)
+    }
+    
+    func unionOverwrite<S : Sequence where S.Iterator.Element == Element>(_ other: S) -> Set<Element> {
+        var new = self.subtracting(other)
+        return new.union(other)
+    }
+    
+}
 
-internal struct ItemUpdate {
+
+
+internal struct ItemUpdate : Hashable {
     enum `Type` {
         case insert
         case remove
@@ -23,11 +43,19 @@ internal struct ItemUpdate {
     let type : Type
     var identifier : SupplementaryViewIdentifier?
     
+    var hashValue: Int {
+        return view.hashValue
+    }
+    
     init(view: CollectionReusableView, attrs: CollectionViewLayoutAttributes, type: Type, identifier: SupplementaryViewIdentifier? = nil) {
         self.view = view
         self.attrs = attrs
         self.identifier = identifier
         self.type = type
+    }
+    
+    static func ==(lhs: ItemUpdate, rhs: ItemUpdate) -> Bool {
+        return lhs.view == rhs.view
     }
 }
 
@@ -159,8 +187,8 @@ final public class CollectionViewDocumentView : NSView {
         }
         self.preparedRect = newRect
         
-        var updates = supps.updates
-        updates.append(contentsOf: items.updates)
+        var updates = Set<ItemUpdate>(supps.updates)
+        updates.formUnionOverwrite(items.updates)
         self.applyUpdates(updates, animated: animated, completion: completion)
         
 //        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
@@ -335,18 +363,21 @@ final public class CollectionViewDocumentView : NSView {
     var animating = false
     var hasPendingAnimations : Bool = false
     var disableAnimationTimer : Timer?
-    internal func applyUpdates(_ updates: [ItemUpdate], animated: Bool, completion: AnimationCompletion?) {
+    internal func applyUpdates(_ updates: Set<ItemUpdate>, animated: Bool, completion: AnimationCompletion?) {
         
         var _updates = updates
-        _updates.append(contentsOf: pendingUpdates)
+        _updates.formUnionOverwrite(pendingUpdates)
         pendingUpdates = []
         
         
         if animated && !animating {
             let _animDuration = self.collectionView.animationDuration
-            let mDelay = DispatchTime.now() + Double(Int64(0.01 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+            
+            NSGraphicsContext.current()?.flushGraphics()
+            
+            // let mDelay = DispatchTime.now() + Double(Int64(0.01 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
             self.animating = true
-            DispatchQueue.main.asyncAfter(deadline: mDelay, execute: {
+            // DispatchQueue.main.asyncAfter(deadline: mDelay, execute: {
                 var removals = [ItemUpdate]()
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in
                     context.duration = _animDuration
@@ -369,7 +400,7 @@ final public class CollectionViewDocumentView : NSView {
                     self.finishRemovals(removals)
                     completion?(true)
                 }
-            })
+            // })
         }
         else {
             if animated {

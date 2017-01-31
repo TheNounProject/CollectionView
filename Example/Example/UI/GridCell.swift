@@ -32,6 +32,9 @@ class GridCell : CollectionViewCell {
 //        
 //    }
     
+    static let rBG = NSColor(white: 0.98, alpha: 1)
+    static let hBG = NSColor(white: 0.95, alpha: 1)
+    
     override func viewWillMove(toSuperview newSuperview: NSView?) {
         super.viewWillMove(toSuperview: newSuperview)
         self.layer?.borderColor = NSColor(white: 0.9, alpha: 1).cgColor
@@ -41,14 +44,14 @@ class GridCell : CollectionViewCell {
         super.setSelected(selected, animated: animated)
         
         if selected {
-            self.backgroundColor = NSColor(white: 0.95, alpha: 1)
+            self.backgroundColor = GridCell.hBG
             self.layer?.borderWidth = 5
         }
         else {
             self.layer?.borderWidth = 0
             self.backgroundColor = self.highlighted
-                ? NSColor(white: 0.95, alpha: 1)
-                : NSColor(white: 0.98, alpha: 1)
+                ? GridCell.hBG
+                : GridCell.rBG
         }
         self.needsDisplay = true
     }
@@ -59,8 +62,8 @@ class GridCell : CollectionViewCell {
         
         guard !self.selected else { return }
         self.backgroundColor = highlighted
-            ? NSColor(white: 0.95, alpha: 1)
-            : NSColor(white: 0.98, alpha: 1)
+            ? GridCell.hBG
+            : GridCell.rBG
         self.needsDisplay = true
     }
     

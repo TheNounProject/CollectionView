@@ -487,13 +487,10 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         }
         for change in context.moved {
             guard let newIP = self.indexPath(for: change.object) else { continue }
-            
-            self.delegate?.controller(self, didChangeObject: change.object, at: change.index, for: .insert(newIP))
+            self.delegate?.controller(self, didChangeObject: change.object, at: change.index, for: .move(newIP))
         }
         for object in context.updated {
             guard let newIP = self.indexPath(for: object) else { continue }
-//            let old : IndexPath = change.index
-//            let type : ResultsControllerChangeType = (old == newIP) ? .update : .move(newIP)
             self.delegate?.controller(self, didChangeObject: object, at: newIP, for: .update)
         }
         
@@ -676,7 +673,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             //                // Moved to another section
             //            if let newSip = self.indexPath(for: sectionValue),
             //                let newSection = self._section(for: newSip) {
-            //                newIP = newIP.copy(item: newSection.insert(object, using: sort))
+            //                newIP = newIP.copy(withItem: newSection.insert(object, using: sort))
             //                _objectMap[object] = newSection.hashValue
             //            }
             //
@@ -684,7 +681,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             //            else {
             //                // The section value doesn't exist yet, the section will be inserted
             //                let sec = SectionWrapper(object: sectionValue, objects: [object])
-            //                newIP = newIP.copy(item: self._sections.count)
+            //                newIP = newIP.copy(withItem: self._sections.count)
             //                self._sections.append(sec)
             //                _sectionMap[sectionValue?.hashValue ?? 0] = newIP.sectionCopy
             //                _objectMap[object] = sec.hashValue
@@ -717,14 +714,16 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             // Same group
             if sectionValue == currentSection._object {
-                newIP = newIP.copy(item: currentSection.insert(object, using: sort))
+                newIP = newIP.copy(withItem: currentSection.insert(object, using: sort))
                 _objectMap[object] = currentSection.hashValue
             }
                 
                 // Moved to another section
             else if let newSip = self.indexPath(for: sectionValue),
                 let newSection = self._section(for: newSip) {
-                newIP = newIP.copy(item: newSection.insert(object, using: sort))
+                // newIP = newIP.copy(withItem: )
+                newIP = IndexPath.for(item: newSection.insert(object, using: sort),
+                                      section: newSip._section)
                 _objectMap[object] = newSection.hashValue
             }
                 
@@ -732,7 +731,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             else {
                 // The section value doesn't exist yet, the section will be inserted
                 let sec = SectionWrapper(object: sectionValue, objects: [object])
-                newIP = newIP.copy(item: self._sections.count)
+                newIP = newIP.copy(withItem: self._sections.count)
                 self._sections.append(sec)
                 _sectionMap[sectionValue?.hashValue ?? 0] = newIP.sectionCopy
                 _objectMap[object] = sec.hashValue
@@ -756,7 +755,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             if let existingIP = self.indexPath(for: sectionValue),
                 let existingSection = self._section(for: existingIP) {
                 
-                newIP = existingIP.copy(item: existingSection.insert(object, using: sort))
+                let insertIndex = existingSection.insert(object, using: sort)
+                newIP = existingIP.copy(withItem: insertIndex)
                 _objectMap[object] = existingSection.hashValue
                 
                 if context.insertedSections.contains(existingSection) {
@@ -775,7 +775,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             //            }
             //            else if let section = self._sections.first {
             //                // No key path, just one section
-            //                newIP = newIP.copy(item: section.insert(object, using: sort))
+            //                newIP = newIP.copy(withItem: section.insert(object, using: sort))
             //                _objectMap[object] = section.hashValue
             //            }
             //            else {

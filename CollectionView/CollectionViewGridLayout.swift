@@ -311,82 +311,8 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
             
             self.sections.append(spec)
             
-            
-//            var itemAttributes :[CollectionViewLayoutAttributes] = []
-//            row[section] = [Array](count: colCount, repeatedValue: [])
-            
-            // Item will be put into shortest column.
-//            for idx in 0..<itemCount {
-//                let indexPath = NSIndexPath.for(item:idx, section: section)
-//                sIndexPaths.insert(indexPath)
-//                allIndexPaths.insert(indexPath)
-//                
-//                let columnIndex = self.nextColumnIndexForItem(indexPath)
-//                let xOffset = sectionInsets.left + (itemWidth + colSpacing) * CGFloat(columnIndex)
-//                let yOffset = self.columnHeights[section][columnIndex]
-//                var itemHeight : CGFloat = 0
-//                let aSize = self.delegate?.collectionView?(self.collectionView!, layout: self, aspectRatioForItemAtIndexPath: indexPath)
-//                if aSize != nil && aSize!.width != 0 && aSize!.height != 0 {
-//                    let h = aSize!.height * (itemWidth/aSize!.width)
-//                    itemHeight = floor(h)
-//                    
-//                    if let addHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAtIndexPath: indexPath) {
-//                        itemHeight += addHeight
-//                    }
-//                }
-//                else {
-//                    itemHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAtIndexPath: indexPath) ?? self.defaultItemHeight
-//                }
-//                
-//                let attributes = CollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
-//                attributes.alpha = 1
-//                attributes.frame = CGRectMake(xOffset, CGFloat(yOffset), itemWidth, itemHeight)
-//                itemAttributes.append(attributes)
-//                self.allItemAttributes.append(attributes)
-//                self.columnHeights[section][columnIndex] = CGRectGetMaxY(attributes.frame) + itemSpacing;
-//                self.sectionColumnAttributes[section]?[columnIndex].append(attributes)
-//            }
-//            self.sectionItemAttributes.append(itemAttributes)
-//            self.sectionIndexPaths[section] = sIndexPaths
-            
-            /*
-             * 4. Section footer
-             */
-//            let columnIndex  = self.longestColumnIndexInSection(section)
-            //            sectionHeight += self.columnHeights[section][columnIndex] - itemSpacing + sectionInsets.bottom - top
-//            top = self.columnHeights[section][columnIndex] - itemSpacing
-            
-//            let footerHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForFooterInSection: section) ?? self.footerHeight
-//            if footerHeight > 0 {
-//                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, withIndexPath: NSIndexPath.for(item:0, section: section))
-//                attributes.alpha = 1
-//                attributes.frame = insetSupplementaryViews ?
-//                    CGRectMake(sectionInsets.left, top, self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, footerHeight)
-//                    : CGRectMake(0, top, self.collectionView!.bounds.size.width, footerHeight)
-//                self.footersAttributes[section] = attributes
-//                self.allItemAttributes.append(attributes)
-//                top = CGRectGetMaxY(attributes.frame)
-//                //                sectionHeight += footerHeight
-//            }
-//            top += sectionInsets.bottom
-//            
-//            sectionRect.size.height = top - sectionRect.origin.y
-//            sectionFrames[section] = sectionRect
-            
-            //            for idx in 0..<colCount {
-            //                self.columnHeights[section][idx] = top
-            //            }
-        }
+            }
         
-        //        var idx = 0;
-        //        let itemCounts = self.allItemAttributes.count
-        //        while(idx < itemCounts){
-        //            let rect1 = self.allItemAttributes[idx].frame
-        //            idx = min(idx + unionSize, itemCounts) - 1
-        //            let rect2 = self.allItemAttributes[idx].frame
-        //            self.unionRects.append(CGRectUnion(rect1,rect2))
-        //            idx += 1
-        //        }
     }
     
     override public func collectionViewContentSize() -> CGSize {

@@ -117,7 +117,9 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     public var sectionKeyPath: String?
     
     public let managedObjectContext: NSManagedObjectContext
-    
+    public var allObjects: [NSManagedObject] { return Array(fetchedObjects) }
+        
+        
     internal var fetchedObjects = Set<Element>()
     
     internal var _objectMap = [Element:Int]() // Map between elements and the last group it was known to be in

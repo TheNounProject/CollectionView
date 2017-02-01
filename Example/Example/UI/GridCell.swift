@@ -32,6 +32,31 @@ class GridCell : CollectionViewCell {
 //        
 //    }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+//        if let c = child {
+//            self.badgeLabel.un
+//        }
+        self.badgeLabel.unbind("stringValue")
+    }
+    
+    var child: Child?
+    
+    func setup(with child: Child) {
+        
+        self.child = child
+        
+        if !self.reused {
+            self.layer?.cornerRadius = 3
+        }
+        self.badgeLabel.stringValue = "\(child.displayOrder)"
+        self.titleLabel.stringValue = "Child \(child.idString)"
+        self.detailLabel.stringValue = child.dateString
+        
+        self.badgeLabel.bind("stringValue", to: child, withKeyPath: "displayOrder", options: nil)
+    }
+    
     static let rBG = NSColor(white: 0.98, alpha: 1)
     static let hBG = NSColor(white: 0.95, alpha: 1)
     

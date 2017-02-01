@@ -16,11 +16,16 @@ struct IndexedSet<Index: Hashable, Object: Hashable> : Sequence {
     private var byObject = [Object:Index]()
     private var byIndex = [Index:Object]()
     
+    fileprivate var _sequenced = OrderedSet<Object>()
+    
+    var objects : [Object] {
+        return _sequenced.objects
+    }
     
     func object(for indexPath: Index) -> Object? {
         return byIndex[indexPath]
     }
-    func indexPath(for object: Object) -> Index? {
+    func index(for object: Object) -> Index? {
         return byObject[object]
     }
     
@@ -39,12 +44,14 @@ struct IndexedSet<Index: Hashable, Object: Hashable> : Sequence {
     
     mutating func insert(_ object: Object, for index: Index) {
         
-        if let ip = byObject.removeValue(forKey: object) {
-            byIndex.removeValue(forKey: ip)
+        if let idx = byObject.removeValue(forKey: object) {
+            byIndex.removeValue(forKey: idx)
+            _sequenced.remove(object)
         }
         
         byObject[object] = index
         byIndex[index] = object
+        _sequenced.append(object)
     }
     
     mutating func remove(_ index: Index) -> Object? {
@@ -52,6 +59,7 @@ struct IndexedSet<Index: Hashable, Object: Hashable> : Sequence {
             return nil
         }
         byObject.removeValue(forKey: object)
+        _sequenced.remove(object)
         return object
     }
     mutating func remove(_ object: Object) -> Index? {
@@ -59,213 +67,61 @@ struct IndexedSet<Index: Hashable, Object: Hashable> : Sequence {
             return nil
         }
         byIndex.removeValue(forKey: index)
+        _sequenced.remove(object)
         return index
     }
     
     mutating func removeAll() {
         byObject.removeAll()
         byIndex.removeAll()
+        _sequenced.removeAll()
     }
     
     typealias Iterator = AnyIterator<(index: Index, object: Object)>
     func makeIterator() -> Iterator {
-        var iterator = byIndex.makeIterator()
+        
+        var it = _sequenced.makeIterator()
         return AnyIterator {
-            return iterator.next()
+            if let val = it.next() {
+                return (self.byObject[val]!, val)
+            }
+            return nil
         }
     }
 }
 
 
-
-
-
-
-
-
-
-
-
-
-struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
-    
-    fileprivate var _map = [Element:Int]()
-    fileprivate var _data = [Element]()
+extension IndexedSet where Index:Comparable {
     
     
-    init() { }
     
-    init<C : Collection where C.Iterator.Element == Element>(elements: C) {
-        for (idx, e) in elements.enumerated() {
-            guard _map[e] == nil else {
-                continue
+    mutating func sort() {
+        _sequenced.sorted { (o1, o2) -> Bool in
+            guard let i1 = index(for: o1),
+                let i2 = index(for: o2) else {
+                    return true
             }
-            _data.append(e)
-            _map[e] = idx
+            return i1 < i2
         }
+    
     }
     
-    init(arrayLiteral elements: Element...) {
-        for (idx, e) in elements.enumerated() {
-            guard _map[e] == nil else {
-                continue
+    mutating func sorted() {
+        _sequenced.sorted { (o1, o2) -> Bool in
+            guard let i1 = index(for: o1),
+                let i2 = index(for: o2) else {
+                    return true
             }
-            _data.append(e)
-            _map[e] = idx
+            return i1 < i2
         }
+        
     }
     
-    
-    
-    
-    
-    var startIndex: Int { return _data.startIndex }
-    var endIndex: Int { return _data.endIndex }
-    
-    func index(after i: Int) -> Int {
-        return _data.index(after: i)
-    }
-    
-    subscript(index: Int) -> Element {
-        return _data[index]
-    }
-    
-    var count : Int { return _data.count }
-    func contains(_ object: Element) -> Bool{
-        return _map[object] != nil
-    }
-    
-    func index(for object: Element) -> Int? {
-        return _map[object]
-    }
-    
-    func object(at index: Int) -> Element {
-        return _data[index]
-    }
-    
-    fileprivate mutating func _remap(startingAt index: Int) {
-        guard index < _data.count else { return }
-        for idx in index..<_data.count {
-            self._map[_data[idx]] = idx
-        }
-    }
-    
-    
-    // MARK: - Inserting & Removing
-    /*-------------------------------------------------------------------------------*/
-    
-    
-    
-    mutating func remove(at index: Int) -> Element {
-        let e = self._data.remove(at: index)
-        _map.removeValue(forKey: e)
-        _remap(startingAt: index)
-        return e
-    }
-    
-    mutating func remove(_ object: Element) -> Int? {
-        guard let index = self.index(for: object) else { return nil }
-        remove(at: index)
-        return index
-    }
-    
-    mutating func append(_ object: Element) -> Bool {
-        guard !self.contains(object) else { return false }
-        _data.append(object)
-        _map[object] = _data.count - 1
-        return true
-    }
-    
-    public mutating func append<C : Collection where C.Iterator.Element == Element>(contentsOf newElements: C) {
-        for e in newElements {
-            self.append(e)
-        }
-    }
-    
-    mutating func insert(_ object: Element, at index: Int) -> Bool {
-        guard !self.contains(object) else { return false }
-        self._data.insert(object, at: index)
-        _remap(startingAt: index)
-        return true
-    }
-    
-    public mutating func insert<C : Collection where C.Iterator.Element == Element>(contentsOf newElements: C, at index: Int) -> Set<Element> {
-        var inserted = Set<Element>()
-        for (idx, e) in newElements.enumerated() {
-            if !self.contains(e) {
-                self._data.insert(e, at: index + idx)
-                inserted.insert(e)
-            }
-        }
-        if inserted.count > 0 {
-            self._remap(startingAt: index)
-        }
-        return inserted
-    }
-    
-    
-    
-    mutating func removeAll(keepingCapacity keep: Bool = false) {
-        _data.removeAll(keepingCapacity: keep)
-        _map.removeAll(keepingCapacity: keep)
-    }
     
 }
 
-extension OrderedSet where Element:AnyObject {
-    
-    mutating func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor]) -> Int {
-        
-        _ = self.remove(object)
-        
-        if sortDescriptors.count > 0 {
-            for (idx, element) in self.enumerated() {
-                if sortDescriptors.compare(object, to: element) == .orderedAscending {
-                    self.insert(object, at: idx)
-                    return idx
-                }
-            }
-        }
-        self.append(object)
-        return self.count - 1
-    }
-    
-    mutating func insert<C : Collection where C.Iterator.Element == Element>(contentsOf newElements: C, using sortDescriptors: [NSSortDescriptor]) {
-        
-        var _fInsert = -1
-        for e in newElements {
-            _ = self.remove(e)
-            let idx = self._data.insert(e, using: sortDescriptors)
-            if idx < _fInsert || _fInsert == -1 {
-                _fInsert = idx
-            }
-        }
-        
-        if _fInsert > -1 {
-            self._remap(startingAt: _fInsert)
-        }
-    }
-    
-    
-    
-    mutating func sort(using sortDescriptors: [NSSortDescriptor]) {
-        guard sortDescriptors.count > 0 else { return }
-        
-        self._data.sort(using: sortDescriptors)
-        self._map.removeAll(keepingCapacity: true)
-        for (idx, obj) in self._data.enumerated() {
-            self._map[obj] = idx
-        }
-    }
-    
-    func sorting(by sortDescriptors: [NSSortDescriptor]) -> OrderedSet<Element> {
-        var new = self
-        guard sortDescriptors.count > 0 else { return new }
-        new.sort(using: sortDescriptors)
-        return new
-    }
-    
-}
+
+
 
 
 

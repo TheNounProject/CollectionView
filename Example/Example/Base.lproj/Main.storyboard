@@ -556,9 +556,15 @@ CA
                                         <action selector="addChild:" target="Oky-zY-oP4" id="gvf-GA-d9G"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="C3A9CAE2-D3FC-4216-A1A4-F88781168BE9" label="Randomize" paletteLabel="Randomize" tag="-1" image="randomize" id="g82-Ad-rrL">
+                                    <connections>
+                                        <action selector="addParent:" target="Oky-zY-oP4" id="T4j-N8-7C6"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="bce-Cx-PvD"/>
+                                <toolbarItem reference="g82-Ad-rrL"/>
                                 <toolbarItem reference="8PW-2V-wnW"/>
                                 <toolbarItem reference="uwP-s3-z6H"/>
                                 <toolbarItem reference="Qyd-Gd-lHF"/>
@@ -589,7 +595,8 @@ CA
         </scene>
     </scenes>
     <resources>
-        <image name="add_chid" width="16" height="16"/>
-        <image name="add_parent" width="16" height="16"/>
+        <image name="add_chid" width="30" height="30"/>
+        <image name="add_parent" width="30" height="30"/>
+        <image name="randomize" width="30" height="30"/>
     </resources>
 </document>

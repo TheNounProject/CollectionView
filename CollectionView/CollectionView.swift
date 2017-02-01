@@ -617,7 +617,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
-        _ = _selectedIndexPaths.removeSet(updatedSelections)
+        _selectedIndexPaths.remove(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
@@ -709,7 +709,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
-        _ = _selectedIndexPaths.removeSet(updatedSelections)
+        _ = _selectedIndexPaths.remove(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
@@ -814,7 +814,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
-        _ = _selectedIndexPaths.removeSet(updatedSelections)
+        _ = _selectedIndexPaths.remove(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
@@ -841,8 +841,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
             var updates = [ItemUpdate(view: cell, attrs: cell.attributes!, type: .update)]
             
-            // cell.indexPath = destinationIndexPath
-            // cell.applyLayoutAttributes(attrs, animated: false)
+             cell.indexPath = destinationIndexPath
+//             cell.applyLayoutAttributes(attrs, animated: false)
             
             if cell.superview == nil {
                 self.contentDocumentView.addSubview(cell)
@@ -850,7 +850,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             cell.selected = self._selectedIndexPaths.contains(indexPath)
             
             var changeMap = [(newIP: IndexPath, cell: CollectionViewCell)]()
-            
             
             func addChange(for ip: IndexPath, by adjust: Int) {
                 if let _cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
@@ -901,7 +900,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
             
             self.contentDocumentView.preparedCellIndex[destinationIndexPath] = cell
-            cell.viewDidDisplay()
             self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
         }
         else {
@@ -926,6 +924,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var updates = [ItemUpdate]()
         var changeMap = [(newIP: IndexPath, cell: CollectionViewCell)]()
+        
+        self._selectedIndexPaths.remove(Set(indexPaths))
         
         for s in bySection {
             let sectionIndex = s.0
@@ -966,7 +966,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         
-        _ = _selectedIndexPaths.removeSet(updatedSelections)
+        _selectedIndexPaths.remove(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
         if batchUpdating { return }
@@ -1378,7 +1378,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         if selectionMode != .multi {
             var deselectIndexes = self._selectedIndexPaths
-            _ = deselectIndexes.removeSet(indexesToSelect)
+            _ = deselectIndexes.remove(indexesToSelect)
             self.deselectItems(at: Array(deselectIndexes), animated: true)
         }
         

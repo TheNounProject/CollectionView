@@ -135,7 +135,7 @@ open class ClipView : NSClipView {
     
     open override func animation(forKey key: String) -> Any? {
         let anim = super.animation(forKey: key)
-        Swift.print("Animation for: \(key): \(anim)")
+//        Swift.print("Animation for: \(key): \(anim)")
         return anim
     }
     

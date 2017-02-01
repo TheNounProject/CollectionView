@@ -61,6 +61,8 @@ public protocol ResultsController {
     func numberOfSections() -> Int
     func numberOfObjects(in section: Int) -> Int
     
+    var allObjects : [NSManagedObject] { get }
+    
     // MARK: - Getting Items
     /*-------------------------------------------------------------------------------*/
     func section(for sectionIndexPath: IndexPath) -> ResultsControllerSection?
@@ -98,14 +100,14 @@ public enum ResultsControllerChangeType {
 
 
 /// A set of changes for an entity with with mappings to original Indexes
-struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: CustomStringConvertible {
+internal struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: CustomStringConvertible {
     
     var inserted = Set<Object>()
     var updated = IndexedSet<Index, Object>()
     var deleted = IndexedSet<Index, Object>()
     
     var description: String {
-        var str = "Change Set \(Object.className()):"
+        let str = "Change Set \(Object.className()):"
         + " \(updated.count) Updated, "
         + " \(inserted.count) Inserted, "
         + " \(deleted.count) Deleted"

@@ -17,13 +17,13 @@ extension Set {
         self.insert(element)
     }
     
-    mutating func formUnionOverwrite<S : Sequence where S.Iterator.Element == Element>(_ other: S) {
-        self.subtracting(other)
+    mutating func formUnionOverwrite<S : Sequence>(_ other: S) where S.Iterator.Element == Element {
+        self.subtract(other)
         self.formUnion(other)
     }
     
-    func unionOverwrite<S : Sequence where S.Iterator.Element == Element>(_ other: S) -> Set<Element> {
-        var new = self.subtracting(other)
+    func unionOverwrite<S : Sequence>(_ other: S) -> Set<Element> where S.Iterator.Element == Element {
+        let new = self.subtracting(other)
         return new.union(other)
     }
     
@@ -188,7 +188,11 @@ final public class CollectionViewDocumentView : NSView {
         self.preparedRect = newRect
         
         var updates = Set<ItemUpdate>(supps.updates)
+        updates.formUnionOverwrite(pendingUpdates)
         updates.formUnionOverwrite(items.updates)
+
+        pendingUpdates.removeAll()
+        
         self.applyUpdates(updates, animated: animated, completion: completion)
         
 //        Swift.print("Prepared rect: \(CGRectGetMinY(_rect)) - \(CGRectGetMaxY(_rect))  old: \(CGRectGetMinY(previousPrepared)) - \(CGRectGetMaxY(previousPrepared))   New: \(CGRectGetMinY(preparedRect)) - \(CGRectGetMaxY(preparedRect)) :: Subviews:  \(self.subviews.count) :: \(date.timeIntervalSinceNow)")
@@ -203,8 +207,8 @@ final public class CollectionViewDocumentView : NSView {
         
         let oldIPs = Set(self.preparedCellIndex.keys)
         var inserted = self.collectionView.indexPathsForItems(in: rect)
-        let removed = oldIPs.removingSet(inserted)
-        let updated = inserted.removeSet(oldIPs)
+        let removed = oldIPs.removing(inserted)
+        let updated = inserted.remove(oldIPs)
         
         if !extending {
             var removedRect = CGRect.zero
@@ -286,8 +290,8 @@ final public class CollectionViewDocumentView : NSView {
         
         let oldIdentifiers = Set(self.preparedSupplementaryViewIndex.keys)
         var inserted = self.collectionView._identifiersForSupplementaryViews(in: rect)
-        let removed = oldIdentifiers.removingSet(inserted)
-        let updated = inserted.removeSet(oldIdentifiers)
+        let removed = oldIdentifiers.removing(inserted)
+        let updated = inserted.remove(oldIdentifiers)
         
         if !extending {
             for identifier in removed {
@@ -366,9 +370,6 @@ final public class CollectionViewDocumentView : NSView {
     internal func applyUpdates(_ updates: Set<ItemUpdate>, animated: Bool, completion: AnimationCompletion?) {
         
         var _updates = updates
-        _updates.formUnionOverwrite(pendingUpdates)
-        pendingUpdates = []
-        
         
         if animated && !animating {
             let _animDuration = self.collectionView.animationDuration

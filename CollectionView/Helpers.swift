@@ -100,13 +100,14 @@ extension Set {
         return self.removeFirst()
     }
     
+    
     /**
      Remove elements shared by both sets, returning the removed items
      
      - parameter set: The set of elements to remove from the receiver
      - returns: A new set of removed elements
      */
-    mutating func removeSet(_ set: Set) -> Set {
+     @discardableResult mutating func remove<C : Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
         var removed = Set(minimumCapacity: self.count)
         for item in set {
             if let r = self.remove(item) {
@@ -116,15 +117,37 @@ extension Set {
         return removed
     }
     
-    func removingSet(_ set: Set) -> Set {
-        var newSet = Set(minimumCapacity: self.count)
-        for item in self {
-            if !set.contains(item) {
-                newSet.insert(item)
-            }
-        }
-        return newSet
+    func removing<C : Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
+        var copy = self
+        copy.remove(set)
+        return copy
     }
+    
+    /**
+     Remove elements shared by both sets, returning the removed items
+     
+     - parameter set: The set of elements to remove from the receiver
+     - returns: A new set of removed elements
+     */
+//    mutating func removeSet(_ set: Set) -> Set {
+//        var removed = Set(minimumCapacity: self.count)
+//        for item in set {
+//            if let r = self.remove(item) {
+//                removed.insert(r)
+//            }
+//        }
+//        return removed
+//    }
+//    
+//    func removingSet(_ set: Set) -> Set {
+//        var newSet = Set(minimumCapacity: self.count)
+//        for item in self {
+//            if !set.contains(item) {
+//                newSet.insert(item)
+//            }
+//        }
+//        return newSet
+//    }
 }
 
 extension CGPoint {

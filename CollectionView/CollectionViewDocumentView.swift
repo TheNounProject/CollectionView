@@ -59,21 +59,19 @@ internal struct ItemUpdate : Hashable {
     }
 }
 
-class SectionInfo : Hashable {
-    let id = UUID()
-    var index: Int = 0
-    var _cellMap = [CollectionViewCell:Int]()
-    var _cells = [CollectionViewCell]()
-    
-    
-    // Hashable
-    var hashValue: Int { return id.hashValue }
-    static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {
-        return lhs.id == rhs.id
-    }
-    
-    
-}
+//class SectionInfo : Hashable {
+//    let id = UUID()
+//    var index: Int = 0
+//    var _cellMap = [CollectionViewCell:Int]()
+//    var _cells = [CollectionViewCell]()
+//    
+//    
+//    // Hashable
+//    var hashValue: Int { return id.hashValue }
+//    static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {
+//        return lhs.id == rhs.id
+//    }
+//}
 
 final public class CollectionViewDocumentView : NSView {
 
@@ -107,7 +105,7 @@ final public class CollectionViewDocumentView : NSView {
 //    var _sections = [SectionInfo]()
     
     
-    var preparedCellIndex = [IndexPath:CollectionViewCell]()
+    var preparedCellIndex = IndexedSet<IndexPath,CollectionViewCell>()
     var preparedSupplementaryViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
     
     func reset() {
@@ -188,7 +186,7 @@ final public class CollectionViewDocumentView : NSView {
         self.preparedRect = newRect
         
         var updates = Set<ItemUpdate>(supps.updates)
-        updates.formUnionOverwrite(pendingUpdates)
+        updates.formUnion(pendingUpdates)
         updates.formUnionOverwrite(items.updates)
 
         pendingUpdates.removeAll()
@@ -205,7 +203,7 @@ final public class CollectionViewDocumentView : NSView {
 
         var updates = [ItemUpdate]()
         
-        let oldIPs = Set(self.preparedCellIndex.keys)
+        let oldIPs = Set(self.preparedCellIndex.indexes)
         var inserted = self.collectionView.indexPathsForItems(in: rect)
         let removed = oldIPs.removing(inserted)
         let updated = inserted.remove(oldIPs)
@@ -244,15 +242,15 @@ final public class CollectionViewDocumentView : NSView {
         
         for ip in inserted {
             guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItem(at: ip) else { continue }
-            guard let cell = preparedCellIndex[ip] ?? self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAt: ip) else {
+            guard let cell =  preparedCellIndex[ip] ?? self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAt: ip) else {
                 debugPrint("For some reason collection view tried to load cells without a data source")
                 continue
             }
             assert(cell.collectionView != nil, "Attemp to load cell without using deque")
             
-            cell.indexPath = ip
+//            cell.indexPath = ip
             
-            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(cell.indexPath!), animated: false)
+            cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(ip), animated: false)
             _rect = _rect.union(attrs.frame.insetBy(dx: -1, dy: -1) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAt: ip)
@@ -437,7 +435,7 @@ final public class CollectionViewDocumentView : NSView {
     }
     fileprivate func removeItem(_ item: ItemUpdate) {
         if let cell = item.view as? CollectionViewCell {
-            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: cell.indexPath!)
+            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: cell.attributes!.indexPath)
             self.collectionView.enqueueCellForReuse(cell)
         }
         else if let id = item.identifier {

@@ -92,6 +92,22 @@ extension Comparable {
 
 
 
+extension Dictionary {
+    
+    
+    func union(_ other: Dictionary<Key, Value>, overwrite: Bool = true) -> Dictionary<Key, Value> {
+        var new = self
+        for element in other {
+            if overwrite || new[element.key] == nil {
+                new[element.key] = element.value
+            }
+        }
+        return new
+    }
+    
+}
+
+
 extension Set {
     
     

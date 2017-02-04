@@ -9,6 +9,77 @@
 import Foundation
 
 
+public extension Array where Element:NSSortDescriptor {
+    
+    func description(of object: AnyObject) -> String {
+        guard self.count > 0 else { return "nil" }
+        
+        var values = [String]()
+        
+        for sort in self {
+            guard let key = sort.key else {
+                values.append("??")
+                continue
+            }
+            guard let value = object.value(forKey: key) else {
+                values.append("nil")
+                continue
+            }
+            values.append("\(value)")
+        }
+        
+        if values.count > 1 {
+            return "[\(values.joined(separator: ", "))]"
+        }
+        return values.first ?? "nil"
+    }
+    
+    
+    func forEachKey<T:Collection>(describing objects: T, do block:(_ key: String, _ object: T.Iterator.Element)->Void) {
+        var validKeys = [String]()
+        for sort in self {
+            if let key = sort.key {
+                validKeys.append(key)
+            }
+        }
+        guard validKeys.count > 0 else {
+            print("Empty sort descriptor array")
+            return
+        }
+        for obj in objects {
+            for k in validKeys {
+                block(k, obj)
+            }
+        }
+    }
+
+    
+    func compare(_ anObject: AnyObject, to otherObject: AnyObject) -> ComparisonResult {
+        guard self.count > 0 else { return .orderedAscending }
+        for sortDesc in self {
+            
+            guard let key = sortDesc.key else { continue }
+            let v1 = anObject.value(forKeyPath: key)
+            let v2 = otherObject.value(forKeyPath: key)
+            if v1 == nil && v2 == nil {
+                continue
+            }
+            let res = sortDesc.compare(anObject, to: otherObject)
+            if res == .orderedSame { continue }
+            return res
+        }
+        return .orderedDescending
+    }
+    
+}
+
+extension Sequence where Iterator.Element: NSSortDescriptor {
+    
+    
+}
+
+
+
 
 
 public extension Sequence where Iterator.Element: AnyObject {
@@ -20,11 +91,11 @@ public extension Sequence where Iterator.Element: AnyObject {
             return sortDescriptors.compare(o1, to: o2) == .orderedAscending
         })
     }
+    
 }
 
 
-
-public extension Array where Element: AnyObject {
+public extension Array where Element:AnyObject {
     
     mutating public func sort(using sortDescriptors: [NSSortDescriptor]) {
         guard sortDescriptors.count > 0 else { return }
@@ -56,26 +127,3 @@ public extension Array where Element: AnyObject {
     }
 }
 
-
-
-
-public extension Array where Element:NSSortDescriptor {
-    
-    func compare(_ anObject: AnyObject, to otherObject: AnyObject) -> ComparisonResult {
-        guard self.count > 0 else { return .orderedAscending }
-        for sortDesc in self {
-            
-            guard let key = sortDesc.key else { continue }
-            let v1 = anObject.value(forKeyPath: key)
-            let v2 = otherObject.value(forKeyPath: key)
-            if v1 == nil && v2 == nil {
-                continue
-            }
-            let res = sortDesc.compare(anObject, to: otherObject)
-            if res == .orderedSame { continue }
-            return res
-        }
-        return .orderedDescending
-    }
-    
-}

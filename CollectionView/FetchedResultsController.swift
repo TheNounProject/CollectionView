@@ -43,12 +43,12 @@ fileprivate struct ChangeContext<Element:NSManagedObject> : CustomStringConverti
 
 public typealias SectionRepresentable = Comparable & Hashable & CustomDisplayStringConvertible
 
-public class FetchedResultsControllerSection<ValueType: SectionRepresentable, Element: NSManagedObject>: ResultsControllerSection, Hashable {
+fileprivate class SectionInfo<ValueType: SectionRepresentable, Element: NSManagedObject>: ResultsControllerSectionInfo, Hashable {
     
     public var object : Any? { return self._value }
-    public var objects: [NSManagedObject] { return _objects }
+    public var objects: [Any] { return _objects }
     
-    public var count : Int { return objects.count }
+    public var numberOfObjects : Int { return objects.count }
     
     private(set) var _value : ValueType?
     private(set) var _objects : [Element] = []
@@ -61,7 +61,7 @@ public class FetchedResultsControllerSection<ValueType: SectionRepresentable, El
     public var hashValue: Int {
         return _value?.hashValue ?? 0
     }
-    public static func ==(lhs: FetchedResultsControllerSection, rhs: FetchedResultsControllerSection) -> Bool {
+    public static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {
         return lhs._value == rhs._value
     }
     
@@ -109,15 +109,20 @@ public class FetchedResultsControllerSection<ValueType: SectionRepresentable, El
 
 public class FetchedResultsController<Section: SectionRepresentable, Element: NSManagedObject> : NSObject, ResultsController {
     
+    
     public var fetchRequest : NSFetchRequest<Element>?
     public var sortDescriptors: [NSSortDescriptor]? {
         return fetchRequest?.sortDescriptors
     }
     
+    fileprivate typealias SectionWrapper = SectionInfo<Section, Element>
+    
     public var sectionKeyPath: String?
     
     public let managedObjectContext: NSManagedObjectContext
-    public var allObjects: [NSManagedObject] { return Array(fetchedObjects) }
+
+    public var sections: [ResultsControllerSectionInfo] { return _sections }
+    public var allObjects: [Any] { return Array(fetchedObjects) }
         
         
     internal var fetchedObjects = Set<Element>()
@@ -128,7 +133,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     internal var _fetchedObjects = [Element]()
     internal var _fetchedSections = OrderedSet<Section>()
     
-    internal var _sections = [FetchedResultsControllerSection<Section, Element>]()
+    private var _sections = [SectionWrapper]()
     
     public var delegate : ResultsControllerDelegate? {
         didSet {
@@ -166,21 +171,21 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     
     // MARK: - Public Item Accessors
     /*-------------------------------------------------------------------------------*/
-    public func section(for sectionIndexPath: IndexPath) -> ResultsControllerSection? {
+    public func section(for sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
         return self._section(for: sectionIndexPath)
     }
     
     public func object(for sectionIndexPath: IndexPath) -> Any? {
         return self._object(for: sectionIndexPath)
     }
-    public func object(at indexPath: IndexPath) -> NSManagedObject? {
+    public func object(at indexPath: IndexPath) -> Any? {
         return self._item(at: indexPath)
     }
     
     
     // MARK: - Private Item Accessors
     /*-------------------------------------------------------------------------------*/
-    private func _section(for sectionIndexPath: IndexPath) -> FetchedResultsControllerSection<Section, Element>? {
+    private func _section(for sectionIndexPath: IndexPath) -> SectionWrapper? {
         return self._sections.object(at: sectionIndexPath._section)
     }
     
@@ -236,7 +241,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         self.fetchedObjects = Set(_objects)
         
         if let keyPath = self.sectionKeyPath {
-            var unordered = [Section : FetchedResultsControllerSection<Section, Element>]()
+            var unordered = [Section : SectionWrapper]()
             var orphans = [Element]()
             for object in _objects {
                 
@@ -245,7 +250,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                         _ = existing.insert(object)
                     }
                     else {
-                        unordered[sec] = FetchedResultsControllerSection(value: sec, objects: [object])
+                        unordered[sec] = SectionWrapper(value: sec, objects: [object])
                     }
                     _objectMap[object] = sec.hashValue
                 }
@@ -264,7 +269,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             })
             
             if orphans.count > 0 {
-                sorted.append(FetchedResultsControllerSection(value: nil, objects: orphans))
+                sorted.append(SectionWrapper(value: nil, objects: orphans))
             }
             
             for (idx, s) in sorted.enumerated() {
@@ -276,7 +281,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         }
         else {
             self._sections = [
-                FetchedResultsControllerSection(value: nil, objects: _objects)
+                SectionWrapper(value: nil, objects: _objects)
             ]
             
         }
@@ -334,8 +339,8 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         for obj in context.updated {
             guard let newIP = self.indexPath(for: obj.key) else { continue }
             let old : IndexPath = obj.value
-            let type : ResultsControllerChangeType = (old == newIP) ? .update : .move(newIP)
-            self.delegate?.controller(self, didChangeObject: obj.key, at: obj.value, for: type)
+//            let type : ResultsControllerChangeType = (old == newIP) ? .update : .move(newIP)
+//            self.delegate?.controller(self, didChangeObject: obj.key, at: obj.value, for: type)
         }
         
         self.delegate?.controllerDidChangeContent(controller: self)
@@ -405,7 +410,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                         // Move to new section
                     else {
                         // The section value doesn't exist yet, the section will be inserted
-                        let sec = FetchedResultsControllerSection<Section, Element>(value: sectionValue, objects: [object])
+                        let sec = SectionWrapper(value: sectionValue, objects: [object])
                         newIP = newIP.copy(withItem: self._sections.count)
                         self._sections.append(sec)
                         _sectionMap[sectionValue?.hashValue ?? 0] = newIP.sectionCopy
@@ -470,7 +475,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 }
                 else {
                     // The section value doesn't exist yet, the section will be inserted
-                    let sec = FetchedResultsControllerSection<Section, Element>(value: sectionValue, objects: [object])
+                    let sec = SectionWrapper(value: sectionValue, objects: [object])
                     newIP = IndexPath.for(item: 0, section: _sections.count)
                     self._sections.append(sec)
                     _sectionMap[sectionValue?.hashValue ?? 0] = newIP.sectionCopy
@@ -483,7 +488,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 _objectMap[object] = section.hashValue
             }
             else {
-                let sec = FetchedResultsControllerSection<Section, Element>(value: nil, objects: [object])
+                let sec = SectionWrapper(value: nil, objects: [object])
                 self._sections.append(sec)
                 _sectionMap[sec.hashValue] = newIP.sectionCopy
                 _objectMap[object] = sec.hashValue

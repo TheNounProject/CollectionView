@@ -9,204 +9,169 @@
 import Foundation
 
 
+//extension OrderedSet where Element
 
 
 
-fileprivate struct UpdateContext<Section: NSManagedObject, Element:NSManagedObject> : CustomStringConvertible {
+fileprivate class UpdateContext<Section: NSManagedObject, Element:NSManagedObject> : CustomStringConvertible {
     
-    typealias SectionWrapper = RelationalResultsControllerSection<Section, Element>
+    typealias SectionInfo = RelationalSectionInfo<Section, Element>
 
     // Changes from context
     var objectChangeSet = ObjectChangeSet<IndexPath, Element>()
-    var sectionChangeSet = ObjectChangeSet<IndexPath, Section>()
+    var sectionChangeSet = ObjectChangeSet<Int, Section>()
     
-    // Object changes
-    var deleted = IndexedSet<IndexPath,Element>()
-    var inserted = IndexedSet<IndexPath, Element>()
+    var itemsWithSectionChange = Set<Element>()
     
-    var moved = IndexedSet<IndexPath,Element>()
-    var movedIndex = IndexedSet<IndexPath,IndexPath>()
-    
-    var updated = Set<Element>()
-    
-    // Section Changes
-    var insertedSections = IndexedSet<IndexPath, SectionWrapper>()
-    var deletedSections = IndexedSet<IndexPath, SectionWrapper>()
-    var movedSections = IndexedSet<IndexPath, SectionWrapper>()
-    var updatedSections = Set<SectionWrapper>()
-    
-    
-    
-    mutating func deleted(_ object: Element, at indexPath: IndexPath) {
-        self.deleted.insert(object, for: indexPath)
-    }
-    
-    mutating func inserted(_ object: Element, at indexPath: IndexPath) {
-        self.inserted.insert(object, for: indexPath)
-    }
-    mutating func updated(_ object: Element, at indexPath: IndexPath, to newIndexPath: IndexPath?) {
-        if let ip = newIndexPath, ip != indexPath {
-            moved.insert(object, for: indexPath)
-            movedIndex.insert(ip, for: indexPath)
-        }
-        else {
-            self.updated.insert(object)
-        }
-    }
-    
-    
-    mutating func deleted(_ section: SectionWrapper, at indexPath: IndexPath) {
-        self.deletedSections.insert(section, for: indexPath)
-    }
-    mutating func inserted(_ section: SectionWrapper, at indexPath: IndexPath) {
-        self.insertedSections.insert(section, for: indexPath)
-    }
-    mutating func updated(_ section: SectionWrapper, at indexPath: IndexPath, to newIndexPath: IndexPath?) {
-        if let ip = newIndexPath, ip._section != indexPath._section {
-            movedSections.insert(section, for: indexPath)
-        }
-        else {
-            self.updatedSections.insert(section)
-        }
-    }
-    
-    
-    
-//    mutating func add(object: Element, at currentIndex: IndexPath?, for change
-//        : ResultsControllerChangeType) {
-//        
-//        switch change {
-//        case .delete:
-//            
-//            deleted.
-//            
-//        default:
-//            <#code#>
-//        }
-//        
-//        if let i = oldIndex {
-//            updated.insert(object, for: i)
-//        }
-//        
-//        else if oldIndex == nil, let i = newIndex {
-//            if self.insertedSections.contains(i) { return }
-//            inserted.insert(object, for: i)
-//        }
-//        else if newIndex == nil, let i = oldIndex {
-//            deleted.insert(object, for: i)
-//        }
-//        
-//    }
-    
-    
-//    mutating func add(section: SectionWrapper, old oldIndex: IndexPath?, new newIndex: IndexPath?) {
-//        
-//        if oldIndex == nil, let i = newIndex {
-//            insertedSections.insert(section, for: i)
-//        }
-//        else if newIndex == nil, let i = oldIndex {
-//            deletedSections.insert(section, for: i)
-//        }
-//        else if let i = oldIndex {
-//            updatedSections.insert(section, for: i)
-//        }
-//    }
-    
-    mutating func reset() {
+    func reset() {
         self.sectionChangeSet.reset()
         self.objectChangeSet.reset()
-        
-        inserted.removeAll()
-        deleted.removeAll()
-        updated.removeAll()
-        moved.removeAll()
-        movedIndex.removeAll()
-        
-        insertedSections.removeAll()
-        deletedSections.removeAll()
-        updatedSections.removeAll()
-        movedSections.removeAll()
     }
     
     var description: String {
-        return "Context Items: \(deleted.count) Deleted, \(inserted.count) Inserted, \(updated.count) Updated, \(moved.count) Moved\n"
-        + "Context Sections: \(insertedSections.count) Inserted, \(deletedSections.count) Deleted \(updatedSections.count) Updated, \(movedSections.count) Moved"
+        return "Context Items: \(objectChangeSet.deleted.count) Deleted, \(objectChangeSet.inserted.count) Inserted, \(objectChangeSet.updated.count) Updated"
+        + "Context Sections: \(sectionChangeSet.inserted.count) Inserted, \(sectionChangeSet.deleted.count) Deleted \(sectionChangeSet.updated.count) Updated"
     }
 }
 
 
-
-
-class RelationalResultsControllerSection<Section: NSManagedObject, Element: NSManagedObject>: ResultsControllerSection, Hashable {
+fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSManagedObject>: ResultsControllerSectionInfo, Hashable, CustomStringConvertible {
     
     public var object : Any? { return self._object }
-    public var objects: [NSManagedObject] { return _data.objects  }
+    public var objects: [Any] { return _storage.objects  }
+    public var numberOfObjects: Int { return objects.count }
     
-    public var count : Int { return objects.count }
+    fileprivate let _object : Section?
     
-    public let _object : Section?
+    private(set) var isEditing: Bool = false
     
-    private(set) public var _data = OrderedSet<Element>() // [Element] = []
-    
-//    private var _map = [Element:Int]()
-    
-    fileprivate var needsSort : Bool = false
+    private(set) var _storage = OrderedSet<Element>()
+    private var _storageCopy = OrderedSet<Element>()
     
     public var hashValue: Int {
         return _object?.hashValue ?? 0
     }
     
-    public static func ==(lhs: RelationalResultsControllerSection, rhs: RelationalResultsControllerSection) -> Bool {
+    public static func ==(lhs: RelationalSectionInfo, rhs: RelationalSectionInfo) -> Bool {
         return lhs._object == rhs._object
     }
     
     internal init(object: Section?, objects: [Element]) {
         self._object = object
-        _data.append(contentsOf: objects)
+        _storage.add(contentsOf: objects)
     }
     
     func index(for object: Element) -> Int? {
-        return _data.index(for: object)
+        return _storage.index(for: object)
     }
     
     func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor] = []) -> Int {
-        let idx = _data.insert(object, using: sortDescriptors)
-        return idx
+        if self._storage.count == 0 {
+            self._storage.add(object)
+            return 0
+        }
+        else if needsSort || sortDescriptors.count == 0 {
+            self.add(object)
+            return self._storage.count - 1
+        }
+        else {
+            let idx = _storage.insert(object, using: sortDescriptors)
+            return idx
+        }
     }
     
     func remove(_ object: Element) -> Int? {
-        return _data.remove(object)
+        return _storage.remove(object)
     }
     
     func sortItems(using sortDescriptors: [NSSortDescriptor]) {
-        self._data.sort(using: sortDescriptors)
+        self.needsSort = false
+        self._storage.sort(using: sortDescriptors)
     }
     
+    
+    func description(with descriptors: [NSSortDescriptor]) -> String {
+        var str = "\(_storage.count) Objects"
+        
+        if descriptors.count > 0 {
+            var sortValues = [String]()
+            for o in _storage {
+                sortValues.append(o.description)
+//                sortValues.append(descriptors.description(of: o))
+            }
+            str += "[\n"
+            str += sortValues.joined(separator: "\n")
+            str += "]"
+        }
+        else {
+            str += "No sort"
+        }
+        return str
+    }
+    var description: String {
+        return description(with: [])
+    }
     
     // MARK: - Editing
     /*-------------------------------------------------------------------------------*/
     
-    private(set) var editing: Bool = false
-    private var _tempData = [Element]()
+    private(set) var needsSort : Bool = false
+    private var _added = Set<Element>() // Tracks added items needing sort, if one do insert for performance
+    
     
     func beginEditing() {
-        editing = true
-        _tempData.removeAll(keepingCapacity: true)
+        assert(!isEditing, "Mutiple calls to beginEditing() for RelationalResultsControllerSection")
+        isEditing = true
+        _storageCopy = _storage
+        _added.removeAll()
     }
     
-    func endEditing() {
-        editing = false
+    func ensureEditing() {
+        if isEditing { return }
+        beginEditing()
+    }
+    
+    func endEditing() -> ChangeSet<OrderedSet<Element>> {
+        assert(isEditing, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
+        assert(!needsSort, "endEditing() called but the section still needs to be sorted.")
+        isEditing = false
+        self.needsSort = false
+        let changes = ChangeSet(source: _storageCopy, target: _storage)
+        self._storageCopy.removeAll()
+        return changes
+    }
+    
+    func markNeedsSort() {
+        self.needsSort = true
+    }
+    
+    func add(_ element: Element) {
+        guard self._storage.contains(element) == false else { return }
+        self.needsSort = self._storage.count > 0
+        _added.insert(element)
+        self._storage.add(element)
     }
 }
 
 
-
 public class RelationalResultsController<Section: NSManagedObject, Element: NSManagedObject> : NSObject, ResultsController {
     
-    typealias SectionWrapper = RelationalResultsControllerSection<Section, Element>
+    
+    fileprivate typealias SectionInfo = RelationalSectionInfo<Section, Element>
+    
+    
+    
+    
+    // MARK: - Results Controller Protocol
+    /*-------------------------------------------------------------------------------*/
+    public var allObjects: [Any] { return _fetchedObjects.objects }
+    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
+    
+    public var sectionFetchRequest : NSFetchRequest<Section>? { didSet { setNeedsFetch() }}
+    public var fetchRequest = NSFetchRequest<Element>() { didSet { setNeedsFetch() }}
+    
     
     private var _fetched: Bool = false
-    
     
     func setNeedsFetch() {
         if _fetched {
@@ -216,11 +181,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     
-    public var sectionFetchRequest : NSFetchRequest<Section>? { didSet { setNeedsFetch() }}
-    public var fetchRequest = NSFetchRequest<Element>() { didSet { setNeedsFetch() }}
-    
-    public var allObjects: [NSManagedObject] { return _fetchedObjects }
-    
     /// Simple way to get the name from the section object
     // Alternative method is to leave nil and conform class to CustomDisplayStringConvertible
     public var sectionNameKeyPath : String?
@@ -228,14 +188,10 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     public var sectionKeyPath: String = "" { didSet { setNeedsFetch() }}
     public let managedObjectContext: NSManagedObjectContext
     
+    internal var _objectSectionMap = [Element:Int]() // Map between elements and the last group it was known to be in
     
-    internal var _objectMap = [Element:Int]() // Map between elements and the last group it was known to be in
-    internal var _sectionMap = [Int:IndexPath]() // Key is hash value of section object, 0 is ungrouped
-    
-    internal var _fetchedObjects = [Element]()
-    internal var _fetchedSections = OrderedSet<Section>()
-    
-    private var _sections = [SectionWrapper]()
+    internal var _fetchedObjects = OrderedSet<Element>()
+    private var _sections = OrderedSet<SectionInfo>()
     
     public var delegate: ResultsControllerDelegate? {
         didSet {
@@ -261,6 +217,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     
     
+    // MARK: - Counts & Section Names
+    /*-------------------------------------------------------------------------------*/
+    
     public func numberOfSections() -> Int {
         return _sections.count
     }
@@ -284,30 +243,38 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     // MARK: - Public Item Accessors
     /*-------------------------------------------------------------------------------*/
-    public func section(for sectionIndexPath: IndexPath) -> ResultsControllerSection? {
+    public func section(for sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
         return self._section(for: sectionIndexPath)
     }
     
     public final func object(for sectionIndexPath: IndexPath) -> Any? {
         return self._object(for: sectionIndexPath)
     }
-    public final func object(at indexPath: IndexPath) -> NSManagedObject? {
+    public final func object(at indexPath: IndexPath) -> Any? {
         return self._object(at: indexPath)
     }
     
     
     // MARK: - Private Item Accessors
     /*-------------------------------------------------------------------------------*/
-    private func _section(for sectionIndexPath: IndexPath) -> SectionWrapper? {
-        return self._sections.object(at: sectionIndexPath._section)
+    private func _section(for sectionIndexPath: IndexPath) -> SectionInfo? {
+        return self._section(at: sectionIndexPath._section)
+    }
+    private func _section(at sectionIndex: Int) -> SectionInfo? {
+        return self._sections.object(at: sectionIndex)
+    }
+    
+    private func _sectionWrapper(for section: Section?) -> SectionInfo? {
+        guard let ip = self.indexPath(for: section) else { return nil }
+        return self._section(for: ip)
     }
     
     public func _object(for sectionIndexPath: IndexPath) -> Section? {
-        return self._sections.object(at: sectionIndexPath._section)?._object
+        return self._sections.object(at: sectionIndexPath._section)._object
     }
     
     public func _object(at indexPath: IndexPath) -> Element? {
-        return self._section(for: indexPath)?._data.object(at: indexPath._item)
+        return self._section(for: indexPath)?._storage.object(at: indexPath._item)
     }
     
     
@@ -316,12 +283,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     public func indexPath(for object: Element) -> IndexPath? {
         
         if self.sectionKeyPath != nil {
-            guard let sHash = self._objectMap[object],
-                let sIndex = self._sectionMap[sHash],
-                let section = self._section(for: sIndex),
+            guard let sHash = self._objectSectionMap[object],
+                let sIndex = self._sections.index(ofHash: sHash),
+                let section = self._section(at: sIndex),
                 let idx = section.index(for: object) else { return nil }
             
-            return IndexPath.for(item: idx, section: sIndex._section)
+            return IndexPath.for(item: idx, section: sIndex)
         }
         else if let idx = _sections.first?.index(for: object) {
             return IndexPath.for(item: idx, section: 0)
@@ -329,8 +296,45 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return nil
     }
     public func indexPath(for sectionObject: Section?) -> IndexPath? {
-        return _sectionMap[sectionObject?.hashValue ?? 0]
+        if let idx = _sections.index(ofHash: sectionObject?.hashValue ?? 0) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
     }
+    
+    
+    // MARK: - Helpers
+    /*-------------------------------------------------------------------------------*/
+    
+    private func contains(sectionObject: Section) -> Bool {
+        let o = _sections[sectionObject.hashValue]
+        return true
+    }
+    
+    private func contains(object: Element) -> Bool {
+        return _fetchedObjects.contains(object)
+    }
+    
+    
+    // MARK: - Logging
+    /*-------------------------------------------------------------------------------*/
+    private func printSectionOrderKeys() {
+        var str = "Section Ordering Keys:\n"
+        if let s = self.sectionFetchRequest?.sortDescriptors {
+            s.forEachKey(describing: _sections, do: { (k, o) in
+                str += "\(k): \(o._object?.value(forKey: k) ?? "-- Ungrouped")  "
+            })
+        }
+        else {
+            print("No section sort descriptors")
+        }
+        print(str)
+    }
+    
+    
+    
+    // MARK: - Perform Fetch
+    /*-------------------------------------------------------------------------------*/
     
     public func performFetch() throws {
         
@@ -341,95 +345,83 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         
         let _objects = try managedObjectContext.fetch(fetchRequest)
         
+        // Manage notification registration
         if !_fetched && delegate != nil {
             NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: self.managedObjectContext)
         }
         _fetched = true
         
-        var unordered = [Section : SectionWrapper]()
-        var orphans = [Element]()
+        self._sections.removeAll()
         
+        // Add the queried sections
         if let sectionRQ = self.sectionFetchRequest {
             for s in try managedObjectContext.fetch(sectionRQ) {
-                if unordered[s] == nil {
-                    unordered[s] = SectionWrapper(object: s, objects: [])
-                }
+                self._insert(section: s)
             }
         }
         
+        // Add the object into sections
+        // No need to sort since they were just fetched with the sort descriptors
         for object in _objects {
-            
             if let parent = object.value(forKey: sectionKeyPath) as? Section {
-                if let existing = unordered[parent] {
-                    _ = existing.insert(object)
-                }
-                else {
-                    unordered[parent] = SectionWrapper(object: parent, objects: [object])
-                }
-                _objectMap[object] = parent.hashValue
+                var p = self._insert(section: parent)
+                p.insert(object)
+                _objectSectionMap[object] = parent.hashValue
             }
             else {
-                orphans.append(object)
-                _objectMap[object] = 0
-            }
-            
-        }
-        
-        func printSectionOrder() {
-            var keys = [String]()
-            for s in self.sectionFetchRequest?.sortDescriptors ?? [] {
-                if let k = s.key {
-                    keys.append(k)
-                }
-                
-            }
-            
-            guard keys.count > 0 else {
-                print("No sort descriptor keys to print")
-                return
-            }
-            
-            var str = "Section Order:\n"
-            
-            
-            for s in self._fetchedSections {
-                var oStr = ""
-                for k in keys {
-                    oStr += "\(k): \(s.value(forKey: k))  "
-                }
-                str += oStr
+                let s = self._insert(section: nil)
+                s.insert(object)
+                _objectSectionMap[object] = 0
             }
         }
         
-        self._fetchedSections = OrderedSet<Section>(elements:  unordered.keys)
-        self._fetchedSections.sort(using: self.sectionFetchRequest?.sortDescriptors ?? [])
-        
-        var _tempSections = [SectionWrapper]()
-        for (idx, s) in self._fetchedSections.enumerated() {
-            let sec = unordered[s]!
-            self._sectionMap[s.hashValue] = IndexPath.for(section: idx)
-            sec.sortItems(using: fetchRequest.sortDescriptors ?? [])
-            _tempSections.append(sec)
-        }
-        
-        if orphans.count > 0 {
-            self._sectionMap[0] = IndexPath.for(section: _tempSections.count)
-            _tempSections.append(SectionWrapper(object: nil, objects: orphans.sorted(using: fetchRequest.sortDescriptors ?? [])))
-        }
-        
-        self._sections = _tempSections
+        // Sort the sections all at once
+        self.sortSections()
     }
     
-    // MARK: - Helpers
+    
+
+    
+    
+    
+    // MARK: - Storage Manipulation
     /*-------------------------------------------------------------------------------*/
     
-    private func contains(sectionObject: Section) -> Bool {
-        return _sectionMap[sectionObject.hashValue] != nil
+    fileprivate func _insert(section: Section?) -> SectionInfo {
+        if let s = self._sectionWrapper(for: section) { return s }
+        let s = SectionInfo(object: section, objects: [])
+        _sections.add(s)
+        return s
     }
     
-    private func contains(object: Element) -> Bool {
-        return _objectMap[object] != nil
+    private func _remove(_ section: Section?) {
+        guard let ip = self.indexPath(for: section) else { return }
+        _sections.remove(at: ip._section)
     }
+    
+    func sortSections() {
+        guard let sort = sectionFetchRequest?.sortDescriptors, sort.count > 0 else {
+            return
+        }
+        
+        let s = self._sections.sorted(by: { (s1, s2) -> Bool in
+            
+            // Always put ungroued at the bottom, maybe this should be an option
+            if s1.object == nil || s2.object == nil {
+                return s1.object != nil
+            }
+            
+            if let o1 = s1._object,
+                let o2 = s2._object {
+                return sort.compare(o1, to: o2) == .orderedAscending
+            }
+            return s1.object != nil
+        })
+        self._sections = OrderedSet(elements: s)
+    }
+    
+    
+    
     
     
     // MARK: - Handling Changes
@@ -444,10 +436,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         self.context.reset()
         
         print("•••••••••••••••• Start ••••••••••••••••")
-        print("\(_sections.count) Sections (\(_fetchedSections.count) Fetched)")
-        for (idx, res) in _sections.enumerated() {
-            print("\(idx) - \(res.objects.count) Objects")
-        }
+        logSections()
         print("---------------------------------------")
         
         
@@ -457,68 +446,231 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         print(context.objectChangeSet)
 
         processDeletedSections()
-        
-        for change in context.deletedSections {
-            self.delegate?.controller(self, didChangeSection: change.object, at: change.index, for: .delete)
-        }
         processInsertedSections()
-        
-        for change in context.insertedSections {
-            guard let newIP = self.indexPath(for: change.object._object) else { continue }
-            self.delegate?.controller(self, didChangeSection: change.object, at: change.index, for: .insert(newIP))
-        }
-        
         processUpdatedSections()
-        
-        for change in context.movedSections {
-            guard let newIP = self.indexPath(for: change.object._object) else { continue }
-            self.delegate?.controller(self, didChangeSection: change.object, at: change.index, for: .move(newIP))
-        }
-        for object in context.updatedSections {
-            guard let newIP = self.indexPath(for: object._object) else { continue }
-//            let type : ResultsControllerChangeType = (old == newIP) ? .update : .move(newIP)
-            self.delegate?.controller(self, didChangeSection: object, at: newIP, for: .update)
-        }
-        
         
         processDeletedObjects()
         processInsertedObjects()
-        
-        for change in context.deleted {
-            self.delegate?.controller(self, didChangeObject: change.object, at: change.index, for: .delete)
-        }
-        for change in context.inserted {
-            guard let newIP = self.indexPath(for: change.object) else { continue }
-            self.delegate?.controller(self, didChangeObject: change.object, at: change.index, for: .insert(newIP))
-        }
-        
         processUpdatedObjects()
         
-        for change in context.moved {
-            guard let newIP = context.movedIndex.object(for: change.index) else { continue }
-            self.delegate?.controller(self, didChangeObject: change.object, at: change.index, for: .move(newIP))
+        // Hang on to the changes for each section to lookup sources for items
+        // that were move to a new section
+        var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
+        var convertedIO = Set<Element>()
+        
+        
+        print("BEFORE cross sectional reduction")
+        for s in _sections {
+            if s.needsSort {
+                s.sortItems(using: fetchRequest.sortDescriptors ?? [])
+            }
+            if s.isEditing {
+                let set = s.endEditing()
+                processedSections[s] = set
+                print(set)
+            }
         }
-        for object in context.updated {
-            guard let newIP = self.indexPath(for: object) else { continue }
-            self.delegate?.controller(self, didChangeObject: object, at: newIP, for: .update)
+        
+        
+        // Reduce
+        for object in self.context.itemsWithSectionChange {
+            
+            guard let source = self.context.objectChangeSet.updated.index(of: object),
+                let target = self.indexPath(for: object),
+                let targetSection = self._section(for: target) else {
+                continue
+            }
+
+            
+            guard let targetEdit = processedSections[targetSection]?.edit(for: object) else { continue }
+            
+            let newEdit = Edit(.move(origin: source._item), value: object, destination: target._section)
+            processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: newEdit)
+            
+            switch targetEdit.operation {
+            case .insertion:
+                // Adding the new edit above should overwrite the old one
+//                processedSections[targetSection]?.operationIndex.inserts.remove(targetEdit)
+                break;
+                
+            case .substitution:
+                processedSections[targetSection]?.operationIndex.substitutions.remove(targetEdit)
+                
+                guard let oldObj = self.context.objectChangeSet.object(for: target) else { continue }
+                let delete = Edit(.deletion, value: oldObj, destination: source._item)
+                processedSections[targetSection]?.operationIndex.deletes.insert(delete, with: delete)
+                
+            case .deletion, .move(_):
+                // The target edit can't be a delete/move if it didn't contain the object to begin
+                break;
+            }
+            
+            /*
+            // sourceSection will be nil if if was deleted (ObjectChangeSet can only lookup by index for inserted/updated)
+            // 
+            // If so, complete the move and handle the old target operation
+            //
+            // Note: since the old section was removed, no operations will be processed for it
+            // there is no need then to handle updating/removing the source edit
+            */
+            guard let sourceSection = self.context.sectionChangeSet.object(for: source._section),
+                let sourceWrap = _sectionWrapper(for: sourceSection),
+                let sourceEdit = processedSections[sourceWrap]?.edit(for: object) else {
+                continue
+            }
+            
+            switch sourceEdit.operation {
+            case .deletion:
+                processedSections[sourceWrap]?.operationIndex.deletes.remove(sourceEdit)
+                break;
+                
+            case .substitution:
+                processedSections[sourceWrap]?.operationIndex.substitutions.remove(sourceEdit)
+//                let insert = sourceEdit.copy(with: .insertion)
+                guard let obj = self._object(at: source) else { continue }
+                let insert = Edit(.insertion, value: obj, destination: source._item)
+                processedSections[sourceWrap]?.operationIndex.inserts.insert(insert, with: insert)
+                
+            case .insertion, .move(_):
+                // The target edit can't be a insert/move if it didn't contain the object to begin
+                break;
+            }
         }
+        
+        print("\nAFTER cross sectional reduction")
+        for s in processedSections {
+            print("\(self.indexPath(for: s.key._object)) \(s.value)")
+        }
+        
+        
+        
+        for s in processedSections {
+            var changes = s.value
+            changes.reduceEdits()
+            
+            // Could merge all the edits together to dispatch the delegate calls in order of operation
+            // but there is no apparent reason why order is important.
+            
+            for edit in changes.edits {
+                switch edit.operation {
+                    
+                case let .move(origin: from):
+                    guard let source = self.context.objectChangeSet.updated.index(of: edit.value),
+                    let sectionIndex = self._sections.index(for: s.key),
+                    let dest = self.indexPath(for: edit.value) else { continue }
+                    
+                    self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .move(dest))
+                    
+                case .substitution:
+                    guard let source = self.context.objectChangeSet.updated.index(of: edit.value),
+                        let destination = self.indexPath(for: edit.value) else { continue }
+                    self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .update(destination))
+                    
+                case .insertion:
+                    guard let ip = self.indexPath(for: edit.value) else { continue  }
+                    self.delegate?.controller(self, didChangeObject: edit.value, at: nil, for: .insert(ip))
+                    
+                case .deletion:
+                    guard let source = self.context.objectChangeSet.deleted.index(of: edit.value) else { continue }
+                    self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .delete)
+                }
+            }
+        }
+        
+        
+        /*
+        func endEditing(for section: SectionInfo) -> ChangeSet<OrderedSet<Element>>? {
+            if let s = processedSections[section] {
+                return s
+            }
+            if !section.isEditing { return nil }
+            
+            guard let sectionIndex = self.indexPath(for: section._object)?._section else {
+                print("IndexPath not found for section containing updated objects")
+                return nil
+            }
+            if section.needsSort {
+                section.sortItems(using: fetchRequest.sortDescriptors ?? [])
+            }
+            
+            let changeSet = section.endEditing()
+            processedSections[section] = changeSet
+            
+            
+            for edit in changeSet.edits {
+                switch edit.operation {
+                    
+                case let .move(origin: from):
+                    
+                    guard let source = self.context.objectChangeSet.updated.index(of: edit.value) else { continue }
+                    let dest = IndexPath.for(item: edit.destination, section: sectionIndex)
+                    
+                    self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .move(dest))
+                    
+                case .substitution:
+                    guard let source = self.context.objectChangeSet.updated.index(of: edit.value),
+                        let destination = self.indexPath(for: edit.value)
+                        else { continue }
+                    self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .update(destination))
+                    
+                case .insertion:
+                    
+                    guard let ip = self.indexPath(for: edit.value) else { continue  }
+                    
+                    // If the item existed, it muse have come from a different sectio, convert to move
+                    if let oldIP = context.objectChangeSet.updated.index(of: edit.value) {
+                        if convertedIO.contains(edit.value) { continue }
+                        
+                        let oldSection = self.context.sectionChangeSet
+                        
+                        self.delegate?.controller(self, didChangeObject: edit.value, at: oldIP, for: .move(ip))
+                        continue
+                    }
+                    self.delegate?.controller(self, didChangeObject: edit.value, at: nil, for: .insert(ip))
+                    
+                case .deletion:
+                    
+                    // If the item still exists, it muse have moved to a different section
+                    // The complimentary is converted to a above, ignore it here
+                    if let newIP = self.indexPath(for: edit.value) {
+                        continue
+                    }
+
+                    if let source = self.context.objectChangeSet.deleted.index(of: edit.value) {
+                        self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .delete)
+                        continue
+                    }
+                }
+            }
+            return changeSet
+        }
+        
+        
+        for s in _sections {
+            endEditing(for: s)
+        }
+ */
+        
         
         self.delegate?.controllerDidChangeContent(controller: self)
         
         print("----------------- AFTER ----------------")
         print(context)
-        
-        print("\(_sections.count) Sections (\(_fetchedSections.count) Fetched)")
-        for (idx, res) in _sections.enumerated() {
-            print("\(idx) - \(res.objects.count) Objects")
-        }
+        logSections()
         print("•••••••••••••••• END •••••••••••••••••••")
     }
     
+    private func logSections() {
+        print("\(_sections.count) Sections")
+        for (idx, res) in _sections.enumerated() {
+            var str = "\(idx) - \(res.description(with: fetchRequest.sortDescriptors ?? []))"
+            print(str)
+        }
+    }
     
     func preprocess(notification: Notification) {
         
-        var sections = ObjectChangeSet<IndexPath, Section>()
+        var sections = ObjectChangeSet<Int, Section>()
         var objects = ObjectChangeSet<IndexPath, Element>()
         
         guard let info = notification.userInfo else {
@@ -536,7 +688,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 objects.add(deleted: o, for: ip)
             }
             else if let o = obj as? Section, let ip = self.indexPath(for: o) {
-                sections.add(deleted: o, for: ip)
+                sections.add(deleted: o, for: ip._section)
             }
         }
         
@@ -571,8 +723,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                         let match = sectionRQ.predicate == nil || sectionRQ.predicate?.evaluate(with: o) == true
                         
                         if let ip = _ip {
-                            if !match { sections.add(deleted: o, for: ip) }
-                            else { sections.add(updated: o, for: ip) }
+                            if !match { sections.add(deleted: o, for: ip._section) }
+                            else { sections.add(updated: o, for: ip._section) }
                         }
                         else if match {
                             sections.add(inserted: o)
@@ -585,7 +737,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     }
                         // No sectionRQ, add it to updated to check order
                     else if let ip = _ip {
-                        sections.add(updated: o, for: ip)
+                        sections.add(updated: o, for: ip._section)
                     }
                 }
                 else if let o = obj as? Element, fetchRequest.entity == o.entity {
@@ -593,7 +745,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     let _ip = self.indexPath(for: o)
                     let match = fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true
                     
-                    if let ip = _ip, sections.deleted.contains(ip.sectionCopy) == false {
+                    if let ip = _ip, sections.deleted.containsValue(for: ip._section) == false {
                         if !match { objects.add(deleted: o, for: ip) }
                         else { objects.add(updated: o, for: ip) }
                     }
@@ -612,92 +764,46 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     // MARK: - Section Processing
     /*-------------------------------------------------------------------------------*/
-
+    
+    
     
     private func processDeletedSections() {
         for change in context.sectionChangeSet.deleted {
             
-            let object = change.object
+            let object = change.value
             guard let ip = self.indexPath(for: object) else { continue }
             
             let section = self._sections[ip._section]
-            context.deleted(section, at: ip.sectionCopy)
-            
-            for obj in section._data {
-                _objectMap[obj] = nil
+            for obj in section._storage {
+                _objectSectionMap[obj] = nil
             }
-            _removeSection(section._object)
+            
+            _sections._batchRemove(at: ip._section)
         }
     }
-    
     
     private func processInsertedSections() {
         for object in context.sectionChangeSet.inserted {
-            
-            let index = _fetchedSections.insert(object, using: sectionFetchRequest?.sortDescriptors ?? [])
-            
-            let ip = IndexPath.for(section: index)
-            
-            _sectionMap[object.hashValue] = ip
-            let s = SectionWrapper(object: object, objects: [])
-            _sections.insert(s, at: index)
-            
-            for idx in index+1..<_sections.count {
-                _sectionMap[_sections[idx].hashValue] = IndexPath.for(section: idx)
-            }
-            context.inserted(s, at: ip)
+            self._insert(section: object)
         }
     }
-    
-    private func _removeSection(_ section: Section?) {
-        
-        guard let ip = self.indexPath(for: section) else { return }
-        
-        _sectionMap[section?.hashValue ?? 0] = nil
-        _sections.remove(at: ip._section)
-        if section != nil {
-            _fetchedSections.remove(at: ip._section)
-        }
-        
-        for idx in ip._section..<_sections.count {
-            _sectionMap[_sections[idx].hashValue] = IndexPath.for(section: idx)
-        }
-    }
-    
-    
+  
     private func processUpdatedSections() {
         for change in context.sectionChangeSet.updated {
+            // Check ordering ??
+            _sections.needsSort = true
             
-            guard let currentIP = self.indexPath(for: change.object),
-                let section = _section(for: currentIP) else { continue }
-            
-            let sort = self.sectionFetchRequest?.sortDescriptors ?? []
-            let newIndex = self._fetchedSections.insert(change.object, using: sort)
-            
-            context.updated(section, at: currentIP, to: IndexPath.for(section: newIndex))
-            
-//            context.add(section: section, old: change.index, new: currentIP)
-            
-            //
-            //                // Moved to another section
-            //            if let newSip = self.indexPath(for: sectionValue),
-            //                let newSection = self._section(for: newSip) {
-            //                newIP = newIP.copy(withItem: newSection.insert(object, using: sort))
-            //                _objectMap[object] = newSection.hashValue
-            //            }
-            //
-            //                // Move to new section
-            //            else {
-            //                // The section value doesn't exist yet, the section will be inserted
-            //                let sec = SectionWrapper(object: sectionValue, objects: [object])
-            //                newIP = newIP.copy(withItem: self._sections.count)
-            //                self._sections.append(sec)
-            //                _sectionMap[sectionValue?.hashValue ?? 0] = newIP.sectionCopy
-            //                _objectMap[object] = sec.hashValue
-            //            }
-            //            
-            //            context.add(object: object, old: cIP, new: newIP)
+            // Not sure what else to do here for now.
         }
+    }
+    
+    private func postProcesssSections() {
+        if _sections.needsSort {
+            _sections.sort(using: sectionFetchRequest?.sortDescriptors ?? [])
+        }
+        
+        // Need to do a changeSet on the sections and create section moves
+        // Maybe just use sectionChangeSet and create from there
     }
     
     
@@ -705,43 +811,36 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     // MARK: - Object Processing
     /*-------------------------------------------------------------------------------*/
     
-    
     func processDeletedObjects() {
         
         for change in context.objectChangeSet.deleted {
             
-            let object = change.object
-            
+            let object = change.value
             defer {
-                _objectMap[object] = nil
+                _objectSectionMap[object] = nil
             }
-            let oldIP = change.index
-            //            guard let oldIP = self.indexPath(for: object) else {
-            //                print("Unable to find index path for deleted object")
-            //                continue
-            //            }
             
-            // If the section was removed, the index path for the object will not be found.
-            // No need to check if the section was deleted, +1
+            let oldIP = change.index
+            
+            // If the section was deleted, ignore the items
+            guard self.context.sectionChangeSet.deleted.containsValue(for: oldIP._section) == nil else {
+                continue
+            }
             
             let section = self._sections[oldIP._section]
+            section.ensureEditing()
             _ = section.remove(object)
-            context.deleted(object, at: oldIP)
             
             if section.objects.count == 0 {
-                
                 // If the section object matches the section predicat, keep it.
                 if let req = self.sectionFetchRequest,
                     let obj = section._object {
                     if req.predicate == nil || req.predicate?.evaluate(with: obj) == true { continue }
                 }
-                
-                _removeSection(section._object)
+                _remove(section._object)
             }
         }
     }
-    
-
     
     func processInsertedObjects() {
         
@@ -749,7 +848,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             guard self.contains(object: object) == false else { continue }
             
-            var newIP = IndexPath.Zero
+//            var newIP = IndexPath.Zero
             let sort = self.fetchRequest.sortDescriptors ?? []
             
             let sectionValue = object.value(forKeyPath: self.sectionKeyPath) as? Section
@@ -757,84 +856,32 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             if let existingIP = self.indexPath(for: sectionValue),
                 let existingSection = self._section(for: existingIP) {
                 
-                let insertIndex = existingSection.insert(object, using: sort)
-                newIP = existingIP.copy(withItem: insertIndex)
-                _objectMap[object] = existingSection.hashValue
+                existingSection.ensureEditing()
+                existingSection.add(object)
+                _objectSectionMap[object] = existingSection.hashValue
                 
-                if context.insertedSections.contains(existingSection) {
-                    // If the section was just inserted, no need to report items within it
-                    continue
-                }
+                // Should items in inserted sections be included?
             }
             else {
                 // The section value doesn't exist yet, the section will be inserted
-                let sec = SectionWrapper(object: sectionValue, objects: [object])
-                newIP = IndexPath.for(item: 0, section: _sections.count)
-                self._sections.append(sec)
-                _sectionMap[sectionValue?.hashValue ?? 0] = newIP.sectionCopy
-                _objectMap[object] = sec.hashValue
+                let sec = SectionInfo(object: sectionValue, objects: [object])
+//                newIP = IndexPath.for(item: 0, section: _sections.count)
+                self._sections.add(sec)
+                _objectSectionMap[object] = sec.hashValue
             }
-            //            }
-            //            else if let section = self._sections.first {
-            //                // No key path, just one section
-            //                newIP = newIP.copy(withItem: section.insert(object, using: sort))
-            //                _objectMap[object] = section.hashValue
-            //            }
-            //            else {
-            //                let sec = RelationalResultsControllerSection<Section, Element>(object: nil, objects: [object])
-            //                self._sections.append(sec)
-            //                _sectionMap[sec.hashValue] = newIP.sectionCopy
-            //                _objectMap[object] = sec.hashValue
-            //            }
-            context.inserted(object, at: newIP)
-//            context.add(object: object, old: nil, new: newIP)
+
+//            context.inserted(object, at: newIP)
         }
     }
     
     
     func processUpdatedObjects() {
         
-        
-        typealias Update = (
-            object: Element,
-            sourceIP: IndexPath,
-            tempIP: IndexPath,
-            destinationIP: IndexPath
-        )
-        var updates = [Update]()
-        
-        
-        
-        func printUpdates(_ updates: [Update]) {
-            for u in updates {
-                var str = "\(u.object.objectID) source: \(u.sourceIP)  destination: \(u.destinationIP)"
-                if u.sourceIP._section == u.destinationIP._section {
-                    str += " Dist: \(abs(u.sourceIP._item.distance(to: u.destinationIP._item)))"
-                }
-                else {
-                    str += " Dist: New Section"
-                }
-                print(str)
-            }
-        }
-
-        
-        
-//        func adjustedIP(for object: Element) -> IndexPath? {
-//            guard var ip = self.indexPath(for: object) else { return nil }
-//            
-//            var adjust = 0
-//            if let _rem = removed[ip._section] {
-//                adjust
-//            }
-//            if let _rem = removed[ip._section] {
-//                
-//            }
-//        }
+        var updatedSections = Set<SectionInfo>()
         
         for change in context.objectChangeSet.updated {
             
-            let object = change.object
+            let object = change.value
             let sourceIP = change.index
             
             guard let tempIP = self.indexPath(for: object),
@@ -842,194 +889,41 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     print("Skipping object update")
                     continue
             }
-            
-            var _tempSections = [Int:[SectionWrapper]]()
-            
+            currentSection.ensureEditing()
             
             let sort = self.fetchRequest.sortDescriptors ?? []
-            _ = currentSection.remove(object)
             var destinationIP = tempIP
             
             let sectionValue = object.value(forKeyPath: sectionKeyPath) as? Section
             
-            // Same group
+            // Move within the same section
             if sectionValue == currentSection._object {
-                destinationIP = destinationIP.copy(withItem: currentSection.insert(object, using: sort))
-                _objectMap[object] = currentSection.hashValue
+                currentSection.markNeedsSort()
+                _objectSectionMap[object] = currentSection.hashValue
             }
                 
                 // Moved to another section
             else if let newSip = self.indexPath(for: sectionValue),
                 let newSection = self._section(for: newSip) {
-                // newIP = newIP.copy(withItem: )
-                destinationIP = IndexPath.for(item: newSection.insert(object, using: sort),
-                                      section: newSip._section)
-                _objectMap[object] = newSection.hashValue
+                currentSection.remove(object)
+                newSection.ensureEditing()
+                newSection.add(object)
+                self.context.itemsWithSectionChange.insert(object)
+                _objectSectionMap[object] = newSection.hashValue
             }
                 
                 // Move to new section
             else {
                 // The section value doesn't exist yet, the section will be inserted
-                let sec = SectionWrapper(object: sectionValue, objects: [object])
-                destinationIP = destinationIP.copy(withItem: self._sections.count)
-                self._sections.append(sec)
-                _sectionMap[sectionValue?.hashValue ?? 0] = destinationIP.sectionCopy
-                _objectMap[object] = sec.hashValue
+                let sec = self._insert(section: sectionValue)
+                sec.ensureEditing()
+                sec.add(object)
+                _objectSectionMap[object] = sec.hashValue
             }
-            updates.append((object, sourceIP, tempIP, destinationIP))
+            
         }
-        
-        print("Updates")
-        printUpdates(updates)
-        let sorted = updates.sorted { (a, b) -> Bool in
-            
-            let s1 = a.sourceIP
-            let s2 = b.sourceIP
-            let d1 = self.indexPath(for: a.object)!
-            let d2 = self.indexPath(for: b.object)!
-            
-            let aIsSectionChange = s1._section != d1._section
-            let bIsSectionChange = s2._section != d2._section
-            
-            // One changed sections, it comes first
-            if aIsSectionChange != bIsSectionChange {
-                return aIsSectionChange
-            }
-            
-            // Both changed sections, order isn't really important (did ip comp anyway)
-            if aIsSectionChange {
-                return d1 < d2
-            }
-            
-            // Neither items change section, determine the distance beetwen source and destination
-            let deltaA = abs(s1._item.distance(to: d1._item))
-            let deltaB = abs(s2._item.distance(to: d2._item))
-            
-            print("DeltaA: \(deltaA)  DeltaB: \(deltaB)")
-            
-            if deltaA == deltaB {
-                return s1._item < s2._item
-            }
-            return deltaA > deltaB
-        }
-        
-        print("Sorted")
-        printUpdates(sorted)
-        
-        var removed = [Int:IndexArray]()
-        var inserted = [Int:IndexArray]()
-        
-        for u in sorted {
-            
-            var s = u.sourceIP
-            guard var d = self.indexPath(for: u.object) else {
-                continue
-            }
-            var _d = d
-            if s == d { continue }
-            
-            if removed[s._section] == nil {
-                removed[s._section] = IndexArray()
-            }
-            if inserted[d._section] == nil {
-                inserted[d._section] = IndexArray()
-            }
-            
-            
-            var temp = s
-            
-            var sourceAdjust =  0
-            var destinationAdjust = 0
-            
-//            if s._section == d._section {
-                let sourceRemoved = removed[s._section]!.count(in: 0...s._item)
-                let sourceInserted = inserted[s._section]!.count(in: 0...s._item)
-            
-                let destinationRemoved = removed[d._section]!.count(in: 0...d._item)
-                let destinationInserted = inserted[d._section]!.count(in: 0...d._item)
-                
-                sourceAdjust = -sourceRemoved
-                destinationAdjust = destinationInserted - destinationRemoved
-//            }
-//            else {
-//                let sourceRemoved = removed[s._section]!.count(in: 0...s._item)
-//                let sourceInserted = inserted[s._section]!.count(in: 0...s._item)
-//                
-//                let destinationRemoved = removed[d._section]!.count(in: 0...d._item)
-//                let destinationInserted = inserted[d._section]!.count(in: 0...d._item)
-//                
-//                sourceAdjust = sourceRemoved
-//                destinationAdjust = destinationInserted - destinationRemoved
-//            }
-            
-            
-            
-            
-            
-//            print("SR: \(sourceRemoved)  SI: \(sourceInserted)  DR: \(destinationRemoved)  DI: \(destinationInserted)")
-            
-            temp = IndexPath.for(item: d._item + sourceAdjust, section: s._section)
-            d = IndexPath.for(item: d._item + destinationAdjust, section: d._section)
-            
-            inserted[d._section]!.insert(d._item)
-            removed[s._section]!.insert(temp._item)
-            
-            
-            print("SR: \(sourceRemoved)  SI: \(sourceInserted)  DR: \(destinationRemoved)  DI: \(destinationInserted) --  source: \(s)  temp: \(temp)  _d: \(_d) destination: \(d) SourceAdjust: \(sourceAdjust) DestinationAdjust: \(destinationAdjust)")
-            
-            print(removed)
-            print(inserted)
-            
-            context.updated(u.object, at: temp, to: d)
-        }
-        
-        print(_sections)
-        
     }
     
 
-
-}
-
-
-struct IndexArray {
-    
-    var _data = [Int]()
-    
-    mutating func insert(_ index: Int) {
-        if _data.count == 0 {
-            _data.append(index)
-            return
-        }
-        var insertAt = 0
-        for (idx, val) in _data.enumerated() {
-            if index > val {
-                insertAt = idx + 1
-            }
-        }
-        _data.insert(index, at: insertAt)
-    }
-    
-    func count(in range: Range<Int>) -> Int {
-        var count = 0
-        for i in _data {
-            if i > range.upperBound { break }
-            if range.contains(i) {
-                count += 1
-            }
-        }
-        return count
-    }
-    
-    func count(in range: CountableClosedRange<Int>) -> Int {
-        var count = 0
-        for i in _data {
-            if i > range.upperBound { break }
-            if range.contains(i) {
-                count += 1
-            }
-        }
-        return count
-    }
 }
 

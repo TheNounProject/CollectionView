@@ -6,6 +6,34 @@ import Cocoa
 //
 //
 //
+
+extension Int {
+    
+    static func random(in range: ClosedRange<Int>) -> Int {
+        let min = range.lowerBound
+        let max = range.upperBound
+        return Int(arc4random_uniform(UInt32(1 + max - min))) + min
+    }
+}
+
+func randomString(length: Int) -> String {
+    
+    let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    let len = UInt32(letters.length)
+    
+    var randomString = ""
+    
+    for _ in 0 ..< length {
+        let rand = arc4random_uniform(len)
+        var nextChar = letters.character(at: Int(rand))
+        randomString += NSString(characters: &nextChar, length: 1) as String
+    }
+    
+    return randomString
+}
+
+
+
 //
 //protocol Section {
 //    var displayName : String { get }
@@ -72,12 +100,60 @@ import Cocoa
 
 
 
-var indexSet = IndexSet()
-indexSet.insert(1)
-indexSet.insert(5)
-indexSet.insert(8)
-debugPrint(indexSet)
+//var indexSet = IndexSet()
+//indexSet.insert(1)
+//indexSet.insert(5)
+//indexSet.insert(8)
+//debugPrint(indexSet)
+//
+//for idx in indexSet {
+//    print(idx)
+//}
 
-for idx in indexSet {
-    print(idx)
+
+
+func runTime(_ block: ()->Void) -> TimeInterval {
+    let start = CFAbsoluteTimeGetCurrent()
+    block()
+    let dur = CFAbsoluteTimeGetCurrent() - start
+    return dur
 }
+
+
+
+import CollectionView
+
+
+var source = [
+    IndexPath.for(item: 1, section: 1),
+    IndexPath.for(item: 0, section: 2),
+    IndexPath.for(item: 1, section: 0),
+    IndexPath.for(item: 0, section: 0)
+]
+var target = source.sorted()
+
+
+func describeEdits(for changeSet: ChangeSet<[IndexPath]>) -> String {
+    var str = ""
+    for e in changeSet.edits {
+        str += "\(e.description)\n"
+    }
+    return str
+    
+}
+
+var cs1 = ChangeSet(source: source, target: target, options: .minimumOperations)
+cs1.matrixLog
+describeEdits(for: cs1)
+
+cs1.reduceEdits()
+describeEdits(for: cs1)
+
+
+
+
+
+
+
+
+

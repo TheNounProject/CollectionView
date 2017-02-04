@@ -25,7 +25,7 @@ public struct ItemChangeSet {
         case .delete:
             print("Delete item at \(source!)")
             deletes.insert(source!)
-        case .update:
+        case .update(_):
             print("Update item at \(source!)")
             updates.insert(source!)
         case let .move(newIndexPath):
@@ -102,7 +102,7 @@ public extension CollectionView {
         for move in changes.moves {
             self.moveItem(at: move.source, to: move.destination, animated: true)
         }
-        // self.collectionView.reloadItems(at: Array(_updates), animated: true)
+        self.reloadItems(at: Array(changes.updates), animated: true)
     }
     
     

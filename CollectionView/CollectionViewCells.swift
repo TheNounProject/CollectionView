@@ -11,11 +11,14 @@ import Foundation
 
 open class CollectionReusableView : NSView {
     
-    open internal(set) var indexPath: IndexPath?
+    
     open internal(set) var reuseIdentifier: String?
     open internal(set) weak var collectionView : CollectionView?
     open internal(set) var reused : Bool = false
     
+//    internal var indexPath: IndexPath? {
+//        return attributes?.indexPath
+//    }
     internal var attributes : CollectionViewLayoutAttributes?
     
     open var backgroundColor: NSColor?
@@ -116,7 +119,7 @@ open class CollectionViewCell : CollectionReusableView {
     open func setHighlighted(_ highlighted: Bool, animated: Bool) {
         self._highlighted = highlighted
         if highlighted {
-            self.collectionView?.indexPathForHighlightedItem = self.indexPath
+            self.collectionView?.indexPathForHighlightedItem = self.attributes?.indexPath
         }
     }
     
@@ -163,7 +166,7 @@ open class CollectionViewCell : CollectionReusableView {
     override open func mouseEntered(with theEvent: NSEvent) {
         
         // Validate self and the event
-        guard let cv = self.collectionView, let ip = self.indexPath else { return }
+        guard let cv = self.collectionView, let ip = self.attributes?.indexPath else { return }
         guard theEvent.type == NSEventType.mouseEntered && (theEvent.trackingArea?.owner as? CollectionViewCell) == self else { return }
         
         // Make sure the event is inside self

@@ -19,6 +19,41 @@ extension Int {
     }
 }
 
+extension MutableCollection where Indices.Iterator.Element == Index {
+    /// Shuffles the contents of this collection.
+    mutating func shuffle() {
+        let c = count
+        guard c > 1 else { return }
+        
+        for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
+            let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
+            guard d != 0 else { continue }
+            let i = index(firstUnshuffled, offsetBy: d)
+            swap(&self[firstUnshuffled], &self[i])
+        }
+    }
+}
+
+extension Sequence {
+    /// Returns an array with the contents of this sequence, shuffled.
+    func shuffled() -> [Iterator.Element] {
+        var result = Array(self)
+        result.shuffle()
+        return result
+    }
+}
+
+extension Array {
+    
+    
+    func random() -> Element? {
+        guard self.count > 0 else { return nil }
+        let idx = Int.random(in: 0...self.count - 1)
+        return self[idx]
+    }
+}
+
+
 
 class ViewController: CollectionViewController, ResultsControllerDelegate, BasicHeaderDelegate, CollectionViewDelegateColumnLayout {
 
@@ -43,6 +78,8 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         let creationSort = NSSortDescriptor(key: "created", ascending: true)
         
+        collectionView.animationDuration = 0.8
+        
         req.sortDescriptors = [creationSort]
         fetchedResultsController.sectionKeyPath = "second"
         fetchedResultsController.fetchRequest = req
@@ -54,12 +91,12 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         let parentRequest = NSFetchRequest<Parent>(entityName: "Parent")
         
         childRequest.sortDescriptors = [
-            NSSortDescriptor(key: "displayOrder", ascending: true),
-            NSSortDescriptor(key: "created", ascending: false)
+            NSSortDescriptor(key: "displayOrder", ascending: true)
+//            NSSortDescriptor(key: "created", ascending: false)
         ]
         parentRequest.sortDescriptors = [
-            NSSortDescriptor(key: "displayOrder", ascending: true),
-            NSSortDescriptor(key: "created", ascending: false)
+            NSSortDescriptor(key: "displayOrder", ascending: true)
+//            NSSortDescriptor(key: "created", ascending: false)
         ]
         
         relationalResultsController.sectionKeyPath = "parent"
@@ -116,26 +153,53 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         self.relationalResultsController.delegate = relational ? self : nil
         
         self.collectionView.reloadData()
-        
     }
     
+    
+    var tests = [
+        [3, 4, 0, 1, 5, 2],
+        [0, 4, 1, 5, 3, 2],
+        [5, 3, 2, 4, 0, 1],
+        [1, 4, 3, 5, 2, 0],
+        [3, 5, 1, 4, 0, 2],
+        [1, 0, 4, 3, 2, 5]
+    ]
     
     
     @IBAction func radomize(_ sender: Any?) {
         
         guard relational else { return }
         
-        for (idx, object) in relationalResultsController.allObjects.enumerated() {
-            
-            let r = Int.random(in: 0...3)
-            
-            if idx%r == 0 {
-                
-                
-                
+        let sections = relationalResultsController.sections
+        
+        var parents = [Parent:[Child]]()
+        for s in sections {
+            if let p = s.object as? Parent {
+                parents[p] = [Child]()
             }
+        }
+        
+        for section in sections {
+            for item in section.objects {
+                let c = item as! Child
+                if let p = sections.random()?.object as? Parent {
+                    c.parent = p
+                    parents[p]?.append(c)
+                }
+            }
+        }
+        
+        
+        for parentSet in parents {
+        
+            var sectionIndexes = [Int](0..<parentSet.value.count)
+            sectionIndexes.shuffle()
             
-            
+            for (idx, child) in parentSet.value.enumerated() {
+                child.displayOrder = NSNumber(value: sectionIndexes[idx])
+//                let obj = relationalResultsController._object(at: IndexPath.for(item: idx, section: sectionIdx))
+//                obj?.displayOrder = NSNumber(value: random)
+            }
         }
     }
     
@@ -195,7 +259,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     
     func delete(_ sender: Any?) {
         for ip in collectionView.indexPathsForSelectedItems {
-            if let item = resultsController.object(at: ip) {
+            if let item = resultsController.object(at: ip) as? NSManagedObject {
                 item.managedObjectContext?.delete(item)
             }
         }
@@ -206,7 +270,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     func basicHeaderView(_ view: BasicHeaderView, didSelectButton button: IconButton) {
         
         guard let ip = collectionView.indexPathForSupplementaryView(view) else { return }
-        guard  let section = self.resultsController.object(for: ip) as? Parent else { return }
+        guard  let section = self.resultsController.section(for: ip)?.object as? Parent else { return }
         
         let flags = NSApp.currentEvent?.modifierFlags
         
@@ -221,7 +285,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             
             order += 1
             for idx in ip._section..<resultsController.numberOfSections() {
-                if let p = resultsController.object(for: IndexPath.for(section: idx)) as? Parent {
+                if let p = resultsController.section(for: IndexPath.for(section: idx))?.object as? Parent {
                     p.displayOrder = NSNumber(value: order)
                     
                 }
@@ -229,7 +293,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             }
         }
         else {
-            let count = flags?.contains(.option) == true ? 100 : 1
+            let count = flags?.contains(.option) == true ? 10 : 1
             repeatBlock(count) {
                 _ = section.createChild()
             }
@@ -282,8 +346,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             cell.setup(with: child)
             return cell
         }
-        
-        
+                
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ListCell", for: indexPath) as! ListCell
         cell.restingBackgroundColor = NSColor(white: 0.98, alpha: 1)
         cell.highlightedBackgroundColor = NSColor(white: 0.95, alpha: 1)
@@ -291,14 +354,12 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
        
         if !cell.reused {
             cell.inset = 16
-            cell.style = .basic
+            cell.style = .split
             cell.titleLabel.font = NSFont.systemFont(ofSize: 12, weight: NSFontWeightThin)
-            
         }
         
-        
-
-        cell.titleLabel.stringValue = "\(indexPath._item) - \(child.displayDescription)"
+        cell.titleLabel.bind("stringValue", to: child, withKeyPath: "displayOrder", options: nil)
+        cell.detailLabel.stringValue = "\(child.idString) \(child.dateString) -- \(indexPath)"
         
         return cell
         
@@ -436,7 +497,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             let start = min(source._item, destination._item)
             let end = max(source._item, destination._item)
             
-            let adjust = source._item < destination._item ? -1 : 1
+//            let adjust = source._item < destination._item ? -1 : 1
             
             let s = source._item
             let d = destination._item
@@ -458,7 +519,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             }
         }
         else {
-            child.parent = self.resultsController.object(for: destination) as? Parent
+            child.parent = self.resultsController.section(for: destination)?.object as? Parent
             
             for idx in source._item..<resultsController.numberOfObjects(in: source._section) {
                 let ip = IndexPath.for(item: idx, section: source._section)
@@ -507,15 +568,16 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         sectionChanges.reset()
     }
     
-    func controller(_ controller: ResultsController, didChangeObject object: NSManagedObject, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+    func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
         itemChanges.addChange(forItemAt: indexPath, with: changeType)
     }
     
-    func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSection, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+    func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSectionInfo, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
         sectionChanges.addChange(forSectionAt: indexPath, with: changeType)
     }
     
     func controllerDidChangeContent(controller: ResultsController) {
+
         // This is a helper to apply all the item and section changes.
         // See documentation for ChangeSets for more info
         collectionView.applyChanges(itemChanges, sections: sectionChanges)

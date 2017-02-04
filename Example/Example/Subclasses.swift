@@ -68,7 +68,11 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
     @NSManaged var displayOrder : NSNumber
     
     var displayDescription: String {
-        return "Child \(displayOrder) - \(formatter.string(from: created))"
+        return "Child \(self.idString) - [\(self.parent?.displayOrder.description ?? "?"), \(displayOrder)]"
+    }
+    
+    override var description: String {
+        return displayDescription
     }
     
     var dateString : String {

@@ -61,13 +61,13 @@ public protocol ResultsController {
     func numberOfSections() -> Int
     func numberOfObjects(in section: Int) -> Int
     
-    var allObjects : [NSManagedObject] { get }
+    var sections : [ResultsControllerSectionInfo] { get }
+    var allObjects : [Any] { get }
     
     // MARK: - Getting Items
     /*-------------------------------------------------------------------------------*/
-    func section(for sectionIndexPath: IndexPath) -> ResultsControllerSection?
-    func object(for sectionIndexPath: IndexPath) -> Any?
-    func object(at indexPath: IndexPath) -> NSManagedObject?
+    func section(for sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo?
+    func object(at indexPath: IndexPath) -> Any?
     
     func sectionName(forSectionAt indexPath :IndexPath) -> String
     
@@ -77,21 +77,21 @@ public protocol ResultsController {
 
 public protocol ResultsControllerDelegate {
     func controllerWillChangeContent(controller: ResultsController)
-    func controller(_ controller: ResultsController, didChangeObject object: NSManagedObject, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
-    func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSection, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSectionInfo, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
     func controllerDidChangeContent(controller: ResultsController)
 }
 
-public protocol ResultsControllerSection {
+public protocol ResultsControllerSectionInfo {
     var object : Any? { get }
-    var objects : [NSManagedObject] { get }
-    var count : Int { get }
+    var numberOfObjects : Int { get }
+    var objects : [Any] { get }
 }
 
 
 public enum ResultsControllerChangeType {
     case delete
-    case update
+    case update(IndexPath)
     case insert(IndexPath)
     case move(IndexPath)
 }
@@ -121,13 +121,20 @@ internal struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: Custom
     }
     
     mutating func add(updated object: Object, for index: Index) {
-        self.updated.insert(object, for: index)
+        self.updated.insert(object, with: index)
     }
     
     mutating func add(deleted object: Object, for index: Index) {
-        self.deleted.insert(object, for: index)
+        self.deleted.insert(object, with: index)
     }
     
+    func object(for index: Index) -> Object? {
+        return updated[index] ?? deleted[index]
+    }
+    
+    func index(for object: Object) -> Index? {
+        return updated.index(of: object) ?? deleted.index(of: object)
+    }
     
     mutating func reset() {
         self.inserted.removeAll()

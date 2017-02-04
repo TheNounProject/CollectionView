@@ -81,6 +81,8 @@ class ListCell : CollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        
+        self.titleLabel.unbind("stringValue")
     }
     
     var highlightedBackgroundColor : NSColor?
@@ -92,6 +94,13 @@ class ListCell : CollectionViewCell {
             }
         }
     }
+    
+//    override func mouseDown(with event: NSEvent) {
+//        self.alphaValue = 0.1
+//    }
+//    override func mouseUp(with event: NSEvent) {
+//        self.alphaValue = 0.8
+//    }
     
     /// If true, highlighting the cell does not change it's appearance
      var disableHighlight : Bool = false

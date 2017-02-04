@@ -558,7 +558,7 @@ CA
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="C3A9CAE2-D3FC-4216-A1A4-F88781168BE9" label="Randomize" paletteLabel="Randomize" tag="-1" image="randomize" id="g82-Ad-rrL">
                                     <connections>
-                                        <action selector="addParent:" target="Oky-zY-oP4" id="T4j-N8-7C6"/>
+                                        <action selector="radomize:" target="Oky-zY-oP4" id="zU2-Bz-40Z"/>
                                     </connections>
                                 </toolbarItem>
                             </allowedToolbarItems>
@@ -595,8 +595,8 @@ CA
         </scene>
     </scenes>
     <resources>
-        <image name="add_chid" width="30" height="30"/>
-        <image name="add_parent" width="30" height="30"/>
-        <image name="randomize" width="30" height="30"/>
+        <image name="add_chid" width="20" height="20"/>
+        <image name="add_parent" width="20" height="20"/>
+        <image name="randomize" width="20" height="20"/>
     </resources>
 </document>

@@ -8,6 +8,19 @@
 
 import Foundation
 
+extension IndexSet {
+    
+    var indices : [Element] {
+        var res = [Element]()
+        for idx in self {
+            res.append(idx)
+        }
+        return res
+    }
+    
+    
+}
+
 open class CollectionView : ScrollView, NSDraggingSource {
     
     public var contentDocumentView : CollectionViewDocumentView {
@@ -170,7 +183,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             cell?.prepareForReuse()
         }
         cell?.reuseIdentifier = identifier
-        cell?.indexPath = indexPath
+//        cell?.indexPath = indexPath
         
         return cell!
     }
@@ -193,13 +206,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
             view?.prepareForReuse()
         }
         view?.reuseIdentifier = identifier
-        view?.indexPath = indexPath
+//        view?.indexPath = indexPath
         return view!
     }
     
     final func enqueueCellForReuse(_ item: CollectionViewCell) {
         item.isHidden = true
-        item.indexPath = nil
+//        item.indexPath = nil
         guard let id = item.reuseIdentifier else { return }
         if self._reusableCells[id] == nil {
             self._reusableCells[id] = []
@@ -209,7 +222,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     final func enqueueSupplementaryViewForReuse(_ view: CollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
         view.isHidden = true
-        view.indexPath = nil
+//        view.indexPath = nil
         let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: view.reuseIdentifier ?? withIdentifier.reuseIdentifier)
         if self._reusableSupplementaryView[newID] == nil {
             self._reusableSupplementaryView[newID] = []
@@ -518,6 +531,25 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     
+    
+    
+    
+    
+    // MARK: - Batch Updates
+    /*-------------------------------------------------------------------------------*/
+    open var animationDuration: TimeInterval = 0.4
+    
+    open func performBatchUpdates(_ updates: (()->Void), completion: AnimationCompletion?) {
+        
+        self.beginEditing()
+        updates()
+//        self.relayout(true, scrollPosition: .none, completion: completion)
+        self.endEditing(true, completion: completion)
+        self.delegate?.collectionViewDidReloadData?(self)
+    }
+    
+    
+    
     // MARK: - Manipulating Sections
     /*-------------------------------------------------------------------------------*/
     
@@ -593,7 +625,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 }
                 
                 for ip in items.cells {
-                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
+                    if let view = contentDocumentView.preparedCellIndex.removeValue(for: ip) {
                         let ip = IndexPath.for(item: ip._item, section: newSection)
                         cellMap.append((newIP: ip, cell: view))
                     }
@@ -603,27 +635,27 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         
         for change in viewMap {
-            change.view.indexPath = change.id.indexPath
+//            change.view.indexPath = change.id.indexPath
             self.contentDocumentView.preparedSupplementaryViewIndex[change.id] = change.view
         }
         
         var updatedSelections = Set<IndexPath>()
         var movedSelections = Set<IndexPath>()
         for change in cellMap {
-            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
-                updatedSelections.insert(ip as IndexPath)
-                movedSelections.insert(change.newIP)
-            }
-            change.cell.indexPath = change.newIP
+//            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+//                updatedSelections.insert(ip as IndexPath)
+//                movedSelections.insert(change.newIP)
+//            }
+//            change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         _selectedIndexPaths.remove(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
-        if batchUpdating { return }
-        
-        self.relayout(true, scrollPosition: .none)
-        self.delegate?.collectionViewDidReloadData?(self)
+//        if batchUpdating { return }
+//        
+//        self.relayout(true, scrollPosition: .none)
+//        self.delegate?.collectionViewDidReloadData?(self)
     }
     
     public func moveSection(_ section: Int, to newSection: Int, animated: Bool) {
@@ -665,7 +697,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     }
                 }
                 for ip in items.cells {
-                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip),
+                    if let view = contentDocumentView.preparedCellIndex.removeValue(for:ip),
                         let attrs = view.attributes {
                         updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove))
                     }
@@ -683,7 +715,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     }
                 }
                 for ip in items.cells {
-                    if let view = contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
+                    if let view = contentDocumentView.preparedCellIndex.removeValue(for:ip) {
                         let ip = IndexPath.for(item: ip._item, section: newSection)
                         cellMap.append((newIP: ip, cell: view))
                     }
@@ -695,27 +727,27 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
         
         for change in viewMap {
-            change.view.indexPath = change.id.indexPath
+//            change.view.indexPath = change.id.indexPath
             self.contentDocumentView.preparedSupplementaryViewIndex[change.id] = change.view
         }
         
         var updatedSelections = Set<IndexPath>()
         var movedSelections = Set<IndexPath>()
         for change in cellMap {
-            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
-                updatedSelections.insert(ip as IndexPath)
-                movedSelections.insert(change.newIP)
-            }
-            change.cell.indexPath = change.newIP
+//            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+//                updatedSelections.insert(ip as IndexPath)
+//                movedSelections.insert(change.newIP)
+//            }
+//            change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         _ = _selectedIndexPaths.remove(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
-        if batchUpdating { return }
-        
-        self.relayout(true, scrollPosition: .none)
-        self.delegate?.collectionViewDidReloadData?(self)
+//        if batchUpdating { return }
+//        
+//        self.relayout(true, scrollPosition: .none)
+//        self.delegate?.collectionViewDidReloadData?(self)
 
     }
     
@@ -724,51 +756,241 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Manipulating items
     /*-------------------------------------------------------------------------------*/
     
-    public func reloadItems(at indexPaths: [IndexPath], animated: Bool) {
+    public typealias Move = (source: IndexPath, destination: IndexPath)
+    
+    
+    
+    private struct UpdateContext : CustomStringConvertible {
         
-        var removals = [ItemUpdate]()
-        for indexPath in indexPaths {
-            guard let cell = self.cellForItem(at: indexPath) else {
-                debugPrint("Not reloading cell because it is not visible")
-                return
-            }
-            guard let newCell = self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
-                debugPrint("For some reason collection view tried to load cells without a data source")
-                return
-            }
-            assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
-            
-            let attrs = self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
-            attrs?.frame = cell.frame
-            
-            if animated {
-                attrs?.alpha = 0
-            }
-            removals.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .remove))
-            
-            newCell.indexPath = indexPath
-            
-            if let a = attrs {
-                newCell.applyLayoutAttributes(a, animated: false)
-            }
-            if newCell.superview == nil {
-                self.contentDocumentView.addSubview(newCell)
-            }
-            newCell.selected = self._selectedIndexPaths.contains(indexPath)
-            
-            self.contentDocumentView.preparedCellIndex[indexPath] = newCell
-            newCell.viewDidDisplay()
+        var updates = [ItemUpdate]()
+        
+        private var _sectionDeletions   = IndexSet() // Original Indexes for deleted sections
+        private var _sectionInsertions  = IndexSet() // Destination Indexes for inserted sections
+        
+        private var _operations = [Int:IOSet]()
+        
+        mutating func reset() {
+            updates.removeAll()
+            _sectionDeletions.removeAll()
+            _sectionInsertions.removeAll()
+            _operations.removeAll()
         }
-        // NSGraphicsContext.current()?.flushGraphics()
-        self.contentDocumentView.pendingUpdates.append(contentsOf: removals)
-        if batchUpdating { return }
-        self.relayout(animated, scrollPosition: .none)
-    }
-
-    public func insertItems(at indexPaths: [IndexPath], animated: Bool) {
         
+        struct IOSet : CustomStringConvertible {
+            var _open = IndexSet()
+            var _locked = IndexSet()
+            
+            init(d index: Int) { self.deleted(at: index) }
+            init(i index: Int) { self.inserted(at: index) }
+            
+            mutating func moved(_ source: Int, to destination: Int) {
+                self.deleted(at: source)
+                self.inserted(at: destination)
+            }
+            
+            mutating func deleted(at index: Int) -> IOSet {
+                if _locked.contains(index) {
+                    return self
+                }
+                _open.insert(index)
+                return self
+            }
+            mutating func inserted(at index: Int) -> IOSet {
+                _locked.insert(index)
+                return self
+            }
+            
+            var description: String {
+                var str = "Section Ops\n"
+                
+                var open = [Int]()
+                var locked = [Int]()
+                
+                let union = _open.union(_locked)
+                
+                str += "Union \(union.indices)\n"
+                if union.count > 0 {
+                    for idx in union {
+                        open.append(_open.contains(idx) ? 1 : 0)
+                        locked.append(_locked.contains(idx) ? 1 : 0)
+                    }
+                }
+                str += "Open: \(open)\n"
+                str += "Lock: \(locked)"
+                return str
+            }
+        }
+        
+        
+        
+        mutating func deletedSection(at index: Int) {
+            _sectionDeletions.insert(index)
+        }
+        mutating func insertedSection(at index: Int) {
+            _sectionInsertions.insert(index)
+        }
+        mutating func movedSection(from source: Int, to destination: Int) {
+            deletedSection(at: source)
+            insertedSection(at: destination)
+        }
+        
+        mutating func deletedItem(at indexPath: IndexPath) {
+            let s = indexPath._section, i = indexPath._item
+            if _operations[s]?.deleted(at: i) == nil {
+                _operations[s] = IOSet(d: i)
+            }
+        }
+        mutating func insertedItem(at indexPath: IndexPath) {
+            let s = indexPath._section, i = indexPath._item
+            if _operations[s]?.inserted(at: i) == nil {
+                _operations[s] = IOSet(i: i)
+            }
+        }
+        
+        mutating func movedItem(from source: IndexPath, to destination: IndexPath) {
+            deletedItem(at: source)
+            insertedItem(at: destination)
+        }
+        
+        
+        mutating func adjust(_ indexPath: IndexPath) -> IndexPath {
+            
+            let sDelete = _sectionDeletions.count(in: 0...indexPath._section)
+            let sInsert = _sectionInsertions.count(in: 0...(indexPath._section))
+            
+            let section = indexPath._section + sInsert - sDelete
+            
+            var _proposed = indexPath._item
+            guard let ops = _operations[section] else { return indexPath }
+            
+            Swift.print("Adjusting: \(_proposed) against : \(ops)")
+            
+            var all = ops._open.union(ops._locked)
+            var idx = all.startIndex
+            var last = ops._open[idx]
+            
+            if _proposed >= last {
+                _proposed = last
+                
+                if ops._locked.contains(last) {
+                
+                    while idx < all.endIndex {
+                        let check = all[idx]
+                        var prop = last + 1
+                        let isGap = prop < check
+                        let isLocked = ops._locked.contains(prop)
+                        
+                        if isGap || (ops._open.contains(prop) && !ops._locked.contains(prop)) {
+                           _proposed = prop
+                            break;
+                        }
+                        _proposed = check + 1
+                        idx = all.index(after: idx)
+                        last = check
+                    }
+                }
+            }
+            _operations[section]?.inserted(at: _proposed)
+            // Open up this space to be filled by another item
+            // If it has already been locked, this does nothing
+            _operations[section]?.deleted(at: indexPath._item)
+            
+            let new = IndexPath.for(item: _proposed, section: section)
+            Swift.print("Adjusted \(indexPath)  to: \(new)")
+            return new
+        }
+        
+        var description: String {
+            return  ""// "Insertions : \(_insertions)  \n Deletions: \(_deletions)
+        }
+    }
+    
+    
+    private var _updateMap = IndexedSet<IndexPath, CollectionViewCell>()
+    private var _updateContext = UpdateContext()
+    
+    private var _editing = 0
+    private func beginEditing() {
+        if _editing == 0 {
+            self._updateContext.reset()
+            self.info.recalculate()
+            self._updateMap.removeAll()
+            Swift.print(self.contentDocumentView.preparedCellIndex)
+        }
+        _editing += 1
+    }
+    private func endEditing(_ animated: Bool, completion: AnimationCompletion? = nil) {
+        
+        if _editing == 0 { return }
+        if _editing > 1 {
+            _editing -= 1
+            return
+        }
+        _editing = 0
+        
+        var newIndex = _updateMap
+        
+        // By now the preparedCellIndex will only contain
+        Swift.print(_updateContext)
+        for stale in self.contentDocumentView.preparedCellIndex.ordered() {
+            let adjustedIP = _updateContext.adjust(stale.index)
+            newIndex[adjustedIP] = stale.value
+            
+            if adjustedIP != stale.index {
+                if let attrs = self.layoutAttributesForItem(at: adjustedIP) {
+                    _updateContext.updates.append(ItemUpdate(view: stale.value, attrs: attrs, type: .update))
+                }
+            }
+        }
+        self.contentDocumentView.pendingUpdates = _updateContext.updates
+        
+        Swift.print(newIndex)
+        
+        self.contentDocumentView.preparedCellIndex = newIndex
+        self.relayout(animated, scrollPosition: .none, completion: nil)
+    }
+    
+    public func insertItems(at indexPaths: [IndexPath], animated: Bool) {
+        self.beginEditing()
+        self._insertItems(at: indexPaths)
+        self.endEditing(animated)
+        
+    }
+    public func deleteItems(at indexPaths: [IndexPath], animated: Bool) {
+        self.beginEditing()
+        self._deleteItems(at: indexPaths)
+        self.endEditing(animated)
+    }
+    public func reloadItems(at indexPaths: [IndexPath], animated: Bool) {
+        self.beginEditing()
+        self._reloadItems(at: indexPaths)
+        self.endEditing(animated)
+    }
+    public func moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath, animated: Bool) {
+        self.beginEditing()
+        self._moveItem(at: indexPath, to: destinationIndexPath)
+        self.endEditing(animated)
+    }
+    public func moveItems(_ moves: [Move], animated: Bool) {
+        self.beginEditing()
+        for m in moves {
+            self._moveItem(at: m.source, to: m.destination)
+        }
+        self.endEditing(animated)
+    }
+    
+    
+    
+    
+    
+    public func _insertItems(at indexPaths: [IndexPath]) {
         self.indexPathForHighlightedItem = nil
         
+        for ip in indexPaths {
+            _updateContext.insertedItem(at: ip)
+        }
+        
+        /*
         let sorted = indexPaths.sorted { (ip1, ip2) -> Bool in
             return ip1._item < ip2._item
         }
@@ -796,7 +1018,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 }
                 
                 let old = IndexPath.for(item:idx, section: sectionIndex)
-                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: old) {
+                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValue(for:old) {
                     let new = IndexPath.for(item:newIndex, section: sectionIndex)
                     changeMap.append((newIP: new, cell: cell))
                 }
@@ -807,114 +1029,47 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var updatedSelections = Set<IndexPath>()
         var movedSelections = Set<IndexPath>()
         for change in changeMap {
-            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
-                updatedSelections.insert(ip as IndexPath)
-                movedSelections.insert(change.newIP)
-            }
-            change.cell.indexPath = change.newIP
+//            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+//                updatedSelections.insert(ip as IndexPath)
+//                movedSelections.insert(change.newIP)
+//            }
+//            change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         _ = _selectedIndexPaths.remove(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
-        if batchUpdating { return }
-        
-        self.relayout(true, scrollPosition: .none)
-        self.delegate?.collectionViewDidReloadData?(self)
+//        if batchUpdating { return }
+//        
+//        self.relayout(true, scrollPosition: .none)
+//        self.delegate?.collectionViewDidReloadData?(self)
+ */
     }
     
-    public func moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath, animated: Bool) {
-        
-        guard indexPath != destinationIndexPath else { return }
-        guard let attrs = self.collectionViewLayout.layoutAttributesForItem(at: destinationIndexPath) else { return }
-        
-        if self.contentDocumentView.preparedCellIndex[indexPath] != nil || self.contentVisibleRect.intersects(attrs.frame) {
-            
-            guard let cell = self._loadCell(at: indexPath) else {
-                return
-            }
-            
-            self.contentDocumentView.preparedCellIndex[indexPath] = nil
-            
-            if animated && cell.isHidden {
-                attrs.alpha = 0
-            }
-            var updates = [ItemUpdate(view: cell, attrs: cell.attributes!, type: .update)]
-            
-             cell.indexPath = destinationIndexPath
-//             cell.applyLayoutAttributes(attrs, animated: false)
-            
-            if cell.superview == nil {
-                self.contentDocumentView.addSubview(cell)
-            }
-            cell.selected = self._selectedIndexPaths.contains(indexPath)
-            
-            var changeMap = [(newIP: IndexPath, cell: CollectionViewCell)]()
-            
-            func addChange(for ip: IndexPath, by adjust: Int) {
-                if let _cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
-                    changeMap.append((ip.adjustingItem(adjust), _cell))
-                    updates.append(ItemUpdate(view: _cell, attrs: _cell.attributes!, type: .update))
-                }
-            }
-            
-            
-            if indexPath._section == destinationIndexPath._section {
-                for ip in self.contentDocumentView.preparedCellIndex.keys {
-                    guard ip._section == indexPath._section else { continue }
-                    
-                    let i = ip._item
-                    let s = indexPath._item
-                    let d = destinationIndexPath._item
-                    
-                    if i > s  && i <= d { // -1
-                        addChange(for: ip, by: -1)
-                    }
-                    else if i < s && i >= d { // +1
-                        addChange(for: ip, by: 1)
-                    }
-                }
-                
-            }
-            else {
-                for ip in Array(self.contentDocumentView.preparedCellIndex.keys) {
-                    guard ip != indexPath else { continue }
-                    if ip._section == indexPath._section {
-                        if ip._item > indexPath._item { // -1
-                            addChange(for: ip, by: -1)
-                        }
-                    }
-                        // Checking ip in destination section
-                    else if ip._section == destinationIndexPath._section {
-                        if ip._item >= destinationIndexPath._item { // +1
-                            addChange(for: ip, by: 1)
-                        }
-                    }
-                }
-                
-            }
-            
-            for change in changeMap {
-                change.cell.indexPath = change.newIP
-                self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
-            }
-            
-            self.contentDocumentView.preparedCellIndex[destinationIndexPath] = cell
-            self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
-        }
-        else {
-            debugPrint("Move did not require cell action because the item is not and will not be visible.")
-        }
-       
-        if batchUpdating { return }
-        self.relayout(animated, scrollPosition: .none)
-    }
     
-    public func deleteItems(at indexPaths: [IndexPath], animated: Bool) {
+    
+    
+    public func _deleteItems(at indexPaths: [IndexPath]) {
         
         self.indexPathForHighlightedItem = nil
         
+        for ip in indexPaths {
+            self._updateContext.deletedItem(at: ip)
+            if let cell = self.cellForItem(at: ip) {
+                _updateContext.updates.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .remove))
+                contentDocumentView.preparedCellIndex.removeValue(for: ip)
+                _updateMap.insert(cell, with: ip)
+            }
+        }
+
+        /*
         var bySection = [Int:[IndexPath]]()
+        
+        
+        for ip in indexPaths {
+            self._updateContext.deletedItem(at: ip)
+            
+        }
         
         let sorted = indexPaths.sorted { (ip1, ip2) -> Bool in return ip1._item < ip2._item }
         for ip in sorted {
@@ -932,20 +1087,20 @@ open class CollectionView : ScrollView, NSDraggingSource {
             var removeIPs = s.1
             
             let cCount = self.numberOfItems(in: sectionIndex)
-    
+            
             var newIndex = 0
             
             for idx in 0..<cCount {
                 if let dIP = removeIPs.first , dIP._item == idx,
-                let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: dIP),
-                let attrs = cell.attributes {
+                    let cell = self.contentDocumentView.preparedCellIndex.removeValue(for:dIP),
+                    let attrs = cell.attributes {
                     removeIPs.removeFirst()
                     updates.append(ItemUpdate(view: cell, attrs: attrs, type: .remove))
                     continue
                 }
                 
                 let old = IndexPath.for(item:idx, section: sectionIndex)
-                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: old) {
+                if newIndex != idx, let cell = self.contentDocumentView.preparedCellIndex.removeValue(for:old) {
                     let new = IndexPath.for(item:newIndex, section: sectionIndex)
                     changeMap.append((newIP: new, cell: cell))
                 }
@@ -958,39 +1113,274 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var updatedSelections = Set<IndexPath>()
         var movedSelections = Set<IndexPath>()
         for change in changeMap {
-            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
-                updatedSelections.insert(ip as IndexPath)
-                movedSelections.insert(change.newIP)
-            }
-            change.cell.indexPath = change.newIP
+//            if let ip = change.cell.indexPath , self._selectedIndexPaths.contains(ip as IndexPath) {
+//                updatedSelections.insert(ip as IndexPath)
+//                movedSelections.insert(change.newIP)
+//            }
+//            change.cell.indexPath = change.newIP
             self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
         }
         
         _selectedIndexPaths.remove(updatedSelections)
         _selectedIndexPaths.formUnion(movedSelections)
         
-        if batchUpdating { return }
-        
-        self.relayout(true, scrollPosition: .none)
-        self.delegate?.collectionViewDidReloadData?(self)
+//        if batchUpdating { return }
+//        
+//        self.relayout(true, scrollPosition: .none)
+//        self.delegate?.collectionViewDidReloadData?(self)
+ */
     }
     
 
     
-    // MARK: - Batch Updates
-    /*-------------------------------------------------------------------------------*/
-    fileprivate var batchUpdating : Bool = false
-    open var animationDuration: TimeInterval = 0.4
-
-    open func performBatchUpdates(_ updates: (()->Void), completion: AnimationCompletion?) {
+    public func _reloadItems(at indexPaths: [IndexPath]) {
         
-        batchUpdating = true
-        updates()
-        batchUpdating = false
-        self.relayout(true, scrollPosition: .none, completion: completion)
-        self.delegate?.collectionViewDidReloadData?(self)
+        for ip in indexPaths {
+//            _updateContext.insertedItem(at: ip)
+            if let cell = self.cellForItem(at: ip) {
+//                _updateMap.insert(cell, with: ip)
+//                contentDocumentView.preparedCellIndex.removeValue(for: ip)
+//                _updateContext.updates.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .update))
+            }
+        }
+        
+        /*
+        var removals = [ItemUpdate]()
+        for indexPath in indexPaths {
+            guard let cell = self.cellForItem(at: indexPath) else {
+                debugPrint("Not reloading cell because it is not visible")
+                return
+            }
+            guard let newCell = self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
+                debugPrint("For some reason collection view tried to load cells without a data source")
+                return
+            }
+            assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
+            
+            let attrs = self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
+            attrs?.frame = cell.frame
+            
+//            if animated {
+//                attrs?.alpha = 0
+//            }
+            removals.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .remove))
+            
+//            newCell.indexPath = indexPath
+            
+            if let a = attrs {
+                newCell.applyLayoutAttributes(a, animated: false)
+            }
+            if newCell.superview == nil {
+                self.contentDocumentView.addSubview(newCell)
+            }
+            newCell.selected = self._selectedIndexPaths.contains(indexPath)
+            
+            self.contentDocumentView.preparedCellIndex[indexPath] = newCell
+            newCell.viewDidDisplay()
+        }
+        // NSGraphicsContext.current()?.flushGraphics()
+        self.contentDocumentView.pendingUpdates.append(contentsOf: removals)
+//        if batchUpdating { return }
+//        self.relayout(animated, scrollPosition: .none)
+ */
     }
+
+    public func _moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath) {
+        
+        guard indexPath != destinationIndexPath else { return }
+        self._updateContext.movedItem(from: indexPath, to: destinationIndexPath)
+        if let cell = self.cellForItem(at: indexPath),
+            let attrs = self.layoutAttributesForItem(at: destinationIndexPath) {
+            _updateContext.updates.append(ItemUpdate(view: cell, attrs: attrs, type: .update))
+            contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
+            _updateMap.insert(cell, with: destinationIndexPath)
+        }
+        
+        /*
+        guard let attrs = self.collectionViewLayout.layoutAttributesForItem(at: destinationIndexPath) else { return }
+        
+        if self.contentDocumentView.preparedCellIndex[indexPath] != nil || self.contentVisibleRect.intersects(attrs.frame) {
+            
+            guard let cell = self._loadCell(at: indexPath) else {
+                return
+            }
+            
+            self.contentDocumentView.preparedCellIndex[indexPath] = nil
+            
+//            if animated && cell.isHidden {
+//                attrs.alpha = 0
+//            }
+            var updates = [ItemUpdate(view: cell, attrs: cell.attributes!, type: .update)]
+            
+//            cell.indexPath = destinationIndexPath
+            //             cell.applyLayoutAttributes(attrs, animated: false)
+            
+            if cell.superview == nil {
+                self.contentDocumentView.addSubview(cell)
+            }
+            cell.selected = self._selectedIndexPaths.contains(indexPath)
+            
+            var changeMap = [(newIP: IndexPath, cell: CollectionViewCell)]()
+            
+            func addChange(for ip: IndexPath, by adjust: Int) {
+                if let _cell = self.contentDocumentView.preparedCellIndex.removeValue(for:ip) {
+                    changeMap.append((ip.adjustingItem(adjust), _cell))
+                    updates.append(ItemUpdate(view: _cell, attrs: _cell.attributes!, type: .update))
+                }
+            }
+            
+            if indexPath._section == destinationIndexPath._section {
+                
+                let s = [Int:String]()
+                for v in s.keys {
+                    
+                }
+                
+                for ip in self.contentDocumentView.preparedCellIndex.indexes {
+                    guard ip._section == indexPath._section else { continue }
+                    
+                    let i = ip._item
+                    let s = indexPath._item
+                    let d = destinationIndexPath._item
+                    
+                    if i > s  && i <= d { // -1
+                        addChange(for: ip, by: -1)
+                    }
+                    else if i < s && i >= d { // +1
+                        addChange(for: ip, by: 1)
+                    }
+                }
+                
+            }
+            else {
+                for ip in self.contentDocumentView.preparedCellIndex.indexes {
+                    guard ip != indexPath else { continue }
+                    if ip._section == indexPath._section {
+                        if ip._item > indexPath._item { // -1
+                            addChange(for: ip, by: -1)
+                        }
+                    }
+                        // Checking ip in destination section
+                    else if ip._section == destinationIndexPath._section {
+                        if ip._item >= destinationIndexPath._item { // +1
+                            addChange(for: ip, by: 1)
+                        }
+                    }
+                }
+            }
+            
+            for change in changeMap {
+//                change.cell.indexPath = change.newIP
+                self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
+            }
+            
+            self.contentDocumentView.preparedCellIndex[destinationIndexPath] = cell
+            self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
+        }
+        else {
+            debugPrint("Move did not require cell action because the item is not and will not be visible.")
+        }
+        
+//        if batchUpdating { return }
+//        self.relayout(animated, scrollPosition: .none)
+ */
+    }
+
     
+//    public func _moveItems(_ moves: [Move], animated: Bool) {
+//
+ 
+//        var movedCells = IndexedSet<IndexPath, CollectionViewCell>()
+//        
+//        for move in moves {
+//            
+//            let source = move.source
+//            let destination = move.destination
+//            
+//            guard source != destination else { return }
+//            guard let attrs = self.collectionViewLayout.layoutAttributesForItem(at: destination) else { return }
+//            
+//            guard self.cellForItem(at: source) != nil || self.contentVisibleRect.intersects(attrs.frame) else {
+//                // The source nor the destination indexPaths are visible
+//                return
+//            }
+//            guard let cell = self._loadCell(at: source) else {
+//                // Something hapened loading the cell
+//                return
+//            }
+//            
+//            //                self.contentDocumentView.preparedCellIndex[source] = nil
+//            
+//            if animated && cell.isHidden {
+//                attrs.alpha = 0
+//            }
+//            var updates = [ItemUpdate(view: cell, attrs: cell.attributes!, type: .update)]
+//            
+//            cell.indexPath = destination
+//            //             cell.applyLayoutAttributes(attrs, animated: false)
+//            
+//            if cell.superview == nil {
+//                self.contentDocumentView.addSubview(cell)
+//            }
+//            cell.selected = self._selectedIndexPaths.contains(source)
+//            var changeMap = [(newIP: IndexPath, cell: CollectionViewCell)]()
+//            
+//            func addChange(for ip: IndexPath, by adjust: Int) {
+//                if let _cell = self.contentDocumentView.preparedCellIndex.removeValue(forKey: ip) {
+//                    changeMap.append((ip.adjustingItem(adjust), _cell))
+//                    updates.append(ItemUpdate(view: _cell, attrs: _cell.attributes!, type: .update))
+//                }
+//            }
+//            
+//            if source._section == destination._section {
+//                for ip in self.contentDocumentView.preparedCellIndex.keys {
+//                    guard ip._section == source._section else { continue }
+//                    
+//                    let i = ip._item
+//                    let s = source._item
+//                    let d = destination._item
+//                    
+//                    if i > s  && i <= d { // -1
+//                        addChange(for: ip, by: -1)
+//                    }
+//                    else if i < s && i >= d { // +1
+//                        addChange(for: ip, by: 1)
+//                    }
+//                }
+//            }
+//            else {
+//                for ip in Array(self.contentDocumentView.preparedCellIndex.keys) {
+//                    guard ip != source else { continue }
+//                    if ip._section == source._section {
+//                        if ip._item > source._item { // -1
+//                            addChange(for: ip, by: -1)
+//                        }
+//                    }
+//                        // Checking ip in destination section
+//                    else if ip._section == destination._section {
+//                        if ip._item >= destination._item { // +1
+//                            addChange(for: ip, by: 1)
+//                        }
+//                    }
+//                }
+//            }
+//            
+//            for change in changeMap {
+//                change.cell.indexPath = change.newIP
+//                self.contentDocumentView.preparedCellIndex[change.newIP] = change.cell
+//            }
+//            
+//            self.contentDocumentView.preparedCellIndex[destination] = cell
+//            self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
+//        }
+//        
+//        if batchUpdating { return }
+//        self.relayout(animated, scrollPosition: .none)
+//    }
+    
+    
+    
+
 
     
     // MARK: - Mouse Tracking (section highlight)
@@ -1286,7 +1676,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open func selectAllItems(_ animated: Bool = true) {
-        self.selectItems(at: Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath], animated: animated)
+        self.selectItems(at: self.contentDocumentView.preparedCellIndex.indexes, animated: animated)
     }
 
     open func selectItems(at indexPaths: [IndexPath], animated: Bool) {
@@ -1487,7 +1877,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // Visible
     public final var visibleCells : [CollectionViewCell]  { return Array( self.contentDocumentView.preparedCellIndex.values) }
-    public final var indexPathsForVisibleItems : [IndexPath]  { return Array(self.contentDocumentView.preparedCellIndex.keys) as [IndexPath] }
+    public final var indexPathsForVisibleItems : [IndexPath]  { return Array(self.contentDocumentView.preparedCellIndex.indexes) }
     
     
 //    final func isItemVisible(at indexPath: IndexPath) -> Bool {
@@ -1507,7 +1897,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // IP & Cell
     public final func cellForItem(at indexPath: IndexPath) -> CollectionViewCell?  { return self.contentDocumentView.preparedCellIndex[indexPath] }
-    public final func indexPath(for cell: CollectionViewCell) -> IndexPath?  { return cell.indexPath as IndexPath? }
+    public final func indexPath(for cell: CollectionViewCell) -> IndexPath?  { return cell.attributes?.indexPath }
     
     // IP By Location
     open func indexPathForItem(at point: CGPoint) -> IndexPath?  {
@@ -1572,7 +1962,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         return nil
     }
     
-    public final func indexPathForSupplementaryView(_ view: CollectionReusableView) -> IndexPath? { return view.indexPath as IndexPath? }
+    public final func indexPathForSupplementaryView(_ view: CollectionReusableView) -> IndexPath? { return view.attributes?.indexPath }
     
     public final func supplementaryView(forElementKind kind: String, at indexPath: IndexPath) -> CollectionReusableView? {
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: indexPath)

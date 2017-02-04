@@ -45,12 +45,13 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         return new
     }
     
-    func createChild() {
+    func createChild() -> Child {
         let child = Child.createOrphan(in: self.managedObjectContext)
         
         let order = self.children.sorted(using: [NSSortDescriptor(key: "displayOrder", ascending: true)]).last?.displayOrder.intValue ?? -1
         child.displayOrder = NSNumber(value: order + 1)
         child.parent = self
+        return child
     }
     
     var displayDescription: String {

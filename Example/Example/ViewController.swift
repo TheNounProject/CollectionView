@@ -183,8 +183,22 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             for item in section.objects {
                 let c = item as! Child
                 if let p = sections.random()?.object as? Parent {
+                    
+                    // Delete randomly
+                    if Int.random(in: 0...20) % 5 == 0 {
+                        c.managedObjectContext?.delete(c)
+                        continue
+                    }
+                    
                     c.parent = p
                     parents[p]?.append(c)
+                    
+                    if Int.random(in: 0...20) % 3 == 0 {
+                        let newC = p.createChild()
+                        parents[p]?.append(newC)
+                    }
+                    
+                    
                 }
             }
         }
@@ -197,8 +211,6 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             
             for (idx, child) in parentSet.value.enumerated() {
                 child.displayOrder = NSNumber(value: sectionIndexes[idx])
-//                let obj = relationalResultsController._object(at: IndexPath.for(item: idx, section: sectionIdx))
-//                obj?.displayOrder = NSNumber(value: random)
             }
         }
     }

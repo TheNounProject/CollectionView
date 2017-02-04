@@ -125,15 +125,12 @@ import CollectionView
 
 
 var source = [
-    IndexPath.for(item: 1, section: 1),
-    IndexPath.for(item: 0, section: 2),
-    IndexPath.for(item: 1, section: 0),
-    IndexPath.for(item: 0, section: 0)
+    "F","C","B","A","G","G"
 ]
 var target = source.sorted()
 
 
-func describeEdits(for changeSet: ChangeSet<[IndexPath]>) -> String {
+func describeEdits(for changeSet: ChangeSet<[String]>) -> String {
     var str = ""
     for e in changeSet.edits {
         str += "\(e.description)\n"
@@ -143,7 +140,9 @@ func describeEdits(for changeSet: ChangeSet<[IndexPath]>) -> String {
 }
 
 var cs1 = ChangeSet(source: source, target: target, options: .minimumOperations)
+var cs2 = ChangeSet(source: source, target: target)
 cs1.matrixLog
+
 describeEdits(for: cs1)
 
 cs1.reduceEdits()
@@ -151,7 +150,10 @@ describeEdits(for: cs1)
 
 
 
-
+cs2.matrixLog
+describeEdits(for: cs2)
+cs2.reduceEdits()
+describeEdits(for: cs2)
 
 
 

@@ -944,8 +944,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         self.contentDocumentView.pendingUpdates = _updateContext.updates
         
-        Swift.print(newIndex)
-        
         self.contentDocumentView.preparedCellIndex = newIndex
         self.relayout(animated, scrollPosition: .none, completion: nil)
     }
@@ -1187,7 +1185,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     public func _moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath) {
         
-        guard indexPath != destinationIndexPath else { return }
+//        guard indexPath != destinationIndexPath else { return }
         self._updateContext.movedItem(from: indexPath, to: destinationIndexPath)
         if let cell = self.cellForItem(at: indexPath),
             let attrs = self.layoutAttributesForItem(at: destinationIndexPath) {

@@ -224,8 +224,8 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
         var sx: T.Index
         var tx = t.startIndex
         
-//        var _inserted = Set<Element>()
-//        var _deleted = Set<Element>()
+        var _inserted = Set<Element>()
+        var _deleted = Set<Element>()
 
         
         // Fill body of _matrix.
@@ -250,30 +250,32 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                     var forceDelete = false
                     var forceInsert = false
                     
-//                    if options.contains(.minimumOperations) == false {
-//                        if shared.contains(src) {
-//                            forceDelete = deletes[src] != nil
-//                            forceInsert = !forceDelete
-//                        }
-//                        else if shared.contains(trg) {
-//                            forceDelete = deletes[trg] != nil
-//                            forceInsert = !forceDelete
-//                        }
-//                    }
+                    if options.contains(.minimumOperations) == false {
+                        if shared.contains(src) {
+                            forceDelete = _deleted.contains(src) != nil
+                            forceInsert = !forceDelete
+                        }
+                        else if shared.contains(trg) {
+                            forceDelete = _deleted.contains(trg) != nil
+                            forceInsert = !forceDelete
+                        }
+                    }
                     
                     let minimumCount = min(del.count, ins.count, sub.count)
                     if forceDelete || del.count == minimumCount {
-                        let deletion = Edit(.deletion, value: s[sx], destination: i - 1)
+                        let deletion = Edit(.deletion, value: src, destination: i - 1)
                         del.append(deletion)
+                        _deleted.insert(src)
                         _matrix[i, j] = del
                     }
                     else if forceInsert || ins.count == minimumCount {
-                        let insertion = Edit(.insertion, value: t[tx], destination: j - 1)
+                        let insertion = Edit(.insertion, value: trg, destination: j - 1)
+                        _inserted.insert(trg)
                         ins.append(insertion)
                         _matrix[i, j] = ins
                     }
                     else {
-                        let substitution = Edit(.substitution, value: t[tx], destination: i - 1)
+                        let substitution = Edit(.substitution, value: trg, destination: i - 1)
                         sub.append(substitution)
                         _matrix[i, j] = sub
                     }
@@ -284,9 +286,10 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
             
             tx = t.index(tx, offsetBy: 1)
         }
-        
         self.edits = _matrix[m, n]
         self.matrix = _matrix
+        
+        print(self.matrixLog)
 
     }
     

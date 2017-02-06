@@ -38,12 +38,14 @@ class GridCell : CollectionViewCell {
 //        if let c = child {
 //            self.badgeLabel.un
 //        }
-        self.badgeLabel.unbind("stringValue")
+        self.badgeLabel.unbind("value")
     }
     
     var child: Child?
     
     func setup(with child: Child) {
+        
+        self.badgeLabel.unbind("value")
         
         self.child = child
         
@@ -54,7 +56,7 @@ class GridCell : CollectionViewCell {
         self.titleLabel.stringValue = "Child \(child.idString)"
         self.detailLabel.stringValue = child.dateString
         
-        self.badgeLabel.bind("stringValue", to: child, withKeyPath: "displayOrder", options: nil)
+        self.badgeLabel.bind("value", to: child, withKeyPath: "displayOrder", options: nil)
     }
     
     static let rBG = NSColor(white: 0.98, alpha: 1)

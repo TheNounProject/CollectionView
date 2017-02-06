@@ -1136,6 +1136,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
         for ip in indexPaths {
 //            _updateContext.insertedItem(at: ip)
             if let cell = self.cellForItem(at: ip) {
+                
+                /*
+                 Load the new cell and replace it in the cell index
+                 It will be moved as needed. 
+                 
+                 Note: May need to mark it as reloaded somehow
+                 
+                */
+                
 //                _updateMap.insert(cell, with: ip)
 //                contentDocumentView.preparedCellIndex.removeValue(for: ip)
 //                _updateContext.updates.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .update))

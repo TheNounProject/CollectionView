@@ -282,21 +282,21 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /*-------------------------------------------------------------------------------*/
     public func indexPath(for object: Element) -> IndexPath? {
         
-        if self.sectionKeyPath != nil {
-            guard let sHash = self._objectSectionMap[object],
-                let sIndex = self._sections.index(ofHash: sHash),
-                let section = self._section(at: sIndex),
-                let idx = section.index(for: object) else { return nil }
-            
-            return IndexPath.for(item: idx, section: sIndex)
-        }
-        else if let idx = _sections.first?.index(for: object) {
-            return IndexPath.for(item: idx, section: 0)
-        }
-        return nil
+//        if self.sectionKeyPath != nil {
+        guard let sHash = self._objectSectionMap[object],
+            let sIndex = self._sections.indexOfValue(withHash: sHash),
+            let section = self._section(at: sIndex),
+            let idx = section.index(for: object) else { return nil }
+        
+        return IndexPath.for(item: idx, section: sIndex)
+//        }
+//        else if let idx = _sections.first?.index(for: object) {
+//            return IndexPath.for(item: idx, section: 0)
+//        }
+//        return nil
     }
     public func indexPath(for sectionObject: Section?) -> IndexPath? {
-        if let idx = _sections.index(ofHash: sectionObject?.hashValue ?? 0) {
+        if let idx = _sections.indexOfValue(withHash: sectionObject?.hashValue ?? 0) {
             return IndexPath.for(section: idx)
         }
         return nil
@@ -307,8 +307,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /*-------------------------------------------------------------------------------*/
     
     private func contains(sectionObject: Section) -> Bool {
-        let o = _sections[sectionObject.hashValue]
-        return true
+        return _sections.containsValue(withHash: sectionObject.hashValue)
     }
     
     private func contains(object: Element) -> Bool {
@@ -453,6 +452,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         processInsertedObjects()
         processUpdatedObjects()
         
+        logSections()
+        
         // Hang on to the changes for each section to lookup sources for items
         // that were move to a new section
         var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
@@ -467,46 +468,74 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             if s.isEditing {
                 let set = s.endEditing()
                 processedSections[s] = set
-                print(set)
+                
+                print("\(self.indexPath(for: s._object)!) \(set)")
             }
         }
         
         
         
-        func reduceCrossSectional(_ object: Element) {
+        var csrLog = "Performing Cross Section Reduction ------ "
+        var indent = 0
+        
+        func appendCSRLog(_ string: String) {
+            csrLog += "\n"
+            for _ in 0..<indent {
+                csrLog += "\t"
+            }
+            csrLog += string
+        }
+        
+        func reduceCrossSectional(_ object: Element, targetEdit tEdit: Edit<Element>? = nil) -> Bool {
             
             guard self.context.itemsWithSectionChange.remove(object) != nil else {
-                return
+                return false
             }
+
+            indent += 1
+            defer {
+                indent -= 1
+            }
+            
+            appendCSRLog("Reducing cross section edit for \(object.idSuffix):")
             
             guard let source = self.context.objectChangeSet.updated.index(of: object),
                 let target = self.indexPath(for: object),
                 let targetSection = self._section(for: target) else {
-                    return
+                    appendCSRLog("No source/target for cross")
+                    return true
             }
             
-            guard let targetEdit = processedSections[targetSection]?.edit(for: object) else { return }
+            guard let targetEdit = tEdit ?? processedSections[targetSection]?.edit(for: object) else {
+                print(processedSections[targetSection]!.operationIndex)
+                appendCSRLog("Target: nil")
+                return true
+            }
             
-            let newEdit = Edit(.move(origin: source._item), value: object, destination: target._section)
-            processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: newEdit)
+            appendCSRLog("Target: \(target) \(targetEdit)")
+            
+            let newEdit = Edit(.move(origin: source._item), value: object, index: target._item)
+            processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: target._item)
             
             switch targetEdit.operation {
             case .insertion:
-                // Adding the new edit above should overwrite the old one
                 processedSections[targetSection]?.operationIndex.inserts.remove(targetEdit)
                 break;
                 
             case .substitution:
                 processedSections[targetSection]?.operationIndex.substitutions.remove(targetEdit)
                 
-                guard let oldObj = self.context.objectChangeSet.object(for: target) else { return }
-                let delete = Edit(.deletion, value: oldObj, destination: source._item)
-                processedSections[targetSection]?.operationIndex.deletes.insert(delete, with: delete)
+                let ip = IndexPath.for(item: targetEdit.index, section: source._section)
+                if let obj =  self.context.objectChangeSet.object(for: ip) {
+                    let d = Edit(.deletion, value: obj, index: targetEdit.index)
+                    appendCSRLog("Adding deletion for \(targetEdit.index)")
+                    processedSections[targetSection]?.operationIndex.deletes.insert(d, with: target._item)
+                }
                 
             case .deletion:
                 // Not sure if this actually happens or not
-                 processedSections[targetSection]?.operationIndex.inserts.remove(targetEdit)
-                 print("Deletion edit available at target index")
+//                 processedSections[targetSection]?.operationIndex.deletes.remove(targetEdit)
+                 appendCSRLog("Deletion edit available at target index")
                 break;
                  
             case .move(_):
@@ -515,7 +544,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             }
             
             /*
-             // sourceSection will be nil if if was deleted (ObjectChangeSet can only lookup by index for inserted/updated)
+             // sourceSection will be nil if it was deleted (ObjectChangeSet can only lookup by index for inserted/updated)
              //
              // If so, complete the move and handle the old target operation
              //
@@ -524,37 +553,44 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
              */
             guard let sourceSection = self.context.sectionChangeSet.object(for: source._section),
                 let sourceWrap = _sectionWrapper(for: sourceSection),
-                let sourceEdit = processedSections[sourceWrap]?.edit(for: object) else {
-                    return
+                let sourceEdit = processedSections[sourceWrap]?.edit(withSource: source._item) else {
+                    appendCSRLog("Source: nil")
+                    return true
             }
             
+            
+            appendCSRLog("Source: \(source), \(sourceEdit)")
             switch sourceEdit.operation {
             case .deletion:
                 processedSections[sourceWrap]?.operationIndex.deletes.remove(sourceEdit)
                 break;
                 
             case .substitution:
-                guard let obj = self._object(at: source) else {
-                    processedSections[sourceWrap]?.operationIndex.substitutions.remove(sourceEdit)
-                    return
-                }
-                reduceCrossSectional(obj)
-//                processedSections[sourceWrap]?.operationIndex.substitutions.remove(sourceEdit)
-                //                let insert = sourceEdit.copy(with: .insertion)
+                processedSections[sourceWrap]?.operationIndex.substitutions.remove(sourceEdit)
                 
-//                let insert = Edit(.insertion, value: obj, destination: source._item)
-//                processedSections[sourceWrap]?.operationIndex.inserts.insert(insert, with: insert)
+                // If false, the item that was supposed to be substituted in at 
+                // this ip did not come from another section, go ahead and replace the old sub
+                // with an insert.
+                if reduceCrossSectional(sourceEdit.value, targetEdit: sourceEdit) == false {
+                    appendCSRLog("Adding insertion for \(source)")
+                    let insert = Edit(.insertion, value: sourceEdit.value, index: source._item)
+                    processedSections[sourceWrap]?.operationIndex.inserts.insert(insert, with: insert)
+                }
                 
             case .insertion, .move(_):
                 // The target edit can't be a insert/move if it didn't contain the object to begin
                 break;
             }
+
+            return true
         }
-        
         
         while let obj = self.context.itemsWithSectionChange.first {
-            reduceCrossSectional(obj)
+            _ = reduceCrossSectional(obj)
         }
+        
+        print(csrLog)
+        
         
         print("\nAFTER cross sectional reduction")
         for s in processedSections {
@@ -562,9 +598,14 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         }
         
         
+        
+        print("\nReport To Delegate 📢")
         for s in processedSections {
             var changes = s.value
             changes.reduceEdits()
+            processedSections[s.key] = changes
+            
+            guard let sectionIndex = self.indexPath(for: s.key._object)?._section else { continue }
             
             // Could merge all the edits together to dispatch the delegate calls in order of operation
             // but there is no apparent reason why order is important.
@@ -575,27 +616,34 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 case let .move(origin: from):
                     guard let source = self.context.objectChangeSet.updated.index(of: edit.value),
                     let sectionIndex = self._sections.index(for: s.key),
-                    let dest = self.indexPath(for: edit.value) else { continue }
+                    let dest = self.indexPath(for: edit.value) else {
+                        fatalError("Missing information to report move operation to RC delegate")
+                    }
                     
                     self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .move(dest))
                     
                 case .substitution:
-                    guard let source = self.context.objectChangeSet.updated.index(of: edit.value),
-                        let destination = self.indexPath(for: edit.value) else { continue }
-                    self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .update(destination))
+                    let ip = IndexPath.for(item: edit.index, section: sectionIndex)
+                    self.delegate?.controller(self, didChangeObject: edit.value, at: ip, for: .update)
                     
                 case .insertion:
-                    guard let ip = self.indexPath(for: edit.value) else { continue  }
+                    guard let ip = self.indexPath(for: edit.value) else {
+                        fatalError("IndexPath not found for insertion")
+                    }
                     self.delegate?.controller(self, didChangeObject: edit.value, at: nil, for: .insert(ip))
                     
                 case .deletion:
-                    guard let source = self.context.objectChangeSet.deleted.index(of: edit.value) else { continue }
+                    guard let source = self.context.objectChangeSet.index(for: edit.value) else {
+                        fatalError("Source indexPath not found for deletion")
+                    }
                     self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .delete)
                 }
             }
+            
+//            print("\(self.indexPath(for: s.key._object)) \(changes)")
         }
         
-        print("\nAFTER final reduction")
+        print("\nList of operations reported above")
         for s in processedSections {
             print("\(self.indexPath(for: s.key._object)) \(s.value)")
         }

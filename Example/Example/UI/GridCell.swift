@@ -38,7 +38,7 @@ class GridCell : CollectionViewCell {
 //        if let c = child {
 //            self.badgeLabel.un
 //        }
-        self.badgeLabel.unbind("stringValue")
+        self.badgeLabel.unbind("value")
     }
     
     var child: Child?
@@ -50,11 +50,11 @@ class GridCell : CollectionViewCell {
         if !self.reused {
             self.layer?.cornerRadius = 3
         }
-        self.badgeLabel.stringValue = "\(child.displayOrder)"
+//        self.badgeLabel.stringValue = "\(child.displayOrder)"
         self.titleLabel.stringValue = "Child \(child.idString)"
         self.detailLabel.stringValue = child.dateString
         
-        self.badgeLabel.bind("stringValue", to: child, withKeyPath: "displayOrder", options: nil)
+        self.badgeLabel.bind("value", to: child, withKeyPath: "displayOrder", options: nil)
     }
     
     static let rBG = NSColor(white: 0.98, alpha: 1)
@@ -90,17 +90,20 @@ class GridCell : CollectionViewCell {
         let ip = layoutAttributes.indexPath
 //        let color = self.collectionView?.numberOfItems(in: ip._section) ?? 10
         
-        
-        
-        var s = 1 - (CGFloat(ip._item) * 0.1)
-        let h = CGFloat(ip._section) * 0.33
-        if s < 0.1 {
-            s = (CGFloat(ip._item) * 0.1) - 0.9
+        if self.child?.isDeleted != false || self.child?.displayOrder.intValue != ip._item {
+            self.bgColor = NSColor.orange
         }
-        let b = 0.3 + CGFloat(ip._item) * 0.05
+        else {
+            var s = 1 - (CGFloat(ip._item) * 0.1)
+            let h = CGFloat(ip._section) * 0.33
+            if s < 0.1 {
+                s = (CGFloat(ip._item) * 0.1) - 0.9
+            }
+            let b = 0.3 + CGFloat(ip._item) * 0.05
         
-        let color = NSColor(calibratedHue: h, saturation: s, brightness: b, alpha: 1)
-        self.bgColor = color
+            let color = NSColor(calibratedHue: h, saturation: s, brightness: b, alpha: 1)
+            self.bgColor = color
+        }
         self.backgroundColor = bgColor
         self.needsDisplay = true
         

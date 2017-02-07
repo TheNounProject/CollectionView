@@ -9,6 +9,21 @@
 import Foundation
 
 
+
+extension NSManagedObject {
+    var idSuffix : String {
+        let str = self.objectID.uriRepresentation().lastPathComponent
+        if self.objectID.isTemporaryID {
+            let from = -3
+            let idx = str.index(from >= 0 ? str.startIndex: str.endIndex,
+                                 offsetBy: from)
+            return str.substring(from: idx)
+        }
+        return self.objectID.uriRepresentation().lastPathComponent
+    }
+}
+
+
 public extension Array where Element:NSSortDescriptor {
     
     func description(of object: AnyObject) -> String {

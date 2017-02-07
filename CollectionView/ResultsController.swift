@@ -91,7 +91,7 @@ public protocol ResultsControllerSectionInfo {
 
 public enum ResultsControllerChangeType {
     case delete
-    case update(IndexPath)
+    case update
     case insert(IndexPath)
     case move(IndexPath)
 }

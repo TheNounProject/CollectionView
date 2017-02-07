@@ -156,8 +156,11 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
 
 extension OrderedSet {
     
-    func index(ofHash hash: HashValue) -> Int? {
+    func indexOfValue(withHash hash: HashValue) -> Int? {
         return _map[hash]
+    }
+    func containsValue(withHash hash: HashValue) -> Bool {
+        return _map[hash] != nil
     }
     
 }

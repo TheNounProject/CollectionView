@@ -369,6 +369,11 @@ final public class CollectionViewDocumentView : NSView {
         
         var _updates = updates
         
+        
+        for u in updates {
+            Swift.print("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type)")
+        }
+        
         if animated && !animating {
             let _animDuration = self.collectionView.animationDuration
             

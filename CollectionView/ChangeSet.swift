@@ -63,17 +63,26 @@ public struct Matrix2D<T> : CustomStringConvertible {
 public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     public let operation: EditOperation
     public let value: T
-    public let destination: Int
+    public let index: Int
     
     // Define initializer so that we don't have to add the `operation` label.
-    public init(_ operation: EditOperation, value: T, destination: Int) {
+    public init(_ operation: EditOperation, value: T, index: Int) {
         self.operation = operation
         self.value = value
-        self.destination = destination
+        self.index = index
     }
     
     public var description: String {
-        return "Edit: \(operation) Destination: \(self.destination)  \(value)"
+        switch self.operation {
+        case let .move(origin):
+            return "Edit: Move \(origin) to \(self.index) (\(self.value))"
+        case .substitution:
+            return "Edit: Replace item at \(self.index) with (\(self.value))"
+        case .insertion:
+            return "Edit: Insert \(self.value) at \(self.index)"
+        case .deletion:
+            return "Edit: Delete item at \(self.index) (was (\(self.value)))"
+        }
     }
 
     public var hashValue: Int { return value.hashValue }
@@ -82,7 +91,7 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     }
     
     func copy(with operation: EditOperation) -> Edit<T> {
-        return Edit(operation, value: self.value, destination: self.destination)
+        return Edit(operation, value: self.value, index: self.index)
     }
 }
 
@@ -132,9 +141,9 @@ public typealias HashedIndexedSet<T:Hashable> = IndexedSet<T,T>
 public struct EditOperationIndex<T:Hashable> {
     
         public var inserts = HashedIndexedSet<Edit<T>>()
-        public var deletes = HashedIndexedSet<Edit<T>>()
-        public var substitutions = HashedIndexedSet<Edit<T>>()
-        public var moves = HashedIndexedSet<Edit<T>>()
+        public var deletes = IndexedSet<Int, Edit<T>>()
+        public var substitutions = IndexedSet<Int, Edit<T>>()
+        public var moves = IndexedSet<Int, Edit<T>>()
     
     init(edits: [Edit<T>]) {
         for e in edits {
@@ -142,11 +151,11 @@ public struct EditOperationIndex<T:Hashable> {
             case .insertion:
                 inserts.insert(e, with: e)
             case .deletion:
-                deletes.insert(e, with: e)
+                deletes.insert(e, with: e.index)
             case .substitution:
-                substitutions.insert(e, with: e)
+                substitutions.insert(e, with: e.index)
             case .move(origin: _):
-                moves.insert(e, with: e)
+                moves.insert(e, with: e.index)
             }
         }
     }
@@ -185,12 +194,16 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
             ?? self.operationIndex.moves.value(withHash: value.hashValue)
     }
     
+    public mutating func edit(withSource index: Int) -> Edit<Element>? {
+        return self.operationIndex.deletes.value(for: index)
+            ?? self.operationIndex.substitutions.value(for: index)
+            ?? self.operationIndex.moves.value(for: index)
+    }
+    
     
     public init(source s: T, target t: T, options: ChangeSetOptions = []) {
         self.origin = s
         self.destination = t
-        
-        
         
         let m = s.count
         let n = t.count
@@ -202,14 +215,14 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
         
         var edits = [Edit<Element>]()
         for (row, element) in s.enumerated() {
-            let deletion = Edit(.deletion, value: element, destination: row)
+            let deletion = Edit(.deletion, value: element, index: row)
             edits.append(deletion)
             _matrix[row + 1, 0] = edits
         }
         
         edits.removeAll()
         for (col, element) in t.enumerated() {
-            let insertion = Edit(.insertion, value: element, destination: col)
+            let insertion = Edit(.insertion, value: element, index: col)
             edits.append(insertion)
             _matrix[0, col + 1] = edits
         }
@@ -232,9 +245,29 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
         
         for j in 1...n {
             sx = s.startIndex
+            let trg = t[tx]
+            
+            var _shared = shared
+            
+            
+//            if options.contains(.minimumOperations) == false, shared.contains(trg) {
+            
+                
+                
+//                    forceDelete = _deleted.contains(src) != nil
+//                    forceInsert = !forceDelete
+//                }
+//                else if _shared.contains(trg) {
+//                    forceDelete = _deleted.contains(trg) != nil
+//                    forceInsert = !forceDelete
+//                }
+//            }
             
             for i in 1...m {
-                if s[sx] == t[tx] {
+                
+                let src = s[sx]
+                
+                if src == trg {
                     _matrix[i, j] = _matrix[i - 1, j - 1] // no operation
                 } else {
                     
@@ -244,38 +277,36 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                     
                     // Record operation.
                     
-                    let src = s[sx]
-                    let trg = t[tx]
-                    
                     var forceDelete = false
                     var forceInsert = false
                     
                     if options.contains(.minimumOperations) == false {
-                        if shared.contains(src) {
-                            forceDelete = _deleted.contains(src) != nil
-                            forceInsert = !forceDelete
+                        if _shared.contains(src) {
+                            forceDelete = true
+//                            forceInsert = !forceDelete
                         }
-                        else if shared.contains(trg) {
-                            forceDelete = _deleted.contains(trg) != nil
-                            forceInsert = !forceDelete
+                        else if _shared.contains(trg) {
+                            forceInsert = true
+//                            forceDelete = _deleted.contains(trg) != nil
+//                            forceInsert = !forceDelete
                         }
                     }
                     
                     let minimumCount = min(del.count, ins.count, sub.count)
                     if forceDelete || del.count == minimumCount {
-                        let deletion = Edit(.deletion, value: src, destination: i - 1)
+                        let deletion = Edit(.deletion, value: src, index: i - 1)
                         del.append(deletion)
                         _deleted.insert(src)
                         _matrix[i, j] = del
                     }
                     else if forceInsert || ins.count == minimumCount {
-                        let insertion = Edit(.insertion, value: trg, destination: j - 1)
+                        let insertion = Edit(.insertion, value: trg, index: j - 1)
                         _inserted.insert(trg)
                         ins.append(insertion)
                         _matrix[i, j] = ins
                     }
                     else {
-                        let substitution = Edit(.substitution, value: trg, destination: i - 1)
+                        let substitution = Edit(.substitution, value: trg, index: i - 1)
                         sub.append(substitution)
                         _matrix[i, j] = sub
                     }
@@ -299,17 +330,12 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
     
     public mutating func reduceEdits() {
         
-        
         for d in self.operationIndex.deletes {
             if let i = self.operationIndex.inserts.remove(d.value) {
-                
-                self.operationIndex.deletes.removeValue(for: d.value)
-                let newEdit = Edit(.move(origin: d.index.destination), value: d.value.value, destination: i.destination)
-                self.operationIndex.moves.insert(newEdit, with: newEdit)
+                self.operationIndex.deletes.remove(d.value)
+                let newEdit = Edit(.move(origin: d.value.index), value: d.value.value, index: i.index)
+                self.operationIndex.moves.insert(newEdit, with: i.index)
             }
-            
-            
-            
         }
         
         self.edits = self.operationIndex.allEdits
@@ -473,8 +499,8 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
             var reducedEdits = edits
             if let (move, index) = move(from: edit, in: reducedEdits), case let .move(origin) = move.operation {
                 reducedEdits.remove(at: index)
-                if move.destination == origin {
-                    let n = Edit(.substitution, value: edit.value, destination: origin)
+                if move.index == origin {
+                    let n = Edit(.substitution, value: edit.value, index: origin)
                     reducedEdits.append(n)
                 }
                 else {
@@ -512,20 +538,19 @@ private func move<T: Equatable>(from deletionOrInsertion: Edit<T>, `in` edits: [
             }
             else { return false }
         }) {
-            return (Edit(.move(origin: deletionOrInsertion.destination), value: deletionOrInsertion.value, destination: edits[insertionIndex].destination), insertionIndex)
+            return (Edit(.move(origin: deletionOrInsertion.index), value: deletionOrInsertion.value, index: edits[insertionIndex].index), insertionIndex)
         }
         
     case .insertion:
         if let deletionIndex = edits.index(where: { (earlierEdit) -> Bool in
             if case .deletion = earlierEdit.operation, earlierEdit.value == deletionOrInsertion.value { return true } else { return false }
         }) {
-            return (Edit(.move(origin: edits[deletionIndex].destination), value: deletionOrInsertion.value, destination: deletionOrInsertion.destination), deletionIndex)
+            return (Edit(.move(origin: edits[deletionIndex].index), value: deletionOrInsertion.value, index: deletionOrInsertion.index), deletionIndex)
         }
         
     default:
         break
     }
-    
     return nil
 }
 
@@ -543,15 +568,15 @@ extension ChangeSet : CustomStringConvertible {
     }
 }
 
-extension Edit: Equatable {}
-public func ==<T: Equatable>(lhs: Edit<T>, rhs: Edit<T>) -> Bool {
-    guard lhs.destination == rhs.destination && lhs.value == rhs.value else { return false }
-    switch (lhs.operation, rhs.operation) {
-    case (.insertion, .insertion), (.deletion, .deletion), (.substitution, .substitution):
-        return true
-    case (.move(let lhsOrigin), .move(let rhsOrigin)):
-        return lhsOrigin == rhsOrigin
-    default:
-        return false
-    }
-}
+//extension Edit: Equatable {}
+//public func ==<T: Equatable>(lhs: Edit<T>, rhs: Edit<T>) -> Bool {
+//    guard lhs.index == rhs.index && lhs.value == rhs.value else { return false }
+//    switch (lhs.operation, rhs.operation) {
+//    case (.insertion, .insertion), (.deletion, .deletion), (.substitution, .substitution):
+//        return true
+//    case (.move(let lhsOrigin), .move(let rhsOrigin)):
+//        return lhsOrigin == rhsOrigin
+//    default:
+//        return false
+//    }
+//}

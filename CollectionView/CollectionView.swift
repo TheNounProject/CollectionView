@@ -767,6 +767,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         private var _sectionDeletions   = IndexSet() // Original Indexes for deleted sections
         private var _sectionInsertions  = IndexSet() // Destination Indexes for inserted sections
         
+        var reloadedItems = Set<IndexPath>() // Track reloaded items to reload after adjusting IPs
+        
         private var _operations = [Int:IOSet]()
         
         mutating func reset() {
@@ -774,6 +776,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             _sectionDeletions.removeAll()
             _sectionInsertions.removeAll()
             _operations.removeAll()
+            reloadedItems.removeAll()
         }
         
         struct IOSet : CustomStringConvertible {
@@ -893,7 +896,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             _operations[section]?.inserted(at: _proposed)
             // Open up this space to be filled by another item
             // If it has already been locked, this does nothing
-            _operations[section]?.deleted(at: indexPath._item)
+            _operations[indexPath._section]?.deleted(at: indexPath._item)
             
             let new = IndexPath.for(item: _proposed, section: section)
             Swift.print("Adjusted \(indexPath)  to: \(new)")
@@ -934,11 +937,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
         Swift.print(_updateContext)
         for stale in self.contentDocumentView.preparedCellIndex.ordered() {
             let adjustedIP = _updateContext.adjust(stale.index)
-            newIndex[adjustedIP] = stale.value
+            
+            var view = _updateContext.reloadedItems.contains(stale.index)
+                ? _prepareReplacementCell(for: stale.value, at: adjustedIP)
+                : stale.value
+            newIndex[adjustedIP] = view
             
             if adjustedIP != stale.index {
                 if let attrs = self.layoutAttributesForItem(at: adjustedIP) {
-                    _updateContext.updates.append(ItemUpdate(view: stale.value, attrs: attrs, type: .update))
+                    _updateContext.updates.append(ItemUpdate(view: view, attrs: attrs, type: .update))
                 }
             }
         }
@@ -979,6 +986,39 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     
+    
+    func _prepareReplacementCell(for currentCell: CollectionViewCell, at indexPath: IndexPath) -> CollectionViewCell {
+        
+        Swift.print("Preparing replacment cell for item at: \(indexPath)")
+        
+        guard let newCell = self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
+            assertionFailure("For some reason collection view tried to load cells without a data source")
+            return currentCell
+        }
+        assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
+        
+        if newCell == currentCell {
+            return newCell
+        }
+        
+        let attrs = currentCell.attributes ?? self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
+        attrs?.frame = currentCell.frame
+        
+        let removal = ItemUpdate(view: currentCell, attrs: currentCell.attributes!, type: .remove)
+        self.contentDocumentView.pendingUpdates.append(removal)
+        
+        if let a = attrs {
+            newCell.applyLayoutAttributes(a, animated: false)
+        }
+        if newCell.superview == nil {
+            self.contentDocumentView.addSubview(newCell)
+        }
+        newCell.selected = self._selectedIndexPaths.contains(indexPath)
+        newCell.viewDidDisplay()
+        return newCell
+        
+        
+    }
     
     
     public func _insertItems(at indexPaths: [IndexPath]) {
@@ -1056,7 +1096,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             if let cell = self.cellForItem(at: ip) {
                 _updateContext.updates.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .remove))
                 contentDocumentView.preparedCellIndex.removeValue(for: ip)
-                _updateMap.insert(cell, with: ip)
+//                _updateMap.insert(cell, with: ip)
             }
         }
 
@@ -1133,51 +1173,54 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     public func _reloadItems(at indexPaths: [IndexPath]) {
         
-        for ip in indexPaths {
+//        for ip in indexPaths {
 //            _updateContext.insertedItem(at: ip)
-            if let cell = self.cellForItem(at: ip) {
+//            if let cell = self.cellForItem(at: ip) {
 //                _updateMap.insert(cell, with: ip)
 //                contentDocumentView.preparedCellIndex.removeValue(for: ip)
 //                _updateContext.updates.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .update))
-            }
-        }
+//            }
+//        }
+        
+        self._updateContext.reloadedItems.formUnion(indexPaths)
+        
+//        var removals = [ItemUpdate]()
+//        for indexPath in indexPaths {
+//            guard let cell = self.cellForItem(at: indexPath) else {
+//                debugPrint("Not reloading cell because it is not visible \(indexPath)")
+//                return
+//            }
+//            guard let newCell = self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
+//                debugPrint("For some reason collection view tried to load cells without a data source")
+//                return
+//            }
+//            assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
+//            
+//            if newCell == cell {
+//                return
+//            }
+//            
+//            let attrs = cell.attributes ?? self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
+//            attrs?.frame = cell.frame
+//
+//            removals.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .remove))
+//            
+//            if let a = attrs {
+//                newCell.applyLayoutAttributes(a, animated: false)
+//            }
+//            if newCell.superview == nil {
+//                self.contentDocumentView.addSubview(newCell)
+//            }
+//            newCell.selected = self._selectedIndexPaths.contains(indexPath)
+//            
+//            self.contentDocumentView.preparedCellIndex[indexPath] = newCell
+//            newCell.viewDidDisplay()
+//        }
+//        self.contentDocumentView.pendingUpdates.append(contentsOf: removals)
         
         /*
-        var removals = [ItemUpdate]()
-        for indexPath in indexPaths {
-            guard let cell = self.cellForItem(at: indexPath) else {
-                debugPrint("Not reloading cell because it is not visible")
-                return
-            }
-            guard let newCell = self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
-                debugPrint("For some reason collection view tried to load cells without a data source")
-                return
-            }
-            assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
-            
-            let attrs = self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
-            attrs?.frame = cell.frame
-            
-//            if animated {
-//                attrs?.alpha = 0
-//            }
-            removals.append(ItemUpdate(view: cell, attrs: cell.attributes!, type: .remove))
-            
-//            newCell.indexPath = indexPath
-            
-            if let a = attrs {
-                newCell.applyLayoutAttributes(a, animated: false)
-            }
-            if newCell.superview == nil {
-                self.contentDocumentView.addSubview(newCell)
-            }
-            newCell.selected = self._selectedIndexPaths.contains(indexPath)
-            
-            self.contentDocumentView.preparedCellIndex[indexPath] = newCell
-            newCell.viewDidDisplay()
-        }
         // NSGraphicsContext.current()?.flushGraphics()
-        self.contentDocumentView.pendingUpdates.append(contentsOf: removals)
+        
 //        if batchUpdating { return }
 //        self.relayout(animated, scrollPosition: .none)
  */

@@ -45,6 +45,8 @@ class GridCell : CollectionViewCell {
     
     func setup(with child: Child) {
         
+        self.badgeLabel.unbind("value")
+        
         self.child = child
         
         if !self.reused {

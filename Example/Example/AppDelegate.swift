@@ -106,6 +106,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let coordinator = self.persistentStoreCoordinator
         var managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
+        managedObjectContext.undoManager = UndoManager()
         return managedObjectContext
     }()
 
@@ -124,6 +125,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 NSApplication.shared().presentError(nserror)
             }
         }
+    }
+    
+    @IBAction func undo(_ sender: AnyObject?) {
+        managedObjectContext.undoManager?.undo()
+    }
+    
+    @IBAction func redo(_ sender: AnyObject?) {
+        managedObjectContext.undoManager?.redo()
     }
 
     func windowWillReturnUndoManager(window: NSWindow) -> UndoManager? {

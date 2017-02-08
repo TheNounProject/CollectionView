@@ -57,6 +57,10 @@ class GridCell : CollectionViewCell {
         self.badgeLabel.bind("value", to: child, withKeyPath: "displayOrder", options: nil)
     }
     
+    override var description: String {
+        return "GridCell: \(child?.description ?? nil)"
+    }
+    
     static let rBG = NSColor(white: 0.98, alpha: 1)
     static let hBG = NSColor(white: 0.95, alpha: 1)
     
@@ -94,15 +98,7 @@ class GridCell : CollectionViewCell {
             self.bgColor = NSColor.orange
         }
         else {
-            var s = 1 - (CGFloat(ip._item) * 0.1)
-            let h = CGFloat(ip._section) * 0.33
-            if s < 0.1 {
-                s = (CGFloat(ip._item) * 0.1) - 0.9
-            }
-            let b = 0.3 + CGFloat(ip._item) * 0.05
-        
-            let color = NSColor(calibratedHue: h, saturation: s, brightness: b, alpha: 1)
-            self.bgColor = color
+            self.bgColor = NSColor(white: 0.98, alpha: 1)
         }
         self.backgroundColor = bgColor
         self.needsDisplay = true

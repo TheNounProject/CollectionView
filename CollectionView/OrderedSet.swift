@@ -10,9 +10,10 @@ import Foundation
 
 typealias HashValue = Int
 
-struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
+
+struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection, CustomStringConvertible {
     
-    fileprivate var _map = [HashValue:Int]()
+    fileprivate var _map = [Element:Int]()
     fileprivate var _data = [Element]()
     
     var objects : [Element] { return _data }
@@ -21,24 +22,35 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
     
     init<C : Collection>(elements: C) where C.Iterator.Element == Element {
         for (idx, e) in elements.enumerated() {
-            guard _map[e.hashValue] == nil else {
+            guard _map[e] == nil else {
                 continue
             }
             Set<Int>()
             _data.append(e)
-            _map[e.hashValue] = idx
+            _map[e] = idx
         }
     }
     
     init(arrayLiteral elements: Element...) {
         for (idx, e) in elements.enumerated() {
-            guard _map[e.hashValue] == nil else {
+            guard _map[e] == nil else {
                 continue
             }
             _data.append(e)
-            _map[e.hashValue] = idx
+            _map[e] = idx
         }
     }
+    
+    public var description: String {
+        var str = "\(type(of: self)) [\n"
+        for i in self.enumerated() {
+            str += "\(i.offset) : \(i.element) \(i.element.hashValue)\n"
+        }
+        str += "]"
+        return str
+    }
+    
+    
     
     
     var startIndex: Int { return _data.startIndex }
@@ -54,11 +66,11 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
     
     var count : Int { return _data.count }
     func contains(_ object: Element) -> Bool{
-        return _map[object.hashValue] != nil
+        return _map[object] != nil
     }
     
-    func index(for object: Element) -> Int? {
-        return _map[object.hashValue]
+    func index(of object: Element) -> Int? {
+        return _map[object]
     }
     
     func object(at index: Int) -> Element {
@@ -68,7 +80,7 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
     fileprivate mutating func _remap(startingAt index: Int) {
         guard index < _data.count else { return }
         for idx in index..<_data.count {
-            self._map[_data[idx].hashValue] = idx
+            self._map[_data[idx]] = idx
         }
     }
     
@@ -80,7 +92,7 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
         guard !self.contains(object) else { return false }
         self.needsSort = true
         _data.append(object)
-        _map[object.hashValue] = _data.count - 1
+        _map[object] = _data.count - 1
         return true
     }
     
@@ -120,13 +132,13 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
     /*-------------------------------------------------------------------------------*/
     @discardableResult mutating func remove(at index: Int) -> Element {
         let e = self._data.remove(at: index)
-        _map.removeValue(forKey: e.hashValue)
+        _map.removeValue(forKey: e)
         _remap(startingAt: index)
         return e
     }
     
     @discardableResult mutating func remove(_ object: Element) -> Int? {
-        guard let index = self.index(for: object) else { return nil }
+        guard let index = self.index(of: object) else { return nil }
         remove(at: index)
         return index
     }
@@ -134,13 +146,13 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
     var needsSort : Bool = false
     mutating func _batchRemove(_ object: Element) {
         self.needsSort = true
-        guard let index = self._map.removeValue(forKey: object.hashValue) else { return }
+        guard let index = self._map.removeValue(forKey: object) else { return }
         remove(at: index)
     }
     mutating func _batchRemove(at index: Int) {
         self.needsSort = true
         let e = self._data.remove(at: index)
-        _map[e.hashValue] = nil
+        _map[e] = nil
     }
     
     
@@ -148,19 +160,6 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection {
         self.needsSort = false
         _data.removeAll(keepingCapacity: keep)
         _map.removeAll(keepingCapacity: keep)
-    }
-    
-}
-
-
-
-extension OrderedSet {
-    
-    func indexOfValue(withHash hash: HashValue) -> Int? {
-        return _map[hash]
-    }
-    func containsValue(withHash hash: HashValue) -> Bool {
-        return _map[hash] != nil
     }
     
 }
@@ -226,7 +225,7 @@ extension OrderedSet where Element:Hashable & AnyObject {
         self._data.sort(using: sortDescriptors)
         self._map.removeAll(keepingCapacity: true)
         for (idx, obj) in self._data.enumerated() {
-            self._map[obj.hashValue] = idx
+            self._map[obj] = idx
         }
     }
     
@@ -242,9 +241,6 @@ extension Collection where Iterator.Element:AnyObject & Hashable {
     func orderedSet(using sortDescriptors: [NSSortDescriptor]) -> OrderedSet<Iterator.Element> {
         let s = OrderedSet<Iterator.Element>(elements: self)
         return s.sorting(by: sortDescriptors)
-        
-        let t : AnyObject
-        
     }
 }
 

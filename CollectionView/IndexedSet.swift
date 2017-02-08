@@ -9,26 +9,20 @@
 import Foundation
 
 
-
-//struct IndexedSetIndex<Index:Hashable, Value: Hashable> {
-//    fileprivate let index: DictionaryIndex<Index, Value>
-//    fileprivate init(_ dictionaryIndex: DictionaryIndex<Index, Value>) {
-//        self.index = dictionaryIndex
-//    }
-//}
-
-
 public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStringConvertible {
     
     
     //    var table = MapTab
-    fileprivate var byValue = [Int:Index]()
+    fileprivate var byValue = [Value:Index]()
     fileprivate var byIndex = [Index:Value]()
     
     //    fileprivate var _sequenced = OrderedSet<Value>()
     
     public var indexes : [Index] {
         return Array(byIndex.keys)
+    }
+    public var indexSet : Set<Index> {
+        return Set(byIndex.keys)
     }
     public var values : [Value] {
         return Array(byIndex.values)
@@ -42,9 +36,9 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
         return byIndex[index]
     }
     public func index(of value: Value) -> Index? {
-        return byValue[value.hashValue]
+        return byValue[value]
     }
-    
+
     
     public init() { }
     
@@ -75,7 +69,7 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
     }
     
     public func contains(_ object: Value) -> Bool {
-        return byValue[object.hashValue] != nil
+        return byValue[object] != nil
     }
     public func containsValue(for index: Index) -> Bool {
         return byIndex[index] != nil
@@ -83,7 +77,7 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
     
     
     public mutating func update(_ value: Value, with index: Index) {
-        if let oldIndex = byValue.updateValue(index, forKey: value.hashValue) {
+        if let oldIndex = byValue.updateValue(index, forKey: value) {
             byIndex.removeValue(forKey: oldIndex)
         }
         byIndex[index] = value
@@ -91,12 +85,12 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
     }
     
     public mutating func insert(_ value: Value, with index: Index) {
-        guard byValue[value.hashValue] == nil else { return }
+        guard byValue[value] == nil else { return }
         if let object = self.byIndex.removeValue(forKey: index) {
-            byValue.removeValue(forKey: object.hashValue)
+            byValue.removeValue(forKey: object)
         }
         
-        byValue[value.hashValue] = index
+        byValue[value] = index
         byIndex[index] = value
         assert(byIndex.count == byValue.count)
     }
@@ -105,12 +99,12 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
         guard let object = byIndex.removeValue(forKey: index) else {
             return nil
         }
-        byValue.removeValue(forKey: object.hashValue)
+        byValue.removeValue(forKey: object)
         assert(byIndex.count == byValue.count)
         return object
     }
     mutating func remove(_ value: Value) -> Index? {
-        guard let index = byValue.removeValue(forKey: value.hashValue) else {
+        guard let index = byValue.removeValue(forKey: value) else {
             return nil
         }
         byIndex.removeValue(forKey: index)
@@ -141,20 +135,20 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
     }
 }
 
-extension IndexedSet {
-    
-    func index(ofHash hash: HashValue) -> Index? {
-        return byValue[hash]
-    }
-    func value(withHash hash: HashValue) -> Value? {
-        guard let i = byValue[hash] else { return nil }
-        return self.value(for: i)
-    }
-    func containsValue(withHash hash: HashValue) -> Bool {
-        return byValue[hash] != nil
-    }
-    
-}
+//extension IndexedSet {
+//    
+//    func index(ofHash hash: HashValue) -> Index? {
+//        return byValue[hash]
+//    }
+//    func value(withHash hash: HashValue) -> Value? {
+//        guard let i = byValue[hash] else { return nil }
+//        return self.value(for: i)
+//    }
+//    func containsValue(withHash hash: HashValue) -> Bool {
+//        return byValue[hash] != nil
+//    }
+//    
+//}
 
 
 extension IndexedSet where Index:Comparable {
@@ -167,6 +161,15 @@ extension IndexedSet where Index:Comparable {
         return self.makeIterator().sorted { (a, b) -> Bool in
             return a.index < b.index
         }
+    }
+    
+    func orderedLog() -> String {
+        var str = "\(type(of: self)) [\n"
+        for i in self.ordered() {
+            str += "\(i.index) : \(i.value)\n"
+        }
+        str += "]"
+        return str
     }
     
     var orderedValues : [Value] {

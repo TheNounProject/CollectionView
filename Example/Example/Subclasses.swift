@@ -24,13 +24,15 @@ let dateGroupFormatter : DateFormatter = {
 }()
 
 
+
+
 class Parent : NSManagedObject, CustomDisplayStringConvertible {
     
     @NSManaged var children : Set<Child>
     @NSManaged var created: Date
     @NSManaged var displayOrder : NSNumber
     
-    static func create(in moc : NSManagedObjectContext? = nil) -> Parent {
+    static func create(in moc : NSManagedObjectContext? = nil, withChild: Bool = true) -> Parent {
         
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let req = NSFetchRequest<Parent>(entityName: "Parent")
@@ -41,7 +43,10 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         let new = NSEntityDescription.insertNewObject(forEntityName: "Parent", into: moc) as! Parent
         new.displayOrder = NSNumber(value: _order + 1)
         new.created = Date()
-        new.createChild()
+        
+        if withChild {
+            _ = new.createChild()
+        }
         return new
     }
     
@@ -69,6 +74,9 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
     @NSManaged var displayOrder : NSNumber
     
     var displayDescription: String {
+        guard self.isValid else {
+            return "Child \(idString) -- Deleted"
+        }
         return "Child \(self.idString) - [\(self.parent?.displayOrder.description ?? "?"), \(displayOrder)]"
     }
     
@@ -102,6 +110,10 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
 
 
 extension NSManagedObject {
+    
+    var isValid : Bool {
+        return self.managedObjectContext != nil && self.isDeleted == false
+    }
     
     var idString : String {
         let str = self.objectID.uriRepresentation().lastPathComponent

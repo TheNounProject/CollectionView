@@ -203,7 +203,7 @@ final public class CollectionViewDocumentView : NSView {
 
         var updates = [ItemUpdate]()
         
-        let oldIPs = Set(self.preparedCellIndex.indexes)
+        let oldIPs = self.preparedCellIndex.indexSet
         var inserted = self.collectionView.indexPathsForItems(in: rect)
         let removed = oldIPs.removing(inserted)
         let updated = inserted.remove(oldIPs)
@@ -370,9 +370,9 @@ final public class CollectionViewDocumentView : NSView {
         var _updates = updates
         
         
-        for u in updates {
-            Swift.print("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type)")
-        }
+//        for u in updates {
+//            Swift.print("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type)")
+//        }
         
         if animated && !animating {
             let _animDuration = self.collectionView.animationDuration
@@ -438,7 +438,7 @@ final public class CollectionViewDocumentView : NSView {
             removeItem(item)
         }
     }
-    fileprivate func removeItem(_ item: ItemUpdate) {
+    func removeItem(_ item: ItemUpdate) {
         if let cell = item.view as? CollectionViewCell {
             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: cell.attributes!.indexPath)
             self.collectionView.enqueueCellForReuse(cell)

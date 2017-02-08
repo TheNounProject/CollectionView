@@ -58,13 +58,17 @@ public struct SectionChangeSet {
     public mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         switch changeType {
         case .delete:
+            print("Delete section at \(source!)")
             deletes.insert(source!._section)
         case .update:
+            print("Update section at \(source!)")
             updates.insert(source!._section)
             break;
         case let .move(newIndexPath):
+            print("Move section \(source!) to \(newIndexPath)")
             moves.append((source!._section, newIndexPath._section))
         case let .insert(newIndexPath):
+            print("Insert section at \(source!)")
             inserts.insert(newIndexPath._section)
         }
     }
@@ -84,18 +88,18 @@ public extension CollectionView {
     
     public func applyChanges(_ items: ItemChangeSet, sections: SectionChangeSet, completion: AnimationCompletion? = nil) {
         self.performBatchUpdates({
-            applyChanges(sections)
-            applyChanges(items)
+            _applyChanges(sections)
+            _applyChanges(items)
         }, completion: completion)
     }
     
-    public func applyChanges(_ changes: SectionChangeSet) {
+    private func _applyChanges(_ changes: SectionChangeSet) {
         self.deleteSections(changes.deletes, animated: true)
         self.insertSections(changes.inserts, animated: true)
         self.reloadSupplementaryViews(in: changes.updates, animated: true)
     }
     
-    public func applyChanges(_ changes: ItemChangeSet) {
+    private func _applyChanges(_ changes: ItemChangeSet) {
         self.deleteItems(at: Array(changes.deletes), animated: true)
         self.insertItems(at: Array(changes.inserts), animated: true)
         

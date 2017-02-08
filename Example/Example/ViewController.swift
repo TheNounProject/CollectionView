@@ -119,6 +119,30 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         BasicHeaderView.register(collectionView)
         
         collectionView.reloadData()
+        
+    
+        
+        if let t = self.test {
+            let moc = AppDelegate.current.managedObjectContext
+            
+            let cReq = NSFetchRequest<Child>(entityName: "Child")
+            for c in try! moc.fetch(cReq) {
+                moc.delete(c)
+            }
+            
+            let pReq = NSFetchRequest<Parent>(entityName: "Parent")
+            for p in try! moc.fetch(pReq) {
+                moc.delete(p)
+            }
+            
+            for t in t.core {
+                let p = Parent.create(withChild: false)
+                for _ in 0..<t.count {
+                    _ = p.createChild()
+                }
+            }
+        }
+        
     }
     
     
@@ -156,19 +180,107 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     }
     
     
-    var tests = [
-        [3, 4, 0, 1, 5, 2],
-        [0, 4, 1, 5, 3, 2],
-        [5, 3, 2, 4, 0, 1],
-        [1, 4, 3, 5, 2, 0],
-        [3, 5, 1, 4, 0, 2],
-        [1, 0, 4, 3, 2, 5]
-    ]
+    
+    struct Test {
+        var core : [[IndexPath?]] = [
+            [
+                nil,
+                IndexPath.for(item: 6, section: 1),
+                IndexPath.for(item: 3, section: 0),
+                IndexPath.for(item: 1, section: 1),
+                IndexPath.for(item: 4, section: 0),
+                IndexPath.for(item: 5, section: 0),
+                IndexPath.for(item: 0, section: 1),
+                IndexPath.for(item: 1, section: 0),
+                IndexPath.for(item: 3, section: 1),
+                IndexPath.for(item: 5, section: 1),
+                nil,
+                nil,
+                ],
+            [
+                IndexPath.for(item: 7, section: 0),
+                IndexPath.for(item: 2, section: 0),
+                nil,
+                IndexPath.for(item: 6, section: 0),
+                nil,
+                IndexPath.for(item: 2, section: 1),
+                nil
+            ]
+        ]
+        
+        var inserts : [IndexPath] = [
+            IndexPath.for(item: 0, section: 0),
+            IndexPath.for(item: 4, section: 1)
+        ]
+        
+    }
+    
+    var test : Test?
+    
+//    var tests : [[IndexPath?]] = [
+//        [
+//            nil,
+//            IndexPath.for(item: 6, section: 1),
+//            IndexPath.for(item: 3, section: 0),
+//            IndexPath.for(item: 1, section: 1),
+//            IndexPath.for(item: 4, section: 0),
+//            IndexPath.for(item: 5, section: 0),
+//            IndexPath.for(item: 0, section: 1),
+//            IndexPath.for(item: 1, section: 0),
+//            IndexPath.for(item: 3, section: 1),
+//            IndexPath.for(item: 5, section: 1),
+//            nil,
+//            nil,
+//            ],
+//        [
+//            IndexPath.for(item: 7, section: 0),
+//            IndexPath.for(item: 2, section: 0),
+//            nil,
+//            IndexPath.for(item: 6, section: 0),
+//            nil,
+//            IndexPath.for(item: 2, section: 1),
+//            nil
+//        ]
+//    ]
+    
+//    var inserts : [IndexPath] = [
+//        IndexPath.for(item: 0, section: 0),
+//        IndexPath.for(item: 4, section: 1)
+//    ]
     
     
     @IBAction func radomize(_ sender: Any?) {
         
         guard relational else { return }
+        
+        if let t = test {
+            for (idx, section) in self.relationalResultsController.sections.enumerated() {
+                let test = t.core[idx]
+                
+                for (cIdx, _c) in section.objects.enumerated() {
+                    let child = _c as! Child
+                    
+                    if let ip = test[cIdx] {
+                        if ip._section != idx {
+                            child.parent = self.relationalResultsController._object(for: ip)
+                        }
+                        child.displayOrder = NSNumber(value: ip._item)
+                    }
+                    else {
+                        child.managedObjectContext?.delete(child)
+                    }
+                }
+            }
+            
+            for ip in t.inserts {
+                if let p = relationalResultsController._object(for: ip) {
+                    let c = p.createChild()
+                    c.displayOrder = NSNumber(value: ip._item)
+                }
+            }
+            return
+        }
+        
         
         let sections = relationalResultsController.sections
         
@@ -213,6 +325,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
                 child.displayOrder = NSNumber(value: sectionIndexes[idx])
             }
         }
+ 
     }
     
     
@@ -311,8 +424,6 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             }
         }
     }
-    
-
     
     
     

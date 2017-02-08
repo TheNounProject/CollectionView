@@ -866,7 +866,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             var _proposed = indexPath._item
             guard let ops = _operations[section] else { return indexPath }
             
-            Swift.print("Adjusting: \(_proposed) against : \(ops)")
+//            Swift.print("Adjusting: \(_proposed) against : \(ops)")
             
             var all = ops._open.union(ops._locked)
             var idx = all.startIndex
@@ -899,7 +899,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             _operations[indexPath._section]?.deleted(at: indexPath._item)
             
             let new = IndexPath.for(item: _proposed, section: section)
-            Swift.print("Adjusted \(indexPath)  to: \(new)")
+//            Swift.print("Adjusted \(indexPath)  to: \(new)")
             return new
         }
         
@@ -918,7 +918,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._updateContext.reset()
             self.info.recalculate()
             self._updateMap.removeAll()
-            Swift.print(self.contentDocumentView.preparedCellIndex)
+//            Swift.print(self.contentDocumentView.preparedCellIndex.orderedLog())
         }
         _editing += 1
     }
@@ -933,24 +933,33 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var newIndex = _updateMap
         
+//        Swift.print("Remaining Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
+//        Swift.print("Pre-adjust Cell Index: \(newIndex.orderedLog())")
+        
         // By now the preparedCellIndex will only contain
-        Swift.print(_updateContext)
+//        Swift.print(_updateContext)
         for stale in self.contentDocumentView.preparedCellIndex.ordered() {
             let adjustedIP = _updateContext.adjust(stale.index)
             
             var view = _updateContext.reloadedItems.contains(stale.index)
                 ? _prepareReplacementCell(for: stale.value, at: adjustedIP)
                 : stale.value
+            
+            self.contentDocumentView.preparedCellIndex.remove(view)
             newIndex[adjustedIP] = view
+            
+//            Swift.print("Adjusted View from \(stale.index) to \(adjustedIP) : \(view)")
             
             if adjustedIP != stale.index {
                 if let attrs = self.layoutAttributesForItem(at: adjustedIP) {
                     _updateContext.updates.append(ItemUpdate(view: view, attrs: attrs, type: .update))
                 }
             }
+            
+//            Swift.print("Pre-adjust Cell Index: \(newIndex.orderedLog())")
         }
+//        Swift.print("New Cell Index: \(newIndex.orderedLog())")
         self.contentDocumentView.pendingUpdates = _updateContext.updates
-        
         self.contentDocumentView.preparedCellIndex = newIndex
         self.relayout(animated, scrollPosition: .none, completion: nil)
     }
@@ -991,23 +1000,33 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         Swift.print("Preparing replacment cell for item at: \(indexPath)")
         
+        // Update the cell index so the same cell be returned via deuque(_:)
+//        currentCell.attributes = currentCell.attributes?.copyWithIndexPath(indexPath)
+//        self.contentDocumentView.preparedCellIndex[indexPath] = currentCell
+        defer {
+            self.contentDocumentView.preparedCellIndex.remove(currentCell)
+            self.contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
+        }
+        
         guard let newCell = self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
             assertionFailure("For some reason collection view tried to load cells without a data source")
             return currentCell
         }
         assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
+        self.contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
+        
+        Swift.print("Loaded replacement cell \(newCell)")
         
         if newCell == currentCell {
             return newCell
         }
         
-        let attrs = currentCell.attributes ?? self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
-        attrs?.frame = currentCell.frame
-        
         let removal = ItemUpdate(view: currentCell, attrs: currentCell.attributes!, type: .remove)
-        self.contentDocumentView.pendingUpdates.append(removal)
+//        _updateContext.updates.append(removal)
+        self.contentDocumentView.removeItem(removal)
+        Swift.print("Remove replaced cell \(currentCell.attributes!.indexPath)")
         
-        if let a = attrs {
+        if let a = currentCell.attributes?.copyWithIndexPath(indexPath) {
             newCell.applyLayoutAttributes(a, animated: false)
         }
         if newCell.superview == nil {
@@ -2003,7 +2022,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         return nil
     }
     
-    public final func indexPathForSupplementaryView(_ view: CollectionReusableView) -> IndexPath? { return view.attributes?.indexPath }
+    public final func indexPath(forSupplementaryView view: CollectionReusableView) -> IndexPath? { return view.attributes?.indexPath }
     
     public final func supplementaryView(forElementKind kind: String, at indexPath: IndexPath) -> CollectionReusableView? {
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: indexPath)

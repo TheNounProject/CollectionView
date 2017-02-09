@@ -39,7 +39,7 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
     
     public var object : Any? { return self._object }
     public var objects: [Any] { return _storage.objects  }
-    public var numberOfObjects: Int { return objects.count }
+    public var numberOfObjects: Int { return _storage.count }
     
     fileprivate let _object : Section?
     
@@ -174,9 +174,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     public var allObjects: [Any] { return _fetchedObjects.objects }
     public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
     
-    public var sectionFetchRequest : NSFetchRequest<Section>? { didSet { setNeedsFetch() }}
-    public var fetchRequest = NSFetchRequest<Element>() { didSet { setNeedsFetch() }}
-    
+    public let sectionFetchRequest : NSFetchRequest<Section>?
+    public let fetchRequest : NSFetchRequest<Element>
     
     private var _fetched: Bool = false
     
@@ -212,13 +211,13 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         }
     }
     
-    public init(context: NSManagedObjectContext, request: NSFetchRequest<Element> = NSFetchRequest<Element>(), sectionRequest: NSFetchRequest<Section>? = nil, sectionKeyPath keyPath: String) {
+    public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionRequest: NSFetchRequest<Section>? = nil, sectionKeyPath keyPath: String) {
         
         self.managedObjectContext = context
-        super.init()
-        
         self.fetchRequest = request
         self.sectionFetchRequest = sectionRequest
+        super.init()
+        
         self.sectionKeyPath = keyPath
     }
     
@@ -227,12 +226,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     // MARK: - Counts & Section Names
     /*-------------------------------------------------------------------------------*/
     
-    public func numberOfSections() -> Int {
+    public var numberOfSections : Int {
         return _sections.count
     }
     
     public func numberOfObjects(in section: Int) -> Int {
-        return self._sections[section].objects.count
+        return self._sections[section].numberOfObjects
     }
     
     public func sectionName(forSectionAt indexPath: IndexPath) -> String {
@@ -250,12 +249,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     // MARK: - Public Item Accessors
     /*-------------------------------------------------------------------------------*/
-    public func section(for sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
         return self._section(for: sectionIndexPath)
     }
     
-    public final func object(for sectionIndexPath: IndexPath) -> Any? {
-        return self._object(for: sectionIndexPath)
+    public final func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
+        return self._object(forSectionAt: sectionIndexPath)
     }
     public final func object(at indexPath: IndexPath) -> Any? {
         return self._object(at: indexPath)
@@ -276,7 +275,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return self._section(for: ip)
     }
     
-    public func _object(for sectionIndexPath: IndexPath) -> Section? {
+    public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
         return self._sections.object(at: sectionIndexPath._section)._object
     }
     
@@ -374,7 +373,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             p.insert(object)
             _objectSectionMap[object] = p
         }
-        
+                                                        
         // Sort the sections all at once
         self.sortSections()
     }
@@ -389,6 +388,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     fileprivate func _insert(section: Section?) -> SectionInfo {
         if let s = self._sectionWrapper(for: section) { return s }
+        if _sectionCopy == nil { _sectionCopy = _sections }
         let s = SectionInfo(object: section, objects: [])
         _sections.add(s)
         return s
@@ -396,16 +396,16 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     private func _remove(_ section: Section?) {
         guard let ip = self.indexPath(for: section) else { return }
+        if _sectionCopy == nil { _sectionCopy = _sections }
         _sections.remove(at: ip._section)
     }
     
     func sortSections() {
+        self._sections.needsSort = false
         guard let sort = sectionFetchRequest?.sortDescriptors, sort.count > 0 else {
             return
         }
-        
         let s = self._sections.sorted(by: { (s1, s2) -> Bool in
-            
             // Always put ungroued at the bottom, maybe this should be an option
             if s1.object == nil || s2.object == nil {
                 return s1.object != nil
@@ -428,6 +428,17 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /*-------------------------------------------------------------------------------*/
     
     fileprivate var context = UpdateContext<Section, Element>()
+    fileprivate var _sectionCopy : OrderedSet<SectionInfo>?
+    
+    public var pendingChangeCount : Int {
+        return pendingItemChangeCount + pendingSectionChangeCount
+    }
+    public var pendingItemChangeCount : Int {
+        return context.objectChangeSet.count
+    }
+    public var pendingSectionChangeCount : Int {
+        return context.sectionChangeSet.count
+    }
     
     let queue : OperationQueue = {
         let q = OperationQueue()
@@ -437,8 +448,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     func handleChangeNotification(_ notification: Notification) {
         
-        self.delegate?.controllerWillChangeContent(controller: self)
+        guard let delegate = self.delegate, self._fetched else {
+            print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
+            return
+        }
         
+        _sectionCopy = nil
         self.context.reset()
         
 //        print("•••••••••••••••• Start ••••••••••••••••")
@@ -449,6 +464,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         
         print(context.sectionChangeSet)
         print(context.objectChangeSet)
+        
+        if context.sectionChangeSet.count == 0 && context.objectChangeSet.count == 0 {
+            return
+        }
+        
+        self.delegate?.controllerWillChangeContent(controller: self)
 
         processDeletedSections()
         processInsertedSections()
@@ -478,6 +499,33 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
 //                print("\(self.indexPath(for: s._object)!) \(set)")
             }
         }
+        
+        if let oldSections = _sectionCopy {
+            var sectionChanges = ChangeSet(source: oldSections, target: _sections)
+            print(oldSections)
+            print(_sections)
+            print(sectionChanges)
+            
+            sectionChanges.reduceEdits()
+            for change in sectionChanges.edits {
+                switch change.operation {
+                case .insertion:
+                    let ip = IndexPath.for(section: change.index)
+                    self.delegate?.controller(self, didChangeSection: change.value, at: nil, for: .insert(ip))
+                case .deletion:
+                    let ip = IndexPath.for(section: change.index)
+                    self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .delete)
+                case .substitution:
+                    let ip = IndexPath.for(section: change.index)
+                    self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .update)
+                case let .move(origin):
+                    let ip = IndexPath.for(section: origin)
+                    self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .move(IndexPath.for(section: change.index)))
+                }
+            }
+        }
+        _sectionCopy = nil
+        
         
 //        logSections()
         
@@ -643,6 +691,10 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
 //        }
     }
     
+    
+//    public var objectChangeKeys = Set<String>()
+//    public var sectionChangeKeys = Set<String>()
+    
     func preprocess(notification: Notification) {
         
         var sections = ObjectChangeSet<Int, Section>()
@@ -689,6 +741,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         // Updated
         if let updated = info[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
             for obj in updated {
+                print(obj)
                 if let o = obj as? Section {
                     
                     let _ip = self.indexPath(for: o)
@@ -705,9 +758,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                             sections.add(inserted: o)
                         }
                         
-//                        print(o.changedValuesForCurrentEvent())
-//                        print(o.changedValues())
-//                        print(o.committedValues(forKeys: []))
+                        print(o.changedValuesForCurrentEvent())
+                        print(o.changedValues())
+                        print(o.committedValues(forKeys: []))
                         
                     }
                         // No sectionRQ, add it to updated to check order

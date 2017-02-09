@@ -23,7 +23,7 @@ import Foundation
                                   heightForFooterInSection section: Int) -> CGFloat
     
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-                                  insetsForSectionAtIndex section: Int) -> EdgeInsets
+                                  insetForSectionAt section: Int) -> EdgeInsets
 
     
 }
@@ -97,7 +97,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
              * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
              */
             
-            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSectionAtIndex: section) ?? self.sectionInsets
+            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAt: section) ?? self.sectionInsets
             let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
             
             let itemWidth = self.collectionView!.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right

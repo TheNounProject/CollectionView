@@ -58,7 +58,7 @@ public protocol ResultsController {
     
     var delegate : ResultsControllerDelegate? { get set }
     
-    func numberOfSections() -> Int
+    var numberOfSections : Int { get }
     func numberOfObjects(in section: Int) -> Int
     
     var sections : [ResultsControllerSectionInfo] { get }
@@ -66,7 +66,7 @@ public protocol ResultsController {
     
     // MARK: - Getting Items
     /*-------------------------------------------------------------------------------*/
-    func section(for sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo?
+    func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo?
     func object(at indexPath: IndexPath) -> Any?
     
     func sectionName(forSectionAt indexPath :IndexPath) -> String
@@ -75,6 +75,12 @@ public protocol ResultsController {
 }
 
 
+public protocol ResultsControllerSectionInfo {
+    var object : Any? { get }
+    var numberOfObjects : Int { get }
+    var objects : [Any] { get }
+}
+
 public protocol ResultsControllerDelegate {
     func controllerWillChangeContent(controller: ResultsController)
     func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
@@ -82,11 +88,7 @@ public protocol ResultsControllerDelegate {
     func controllerDidChangeContent(controller: ResultsController)
 }
 
-public protocol ResultsControllerSectionInfo {
-    var object : Any? { get }
-    var numberOfObjects : Int { get }
-    var objects : [Any] { get }
-}
+
 
 
 public enum ResultsControllerChangeType {
@@ -105,6 +107,10 @@ internal struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: Custom
     var inserted = Set<Object>()
     var updated = IndexedSet<Index, Object>()
     var deleted = IndexedSet<Index, Object>()
+    
+    var count : Int {
+        return inserted.count + updated.count + deleted.count
+    }
     
     var description: String {
         let str = "Change Set \(Object.className()):"

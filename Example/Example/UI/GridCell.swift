@@ -34,10 +34,6 @@ class GridCell : CollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
-//        if let c = child {
-//            self.badgeLabel.un
-//        }
         self.badgeLabel.unbind("value")
     }
     

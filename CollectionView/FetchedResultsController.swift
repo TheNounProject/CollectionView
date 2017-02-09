@@ -153,9 +153,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         self.sectionKeyPath = sectionKeyPath
     }
     
-
-    
-    public func numberOfSections() -> Int {
+    public var numberOfSections : Int {
         return _sections.count
     }
     
@@ -171,11 +169,11 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     
     // MARK: - Public Item Accessors
     /*-------------------------------------------------------------------------------*/
-    public func section(for sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
         return self._section(for: sectionIndexPath)
     }
     
-    public func object(for sectionIndexPath: IndexPath) -> Any? {
+    public func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
         return self._object(for: sectionIndexPath)
     }
     public func object(at indexPath: IndexPath) -> Any? {

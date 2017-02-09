@@ -43,14 +43,14 @@ import Foundation
                                   heightForFooterInSection section: NSInteger) -> CGFloat
     
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-                                  insetsForSectionAtIndex section: NSInteger) -> EdgeInsets
+                                  insetForSectionAt section: NSInteger) -> EdgeInsets
     
     // Between to items in the same column
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-                                  rowSpacingForSectionAtIndex section: NSInteger) -> CGFloat
+                                  rowSpacingForSectionAt section: NSInteger) -> CGFloat
     
     @objc optional func collectionview(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-                                 columnSpacingForSectionAtIndex section: NSInteger) -> CGFloat
+                                 columnSpacingForSectionAt section: NSInteger) -> CGFloat
     
 }
 
@@ -64,10 +64,10 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
     public final var columnCount : NSInteger = 2 { didSet{ invalidateLayout() }}
     
     /// The spacing between each column
-    public final var minimumColumnSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
+    public final var columnSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
     
     /// The vertical spacing between items in the same column
-    public final var minimumInteritemSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
+    public final var interitemSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
     
     /// The height of section header views
     public final var headerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
@@ -181,9 +181,9 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
              * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
              */
             
-            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSectionAtIndex: section) ?? self.sectionInsets
-            let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, rowSpacingForSectionAtIndex: section) ?? self.minimumInteritemSpacing
-            let colSpacing = self.delegate?.collectionview?(self.collectionView!, layout: self, columnSpacingForSectionAtIndex: section) ?? self.minimumColumnSpacing
+            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSection: section) ?? self.sectionInsets
+            let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, rowSpacingForSection: section) ?? self.interitemSpacing
+            let colSpacing = self.delegate?.collectionview?(self.collectionView!, layout: self, columnSpacingForSection: section) ?? self.columnSpacing
             
             let contentWidth = self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right
             let spaceColumCount = CGFloat(colCount-1)

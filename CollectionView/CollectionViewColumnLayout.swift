@@ -53,10 +53,10 @@ import Foundation
     
     // Between to items in the same column
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        minimumInteritemSpacingForSectionAt section: Int) -> CGFloat
+        interitemSpacingForSectionAt section: Int) -> CGFloat
     
     @objc optional func collectionview(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        minimumColumnSpacingForSectionAt section: Int) -> CGFloat
+        columnSpacingForSectionAt section: Int) -> CGFloat
     
 }
 
@@ -84,10 +84,10 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     open var columnCount : NSInteger = 2 { didSet{ invalidateLayout() }}
 
     /// The spacing between each column
-    open var minimumColumnSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
+    open var columnSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
     
     /// The vertical spacing between items in the same column
-    open var minimumInteritemSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
+    open var interitemSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
 
     /// The height of section header views
     open var headerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
@@ -96,7 +96,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     open var footerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
 
     /// The default height to apply to all items
-    open var defaultItemHeight : CGFloat = 50 { didSet{ invalidateLayout() }}
+    open var itemHeight : CGFloat = 50 { didSet{ invalidateLayout() }}
 
     /// If supplementary views should respect section insets or fill the CollectionView width
     open var insetSupplementaryViews : Bool = false { didSet{ invalidateLayout() }}
@@ -161,7 +161,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         }
         let width:CGFloat = self.collectionView!.contentVisibleRect.size.width - insets.left - insets.right
         let spaceColumCount:CGFloat = CGFloat(colCount-1)
-        return floor((width - (spaceColumCount*self.minimumColumnSpacing)) / CGFloat(colCount))
+        return floor((width - (spaceColumCount*self.columnSpacing)) / CGFloat(colCount))
     }
     
     override open func prepareLayout(){
@@ -191,8 +191,8 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             */
 //            let colCount = self.columnsInSection(section)
             let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(_collectionView, layout: self, insetForSectionAt: section) ?? self.sectionInset
-            let itemSpacing : CGFloat = self.delegate?.collectionView?(_collectionView, layout: self, minimumInteritemSpacingForSectionAt: section) ?? self.minimumInteritemSpacing
-            let colSpacing = self.delegate?.collectionview?(_collectionView, layout: self, minimumColumnSpacingForSectionAt: section) ?? self.minimumColumnSpacing
+            let itemSpacing : CGFloat = self.delegate?.collectionView?(_collectionView, layout: self, interitemSpacingForSectionAt: section) ?? self.interitemSpacing
+            let colSpacing = self.delegate?.collectionview?(_collectionView, layout: self, columnSpacingForSectionAt: section) ?? self.columnSpacing
             
             let contentWidth = _collectionView.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right
             let spaceColumCount = CGFloat(colCount-1)
@@ -246,7 +246,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                     }
                 }
                 else {
-                    itemHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForItemAt: indexPath) ?? self.defaultItemHeight
+                    itemHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForItemAt: indexPath) ?? self.itemHeight
                 }
                 
                 let attributes = CollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)

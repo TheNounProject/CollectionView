@@ -394,7 +394,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     // Basic Header View delegate (+ button)
     func basicHeaderView(_ view: BasicHeaderView, didSelectButton button: IconButton) {
         
-        guard let ip = collectionView.indexPathForSupplementaryView(view) else { return }
+        guard let ip = collectionView.indexPath(forSupplementaryView: view) else { return }
         guard  let section = self.resultsController.section(for: ip)?.object as? Parent else { return }
         
         let flags = NSApp.currentEvent?.modifierFlags

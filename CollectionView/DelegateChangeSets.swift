@@ -10,74 +10,108 @@ import Foundation
 
 
 
-public struct ItemChangeSet {
-    public typealias Move = (source: IndexPath, destination: IndexPath)
+public struct ResultsChangeSet {
     
-    public var inserts = Set<IndexPath>()
-    public var deletes = Set<IndexPath>()
-    public var updates = Set<IndexPath>()
-    public var moves = [Move]()
+    var items = ItemChangeSet()
+    var sections = SectionChangeSet()
     
     public init() { }
     
     public mutating func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
-        switch changeType {
-        case .delete:
-            print("Delete item at \(source!)")
-            deletes.insert(source!)
-        case .update(_):
-            print("Update item at \(source!)")
-            updates.insert(source!)
-        case let .move(newIndexPath):
-            print("Move item at \(source!) to \(newIndexPath)")
-            moves.append((source!, newIndexPath))
-        case let .insert(newIndexPath):
-            print("Insert item at \(newIndexPath)")
-            inserts.insert(newIndexPath)
-        }
+        items.addChange(forItemAt: source, with: changeType)
     }
     
-    public mutating func reset() {
-        inserts.removeAll()
-        deletes.removeAll()
-        updates.removeAll()
-        moves.removeAll()
+    public mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
+        sections.addChange(forSectionAt: source, with: changeType)
+    }
+    
+    public var count : Int {
+        return items.count + sections.count
+    }
+    
+    public mutating func removeAll() {
+        items.reset()
+        sections.reset()
     }
 }
 
-public struct SectionChangeSet {
-    public typealias Move = (source: Int, destination: Int)
+
+struct ItemChangeSet {
+    typealias Move = (source: IndexPath, destination: IndexPath)
     
-    public var inserts = IndexSet()
-    public var deletes = IndexSet()
-    public var updates = IndexSet()
-    public var moves = [Move]()
+    var inserted = Set<IndexPath>()
+    var deleted = Set<IndexPath>()
+    var updated = Set<IndexPath>()
+    var moved = [Move]()
     
-    public init() { }
+    init() { }
     
-    public mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
+    var count : Int {
+        return inserted.count + deleted.count + updated.count + moved.count
+    }
+    
+    mutating func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         switch changeType {
         case .delete:
-            print("Delete section at \(source!)")
-            deletes.insert(source!._section)
-        case .update:
-            print("Update section at \(source!)")
-            updates.insert(source!._section)
-            break;
+            print("Delete item at \(source!)")
+            deleted.insert(source!)
+        case .update(_):
+            print("Update item at \(source!)")
+            updated.insert(source!)
         case let .move(newIndexPath):
-            print("Move section \(source!) to \(newIndexPath)")
-            moves.append((source!._section, newIndexPath._section))
+            print("Move item at \(source!) to \(newIndexPath)")
+            moved.append((source!, newIndexPath))
         case let .insert(newIndexPath):
-            print("Insert section at \(source!)")
-            inserts.insert(newIndexPath._section)
+            print("Insert item at \(newIndexPath)")
+            inserted.insert(newIndexPath)
         }
     }
     
-    public mutating func reset() {
-        inserts.removeAll()
-        deletes.removeAll()
-        updates.removeAll()
-        moves.removeAll()
+    mutating func reset() {
+        inserted.removeAll()
+        deleted.removeAll()
+        updated.removeAll()
+        moved.removeAll()
+    }
+}
+
+struct SectionChangeSet {
+     typealias Move = (source: Int, destination: Int)
+    
+     var inserted = IndexSet()
+     var deleted = IndexSet()
+     var updated = IndexSet()
+     var moved = [Move]()
+    
+     init() { }
+    
+    var count : Int {
+        return inserted.count + deleted.count + updated.count + moved.count
+    }
+    
+     mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
+        switch changeType {
+        case .delete:
+            print("Delete section at \(source!)")
+            deleted.insert(source!._section)
+        case .update:
+            print("Update section at \(source!)")
+            updated.insert(source!._section)
+            break;
+        case let .move(newIndexPath):
+            print("Move section \(source!) to \(newIndexPath)")
+            moved.append((source!._section, newIndexPath._section))
+        case let .insert(newIndexPath):
+            print("Insert section at \(newIndexPath)")
+            inserted.insert(newIndexPath._section)
+        }
+    }
+    
+     mutating func reset() {
+        inserted.removeAll()
+        deleted.removeAll()
+        updated.removeAll()
+        moved.removeAll()
     }
 }
 
@@ -86,27 +120,27 @@ public struct SectionChangeSet {
 public extension CollectionView {
     
     
-    public func applyChanges(_ items: ItemChangeSet, sections: SectionChangeSet, completion: AnimationCompletion? = nil) {
+    public func applyChanges(from changeSet: ResultsChangeSet, completion: AnimationCompletion? = nil) {
         self.performBatchUpdates({
-            _applyChanges(sections)
-            _applyChanges(items)
+            _applyChanges(changeSet.items)
+            _applyChanges(changeSet.sections)
         }, completion: completion)
     }
     
     private func _applyChanges(_ changes: SectionChangeSet) {
-        self.deleteSections(changes.deletes, animated: true)
-        self.insertSections(changes.inserts, animated: true)
-        self.reloadSupplementaryViews(in: changes.updates, animated: true)
+        self.deleteSections(changes.deleted, animated: true)
+        self.insertSections(changes.inserted, animated: true)
+        self.reloadSupplementaryViews(in: changes.updated, animated: true)
     }
     
     private func _applyChanges(_ changes: ItemChangeSet) {
-        self.deleteItems(at: Array(changes.deletes), animated: true)
-        self.insertItems(at: Array(changes.inserts), animated: true)
+        self.deleteItems(at: Array(changes.deleted), animated: true)
+        self.insertItems(at: Array(changes.inserted), animated: true)
         
-        for move in changes.moves {
+        for move in changes.moved {
             self.moveItem(at: move.source, to: move.destination, animated: true)
         }
-        self.reloadItems(at: Array(changes.updates), animated: true)
+        self.reloadItems(at: Array(changes.updated), animated: true)
     }
     
     

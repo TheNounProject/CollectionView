@@ -23,7 +23,7 @@ open class CollectionViewLayoutAttributes {
         get { return CGRect(origin: CGPoint.zero, size: self.frame.size) }
         set { self.frame.size = bounds.size }
     }
-    open var alpha: CGFloat = 0.5
+    open var alpha: CGFloat = 1
     open var zIndex: CGFloat = 0
     open var hidden: Bool = false
     open var floating: Bool = false

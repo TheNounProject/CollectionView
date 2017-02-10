@@ -166,9 +166,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     fileprivate typealias SectionInfo = RelationalSectionInfo<Section, Element>
     
-    
-    let uuid: UUID = UUID()
-    
     // MARK: - Results Controller Protocol
     /*-------------------------------------------------------------------------------*/
     public var allObjects: [Any] { return _fetchedObjects.objects }

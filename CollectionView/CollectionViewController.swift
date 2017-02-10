@@ -59,7 +59,7 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
         }
     }
     
-    open func numberOfSectionsInCollectionView(_ collectionView: CollectionView) -> Int {
+    open func numberOfSections(in collectionView: CollectionView) -> Int {
         return 0
     }
     

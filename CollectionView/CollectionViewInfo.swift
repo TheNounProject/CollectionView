@@ -40,7 +40,7 @@ internal final class CollectionViewInfo {
         
         let layout = self.collectionView.collectionViewLayout
         var totalNumberOfItems = 0
-        self.numberOfSections = self.collectionView.dataSource?.numberOfSectionsInCollectionView(self.collectionView) ?? 0
+        self.numberOfSections = self.collectionView.dataSource?.numberOfSections(in: self.collectionView) ?? 0
         if self.numberOfSections > 0 {
             for sIndex in 0..<self.numberOfSections {
                 let itemCount = self.collectionView.dataSource?.collectionView(self.collectionView, numberOfItemsInSection: sIndex) ?? 0

@@ -12,7 +12,7 @@ import Foundation
 
 
 @objc public protocol CollectionViewDataSource {
-    func numberOfSectionsInCollectionView(_ collectionView: CollectionView) -> Int
+    func numberOfSections(in collectionView: CollectionView) -> Int
     func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int
     func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell
     @objc optional func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView

@@ -135,12 +135,12 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
         beginEditing()
     }
     
-    func endEditing() -> ChangeSet<OrderedSet<Element>> {
+    func endEditing(forceUpdates: Set<Element>) -> ChangeSet<OrderedSet<Element>> {
         assert(isEditing, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
         assert(!needsSort, "endEditing() called but the section still needs to be sorted.")
         isEditing = false
         self.needsSort = false
-        let changes = ChangeSet(source: _storageCopy, target: _storage)
+        let changes = ChangeSet(source: _storageCopy, target: _storage, forceUpdates: forceUpdates)
         self._storageCopy.removeAll()
         return changes
     }
@@ -502,15 +502,15 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         // Hang on to the changes for each section to lookup sources for items
         // that were move to a new section
         var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
-        var convertedIO = Set<Element>()
+//        var convertedIO = Set<Element>()
         
-        print("BEFORE cross sectional reduction")
+//        print("BEFORE cross sectional reduction")
         for s in _sections {
             if s.needsSort {
                 s.sortItems(using: fetchRequest.sortDescriptors ?? [])
             }
             if s.isEditing {
-                let set = s.endEditing()
+                let set = s.endEditing(forceUpdates: self.context.objectChangeSet.updated.valuesSet)
                 processedSections[s] = set
 //                print("\(self.indexPath(for: s._object)!) \(set)")
             }
@@ -518,9 +518,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         
         if let oldSections = _sectionCopy {
             var sectionChanges = ChangeSet(source: oldSections, target: _sections)
-            print(oldSections)
-            print(_sections)
-            print(sectionChanges)
+//            print(oldSections)
+//            print(_sections)
+//            print(sectionChanges)
             
             sectionChanges.reduceEdits()
             for change in sectionChanges.edits {
@@ -729,7 +729,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             for obj in sectionChanges.inserted {
                 if let o = obj as? Section {
-                    if sectionFetchRequest.predicate == nil || sectionFetchRequest.predicate?.evaluate(with: 0) == true {
+                    if sectionFetchRequest.predicate == nil || sectionFetchRequest.predicate?.evaluate(with: o) == true {
                         sections.add(inserted: o)
                     }
                 }
@@ -749,9 +749,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                             sections.add(inserted: o)
                         }
                         
-                        print(o.changedValuesForCurrentEvent())
-                        print(o.changedValues())
-                        print(o.committedValues(forKeys: []))
+//                        print(o.changedValuesForCurrentEvent())
+//                        print(o.changedValues())
+//                        print(o.committedValues(forKeys: []))
                         
                     }
                         // No sectionRQ, add it to updated to check order
@@ -773,7 +773,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             for obj in itemChanges.inserted {
                 if let o = obj as? Element {
-                    if fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: 0) == true {
+                    if fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true {
                         objects.add(inserted: o)
                     }
                 }

@@ -60,7 +60,10 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     var relational: Bool = false
     
     let fetchedResultsController = FetchedResultsController<NSNumber, Child>(context: AppDelegate.current.managedObjectContext)
-    let relationalResultsController = RelationalResultsController<Parent, Child>(context: AppDelegate.current.managedObjectContext, sectionKeyPath: "parent")
+    let relationalResultsController = RelationalResultsController(context: AppDelegate.current.managedObjectContext,
+                                                                                 request: NSFetchRequest<Child>(entityName: "Child"),
+                                                                                 sectionRequest: NSFetchRequest<Parent>(entityName: "Parent"),
+                                                                                 sectionKeyPath: "parent")
     
     
     var resultsController : ResultsController {
@@ -87,21 +90,16 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         try! resultsController.performFetch()
         
-        let childRequest = NSFetchRequest<Child>(entityName: "Child")
-        let parentRequest = NSFetchRequest<Parent>(entityName: "Parent")
-        
-        childRequest.sortDescriptors = [
+        relationalResultsController.fetchRequest.sortDescriptors = [
             NSSortDescriptor(key: "displayOrder", ascending: true)
 //            NSSortDescriptor(key: "created", ascending: false)
         ]
-        parentRequest.sortDescriptors = [
+        relationalResultsController.fetchRequest.sortDescriptors = [
             NSSortDescriptor(key: "displayOrder", ascending: true)
 //            NSSortDescriptor(key: "created", ascending: false)
         ]
         
         relationalResultsController.sectionKeyPath = "parent"
-        relationalResultsController.fetchRequest = childRequest
-        relationalResultsController.sectionFetchRequest = parentRequest
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -110,7 +108,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         listLayout.headerHeight = 36
         
         gridLayout.headerHeight = 36
-        gridLayout.defaultItemHeight = 80
+        gridLayout.itemHeight = 80
         
         collectionView.collectionViewLayout = listLayout
         
@@ -262,7 +260,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
                     
                     if let ip = test[cIdx] {
                         if ip._section != idx {
-                            child.parent = self.relationalResultsController._object(for: ip)
+                            child.parent = self.relationalResultsController._object(forSectionAt: ip)
                         }
                         child.displayOrder = NSNumber(value: ip._item)
                     }
@@ -273,7 +271,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             }
             
             for ip in t.inserts {
-                if let p = relationalResultsController._object(for: ip) {
+                if let p = relationalResultsController._object(forSectionAt: ip) {
                     let c = p.createChild()
                     c.displayOrder = NSNumber(value: ip._item)
                 }
@@ -395,7 +393,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     func basicHeaderView(_ view: BasicHeaderView, didSelectButton button: IconButton) {
         
         guard let ip = collectionView.indexPath(forSupplementaryView: view) else { return }
-        guard  let section = self.resultsController.section(for: ip)?.object as? Parent else { return }
+        guard  let section = self.resultsController.sectionInfo(forSectionAt: ip)?.object as? Parent else { return }
         
         let flags = NSApp.currentEvent?.modifierFlags
         
@@ -409,8 +407,8 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             newParent.displayOrder = NSNumber(value: order)
             
             order += 1
-            for idx in ip._section..<resultsController.numberOfSections() {
-                if let p = resultsController.section(for: IndexPath.for(section: idx))?.object as? Parent {
+            for idx in ip._section..<resultsController.numberOfSections {
+                if let p = resultsController.sectionInfo(forSectionAt: IndexPath.for(section: idx))?.object as? Parent {
                     p.displayOrder = NSNumber(value: order)
                     
                 }
@@ -432,8 +430,8 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     // MARK: - Collection View Data Source
     /*-------------------------------------------------------------------------------*/
     
-    override func numberOfSectionsInCollectionView(_ collectionView: CollectionView) -> Int {
-        return resultsController.numberOfSections()
+    override func numberOfSections(in collectionView: CollectionView) -> Int {
+        return resultsController.numberOfSections
     }
     
     override func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -452,7 +450,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         view.drawBorder = true
         view.accessoryButton.setIcon(.add, animated: false)
         view.delegate = self
-        view.accessoryButton.isHidden = !relational || relationalResultsController.object(for: indexPath) == nil
+        view.accessoryButton.isHidden = !relational || relationalResultsController.object(forSectionAt: indexPath) == nil
         
         return view
     }
@@ -642,7 +640,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             }
         }
         else {
-            child.parent = self.resultsController.section(for: destination)?.object as? Parent
+            child.parent = self.resultsController.sectionInfo(forSectionAt: destination)?.object as? Parent
             
             for idx in source._item..<resultsController.numberOfObjects(in: source._section) {
                 let ip = IndexPath.for(item: idx, section: source._section)
@@ -683,27 +681,25 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     // This implementation uses a number of helpers that make tracking and applying changes
     // reported by the results controller easy to manage.
     
-    var itemChanges = ItemChangeSet()
-    var sectionChanges = SectionChangeSet()
+    var changes = ResultsChangeSet()
     
     func controllerWillChangeContent(controller: ResultsController) {
-        itemChanges.reset()
-        sectionChanges.reset()
+        changes.removeAll()
     }
     
     func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
-        itemChanges.addChange(forItemAt: indexPath, with: changeType)
+        changes.addChange(forItemAt: indexPath, with: changeType)
     }
     
     func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSectionInfo, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
-        sectionChanges.addChange(forSectionAt: indexPath, with: changeType)
+        changes.addChange(forSectionAt: indexPath, with: changeType)
     }
     
     func controllerDidChangeContent(controller: ResultsController) {
 
         // This is a helper to apply all the item and section changes.
         // See documentation for ChangeSets for more info
-        collectionView.applyChanges(itemChanges, sections: sectionChanges)
+        collectionView.applyChanges(from: changes)
     }
     
     

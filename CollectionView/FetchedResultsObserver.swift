@@ -65,7 +65,7 @@ class ResultsControllerCDManager {
     func add(context: NSManagedObjectContext) {
         let count = contexts[context] ?? 0
         if count == 0 {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
+            NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: Notification.Name.NSManagedObjectContextDidSave, object: context)
         }
         contexts[context] = count + 1
     }
@@ -75,7 +75,7 @@ class ResultsControllerCDManager {
         let count = contexts[context] ?? 0
         
         if count <= 1 {
-            NotificationCenter.default.removeObserver(self, name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
+            NotificationCenter.default.removeObserver(self, name: Notification.Name.NSManagedObjectContextDidSave, object: context)
             contexts.removeValue(forKey: context)
         }
         else {
@@ -85,7 +85,6 @@ class ResultsControllerCDManager {
     
     
     @objc func handleChangeNotification(_ notification: Notification) {
-     
         var changeSets = [NSEntityDescription:EntityChangeSet]()
         guard let info = notification.userInfo else {
             return
@@ -100,8 +99,6 @@ class ResultsControllerCDManager {
                 changeSets[obj.entity] = EntityChangeSet(deleted: obj)
             }
         }
-        
-        
         
         if let inserted = info[NSInsertedObjectsKey] as? Set<NSManagedObject> {
             for obj in inserted {

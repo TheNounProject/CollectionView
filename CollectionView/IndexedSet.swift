@@ -27,6 +27,9 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
     public var values : [Value] {
         return Array(byIndex.values)
     }
+    public var valuesSet : Set<Value> {
+        return Set(byIndex.values)
+    }
     
     public var count : Int {
         return byValue.count

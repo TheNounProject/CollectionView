@@ -220,7 +220,7 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
     }
     
     
-    public init(source s: T, target t: T, options: ChangeSetOptions = []) {
+    public init(source s: T, target t: T, forceUpdates: Set<Element>? = nil, options: ChangeSetOptions = []) {
         self.origin = s
         self.destination = t
         
@@ -273,7 +273,15 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                 let src = s[sx]
                 
                 if src == trg {
-                    _matrix[i, j] = _matrix[i - 1, j - 1] // no operation
+                    if forceUpdates?.contains(src) == true {
+                        var e = _matrix[i - 1, j - 1]
+                        e.append(Edit(.substitution, value: src, index: i - 1))
+                        _matrix[i, j] = e
+                    }
+                    else {
+                        _matrix[i, j] = _matrix[i - 1, j - 1]
+                    }
+                     // no operation
                 } else {
                     
                     var del = _matrix[i - 1, j] // a deletion

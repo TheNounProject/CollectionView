@@ -121,6 +121,10 @@ public extension CollectionView {
     
     
     public func applyChanges(from changeSet: ResultsChangeSet, completion: AnimationCompletion? = nil) {
+        guard changeSet.count > 0 else {
+            completion?(true)
+            return
+        }
         self.performBatchUpdates({
             _applyChanges(changeSet.items)
             _applyChanges(changeSet.sections)

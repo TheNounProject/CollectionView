@@ -69,6 +69,8 @@ public protocol ResultsController {
     func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo?
     func object(at indexPath: IndexPath) -> Any?
     
+//    func indexPath(of: Any) -> IndexPath?
+    
     func sectionName(forSectionAt indexPath :IndexPath) -> String
     
     func performFetch() throws

@@ -65,7 +65,7 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
         _storage.add(contentsOf: objects)
     }
     
-    func index(for object: Element) -> Int? {
+    func index(of object: Element) -> Int? {
         return _storage.index(of: object)
     }
     
@@ -120,14 +120,14 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
     /*-------------------------------------------------------------------------------*/
     
     private(set) var needsSort : Bool = false
-    private var _added = Set<Element>() // Tracks added items needing sort, if one do insert for performance
+//    private var _added = Set<Element>() // Tracks added items needing sort, if one do insert for performance
     
     
     func beginEditing() {
         assert(!isEditing, "Mutiple calls to beginEditing() for RelationalResultsControllerSection")
         isEditing = true
         _storageCopy = _storage
-        _added.removeAll()
+//        _added.removeAll()
     }
     
     func ensureEditing() {
@@ -155,7 +155,7 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
             return
         }
         self.needsSort = self._storage.count > 0
-        _added.insert(element)
+//        _added.insert(element)
         self._storage.add(element)
     }
 }
@@ -220,7 +220,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         let sectionEntity = NSEntityDescription.entity(forEntityName: sectionRequest.entityName!, in: context)
         
         assert(objectEntity != nil, "Unable to load entity description for object \(request.entityName!)")
-        assert(objectEntity != nil, "Unable to load entity description for section \(sectionRequest.entityName!)")
+        assert(sectionEntity != nil, "Unable to load entity description for section \(sectionRequest.entityName!)")
         
         request.entity = objectEntity
         sectionRequest.entity = sectionEntity
@@ -244,7 +244,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     public func sectionName(forSectionAt indexPath: IndexPath) -> String {
-        guard let obj = _section(for: indexPath)?._object else {
+        guard let obj = _sectionInfo(at: indexPath)?._object else {
             return "Ungrouped"
         }
         if let key = self.sectionNameKeyPath,
@@ -259,7 +259,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     // MARK: - Public Item Accessors
     /*-------------------------------------------------------------------------------*/
     public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
-        return self._section(for: sectionIndexPath)
+        return self._sectionInfo(at: sectionIndexPath)
     }
     
     public final func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
@@ -270,18 +270,43 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     
-    // MARK: - Private Item Accessors
+    // MARK: - Getting IndexPaths
     /*-------------------------------------------------------------------------------*/
-    private func _section(for sectionIndexPath: IndexPath) -> SectionInfo? {
-        return self._section(at: sectionIndexPath._section)
-    }
-    private func _section(at sectionIndex: Int) -> SectionInfo? {
-        return self._sections.object(at: sectionIndex)
+    public func indexPath(of object: Element) -> IndexPath? {
+        guard let section = self._objectSectionMap[object],
+            let sIdx = self._sections.index(of: section),
+            let idx = section.index(of: object) else { return nil }
+        
+        return IndexPath.for(item: idx, section: sIdx)
     }
     
-    private func _sectionWrapper(for section: Section?) -> SectionInfo? {
-        guard let ip = self.indexPath(for: section) else { return nil }
-        return self._section(for: ip)
+    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
+        guard let info = sectionInfo as? SectionInfo else { return nil }
+        if let idx = _sections.index(of: info) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    public func indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {
+        let _wrap = SectionInfo(object: sectionObject)
+        if let idx = _sections.index(of: _wrap) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
+    
+    // MARK: - Private Accessors
+    /*-------------------------------------------------------------------------------*/
+    private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
+        return self._sections.object(at: sectionIndexPath._section)
+    }
+    private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
+        return self._sections.object(at: sectionIndex)
+    }
+    private func _sectionInfo(representing section: Section?) -> SectionInfo? {
+        guard let ip = self.indexPathOfSection(representing: section) else { return nil }
+        return self._sectionInfo(at: ip)
     }
     
     public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
@@ -289,26 +314,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     public func _object(at indexPath: IndexPath) -> Element? {
-        return self._section(for: indexPath)?._storage.object(at: indexPath._item)
+        return self._sectionInfo(at: indexPath)?._storage.object(at: indexPath._item)
     }
     
-    
-    // MARK: - Getting IndexPaths
-    /*-------------------------------------------------------------------------------*/
-    public func indexPath(of object: Element) -> IndexPath? {
-        guard let section = self._objectSectionMap[object],
-            let sIdx = self._sections.index(of: section),
-            let idx = section.index(for: object) else { return nil }
-        
-        return IndexPath.for(item: idx, section: sIdx)
-    }
-    public func indexPath(for sectionObject: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(object: sectionObject)
-        if let idx = _sections.index(of: _wrap) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
     
     
     // MARK: - Helpers
@@ -339,6 +347,17 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         print(str)
     }
     
+    private func logSections() {
+        print("\(_sections.count) Sections")
+        for (idx, res) in _sections.enumerated() {
+            var str = "\(idx) - \(res.description(with: fetchRequest.sortDescriptors ?? []))"
+            print(str)
+        }
+    }
+    
+    
+    // MARK: - Notification Registration
+    /*-------------------------------------------------------------------------------*/
     
     func register() {
         ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
@@ -403,16 +422,16 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /*-------------------------------------------------------------------------------*/
     
     fileprivate func _insert(section: Section?) -> SectionInfo {
-        if let s = self._sectionWrapper(for: section) { return s }
-        if _sectionCopy == nil { _sectionCopy = _sections }
+        if let s = self._sectionInfo(representing: section) { return s }
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
         let s = SectionInfo(object: section, objects: [])
         _sections.add(s)
         return s
     }
     
     private func _remove(_ section: Section?) {
-        guard let ip = self.indexPath(for: section) else { return }
-        if _sectionCopy == nil { _sectionCopy = _sections }
+        guard let ip = self.indexPathOfSection(representing: section) else { return }
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
         _sections.remove(at: ip._section)
     }
     
@@ -422,11 +441,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             return
         }
         let s = self._sections.sorted(by: { (s1, s2) -> Bool in
-            // Always put ungroued at the bottom, maybe this should be an option
-            if s1.object == nil || s2.object == nil {
-                return s1.object != nil
-            }
-            
             if let o1 = s1._object,
                 let o2 = s2._object {
                 return sort.compare(o1, to: o2) == .orderedAscending
@@ -444,7 +458,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /*-------------------------------------------------------------------------------*/
     
     fileprivate var context = UpdateContext<Section, Element>()
-    fileprivate var _sectionCopy : OrderedSet<SectionInfo>?
+    fileprivate var _sectionsCopy : OrderedSet<SectionInfo>?
     
     public var pendingChangeCount : Int {
         return pendingItemChangeCount + pendingSectionChangeCount
@@ -469,7 +483,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             return
         }
         
-        _sectionCopy = nil
+        _sectionsCopy = nil
         self.context.reset()
         
 //        print("•••••••••••••••• Start ••••••••••••••••")
@@ -516,7 +530,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             }
         }
         
-        if let oldSections = _sectionCopy {
+        if let oldSections = _sectionsCopy {
             var sectionChanges = ChangeSet(source: oldSections, target: _sections)
 //            print(oldSections)
 //            print(_sections)
@@ -540,7 +554,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 }
             }
         }
-        _sectionCopy = nil
+        _sectionsCopy = nil
         
         
 //        logSections()
@@ -573,7 +587,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 
                 guard let source = self.context.objectChangeSet.updated.index(of: object),
                     let targetIP = self.indexPath(of: object),
-                    let targetSection = self._section(for: targetIP) else {
+                    let targetSection = self._sectionInfo(at: targetIP) else {
                         appendCSRLog("No source/target for cross")
                         return true
                 }
@@ -610,20 +624,21 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                  // Note: since the old section was removed, no operations will be processed for it
                  // there is no need then to handle updating/removing the source edit
                  */
+                
                 guard let sourceSection = self.context.sectionChangeSet.object(for: source._section),
-                    let sourceWrap = self._sectionWrapper(for: sourceSection),
-                    let sourceEdit = processedSections[sourceWrap]?.edit(withSource: source._item) else {
+                    let sourceInfo = self._sectionInfo(representing: sourceSection),
+                    let sourceEdit = processedSections[sourceInfo]?.edit(withSource: source._item) else {
                         appendCSRLog("Source: nil")
                         return true
                 }
                 
-                processedSections[sourceWrap]?.operationIndex.deletes.remove(sourceEdit)
+                processedSections[sourceInfo]?.operationIndex.deletes.remove(sourceEdit)
                 appendCSRLog("Removed source edit")
                 
                 if case .substitution = sourceEdit.operation {
                     if let ip = self.indexPath(of: sourceEdit.value) {
                         let insert = Edit(.insertion, value: sourceEdit.value, index: ip._item)
-                        processedSections[sourceWrap]?.operationIndex.inserts.insert(insert, with: insert.index)
+                        processedSections[sourceInfo]?.operationIndex.inserts.insert(insert, with: insert.index)
                         appendCSRLog("Adding insertion for \(ip)")
                     }
                     reduceCrossSectional(sourceEdit.value, targetEdit: sourceEdit)
@@ -649,7 +664,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     changes.reduceEdits()
                     processedSections[s.key] = changes
                     
-                    guard let sectionIndex = self.indexPath(for: s.key._object)?._section else { continue }
+                    guard let sectionIndex = self.indexPath(of: s.key)?._section else { continue }
                     
                     // Could merge all the edits together to dispatch the delegate calls in order of operation
                     // but there is no apparent reason why order is important.
@@ -685,10 +700,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     }
                 }
                 
-                //            print("\nList of operations reported above")
-                //            for s in processedSections {
-                //                print("\(self.indexPath(for: s.key._object)) \(s.value)")
-                //            }
+                
                 self.delegate?.controllerDidChangeContent(controller: self)
             })
 //        }
@@ -699,13 +711,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
 //        print("•••••••••••••••• END •••••••••••••••••••")
     }
     
-    private func logSections() {
-//        print("\(_sections.count) Sections")
-//        for (idx, res) in _sections.enumerated() {
-//            var str = "\(idx) - \(res.description(with: fetchRequest.sortDescriptors ?? []))"
-//            print(str)
-//        }
-    }
+
     
     
 //    public var objectChangeKeys = Set<String>()
@@ -722,7 +728,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         
         if let sectionChanges = changes[sectionFetchRequest.entity!] {
             for obj in sectionChanges.deleted {
-                guard let o = obj as? Section, let index = self.indexPath(for: o)?._section else { continue }
+                guard let o = obj as? Section, let index = self.indexPathOfSection(representing: o)?._section else { continue }
                 sections.add(deleted: o, for: index)
             }
             
@@ -737,7 +743,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             for obj in sectionChanges.updated {
                 if let o = obj as? Section {
-                    let _ip = self.indexPath(for: o)
+                    let _ip = self.indexPathOfSection(representing: o)
                     if fetchSections {
                         let match = sectionFetchRequest.predicate == nil || sectionFetchRequest.predicate?.evaluate(with: o) == true
                         
@@ -901,7 +907,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         for change in context.sectionChangeSet.deleted {
             
             let object = change.value
-            guard let ip = self.indexPath(for: object) else { continue }
+            guard let ip = self.indexPathOfSection(representing: object) else { continue }
             
             let section = self._sections[ip._section]
             for obj in section._storage {
@@ -977,14 +983,10 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         for object in context.objectChangeSet.inserted {
             
             guard self.contains(object: object) == false else { continue }
-            
-//            var newIP = IndexPath.Zero
-            let sort = self.fetchRequest.sortDescriptors ?? []
-            
             let sectionValue = object.value(forKeyPath: self.sectionKeyPath) as? Section
             
-            if let existingIP = self.indexPath(for: sectionValue),
-                let existingSection = self._section(for: existingIP) {
+            if let existingIP = self.indexPathOfSection(representing: sectionValue),
+                let existingSection = self._sectionInfo(at: existingIP) {
                 
                 existingSection.ensureEditing()
                 existingSection.add(object)
@@ -1013,13 +1015,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             let sourceIP = change.index
             
             guard let tempIP = self.indexPath(of: object),
-                let currentSection = _section(for: tempIP) else {
+                let currentSection = _sectionInfo(at: tempIP) else {
                     print("Skipping object update")
                     continue
             }
             currentSection.ensureEditing()
-            
-            let sort = self.fetchRequest.sortDescriptors ?? []
             var destinationIP = tempIP
             
             let sectionValue = object.value(forKeyPath: sectionKeyPath) as? Section
@@ -1031,8 +1031,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             }
                 
                 // Moved to another section
-            else if let newSip = self.indexPath(for: sectionValue),
-                let newSection = self._section(for: newSip) {
+            else if let newSip = self.indexPathOfSection(representing: sectionValue),
+                let newSection = self._sectionInfo(at: newSip) {
                 currentSection.remove(object)
                 newSection.ensureEditing()
                 newSection.add(object)

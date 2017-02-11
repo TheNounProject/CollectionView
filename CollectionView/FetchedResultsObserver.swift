@@ -18,7 +18,7 @@ class ResultsControllerCDManager {
     }
     
     
-    struct EntityChangeSet {
+    struct EntityChangeSet : CustomStringConvertible {
         var entity: NSEntityDescription
         var inserted = Set<NSManagedObject>()
         var deleted = Set<NSManagedObject>()
@@ -46,6 +46,15 @@ class ResultsControllerCDManager {
         mutating func updated(_ object: NSManagedObject) -> Bool {
             return updated.insert(object).inserted
         }
+        
+        var description: String {
+            return "EntityChangeSet for \(self.entity.name!): "
+                + "\(self.inserted.count) Inserted, "
+            + "\(self.deleted.count) Deleted, "
+            + "\(self.updated.count) Updated, "
+            
+        }
+        
     }
 
     
@@ -114,6 +123,11 @@ class ResultsControllerCDManager {
                     changeSets[obj.entity] = EntityChangeSet(updated: obj)
                 }
             }
+        }
+        
+        print("CD Results Controller Dispatch")
+        for set in changeSets {
+            print(set.value)
         }
         
         NotificationCenter.default.post(name: Dispatch.name, object: notification.object, userInfo: [

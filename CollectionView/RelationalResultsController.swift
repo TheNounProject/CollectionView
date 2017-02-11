@@ -766,8 +766,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     }
                 }
             }
-            
-            
         }
         
         if let itemChanges = changes[fetchRequest.entity!] {
@@ -803,13 +801,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         }
         self.context.objectChangeSet = objects
         self.context.sectionChangeSet = sections
-        
-        
-        
-        
-        
-        
-        
         
         
         /*

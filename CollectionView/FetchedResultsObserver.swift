@@ -74,7 +74,7 @@ class ResultsControllerCDManager {
     func add(context: NSManagedObjectContext) {
         let count = contexts[context] ?? 0
         if count == 0 {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: Notification.Name.NSManagedObjectContextDidSave, object: context)
+            NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
         }
         contexts[context] = count + 1
     }
@@ -84,7 +84,7 @@ class ResultsControllerCDManager {
         let count = contexts[context] ?? 0
         
         if count <= 1 {
-            NotificationCenter.default.removeObserver(self, name: Notification.Name.NSManagedObjectContextDidSave, object: context)
+            NotificationCenter.default.removeObserver(self, name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
             contexts.removeValue(forKey: context)
         }
         else {

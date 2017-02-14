@@ -59,7 +59,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
 
     var relational: Bool = false
     
-    let fetchedResultsController = FetchedResultsController<NSNumber, Child>(context: AppDelegate.current.managedObjectContext)
+    let fetchedResultsController = FetchedResultsController<NSNumber, Child>(context: AppDelegate.current.managedObjectContext, request: NSFetchRequest<Child>(entityName: "Child"))
     let relationalResultsController = RelationalResultsController(context: AppDelegate.current.managedObjectContext,
                                                                                  request: NSFetchRequest<Child>(entityName: "Child"),
                                                                                  sectionRequest: NSFetchRequest<Parent>(entityName: "Parent"),
@@ -77,15 +77,11 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let req = NSFetchRequest<Child>(entityName: "Child")
-        
-        let creationSort = NSSortDescriptor(key: "created", ascending: true)
-        
         collectionView.animationDuration = 0.8
-        
-        req.sortDescriptors = [creationSort]
+
+        let creationSort = NSSortDescriptor(key: "created", ascending: true)
+        fetchedResultsController.fetchRequest.sortDescriptors = [creationSort]
         fetchedResultsController.sectionKeyPath = "second"
-        fetchedResultsController.fetchRequest = req
         fetchedResultsController.delegate = self
         
         try! resultsController.performFetch()
@@ -416,7 +412,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             }
         }
         else {
-            let count = flags?.contains(.option) == true ? 10 : 1
+            let count = flags?.contains(.option) == true ? 100 : 1
             repeatBlock(count) {
                 _ = section.createChild()
             }
@@ -530,6 +526,14 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         let layout = collectionView.collectionViewLayout
         
+        let front = menu.addItem(withTitle: "Move to front", action: #selector(moveItemToFront(_:)), keyEquivalent: "")
+        let end = menu.addItem(withTitle: "Move to end", action: #selector(moveItemToEnd(_:)), keyEquivalent: "")
+        
+        front.isEnabled = indexPath._item > 0
+        end.isEnabled = indexPath._item < resultsController.numberOfObjects(in: indexPath._section)
+        
+        menu.addItem(NSMenuItem.separator())
+        
         let left = menu.addItem(withTitle: "Move Left", action: #selector(moveItemLeft(_:)), keyEquivalent: "")
         let right = menu.addItem(withTitle: "Move Right", action: #selector(moveItemRight(_:)), keyEquivalent: "")
         let up = menu.addItem(withTitle: "Move Up", action: #selector(moveItemUp(_:)), keyEquivalent: "")
@@ -551,6 +555,18 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         menu.popUp(positioning: nil, at: loc, in: cell)
     }
     
+    
+    func moveItemToFront(_ sender: Any?) {
+        guard let ip = _rightClicked, let item = resultsController.object(at: ip) as? Child else { return }
+        guard let first = resultsController.object(at: ip.sectionCopy) as? Child, first != item else { return }
+        item.displayOrder = NSNumber(value: first.displayOrder.intValue - 10)
+    }
+    func moveItemToEnd(_ sender: Any?) {
+        guard let ip = _rightClicked, let item = resultsController.object(at: ip) as? Child else { return }
+        let endIP = IndexPath.for(item: resultsController.numberOfObjects(in: ip._section) - 1, section: ip._section)
+        guard let last = resultsController.object(at: endIP) as? Child, last != item else { return }
+        item.displayOrder = NSNumber(value: last.displayOrder.intValue + 10)
+    }
     
     func insertBefore(_ sender: Any?) {
         insertItem(before: true)

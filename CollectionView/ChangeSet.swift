@@ -179,7 +179,10 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
     
     /// The ending-point collection.
     public let destination: T
-    public let matrix : Matrix2D<[Edit<Element>]>
+    
+    private let _shared : Set<Element>
+    
+//    public let matrix : Matrix2D<[Edit<Element>]>
 
     public lazy var operationIndex : EditOperationIndex<Element> = {
         return EditOperationIndex<Element>(edits: self.edits)
@@ -227,8 +230,66 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
         let m = s.count
         let n = t.count
         
+        self._shared = Set(s).intersection(t)
+        
+        var sourceSet = s.indexedSet
+        var targetSet = t.indexedSet
+        
+        var insertions = IndexSet()
+        var deletions = IndexSet()
+        
+//        self.matrix = Matrix2D(rows: n+1, columns: m+2, default: [Edit<Element>]())
+        var _edits = [Edit<Element>]()
+        
+        for value in Set(s).union(t) {
+            
+            let sIdx = sourceSet.index(of: value)
+            let tIdx = targetSet.index(of: value)
+            
+            if let s = sIdx, let t = tIdx {
+                
+                if s == t {
+//                    print("\(value): Non Op \(s)")
+                }
+                else {
+                    var adjust = insertions.count(in: 0...s) - deletions.count(in: 0...s)
+//                    print(adjust)
+                    if s + adjust == t { continue }
+                    
+//                    print("Move \(value) from \(s) to \(t)")
+//                    _edits.append(Edit(.move(origin: s), value: value, index: t))
+                    _edits.append(Edit(.deletion, value: value, index: s))
+                    _edits.append(Edit(.insertion, value: value, index: t))
+                    insertions.insert(t)
+                    deletions.insert(s)
+                }
+            }
+            else if let idx = sIdx {
+//                print("Delete \(value) at \(idx)")
+                _edits.append(Edit(.deletion, value: value, index: idx))
+                deletions.insert(idx)
+            }
+            else if let idx = tIdx {
+//                print("Insert \(value) at \(idx)")
+                _edits.append(Edit(.insertion, value: value, index: idx))
+                insertions.insert(idx)
+            }
+        }
+//        print(_edits)
+        self.edits = _edits
+        return;
+        
+        
+        /*
+        
+        
         let shared = Set(s).intersection(t)
         // Fill first row and column of insertions and deletions.
+        
+        
+        
+        
+        
         
         var _matrix = Matrix2D(rows: n+1, columns: m+2, default: [Edit<Element>]())
         
@@ -253,20 +314,141 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
         }
         
         // Indexes into the two collections.
-        var sx: T.Index
+        var sx = s.startIndex
         var tx = t.startIndex
         
-        var _inserted = Set<Element>()
-        var _deleted = Set<Element>()
-
-        
         // Fill body of _matrix.
+        
+        
+        var _shared = shared
+        
+//        var sx = 1
+//        var tx = 1
+        
+        while sx < s.endIndex && tx < t.endIndex {
+            
+//            let srcIdx = Int(sx)
+//            let trgIdx = Int(tx)
+            let x = s.distance(from: s.startIndex, to: sx) + 1
+            let y = s.distance(from: t.startIndex, to: tx) + 1
+            
+            let src = s[sx]
+            let trg = t[tx]
+            
+            if src == trg {
+                if forceUpdates?.contains(src) == true {
+                    var e = _matrix[x - 1, y - 1]
+                    e.append(Edit(.substitution, value: src, index: x - 1))
+                    _matrix[x, y] = e
+                }
+                else {
+                    _matrix[x, y] = _matrix[x - 1, y - 1]
+                }
+                // no operation
+                
+                if _matrix[x - 1, y].count == _matrix[x, y].count {
+                    sx = s.startIndex
+                    tx = t.index(tx, offsetBy: 1)
+                }
+                else {
+                    sx = s.index(sx, offsetBy: 1)
+                }
+                continue;
+            }
+            
+            var del = _matrix[x - 1, y] // a deletion
+            var ins = _matrix[x, y - 1] // an insertion
+            
+            let iCount = ins.count
+            let dCount = del.count
+            //                    var sub = _matrix[i - 1, j - 1] // a substitution
+            
+            // Modified to only allow for deletions and insertions,
+            // This allows for merging two change sets to identify cross set changes
+            // Reduction will clean up any redundant calls if needed
+            
+            // Record operation.
+            
+            var forceDelete = false
+            var forceInsert = false
+            
+            if options.contains(.minimumOperations) == false {
+                if _shared.contains(src) {
+                    forceDelete = true
+                }
+                else if _shared.contains(trg) {
+                    forceInsert = true
+                }
+            }
+            
+            func insert() {
+                let insertion = Edit(.insertion, value: trg, index: y - 1)
+                ins.append(insertion)
+                _matrix[x, y] = ins
+            }
+            func delete() {
+                let deletion = Edit(.deletion, value: src, index: y - 1)
+                del.append(deletion)
+                _matrix[x, y] = del
+            }
+            
+            if forceDelete {
+                delete()
+                sx = t.index(sx, offsetBy: 1)
+                tx = t.startIndex
+            }
+            else if forceInsert {
+                insert()
+                sx = s.startIndex
+                tx = t.index(tx, offsetBy: 1)
+            }
+            else {
+                
+                if ins.count <= del.count {
+                    insert()
+                }
+                else {
+                    delete()
+                }
+                
+                if iCount < dCount {
+                    sx = s.index(sx, offsetBy: 1)
+                    tx = t.startIndex
+                }
+                else {
+                    print("Pre \(x), \(y)")
+                    sx = s.index(sx, offsetBy: 1)
+                    tx = t.index(tx, offsetBy: 1)
+                }
+            }
+            
+            print("Post \(x), \(y)")
+
+//            if forceDelete {
+//                tx = t.index(tx, offsetBy: 1)
+////                sx = s.index(sx, offsetBy: 1)
+//            }
+//            else if forceInsert {
+//                tx = t.index(tx, offsetBy: -1)
+//                sx = s.index(sx, offsetBy: -1)
+//            }
+//            else {
+//                sx = s.index(sx, offsetBy: 1)
+//                tx = t.index(tx, offsetBy: -1)
+//            }
+        }
+ */
+        
+        /*
+        sx = s.startIndex
+        tx = t.startIndex
+        
         
         for j in 1...n {
             sx = s.startIndex
             let trg = t[tx]
             
-            var _shared = shared
+            
             
             for i in 1...m {
                 
@@ -288,7 +470,6 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                     var ins = _matrix[i, j - 1] // an insertion
 //                    var sub = _matrix[i - 1, j - 1] // a substitution
                     
-                    
                     // Modified to only allow for deletions and insertions, 
                     // This allows for merging two change sets to identify cross set changes
                     // Reduction will clean up any redundant calls if needed
@@ -309,14 +490,12 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                     
                     func insert() {
                         let insertion = Edit(.insertion, value: trg, index: j - 1)
-                        _inserted.insert(trg)
                         ins.append(insertion)
                         _matrix[i, j] = ins
                     }
                     func delete() {
                         let deletion = Edit(.deletion, value: src, index: i - 1)
                         del.append(deletion)
-                        _deleted.insert(src)
                         _matrix[i, j] = del
                     }
                     
@@ -340,11 +519,11 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                 
                 sx = s.index(sx, offsetBy: 1)
             }
-            
             tx = t.index(tx, offsetBy: 1)
         }
-        self.edits = _matrix[m, n]
-        self.matrix = _matrix
+ */
+//        self.edits = _matrix[m, n]
+//        self.matrix = _matrix
         
 //        print(self.matrixLog)
     }
@@ -355,15 +534,26 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
     
     public mutating func reduceEdits() {
         
+        for element in _shared {
+            let temp = Edit(.insertion, value: element, index: 0)
+            if let t = self.operationIndex.inserts.remove(temp),
+                let s = self.operationIndex.deletes.remove(temp) {
+                let newEdit = Edit(.move(origin: s), value: element, index: t)
+                self.operationIndex.moves.insert(newEdit, with: t)
+            }
+        }
+        
         for d in self.operationIndex.deletes {
             if let i = self.operationIndex.inserts.remove(d.value) {
                 self.operationIndex.deletes.remove(d.value)
                 let newEdit = Edit(.move(origin: d.value.index), value: d.value.value, index: i)
+//                print("Converted delete: \(d) and insert: \(i) to \(newEdit)")
                 self.operationIndex.moves.insert(newEdit, with: i)
             }
             else if let i = self.operationIndex.inserts.removeValue(for: d.index) {
                 self.operationIndex.deletes.remove(d.value)
-                let newEdit = Edit(.substitution, value: d.value.value, index: d.index)
+                let newEdit = Edit(.substitution, value: i.value, index: d.index)
+//                print("Converted delete: \(d) and insert: \(i) to \(newEdit)")
                 self.operationIndex.substitutions.insert(newEdit, with: d.index)
             }
         }
@@ -392,9 +582,10 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
     
     
     public var matrixLog : String {
-        return matrix.dump({ (v) -> Any in
-            return v.count
-        })
+        return "Change set no longer uses a matrix..."
+//        return matrix.dump({ (v) -> Any in
+//            return v.count
+//        })
     }
     
     

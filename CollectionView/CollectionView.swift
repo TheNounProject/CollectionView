@@ -951,6 +951,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         _editing = 0
         
         var newIndex = _updateMap
+        Swift.print("INdexPaths: \(_selectedIndexPaths)")
         
 //        Swift.print("Remaining Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
 //        Swift.print("Pre-adjust Cell Index: \(newIndex.orderedLog())")
@@ -960,7 +961,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         for stale in self.contentDocumentView.preparedCellIndex.ordered() {
             let adjustedIP = _updateContext.adjust(stale.index)
             
-            if self.itemAtIndexPathIsSelected(stale.index) {
+            if self._selectedIndexPaths.remove(stale.index) != nil {
                 _updateSelections?.insert(adjustedIP)
             }
             
@@ -1001,6 +1002,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 }
             }
         }
+        Swift.print("UpdatedSelections: \(_updateSelections!)")
         
         
 //        Swift.print("New Cell Index: \(newIndex.orderedLog())")
@@ -1121,7 +1123,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public func _moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath) {
         
         self._updateContext.movedItem(from: indexPath, to: destinationIndexPath)
-        _updateSelections?.insert(destinationIndexPath)
+        if itemAtIndexPathIsSelected(indexPath) {
+            _updateSelections?.insert(destinationIndexPath)
+        }
         if let cell = self.cellForItem(at: indexPath),
             let attrs = self.layoutAttributesForItem(at: destinationIndexPath) {
             _updateContext.updates.append(ItemUpdate(view: cell, attrs: attrs, type: .update))
@@ -1650,7 +1654,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // IP & Cell
     public final func cellForItem(at indexPath: IndexPath) -> CollectionViewCell?  { return self.contentDocumentView.preparedCellIndex[indexPath] }
-    public final func indexPath(for cell: CollectionViewCell) -> IndexPath?  { return cell.attributes?.indexPath }
+    public final func indexPath(for cell: CollectionViewCell) -> IndexPath?  { return self.contentDocumentView.preparedCellIndex.index(of: cell) }
     
     // IP By Location
     open func indexPathForItem(at point: CGPoint) -> IndexPath?  {

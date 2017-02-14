@@ -33,6 +33,32 @@ func randomString(length: Int) -> String {
 }
 
 
+extension MutableCollection where Indices.Iterator.Element == Index {
+    /// Shuffles the contents of this collection.
+    mutating func shuffle() {
+        let c = count
+        guard c > 1 else { return }
+        
+        for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
+            let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
+            guard d != 0 else { continue }
+            let i = index(firstUnshuffled, offsetBy: d)
+            swap(&self[firstUnshuffled], &self[i])
+        }
+    }
+}
+
+extension Sequence {
+    /// Returns an array with the contents of this sequence, shuffled.
+    func shuffled() -> [Iterator.Element] {
+        var result = Array(self)
+        result.shuffle()
+        return result
+    }
+}
+
+
+
 
 //
 //protocol Section {
@@ -124,10 +150,16 @@ func runTime(_ block: ()->Void) -> TimeInterval {
 import CollectionView
 
 
-var source = [
-    "F","C","B","A","G","G"
-]
+var source = // ["H", "F", "A", "G", "E", "C", "D"]
+    [
+    "H","C","D","A","E","F", "G"
+].shuffled()
+
 var target = source.sorted()
+target.removeFirst()
+_ = target
+
+target.insert("B", at: 0)
 
 
 func describeEdits(for changeSet: ChangeSet<[String]>) -> String {
@@ -140,20 +172,24 @@ func describeEdits(for changeSet: ChangeSet<[String]>) -> String {
 }
 
 var cs1 = ChangeSet(source: source, target: target, options: .minimumOperations)
-var cs2 = ChangeSet(source: source, target: target)
-cs1.matrixLog
+//var cs2 = ChangeSet(source: source, target: target)
+//cs1.matrixLog
+//
+
+_ = source
+_ = target
 
 describeEdits(for: cs1)
-
+//
 cs1.reduceEdits()
 describeEdits(for: cs1)
-
-
-
-cs2.matrixLog
-describeEdits(for: cs2)
-cs2.reduceEdits()
-describeEdits(for: cs2)
+//
+//
+//
+//cs2.matrixLog
+//describeEdits(for: cs2)
+//cs2.reduceEdits()
+//describeEdits(for: cs2)
 
 
 

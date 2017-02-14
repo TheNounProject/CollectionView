@@ -154,6 +154,33 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
 //}
 
 
+extension IndexedSet {
+    
+    
+    
+}
+
+
+extension Array where Element:Hashable {
+    public var indexedSet : IndexedSet<Int, Element> {
+        var set = IndexedSet<Int, Element>()
+        for (idx, v) in self.enumerated() {
+            set.insert(v, with: idx)
+        }
+        return set
+    }
+}
+
+extension Collection where Iterator.Element:Hashable {
+    public var indexedSet : IndexedSet<Int, Iterator.Element> {
+        var set = IndexedSet<Int, Iterator.Element>()
+        for (idx, v) in self.enumerated() {
+            set.insert(v, with: idx)
+        }
+        return set
+    }
+}
+
 extension IndexedSet where Index:Comparable {
     
     var orderedIndexes : [Index] {

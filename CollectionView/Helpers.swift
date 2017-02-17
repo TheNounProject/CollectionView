@@ -29,21 +29,29 @@ public extension IndexPath {
         return ips
     }
     
+    public var previous : IndexPath? {
+        guard self._item >= 1 else { return nil }
+        return IndexPath.for(item: self._item - 1, section: self._section)
+    }
+    public var next : IndexPath {
+        return IndexPath.for(item: self._item + 1, section: self._section)
+    }
+    
     var sectionCopy : IndexPath {
         return IndexPath.for(item: 0, section: self._section)
     }
     
-    func copy(withItem item: Int) -> IndexPath {
+    func with(item: Int) -> IndexPath {
         return IndexPath.for(item: item, section: self._section)
     }
-    func copy(withSection section: Int) -> IndexPath {
+    func with(section: Int) -> IndexPath {
         return IndexPath.for(item: self._item, section: section)
     }
     
-    func adjustingItem(_ by: Int = 1) -> IndexPath {
+    func adjustingItem(by: Int) -> IndexPath {
         return IndexPath.for(item: self._item + by, section: section)
     }
-    func adjustingSection(_ by: Int = 1) -> IndexPath {
+    func adjustingSection(by: Int) -> IndexPath {
         return IndexPath.for(item: self._item, section: section + by)
     }
 }

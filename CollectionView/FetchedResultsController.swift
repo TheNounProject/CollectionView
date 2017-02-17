@@ -163,6 +163,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     public var allObjects: [Any] { return Array(fetchedObjects) }
     public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
     
+    public var hasEmptyPlaceholder : Bool = false
     
     public let fetchRequest : NSFetchRequest<Element>
     public var sortDescriptors: [NSSortDescriptor]? {
@@ -194,6 +195,8 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: context)
         assert(objectEntity != nil, "Unable to load entity description for object \(request.entityName!)")
         request.entity = objectEntity
+        
+        request.returnsObjectsAsFaults = false
         
         self.managedObjectContext = context
         self.fetchRequest = request
@@ -264,9 +267,10 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     // MARK: - Private Accessors
     /*-------------------------------------------------------------------------------*/
     private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
-        return self._sections.object(at: sectionIndexPath._section)
+        return self._sectionInfo(at: sectionIndexPath._section)
     }
     private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
+        guard sectionIndex < self.numberOfSections else { return nil }
         return self._sections.object(at: sectionIndex)
     }
     
@@ -276,7 +280,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     }
     
     public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
-        return self._sections.object(at: sectionIndexPath._section)._value
+        return self._sectionInfo(at: sectionIndexPath)?._value
     }
     
     public func _object(at indexPath: IndexPath) -> Element? {
@@ -425,6 +429,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     
     private var context = ChangeContext<Element>()
     private var _sectionsCopy : OrderedSet<SectionInfo>?
+    public private(set) var emptySectionChanges : ResultsChangeSet?
     
     func handleChangeNotification(_ notification: Notification) {
         
@@ -490,6 +495,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 }
             }
         }
+        let _previousSectionCount = _sectionsCopy?.count
         _sectionsCopy = nil
         
         
@@ -585,6 +591,23 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         }
         
         
+        if hasEmptyPlaceholder, let old = _previousSectionCount {
+            
+            if self.emptySectionChanges == nil {
+                self.emptySectionChanges = ResultsChangeSet()
+            }
+            if old == 0 && _sections.count != 0 {
+                self.emptySectionChanges?.addChange(forItemAt: IndexPath.Zero, with: .delete)
+            }
+            else if old != 0 && _sections.count == 0 {
+                self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.Zero))
+            }
+        }
+        else {
+            self.emptySectionChanges = nil
+        }
+        
+        
         
         self.managedObjectContext.perform({
             //                print("\nReport To Delegate 📢")
@@ -632,6 +655,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
 //            }
             
             delegate.controllerDidChangeContent(controller: self)
+            self.emptySectionChanges = nil
         })
         
         
@@ -655,7 +679,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 guard let o = obj as? Element, let ip = self.indexPath(of: o) else { continue }
                 objects.add(deleted: o, for: ip)
             }
-            
             
             for obj in itemChanges.inserted {
                 if let o = obj as? Element {
@@ -740,9 +763,9 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 _objectSectionMap[object] = section
             }
             else {
-                let sec = SectionInfo(value: nil, objects: [object])
-                self._sections = [sec]
-                _objectSectionMap[object] = sec
+                let s = self._insert(section: nil)
+                s.insert(object)
+                _objectSectionMap[object] = s
             }
         }
     }

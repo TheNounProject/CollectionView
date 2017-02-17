@@ -163,7 +163,6 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
 
 public class RelationalResultsController<Section: NSManagedObject, Element: NSManagedObject> : NSObject, ResultsController {
     
-    
     fileprivate typealias SectionInfo = RelationalSectionInfo<Section, Element>
     
     // MARK: - Results Controller Protocol
@@ -177,6 +176,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     public var fetchSections : Bool = true
     
     private var _fetched: Bool = false
+    
+    public var hasEmptySectionPlaceholders : Bool = false
     
     func setNeedsFetch() {
         if _fetched {
@@ -224,6 +225,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         
         request.entity = objectEntity
         sectionRequest.entity = sectionEntity
+        
+        request.returnsObjectsAsFaults = false
+        sectionRequest.returnsObjectsAsFaults = false
         
         super.init()
         
@@ -299,10 +303,10 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     // MARK: - Private Accessors
     /*-------------------------------------------------------------------------------*/
     private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
-        return self._sections.object(at: sectionIndexPath._section)
+        return self._sections._object(at: sectionIndexPath._section)
     }
     private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
-        return self._sections.object(at: sectionIndex)
+        return self._sections._object(at: sectionIndex)
     }
     private func _sectionInfo(representing section: Section?) -> SectionInfo? {
         guard let ip = self.indexPathOfSection(representing: section) else { return nil }
@@ -310,11 +314,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
-        return self._sections.object(at: sectionIndexPath._section)._object
+        return self._sectionInfo(at: sectionIndexPath)?._object
     }
     
     public func _object(at indexPath: IndexPath) -> Element? {
-        return self._sectionInfo(at: indexPath)?._storage.object(at: indexPath._item)
+        return self._sectionInfo(at: indexPath)?._storage._object(at: indexPath._item)
     }
     
     
@@ -459,6 +463,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     fileprivate var context = UpdateContext<Section, Element>()
     fileprivate var _sectionsCopy : OrderedSet<SectionInfo>?
+    
+    public private(set) var emptySectionChanges : ResultsChangeSet?
     
     public var pendingChangeCount : Int {
         return pendingItemChangeCount + pendingSectionChangeCount
@@ -656,6 +662,30 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
 //            for s in processedSections {
 //                print("\(self.indexPath(for: s.key._object)) \(s.value)")
 //            }
+        
+        
+        if hasEmptySectionPlaceholders {
+            if self.emptySectionChanges == nil {
+                self.emptySectionChanges = ResultsChangeSet()
+            }
+            for sec in processedSections {
+                guard let sectionIndex = self.indexPath(of: sec.key)?._section else { continue }
+                
+                if sec.value.origin.count == 0 {
+                    let ip = IndexPath.for(section: sectionIndex)
+                    self.emptySectionChanges?.addChange(forItemAt: ip, with: .delete)
+                }
+                else if sec.value.destination.count == 0 {
+                    let ip = IndexPath.for(section: sectionIndex)
+                    self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(ip))
+                }
+            }
+        }
+        else {
+            self.emptySectionChanges = nil
+        }
+        
+        
             
             self.managedObjectContext.perform({
 //                print("\nReport To Delegate 📢")
@@ -702,6 +732,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 
                 
                 self.delegate?.controllerDidChangeContent(controller: self)
+                self.emptySectionChanges = nil
             })
 //        }
         

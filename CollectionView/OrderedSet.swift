@@ -80,6 +80,10 @@ struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection, Cu
     func object(at index: Int) -> Element {
         return _data[index]
     }
+    func _object(at index: Int) -> Element? {
+        guard index < self.count else { return nil }
+        return _data[index]
+    }
     
     fileprivate mutating func _remap(startingAt index: Int) {
         guard index < _data.count else { return }

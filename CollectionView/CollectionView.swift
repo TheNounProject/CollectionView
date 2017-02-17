@@ -249,6 +249,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     // MARK: - Data
+    /*-------------------------------------------------------------------------------*/
     fileprivate var info : CollectionViewInfo!
     open func numberOfSections() -> Int { return self.info.numberOfSections }
     open func numberOfItems(in section: Int) -> Int { return self.info.numberOfItems(in: section) }
@@ -262,6 +263,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
     let _floatingSupplementaryView = FloatingSupplementaryView(frame: NSZeroRect)
     open func addAccessoryView(_ view: NSView) {
         self._floatingSupplementaryView.addSubview(view)
+    }
+    
+    public var  floatingContentView : NSView {
+        return _floatingSupplementaryView
     }
     
     
@@ -786,6 +791,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 return _open.union(_locked)
             }
             var _lastIndex : Int? { return _locked.last }
+            var _firstIndex : Int? {
+                if let o = _open.first, let l = _locked.first {
+                    return min(o, l)
+                }
+                if let o = _open.first { return o }
+                return _locked.first
+            }
             var _deleteCount = 0
             var _insertCount = 0
             
@@ -795,6 +807,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
             mutating func moved(_ source: Int, to destination: Int) {
                 self.deleted(at: source)
                 self.inserted(at: destination)
+            }
+            
+            mutating func lock(upTo index: Int) {
+                guard let start = self._firstIndex, start < index else { return }
+                var idxSet = IndexSet(integersIn: start...index)
+                idxSet.subtract(_open)
+                self._locked = _locked.union(idxSet)
             }
             
             
@@ -842,6 +861,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
         }
         
+        
+        mutating func lock(upTo indexPath: IndexPath) {
+            _operations[indexPath._section]?.lock(upTo: indexPath._item)
+        }
         
         
         mutating func deletedSection(at index: Int) {
@@ -957,8 +980,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
 //        Swift.print("Pre-adjust Cell Index: \(newIndex.orderedLog())")
         
         // By now the preparedCellIndex will only contain
-//        Swift.print(_updateContext)
+        Swift.print(_updateContext._operations)
+        
+        var checked = Set<Int>()
+        
         for stale in self.contentDocumentView.preparedCellIndex.ordered() {
+            
+            if !checked.contains(stale.index._section) {
+                _updateContext.lock(upTo: stale.index)
+                checked.insert(stale.index._section)
+            }
+            
+            
             let adjustedIP = _updateContext.adjust(stale.index)
             
             if self._selectedIndexPaths.remove(stale.index) != nil {
@@ -988,13 +1021,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
             let sectionIdx = sectionOps.key
             let ops = sectionOps.value
             
-            guard let end = ops._lastIndex else {
+            guard let last = ops._lastIndex else {
                 continue
             }
             
             let adjust = ops._insertCount - ops._deleteCount
-            for idx in end..<self.numberOfItems(in: sectionIdx) {
-                
+            let count = self.numberOfItems(in: sectionIdx)
+            guard last < count else { continue }
+            for idx in last..<count {
                 let ip = IndexPath.for(item: idx, section: sectionIdx)
                 if self.itemAtIndexPathIsSelected(ip) {
                     let newIP = IndexPath.for(item: ip._item + adjust, section: sectionIdx)
@@ -1674,6 +1708,50 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         return nil;
     }
+    
+    // IP By Location
+    open func firstIndexPathForItem(near point: CGPoint, radius: CGFloat) -> IndexPath?  {
+        if self.info.numberOfSections == 0 { return nil }
+        
+        let rect = CGRect(x: point.x - radius, y: point.y - radius, width: radius * 2, height: radius * 2)
+        for sectionIndex in 0..<self.info.numberOfSections {
+            guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
+            if !sectionInfo.frame.intersects(rect) || sectionInfo.numberOfItems == 0 { continue }
+            
+            for itemIndex in 0...sectionInfo.numberOfItems - 1 {
+                let indexPath = IndexPath.for(item:itemIndex, section: sectionIndex)
+                if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
+                    if attributes.frame.intersects(rect) {
+                        return indexPath;
+                    }
+                }
+            }
+        }
+        return nil;
+    }
+    
+    // IP By Location
+    open func firstIndexPathForItem(in rect: CGRect) -> IndexPath?  {
+        if self.info.numberOfSections == 0 { return nil }
+        
+        for sectionIndex in 0..<self.info.numberOfSections {
+            guard let sectionInfo = self.info.sections[sectionIndex] else { continue }
+            if !sectionInfo.frame.intersects(rect) || sectionInfo.numberOfItems == 0 { continue }
+            
+            for itemIndex in 0...sectionInfo.numberOfItems - 1 {
+                let indexPath = IndexPath.for(item:itemIndex, section: sectionIndex)
+                if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
+                    if attributes.frame.intersects(rect) {
+                        return indexPath;
+                    }
+                }
+            }
+        }
+        return nil;
+    }
+    
+    
+    
     open func indexPathsForItems(in rect: CGRect) -> Set<IndexPath> {
         if let providedIndexPaths = self.collectionViewLayout.indexPathsForItems(in: rect) { return providedIndexPaths }
         if rect.equalTo(CGRect.zero) || self.info.numberOfSections == 0 { return [] }

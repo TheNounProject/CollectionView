@@ -338,7 +338,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                 
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
-                if indexPath._section == 0 && contentOffset.y <= -cv.contentInsets.top {
+                if indexPath._section == 0 && contentOffset.y < -cv.contentInsets.top {
                     currentAttrs.frame.origin.y = 0
                     currentAttrs.floating = false
                 }
@@ -349,7 +349,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                     }
                     let topInset = cv.contentInsets.top 
                     currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
-                    currentAttrs.floating = currentAttrs.frame.origin.y > frame.origin.y
+                    currentAttrs.floating = indexPath._section == 0 || currentAttrs.frame.origin.y > frame.origin.y
                 }
             }
             return attrs

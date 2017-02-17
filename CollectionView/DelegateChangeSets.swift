@@ -33,6 +33,16 @@ public struct ResultsChangeSet {
         items.reset()
         sections.reset()
     }
+    
+    public mutating func union(with other: ResultsChangeSet) {
+        self.items.inserted.union(other.items.inserted)
+        self.items.deleted.union(other.items.deleted)
+        self.items.updated.union(other.items.updated)
+
+        self.sections.inserted.union(other.sections.inserted)
+        self.sections.deleted.union(other.sections.deleted)
+        self.sections.updated.union(other.sections.updated)
+    }
 }
 
 

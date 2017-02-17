@@ -156,18 +156,20 @@ final public class CollectionViewDocumentView : NSView {
             for id in self.preparedSupplementaryViewIndex {
                 let view = id.1
                 guard let ip = id.0.indexPath, let attrs = self.collectionView.layoutAttributesForSupplementaryElement(ofKind: id.0.kind, atIndexPath: ip) else { continue }
+                
                 if attrs.floating == true {
                     if view.superview != self.collectionView._floatingSupplementaryView {
                         view.removeFromSuperview()
                         self.collectionView._floatingSupplementaryView.addSubview(view)
                     }
                     attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
+                    view.applyLayoutAttributes(attrs, animated: false)
                 }
                 else if view.superview == self.collectionView._floatingSupplementaryView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
+                    view.applyLayoutAttributes(attrs, animated: false)
                 }
-                view.applyLayoutAttributes(attrs, animated: false)
             }
             completion?(true)
             return

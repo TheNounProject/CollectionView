@@ -810,8 +810,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
             
             mutating func lock(upTo index: Int) {
-                guard let start = self._firstIndex, start < index else { return }
-                var idxSet = IndexSet(integersIn: start...index)
+                var idx = index - 1
+                guard let start = self._firstIndex, start < idx else { return }
+                var idxSet = IndexSet(integersIn: start...idx)
                 idxSet.subtract(_open)
                 self._locked = _locked.union(idxSet)
             }
@@ -921,7 +922,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
                         let check = all[idx]
                         var prop = last + 1
                         let isGap = prop < check
-                        let isLocked = ops._locked.contains(prop)
+//                        let isLocked = ops._locked.contains(prop)
+//                        Swift.print("Open: \(ops._open.contains(prop))  Locked: \(ops._locked.contains(prop))")
                         
                         if isGap || (ops._open.contains(prop) && !ops._locked.contains(prop)) {
                            _proposed = prop
@@ -956,6 +958,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private var _editing = 0
     private func beginEditing() {
         if _editing == 0 {
+            self._firstSelection = nil
             self._updateContext.reset()
             self.info.recalculate()
             self._updateMap.removeAll()
@@ -974,13 +977,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
         _editing = 0
         
         var newIndex = _updateMap
-        Swift.print("INdexPaths: \(_selectedIndexPaths)")
+//        Swift.print("INdexPaths: \(_selectedIndexPaths)")
         
 //        Swift.print("Remaining Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
 //        Swift.print("Pre-adjust Cell Index: \(newIndex.orderedLog())")
         
         // By now the preparedCellIndex will only contain
-        Swift.print(_updateContext._operations)
+//        Swift.print(_updateContext._operations)
         
         var checked = Set<Int>()
         
@@ -990,7 +993,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 _updateContext.lock(upTo: stale.index)
                 checked.insert(stale.index._section)
             }
-            
             
             let adjustedIP = _updateContext.adjust(stale.index)
             
@@ -1011,7 +1013,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     _updateContext.updates.append(ItemUpdate(view: view, attrs: attrs, type: .update))
                 }
             }
-            
 //            Swift.print("Pre-adjust Cell Index: \(newIndex.orderedLog())")
         }
         
@@ -1030,7 +1031,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             guard last < count else { continue }
             for idx in last..<count {
                 let ip = IndexPath.for(item: idx, section: sectionIdx)
-                if self.itemAtIndexPathIsSelected(ip) {
+                if self.itemAtIndexPathIsSelected(ip), ip._item + adjust >= 0 {
                     let newIP = IndexPath.for(item: ip._item + adjust, section: sectionIdx)
                     self._updateSelections?.insert(newIP)
                 }
@@ -1134,9 +1135,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     public func _deleteItems(at indexPaths: [IndexPath]) {
-        
-        
-        self.indexPathForHighlightedItem = nil
         
         for ip in indexPaths {
             self._selectedIndexPaths.remove(ip)
@@ -1904,14 +1902,32 @@ open class CollectionView : ScrollView, NSDraggingSource {
             rect.size.width = contentSize.width
         }
         else {
-//            rect.size.
             rect.size.height = self.contentSize.height
         }
         
-        if prepare {
+        
+        if !animated && scrollPosition == .centered || scrollPosition == .leading {
+            if contentSize.height < self.contentVisibleRect.size.height {
+                completion?(true)
+                return
+            }
+            if rect.origin.y > self.contentSize.height - self.frame.size.height {
+                rect.origin.y = self.contentSize.height - self.frame.size.height + self.contentInsets.top
+            }
+        }
+        
+        
+        Swift.print(rect)
+        Swift.print(self.contentDocumentView.frame)
+        Swift.print(self.contentInsets.top)
+        
+        if animated || prepare {
             self.contentDocumentView.prepareRect(rect.union(visibleRect), force: false)
         }
         self.clipView?.scrollRectToVisible(rect, animated: animated, completion: completion)
+        if !animated {
+            self.contentDocumentView.prepareRect(self.contentVisibleRect, force: false)
+        }
     }
     
 

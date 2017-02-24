@@ -15,6 +15,8 @@ import Foundation
 public extension IndexPath {
     
     public static func `for`(item: Int = 0, section: Int) -> IndexPath {
+        precondition(item >= 0, "Attempt to create an indexPath with negative item")
+        precondition(section >= 0, "Attempt to create an indexPath with negative section")
         return IndexPath(indexes: [section, item])
     }
 

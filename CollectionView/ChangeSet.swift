@@ -254,7 +254,7 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                 else {
                     var adjust = insertions.count(in: 0...s) - deletions.count(in: 0...s)
 //                    print(adjust)
-                    if s + adjust == t { continue }
+                    if s + adjust == t && forceUpdates?.contains(value) != true { continue }
                     
 //                    print("Move \(value) from \(s) to \(t)")
 //                    _edits.append(Edit(.move(origin: s), value: value, index: t))

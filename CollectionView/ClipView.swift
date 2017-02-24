@@ -104,7 +104,9 @@ open class ClipView : NSClipView {
         if animated == false {
             
             // Calculate the point to scroll to to get make the rect visible
-            self.scroll(to: rect.origin)
+            var o = rect.origin
+            o.y -= self.contentInsets.top
+            self.scroll(to: o)
             return true
         }
         
@@ -158,6 +160,7 @@ open class ClipView : NSClipView {
             // super's implementation handle a normal scroll.
             self.endScrolling()
             super.scroll(to: newOrigin)
+            self.scrollView.reflectScrolledClipView(self)
         }
     }
     

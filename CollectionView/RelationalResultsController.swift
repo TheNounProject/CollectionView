@@ -167,7 +167,13 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     // MARK: - Results Controller Protocol
     /*-------------------------------------------------------------------------------*/
-    public var allObjects: [Any] { return _fetchedObjects.objects }
+    public var allObjects: [Any] {
+        var objects = [Element]()
+        for section in _sections {
+            objects.append(contentsOf: section._storage)
+        }
+        return objects
+    }
     public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
     
     public let sectionFetchRequest : NSFetchRequest<Section>
@@ -196,7 +202,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
     
-    internal var _fetchedObjects = OrderedSet<Element>()
+//    internal var _fetchedObjects = OrderedSet<Element>()
     private var _sections = OrderedSet<SectionInfo>()
     
     public var delegate: ResultsControllerDelegate? {
@@ -332,7 +338,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     private func contains(object: Element) -> Bool {
-        return _fetchedObjects.contains(object)
+        return indexPath(of: object) != nil
     }
     
     
@@ -532,7 +538,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             if s.isEditing {
                 let set = s.endEditing(forceUpdates: self.context.objectChangeSet.updated.valuesSet)
                 processedSections[s] = set
-//                print("\(self.indexPath(for: s._object)!) \(set)")
+                print("\(self.indexPath(of: s)!) \(set)")
             }
         }
         
@@ -560,7 +566,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 }
             }
         }
-        _sectionsCopy = nil
+
         
         
 //        logSections()
@@ -700,6 +706,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     // but there is no apparent reason why order is important.
                     
                     for edit in changes.edits {
+                        
+                        print(edit)
                         switch edit.operation {
                             
                         case let .move(origin: from):
@@ -733,6 +741,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 
                 self.delegate?.controllerDidChangeContent(controller: self)
                 self.emptySectionChanges = nil
+                self._sectionsCopy = nil
             })
 //        }
         
@@ -1048,6 +1057,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             // Move within the same section
             if sectionValue == currentSection._object {
+                currentSection.ensureEditing()
                 currentSection.markNeedsSort()
                 _objectSectionMap[object] = currentSection
             }

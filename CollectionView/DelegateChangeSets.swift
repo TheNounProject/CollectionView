@@ -35,13 +35,13 @@ public struct ResultsChangeSet {
     }
     
     public mutating func union(with other: ResultsChangeSet) {
-        self.items.inserted.union(other.items.inserted)
-        self.items.deleted.union(other.items.deleted)
-        self.items.updated.union(other.items.updated)
+        self.items.inserted.formUnion(other.items.inserted)
+        self.items.deleted.formUnion(other.items.deleted)
+        self.items.updated.formUnion(other.items.updated)
 
-        self.sections.inserted.union(other.sections.inserted)
-        self.sections.deleted.union(other.sections.deleted)
-        self.sections.updated.union(other.sections.updated)
+        self.sections.inserted.formUnion(other.sections.inserted)
+        self.sections.deleted.formUnion(other.sections.deleted)
+        self.sections.updated.formUnion(other.sections.updated)
     }
 }
 

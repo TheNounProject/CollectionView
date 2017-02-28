@@ -107,7 +107,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                         rows.last?.centerItems(between: insets.left, cv.frame.size.width - insets.right)
                         rows.append(RowAttributes(attributes: attributes))
                     }
-                } 
+                }
                 
                 if rows.count > 0, let prev = rows[rows.count - 1].items.last, prev.frame.size.height == size.height {
                     

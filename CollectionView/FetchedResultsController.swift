@@ -597,10 +597,10 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 self.emptySectionChanges = ResultsChangeSet()
             }
             if old == 0 && _sections.count != 0 {
-                self.emptySectionChanges?.addChange(forItemAt: IndexPath.Zero, with: .delete)
+                self.emptySectionChanges?.addChange(forItemAt: IndexPath.zero, with: .delete)
             }
             else if old != 0 && _sections.count == 0 {
-                self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.Zero))
+                self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
             }
         }
         else {

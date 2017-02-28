@@ -89,7 +89,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     open override var scrollerStyle: NSScrollerStyle {
         didSet {
             Swift.print("Scroller Style changed")
-            self.relayout(false)
+            self.reloadLayout(false)
         }
     }
     
@@ -356,12 +356,21 @@ open class CollectionView : ScrollView, NSDraggingSource {
      - parameter animated:       If the layout should be animated
      - parameter scrollPosition: Where (if any) the scroll position should be pinned
      */
-    open func relayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion? = nil) {
-        
+    
+    
+    
+    
+    open func reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion? = nil) {
+        self._reloadLayout(animated, scrollPosition: scrollPosition, completion: completion, needsRecalculation: true)
+    }
+    
+    private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
+    
         var absoluteCellFrames = [CollectionReusableView:CGRect]()
         
         for cell in self.contentDocumentView.preparedCellIndex {
-            absoluteCellFrames[cell.1] = self.convert(cell.1.frame, from: cell.1.superview)
+            
+            absoluteCellFrames[cell.value] = self.convert(cell.value.frame, from: cell.value.superview)
         }
         for cell in self.contentDocumentView.preparedSupplementaryViewIndex {
             absoluteCellFrames[cell.1] = self.convert(cell.1.frame, from: cell.1.superview)
@@ -370,7 +379,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
         let holdIP : IndexPath? = self.indexPathForFirstVisibleItem
             //?? self.indexPathsForSelectedItems().intersect(self.indexPathsForVisibleItems()).first
 
-        self.info.recalculate()
+        if needsRecalculation {
+            self.info.recalculate()
+        }
+        
+//        NSGraphicsContext.setCurrent(NSGraphicsContext())
        
         let nContentSize = self.info.contentSize
         contentDocumentView.frame.size = nContentSize
@@ -1044,7 +1057,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._selectedIndexPaths = _updateSelections!
         self.contentDocumentView.pendingUpdates = _updateContext.updates
         self.contentDocumentView.preparedCellIndex = newIndex
-        self.relayout(animated, scrollPosition: .none, completion: nil)
+        self._reloadLayout(animated, scrollPosition: .none, completion: nil, needsRecalculation: false)
     }
     
     public func insertItems(at indexPaths: [IndexPath], animated: Bool) {
@@ -1548,7 +1561,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 }
             }
             else {
-                indexesToSelect.insert(IndexPath.Zero)
+                indexesToSelect.insert(IndexPath.zero)
             }
             indexesToSelect.insert(indexPath)
         }
@@ -1917,15 +1930,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         
         
-        Swift.print(rect)
-        Swift.print(self.contentDocumentView.frame)
-        Swift.print(self.contentInsets.top)
+//        Swift.print(rect)
+//        Swift.print(self.contentDocumentView.frame)
+//        Swift.print(self.contentInsets.top)
         
         if animated || prepare {
             self.contentDocumentView.prepareRect(rect.union(visibleRect), force: false)
         }
         self.clipView?.scrollRectToVisible(rect, animated: animated, completion: completion)
-        if !animated {
+        if !animated && prepare {
             self.contentDocumentView.prepareRect(self.contentVisibleRect, force: false)
         }
     }

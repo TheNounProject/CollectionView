@@ -55,7 +55,7 @@ extension Array {
 
 
 
-class ViewController: CollectionViewController, ResultsControllerDelegate, BasicHeaderDelegate, CollectionViewDelegateColumnLayout {
+class ViewController: CollectionViewController, ResultsControllerDelegate, BasicHeaderDelegate, CollectionViewDelegateColumnLayout, CollectionViewDelegateFlowLayout {
 
     var relational: Bool = false
     
@@ -72,7 +72,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     
     
     var listLayout = CollectionViewListLayout()
-    var gridLayout = CollectionViewColumnLayout()
+    var gridLayout = CollectionViewFlowLayout()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +81,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
 
         let creationSort = NSSortDescriptor(key: "created", ascending: true)
         fetchedResultsController.fetchRequest.sortDescriptors = [creationSort]
-        fetchedResultsController.sectionKeyPath = "second"
+//        fetchedResultsController.sectionKeyPath = "second"
         fetchedResultsController.delegate = self
         
         try! resultsController.performFetch()
@@ -103,8 +103,8 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         listLayout.itemHeight = 36
         listLayout.headerHeight = 36
         
-        gridLayout.headerHeight = 36
-        gridLayout.itemHeight = 80
+//        gridLayout.headerHeight = 36
+//        gridLayout.itemHeight = 80
         
         collectionView.collectionViewLayout = listLayout
         
@@ -456,7 +456,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         let child = resultsController.object(at: indexPath) as! Child
         
-        if collectionView.collectionViewLayout is CollectionViewColumnLayout {
+        if collectionView.collectionViewLayout is CollectionViewFlowLayout {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GridCell", for: indexPath) as! GridCell
             
@@ -482,6 +482,32 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
     }
     
+    
+    
+    func collectionView(_ collectionView: CollectionView, gridLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> FlowLayoutItemStyle {
+        
+        if indexPath._item % 20 == 0 {
+            return .span(50)
+        }
+        
+        let item = resultsController.object(at: indexPath) as! Child
+        
+        let displaySize = (CGFloat(Int(item.second.floatValue/3 + 1)))
+        
+        let size = (displaySize * (30 + (displaySize * 15))) + 80
+        return .flow(CGSize(width: size  + (50 * CGFloat(indexPath._item % 5)), height: size))
+    }
+    
+    func collectionView(_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout, insetsForSectionAt section: Int) -> EdgeInsets {
+        return EdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+    }
+    
+    func collectionView(_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout, heightForFooterInSection section: Int) -> CGFloat {
+        return 0
+    }
+    func collectionView(_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout, heightForHeaderInSection section: Int) -> CGFloat {
+        return 50
+    }
     
     
     // MARK: - Layout Delegate

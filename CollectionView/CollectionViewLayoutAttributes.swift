@@ -9,7 +9,7 @@
 import Foundation
 
 
-open class CollectionViewLayoutAttributes {
+open class CollectionViewLayoutAttributes: CustomStringConvertible {
     open var frame: CGRect = CGRect.zero
     open var center: CGPoint {
         get { return CGPoint(x: frame.origin.x + frame.size.width/2, y: frame.origin.y + frame.size.height/2) }
@@ -45,7 +45,7 @@ open class CollectionViewLayoutAttributes {
         self.indexPath = indexPath
     }
     
-    open var desciption : String {
+    public var description: String {
         var str = "CollectionViewLayoutAttributes-"
         str += " IP: \(self.indexPath._section)-\(self.indexPath._item) "
         str += " Frame: \(self.frame)"

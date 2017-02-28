@@ -20,7 +20,7 @@ public extension IndexPath {
         return IndexPath(indexes: [section, item])
     }
 
-    public static var Zero : IndexPath { return IndexPath.for(item: 0, section: 0) }
+    public static var zero : IndexPath { return IndexPath.for(item: 0, section: 0) }
     public var _item: Int { return self[1] }
     public var _section: Int { return self[0] }
     public static func inRange(_ range: CountableRange<Int>, section: Int) -> [IndexPath] {

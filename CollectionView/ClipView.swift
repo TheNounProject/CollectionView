@@ -6,9 +6,9 @@
 //  Copyright © 2016 Noun Project. All rights reserved.
 //
 
-import Foundation
+//import Foundation
 import AppKit
-import QuartzCore
+//import QuartzCore
 import Quartz
 
 let ClipViewDecelerationRate : CGFloat = 0.78
@@ -160,7 +160,7 @@ open class ClipView : NSClipView {
             // super's implementation handle a normal scroll.
             self.endScrolling()
             super.scroll(to: newOrigin)
-            self.scrollView.reflectScrolledClipView(self)
+//            self.scrollView.reflectScrolledClipView(self)
         }
     }
     

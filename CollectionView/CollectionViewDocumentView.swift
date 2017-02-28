@@ -379,11 +379,11 @@ final public class CollectionViewDocumentView : NSView {
         if animated && !animating {
             let _animDuration = self.collectionView.animationDuration
             
-            NSGraphicsContext.current()?.flushGraphics()
-            
-            // let mDelay = DispatchTime.now() + Double(Int64(0.01 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
             self.animating = true
-            // DispatchQueue.main.asyncAfter(deadline: mDelay, execute: {
+            
+            // Dispatch to allow frame changes from reloadLayout() to apply before 
+            // beginning the animations
+            DispatchQueue.main.async {
                 var removals = [ItemUpdate]()
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in
                     context.duration = _animDuration
@@ -406,7 +406,7 @@ final public class CollectionViewDocumentView : NSView {
                     self.finishRemovals(removals)
                     completion?(true)
                 }
-            // })
+             }
         }
         else {
             if animated {

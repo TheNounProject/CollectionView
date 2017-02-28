@@ -38,6 +38,7 @@ internal final class CollectionViewInfo {
         
         self.collectionView.delegate?.collectionViewWillReloadData?(self.collectionView)
         
+        self.sections = [:]
         let layout = self.collectionView.collectionViewLayout
         var totalNumberOfItems = 0
         self.numberOfSections = self.collectionView.dataSource?.numberOfSections(in: self.collectionView) ?? 0
@@ -48,9 +49,9 @@ internal final class CollectionViewInfo {
                 self.sections[sIndex] = CollectionViewSectionInfo(section: sIndex, frame: CGRect.zero, numberOfItems: itemCount)
             }
         }
-        else {
-            self.sections = [:]
-        }
+//        else {
+//            
+//        }
         
         self.collectionView.collectionViewLayout.prepareLayout()
         if self.sections.count == 0 { return }

@@ -12,7 +12,7 @@ import Foundation
 open class CollectionViewLayout : NSObject {
     
     // This is set internally when the layout is set on the CollectionView
-    open internal(set) weak var collectionView: CollectionView? { didSet { prepare() }}
+    public internal(set) weak var collectionView: CollectionView? { didSet { prepare() }}
     open var scrollDirection : CollectionViewScrollDirection { return .vertical }
     
     /// Called when the collection view is set to do any initialization setup

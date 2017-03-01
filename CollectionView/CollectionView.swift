@@ -332,17 +332,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
             contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize
             //self.info.contentSize.height != _size.height,
             if let ip = _topIP, var rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: CollectionViewScrollPosition.leading) {
+                        self.scrollItem(at: ip, to: .leading, animated: false, completion: nil)
+//                if self.collectionViewLayout.scrollDirection == .vertical {
+//                    rect = CGRect(origin: rect.origin, size: self.bounds.size)
+//                    rect.origin.x = self.contentInsets.left
+//                }
+//                else {
+//                    rect = CGRect(origin: rect.origin, size: self.bounds.size)
+////                    rect.origin.y = self.contentInsets.top
+//                }
                 
-                if self.collectionViewLayout.scrollDirection == .vertical {
-                    rect = CGRect(origin: rect.origin, size: self.bounds.size)
-                    rect.origin.x = self.contentInsets.left
-                }
-                else {
-                    rect = CGRect(origin: rect.origin, size: self.bounds.size)
-//                    rect.origin.y = self.contentInsets.top
-                }
-                
-                _ = self.clipView?.scrollRectToVisible(rect, animated: false, completion: nil)
+//                _ = self.clipView?.scrollRectToVisible(rect, animated: false, completion: nil)
             }
             self.reflectScrolledClipView(self.clipView!)
             self.contentDocumentView.prepareRect(prepareAll ? contentDocumentView.frame : self.contentVisibleRect, force: true)

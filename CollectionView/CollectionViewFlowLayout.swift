@@ -23,7 +23,7 @@ public protocol CollectionViewDelegateFlowLayout : CollectionViewDelegate {
 
 public enum FlowLayoutItemStyle {
     case flow(CGSize)
-    case span(CGFloat)
+    case span(CGSize)
 }
 
 
@@ -31,8 +31,8 @@ public enum FlowLayoutItemStyle {
 open class CollectionViewFlowLayout : CollectionViewLayout {
     
     
-    var itemSpacing: CGFloat = 8
-    var sectionInsets : EdgeInsets = NSEdgeInsetsZero
+    public var itemSpacing: CGFloat = 8
+    public var sectionInsets : EdgeInsets = NSEdgeInsetsZero
     
     struct RowAttributes : CustomStringConvertible {
         var frame = CGRect.zero
@@ -64,6 +64,35 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             }
         }
         
+        func index(of indexPath: IndexPath) -> Int? {
+            guard let f = self.items.first,
+                let l = self.items.last else { return nil }
+            
+            if f.indexPath > indexPath { return nil }
+            if l.indexPath < indexPath { return nil }
+            for (idx, item) in self.items.enumerated() {
+                if item.indexPath == indexPath { return idx }
+            }
+            return nil
+        }
+        
+        func item(verticallyAlignedTo attrs: CollectionViewLayoutAttributes) -> IndexPath? {
+            
+            guard self.items.count > 1,
+                let f = self.items.first,
+                let l = self.items.last else { return items.last?.indexPath }
+            
+            let center = attrs.frame.midX
+            
+            if l.frame.origin.x < center { return l.indexPath }
+            for item in self.items {
+                if item.frame.maxX > center {
+                    return item.indexPath
+                }
+            }
+            return nil
+        }
+        
         var description: String {
             return "Row Attributes : \(frame) -- \(items.count)"
         }
@@ -71,6 +100,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     
     struct SectionAttributes  : CustomStringConvertible {
         var frame = CGRect.zero
+        var insets : EdgeInsets = NSEdgeInsetsZero
         var contentFrame = CGRect.zero
         var header : CollectionViewLayoutAttributes?
         var footer : CollectionViewLayoutAttributes?
@@ -96,9 +126,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             switch style {
             case let .flow(size):
                 
-                
                 func newRow() {
-                    attributes.frame = CGRect(x: insets.left, y: contentFrame.maxY + itemSpacing, width: size.width, height: size.height)
+                    let space = rows.count > 0 ? itemSpacing : 0
+                    attributes.frame = CGRect(x: insets.left, y: contentFrame.maxY + space, width: size.width, height: size.height)
                     adjustOversizedIfNeeded()
                     if rows.last?.items.count == 0 {
                         rows[rows.count - 1].add(attributes: attributes)
@@ -118,8 +148,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     }
                     else {
                         newRow()
-//                        attributes.frame = CGRect(x: insets.left, y: prev.frame.maxY + itemSpacing, width: size.width, height: size.height)
-//                        adjustOversizedIfNeeded()
                     }
                 }
                 else {
@@ -132,12 +160,15 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 }
                 return attributes.frame.maxY
                 
-            case let .span(height):
-                let width = cv.frame.size.width - insets.left - insets.right
-                attributes.frame = CGRect(x: insets.left, y: contentFrame.maxY + (rows.count > 0 ? itemSpacing : 0), width: width, height: height)
-                adjustOversizedIfNeeded()
+            case let .span(size):
+                attributes.frame = CGRect(x: insets.left, y: contentFrame.maxY + (rows.count > 0 ? itemSpacing : 0), width: size.width, height: size.height)
+                //                adjustOversizedIfNeeded()
+                
                 rows.last?.centerItems(between: insets.left, cv.frame.size.width - insets.right)
-                rows.append(RowAttributes(attributes: attributes))
+                let r = RowAttributes(attributes: attributes)
+                r.centerItems(between: insets.left, cv.frame.size.width - insets.right)
+                rows.append(r)
+                
                 rows.append(RowAttributes())
                 items.append(attributes)
                 contentFrame = contentFrame.union(attributes.frame)
@@ -149,13 +180,18 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         }
     }
     
-//    init() { }
-    
     var delegate : CollectionViewDelegateFlowLayout? {
         return self.collectionView?.delegate as? CollectionViewDelegateFlowLayout
     }
     
+    
+    
+    
     var sectionAttributes = [SectionAttributes]()
+    
+    /// Only used during layout preparation to reference the width of the previously inserted row
+    private(set) public var widthOfLastRow : CGFloat?
+    
     public var insetSupplementaryViews = true
     
     override open func prepareLayout() {
@@ -173,10 +209,12 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             var sectionAttrs = SectionAttributes()
             
             var sectionInsets = self.delegate?.collectionView(cv, gridLayout: self, insetsForSectionAt: sec) ?? self.sectionInsets
+            sectionAttrs.insets = sectionInsets
             let numItems = cv.numberOfItems(in: sec)
             
             sectionAttrs.frame.origin.y = top
             sectionAttrs.contentFrame.origin.y = top
+            
             
             let heightHeader : CGFloat = self.delegate?.collectionView(cv, gridLayout: self, heightForHeaderInSection: sec) ?? 0
             if heightHeader > 0 {
@@ -199,8 +237,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     guard let style = self.delegate?.collectionView(cv, gridLayout: self, styleForItemAt: ip) else { continue }
                     var attrs = CollectionViewLayoutAttributes(forCellWithIndexPath: ip)
                     top = sectionAttrs.addItem(with: attrs, using: style, in: cv, insets: sectionInsets, itemSpacing: itemSpacing)
+                    widthOfLastRow = sectionAttrs.rows.last?.frame.size.width
                 }
-                
+                widthOfLastRow = nil
                 if sectionAttrs.rows.last?.items.count == 0 {
                     sectionAttrs.rows.removeLast()
                 }
@@ -222,10 +261,10 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             
             sectionAttrs.frame = sectionAttrs.frame.union(sectionAttrs.contentFrame)
             sectionAttributes.append(sectionAttrs)
+
         }
-        
-        
     }
+    
     
     override open func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes]? {
         var attrs : [CollectionViewLayoutAttributes] = []
@@ -336,4 +375,144 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         contentSize.height = height
         return  contentSize
     }
+    
+    
+    
+    open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
+        guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
+        let inset = (self.collectionView?.contentInsets.top ?? 0) - sectionAttributes[indexPath._section].insets.top
+//        let sectionInsets =
+        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, atIndexPath: indexPath.sectionCopy) {
+            let y = (frame.origin.y - attrs.frame.size.height) + inset
+            
+            let height = frame.size.height + attrs.frame.size.height
+            frame.size.height = height
+            frame.origin.y = y
+        }
+        return frame
+    }
+    
+    
+    open override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
+        guard let collectionView = self.collectionView else { fatalError() }
+        
+        var index = currentIndexPath._item
+        var section = currentIndexPath._section
+        
+        let numberOfSections = collectionView.numberOfSections()
+        let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
+        
+        guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }
+        
+//        func item(in row: RowAttributes, verticallyAlignedTo attrs: CollectionViewLayoutAttributes) -> IndexPath? {
+//            for item in row.items {
+//                if item.frame.origin.x > attrs.frame.origin.x {
+//                    return item.indexPath
+//                }
+//            }
+//            return
+//        }
+        
+        switch direction {
+        case .up:
+            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
+//            let secAttrs = sectionAttributes.object(at: currentIndexPath._section)
+//            let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
+            
+            var prev : RowAttributes?
+            for row in sectionAttributes[section].rows {
+                if let idx = row.index(of: currentIndexPath) {
+                    guard let pRow = prev else {
+                        guard let pSectionRow = sectionAttributes.object(at: section - 1)?.rows.last else { return nil }
+                        return pSectionRow.item(verticallyAlignedTo: cAttrs)
+                    }
+                    return pRow.item(verticallyAlignedTo: cAttrs)
+                }
+                prev = row
+            }
+            return nil
+            
+        case .down:
+            
+            
+            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
+//            let secAttrs = sectionAttributes.object(at: currentIndexPath._section)
+//            let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
+            
+            var prev : RowAttributes?
+            for row in sectionAttributes[section].rows.reversed() {
+                if let idx = row.index(of: currentIndexPath) {
+                    guard let pRow = prev else {
+                        guard let pSectionRow = sectionAttributes.object(at: section + 1)?.rows.first else { return nil }
+                        return pSectionRow.item(verticallyAlignedTo: cAttrs)
+                    }
+                    return pRow.item(verticallyAlignedTo: cAttrs)
+                }
+                prev = row
+            }
+            return nil
+            
+            
+//            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath),
+//                let columns = sectionColumnAttributes[section] else { return nil }
+//            
+//            let cFlat = CGRect(x: cAttrs.frame.origin.x, y: 0, width: cAttrs.frame.size.width, height: 50)
+//            
+//            for column in columns {
+//                if let first = column.first {
+//                    // This is the last item in the column -> Check the previous section
+//                    if column.last?.indexPath == currentIndexPath {
+//                        guard let pColumns = sectionColumnAttributes[section + 1] else { return nil }
+//                        
+//                        for col in pColumns {
+//                            if let pFirst = col.first {
+//                                let flat = CGRect(x: pFirst.frame.origin.x, y: 0, width: pFirst.frame.size.width, height: 50)
+//                                if cFlat.intersects(flat) {
+//                                    return col.first?.indexPath
+//                                }
+//                            }
+//                        }
+//                        return sectionItemAttributes[section + 1].last?.indexPath
+//                    }
+//                    
+//                    let flat = CGRect(x: first.frame.origin.x, y: 0, width: first.frame.size.width, height: 50)
+//                    
+//                    // Get the same column
+//                    if cFlat.intersects(flat) {
+//                        for idx in 0..<column.count {
+//                            let attr = column[idx]
+//                            if attr.indexPath == currentIndexPath {
+//                                return column[idx + 1].indexPath
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+            return nil
+            
+        case .left:
+            if section == 0 && index == 0 {
+                return currentIndexPath
+            }
+            if index > 0 {
+                index = index - 1
+            } else {
+                section = section - 1
+                index = collectionView.numberOfItems(in: currentIndexPath._section - 1) - 1
+            }
+            return IndexPath.for(item:index, section: section)
+        case .right :
+            if section == numberOfSections - 1 && index == numberOfItemsInSection - 1 {
+                return currentIndexPath
+            }
+            if index < numberOfItemsInSection - 1 {
+                index = index + 1
+            } else {
+                section = section + 1
+                index = 0
+            }
+            return IndexPath.for(item:index, section: section)
+        }
+    }
+    
 }

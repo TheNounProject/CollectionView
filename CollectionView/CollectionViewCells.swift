@@ -191,3 +191,15 @@ open class CollectionViewCell : CollectionReusableView {
     }
     
 }
+
+public extension CollectionViewCell {
+    public static var defaultReuseIdentifier : String { return self.className() }
+    public static func register(in collectionView: CollectionView) {
+        let id = defaultReuseIdentifier
+        collectionView.register(class: self, forCellWithReuseIdentifier: id)
+    }
+    public static func deque(for indexPath: IndexPath, in collectionView: CollectionView) -> CollectionViewCell {
+        return collectionView.dequeueReusableCell(withReuseIdentifier: defaultReuseIdentifier, for: indexPath)
+    }
+    
+}

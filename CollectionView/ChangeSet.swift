@@ -73,16 +73,17 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     }
     
     public var description: String {
-        switch self.operation {
-        case let .move(origin):
-            return "Edit: Move \(origin) to \(self.index) (\(self.value))"
-        case let .substitution(target):
-            return "Edit: Replace item at \(self.index) with (\(self.value)) - Target: \(target)"
-        case .insertion:
-            return "Edit: Insert \(self.value) at \(self.index)"
-        case .deletion:
-            return "Edit: Delete item at \(self.index) (was (\(self.value)))"
-        }
+        return "Edit"
+//        switch self.operation {
+//        case let .move(origin):
+//            return "Edit: Move \(origin) to \(self.index) (\(self.value))"
+//        case let .substitution(target):
+//            return "Edit: Replace item at \(self.index) with (\(self.value)) - Target: \(target)"
+//        case .insertion:
+//            return "Edit: Insert \(self.value) at \(self.index)"
+//        case .deletion:
+//            return "Edit: Delete item at \(self.index) (was (\(self.value)))"
+//        }
     }
 
     public var hashValue: Int { return value.hashValue }

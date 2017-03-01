@@ -83,53 +83,8 @@ open class CollectionReusableView : NSView {
     
     
     
-}
-
-open class CollectionViewCell : CollectionReusableView {
-    
-    open override func acceptsFirstMouse(for theEvent: NSEvent?) -> Bool { return true }
-    
-    fileprivate var wantsTracking = true
+    fileprivate var wantsTracking = false
     open var trackingOptions = [NSTrackingAreaOptions.mouseEnteredAndExited, NSTrackingAreaOptions.activeInKeyWindow, .inVisibleRect, .enabledDuringMouseDrag]
-    
-    fileprivate var _selected: Bool = false
-    fileprivate var _highlighted : Bool = false
-    open var highlighted: Bool {
-        get { return _highlighted }
-        set { self.setHighlighted(newValue, animated: false) }
-    }
-    open var selected : Bool {
-        set { self.setSelected(newValue, animated: false) }
-        get { return self._selected }
-    }
-    
-    override public init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-        
-    }
-    
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
-    open func setSelected(_ selected: Bool, animated: Bool = true) {
-        self._selected = selected
-    }
-    
-    open func setHighlighted(_ highlighted: Bool, animated: Bool) {
-        self._highlighted = highlighted
-        if highlighted {
-            self.collectionView?.indexPathForHighlightedItem = self.attributes?.indexPath
-        }
-    }
-    
-    open override func prepareForReuse() {
-        super.prepareForReuse()
-        self.setSelected(false, animated: false)
-        self.setHighlighted(false, animated: false)
-    }
-    
-    
     var _trackingArea : NSTrackingArea?
     open var trackMouseMoved : Bool = false {
         didSet {
@@ -161,6 +116,51 @@ open class CollectionViewCell : CollectionReusableView {
         if self.wantsTracking == false { return }
         _trackingArea = NSTrackingArea(rect: self.bounds, options: NSTrackingAreaOptions(trackingOptions), owner: self, userInfo: nil)
         self.addTrackingArea(_trackingArea!)
+    }
+    
+    
+}
+
+open class CollectionViewCell : CollectionReusableView {
+    
+    open override func acceptsFirstMouse(for theEvent: NSEvent?) -> Bool { return true }
+    
+    fileprivate var _selected: Bool = false
+    fileprivate var _highlighted : Bool = false
+    open var highlighted: Bool {
+        get { return _highlighted }
+        set { self.setHighlighted(newValue, animated: false) }
+    }
+    open var selected : Bool {
+        set { self.setSelected(newValue, animated: false) }
+        get { return self._selected }
+    }
+    
+    override public init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsTracking = true
+    }
+    
+    required public init?(coder: NSCoder) {
+        super.init(coder: coder)
+        wantsTracking = true
+    }
+    
+    open func setSelected(_ selected: Bool, animated: Bool = true) {
+        self._selected = selected
+    }
+    
+    open func setHighlighted(_ highlighted: Bool, animated: Bool) {
+        self._highlighted = highlighted
+        if highlighted {
+            self.collectionView?.indexPathForHighlightedItem = self.attributes?.indexPath
+        }
+    }
+    
+    open override func prepareForReuse() {
+        super.prepareForReuse()
+        self.setSelected(false, animated: false)
+        self.setHighlighted(false, animated: false)
     }
     
     override open func mouseEntered(with theEvent: NSEvent) {

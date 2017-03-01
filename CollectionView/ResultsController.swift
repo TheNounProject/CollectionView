@@ -6,7 +6,6 @@
 //  Copyright © 2017 The Noun Project. All rights reserved.
 //
 
-import Foundation
 import CoreData
 
 // Test 2

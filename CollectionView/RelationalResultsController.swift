@@ -198,7 +198,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     public var sectionNameKeyPath : String?
     
     public var sectionKeyPath: String = "" { didSet { setNeedsFetch() }}
-    public let managedObjectContext: NSManagedObjectContext
+    public private(set) var managedObjectContext: NSManagedObjectContext
     
     private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
     
@@ -219,25 +219,40 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         self.fetchRequest = request
         self.sectionFetchRequest = sectionRequest
         
-        
-        assert(request.entityName != nil, "request is missing entity name")
-        assert(sectionRequest.entityName != nil, "sectionRequest is missing entity name")
-
-        let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: context)
-        let sectionEntity = NSEntityDescription.entity(forEntityName: sectionRequest.entityName!, in: context)
-        
-        assert(objectEntity != nil, "Unable to load entity description for object \(request.entityName!)")
-        assert(sectionEntity != nil, "Unable to load entity description for section \(sectionRequest.entityName!)")
-        
-        request.entity = objectEntity
-        sectionRequest.entity = sectionEntity
+//        assert(request.entityName != nil, "request is missing entity name")
+//        assert(sectionRequest.entityName != nil, "sectionRequest is missing entity name")
+//
+//        let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: context)
+//        let sectionEntity = NSEntityDescription.entity(forEntityName: sectionRequest.entityName!, in: context)
+//        
+//        assert(objectEntity != nil, "Unable to load entity description for object \(request.entityName!)")
+//        assert(sectionEntity != nil, "Unable to load entity description for section \(sectionRequest.entityName!)")
+//        
+//        request.entity = objectEntity
+//        sectionRequest.entity = sectionEntity
         
         request.returnsObjectsAsFaults = false
         sectionRequest.returnsObjectsAsFaults = false
         
         super.init()
         
+        validateRequests()
+        
         self.sectionKeyPath = keyPath
+    }
+    
+    private func validateRequests() {
+        assert(fetchRequest.entityName != nil, "request is missing entity name")
+        assert(sectionFetchRequest.entityName != nil, "sectionRequest is missing entity name")
+        
+        let objectEntity = NSEntityDescription.entity(forEntityName: fetchRequest.entityName!, in: self.managedObjectContext)
+        let sectionEntity = NSEntityDescription.entity(forEntityName: sectionFetchRequest.entityName!, in: self.managedObjectContext)
+        
+        assert(objectEntity != nil, "Unable to load entity description for object \(fetchRequest.entityName!)")
+        assert(sectionEntity != nil, "Unable to load entity description for section \(sectionFetchRequest.entityName!)")
+        
+        fetchRequest.entity = objectEntity
+        sectionFetchRequest.entity = sectionEntity
     }
     
     
@@ -381,6 +396,16 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     // MARK: - Perform Fetch
     /*-------------------------------------------------------------------------------*/
+    
+    public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
+        guard moc != self.managedObjectContext else { return }
+        self.setNeedsFetch()
+        self.managedObjectContext = moc
+        
+        validateRequests()
+        
+        try self.performFetch()
+    }
     
     public func performFetch() throws {
         

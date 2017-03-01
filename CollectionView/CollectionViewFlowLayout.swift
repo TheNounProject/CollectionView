@@ -178,6 +178,15 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 return attributes.frame.maxY
             }
         }
+        
+        var lastRowWidth : CGFloat {
+            for row in rows.reversed() {
+                if row.items.count > 0 {
+                    return row.frame.size.width
+                }
+            }
+            return 0
+        }
     }
     
     var delegate : CollectionViewDelegateFlowLayout? {
@@ -237,7 +246,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     guard let style = self.delegate?.collectionView(cv, gridLayout: self, styleForItemAt: ip) else { continue }
                     var attrs = CollectionViewLayoutAttributes(forCellWithIndexPath: ip)
                     top = sectionAttrs.addItem(with: attrs, using: style, in: cv, insets: sectionInsets, itemSpacing: itemSpacing)
-                    widthOfLastRow = sectionAttrs.rows.last?.frame.size.width
+                    widthOfLastRow = sectionAttrs.lastRowWidth
                 }
                 widthOfLastRow = nil
                 if sectionAttrs.rows.last?.items.count == 0 {

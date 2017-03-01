@@ -8,7 +8,6 @@
 
 //import Foundation
 import AppKit
-//import QuartzCore
 import Quartz
 
 let ClipViewDecelerationRate : CGFloat = 0.78

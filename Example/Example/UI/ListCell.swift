@@ -113,6 +113,8 @@ class ListCell : CollectionViewCell {
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
+        self.alphaValue = selected ? 0.5 : 0.8
+        
         var color : NSColor?
         if selected, let bg = self.selectedBackgroundColor {
             color = bg

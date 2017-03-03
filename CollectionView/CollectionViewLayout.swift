@@ -30,7 +30,7 @@ open class CollectionViewLayout : NSObject {
     open func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         return self.layoutAttributesForItem(at: indexPath)?.frame
     }
-    open func indexPathsForItems(in rect: CGRect) -> Set<IndexPath>? { return nil }
+    open func indexPathsForItems(in rect: CGRect) -> [IndexPath]? { return nil }
     
     open func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool { return true }  // return YES to cause the collection view to requery the layout for geometry information
     

@@ -21,7 +21,7 @@ open class CollectionReusableView : NSView {
 //    }
     internal var attributes : CollectionViewLayoutAttributes?
     
-    open var backgroundColor: NSColor?
+    open var backgroundColor: NSColor? { didSet { self.needsDisplay = true }}
     
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)

@@ -153,9 +153,17 @@ final public class CollectionViewDocumentView : NSView {
         
         if !force && !self.preparedRect.isEmpty && self.preparedRect.contains(_rect) {
             
-            for id in self.preparedSupplementaryViewIndex {
-                let view = id.1
-                guard let ip = id.0.indexPath, let attrs = self.collectionView.layoutAttributesForSupplementaryElement(ofKind: id.0.kind, atIndexPath: ip) else { continue }
+            for _view in self.preparedSupplementaryViewIndex {
+                let view = _view.1
+                let id = _view.0
+                guard let ip = id.indexPath, let attrs = self.collectionView.layoutAttributesForSupplementaryElement(ofKind: id.kind, atIndexPath: ip) else { continue }
+                
+                guard attrs.frame.intersects(self.preparedRect) else {
+                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, ofElementKind: id.kind, at: ip)
+                    self.preparedSupplementaryViewIndex[id] = nil
+                    self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: id)
+                    continue
+                }
                 
                 if attrs.floating == true {
                     if view.superview != self.collectionView._floatingSupplementaryView {
@@ -206,7 +214,7 @@ final public class CollectionViewDocumentView : NSView {
         var updates = [ItemUpdate]()
         
         let oldIPs = self.preparedCellIndex.indexSet
-        var inserted = self.collectionView.indexPathsForItems(in: rect)
+        var inserted = Set(self.collectionView.indexPathsForItems(in: rect))
         let removed = oldIPs.removing(inserted)
         let updated = inserted.remove(oldIPs)
         
@@ -219,7 +227,7 @@ final public class CollectionViewDocumentView : NSView {
                     
                     self.preparedCellIndex[ip] = nil
                     cell.layer?.zPosition = 0
-                    if animated  && !animating, let attrs =  self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
+                    if animated  && !animating, let attrs =  cell.attributes ?? self.collectionView.layoutAttributesForItem(at: ip) {
                         updates.append(ItemUpdate(view: cell, attrs: attrs, type: .remove))
                     }
                     else {
@@ -299,7 +307,7 @@ final public class CollectionViewDocumentView : NSView {
                     self.preparedSupplementaryViewIndex[identifier] = nil
                     view.layer?.zPosition = -100
                     
-                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!) {
+                    if animated && !animating, let attrs = view.attributes ?? self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!) {
                         updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: identifier))
                     }
                     else {
@@ -373,7 +381,7 @@ final public class CollectionViewDocumentView : NSView {
         
         
 //        for u in updates {
-//            Swift.print("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type)")
+//            Swift.print("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type) - is view\(u.view)")
 //        }
         
         if animated && !animating {

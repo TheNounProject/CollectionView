@@ -197,10 +197,10 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     }
     
     
-    open override func indexPathsForItems(in rect: CGRect) -> Set<IndexPath>? {
+    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath]? {
         //        return nil
         
-        var indexPaths = Set<IndexPath>()
+        var indexPaths = [IndexPath]()
         guard let cv = self.collectionView else { return nil }
         if rect.isEmpty || self.numSections == 0 { return indexPaths }
         for sectionIndex in 0..<cv.numberOfSections() {
@@ -212,13 +212,13 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
             
             // If the section is completely show, add all the attrs
             if rect.contains(contentFrame) {
-                indexPaths.formUnion(sectionIndexPaths[sectionIndex])
+                indexPaths.append(contentsOf: sectionIndexPaths[sectionIndex])
                 continue
             }
             
             for attr in sectionItemAttributes[sectionIndex] {
                 if attr.frame.intersects(rect) {
-                    indexPaths.insert(attr.indexPath as IndexPath)
+                    indexPaths.append(attr.indexPath as IndexPath)
                 }
             }
         }
@@ -282,7 +282,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     fileprivate var _cvSize = CGSize.zero
     override public func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
-        if !newBounds.size.equalTo(self._cvSize) {
+        if newBounds.size.width != self._cvSize.width {
             self._cvSize = newBounds.size
             return true
         }

@@ -338,8 +338,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     }
     
     
-    override open func indexPathsForItems(in rect: CGRect) -> Set<IndexPath>? {
-        var indexPaths = Set<IndexPath>()
+    override open func indexPathsForItems(in rect: CGRect) -> [IndexPath]? {
+        var indexPaths = [IndexPath]()
         guard let cv = self.collectionView else { return nil }
         if rect.equalTo(CGRect.zero) || cv.numberOfSections() == 0 { return indexPaths }
         for sectionIndex in 0...cv.numberOfSections() - 1 {
@@ -352,7 +352,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             // If the section is completely show, add all the attrs
             if rect.contains(sAttrs.frame) {
                 for a in sAttrs.items {
-                    indexPaths.insert(a.indexPath)
+                    indexPaths.append(a.indexPath)
                 }
 //                if let ips = self.sectionAttributes[sectionIndex] {
 //                    indexPaths.formUnion(ips)
@@ -363,7 +363,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     guard row.frame.intersects(rect) else { continue }
                     for attr in row.items {
                         if attr.frame.intersects(rect) {
-                            indexPaths.insert(attr.indexPath as IndexPath)
+                            indexPaths.append(attr.indexPath as IndexPath)
                         }
                         else if attr.frame.origin.y > rect.maxY { break }
                     }

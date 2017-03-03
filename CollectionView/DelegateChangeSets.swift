@@ -145,6 +145,9 @@ public extension CollectionView {
         self.deleteSections(changes.deleted, animated: true)
         self.insertSections(changes.inserted, animated: true)
         self.reloadSupplementaryViews(in: changes.updated, animated: true)
+        for m in changes.moved {
+            self.moveSection(m.source, to: m.destination, animated: true)
+        }
     }
     
     private func _applyChanges(_ changes: ItemChangeSet) {

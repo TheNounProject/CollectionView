@@ -426,10 +426,10 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     }
 
     
-    open override func indexPathsForItems(in rect: CGRect) -> Set<IndexPath>? {
+    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath]? {
 //        return nil
         
-        var indexPaths = Set<IndexPath>()
+        var indexPaths = [IndexPath]()
         guard let cv = self.collectionView else { return nil }
         if rect.equalTo(CGRect.zero) || cv.numberOfSections() == 0 { return indexPaths }
         for sectionIndex in 0...cv.numberOfSections() - 1 {
@@ -442,14 +442,14 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             // If the section is completely show, add all the attrs
             if rect.contains(sectionFrame) {
                 if let ips = self.sectionIndexPaths[sectionIndex] {
-                    indexPaths.formUnion(ips)
+                    indexPaths.append(contentsOf: ips)
                 }
             }
             else if let columns = self.sectionColumnAttributes[sectionIndex] , columns.count > 0 {
                 for column in columns {
                     for attr in column {
                         if attr.frame.intersects(rect) {
-                            indexPaths.insert(attr.indexPath as IndexPath)
+                            indexPaths.append(attr.indexPath as IndexPath)
                         }
                         else if attr.frame.origin.y > rect.maxY { break }
                     }

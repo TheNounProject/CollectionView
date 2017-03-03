@@ -90,7 +90,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             NSSortDescriptor(key: "displayOrder", ascending: true)
 //            NSSortDescriptor(key: "created", ascending: false)
         ]
-        relationalResultsController.fetchRequest.sortDescriptors = [
+        relationalResultsController.sectionFetchRequest.sortDescriptors = [
             NSSortDescriptor(key: "displayOrder", ascending: true)
 //            NSSortDescriptor(key: "created", ascending: false)
         ]
@@ -247,6 +247,17 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         guard relational else { return }
         
+        var num = self.relationalResultsController.numberOfSections
+        
+        for section in self.relationalResultsController.sections {
+            guard let p = section.object as? Parent else { continue }
+            p.displayOrder = NSNumber(value: num)
+            num -= 1
+        }
+        
+        return;
+        
+        
         if let t = test {
             for (idx, section) in self.relationalResultsController.sections.enumerated() {
                 let test = t.core[idx]
@@ -393,10 +404,34 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         let flags = NSApp.currentEvent?.modifierFlags
         
+        
+        
+        
         if flags?.contains(.control) == true {
-            section.managedObjectContext?.delete(section)
+            let moc = section.managedObjectContext
+            if flags?.contains(.option) == true {
+                for child in section.children {
+                    moc?.delete(child)
+                }
+            }
+            moc?.delete(section)
+            
         }
         else if flags?.contains(.shift) == true {
+            
+            if self.resultsController.numberOfSections > 1 && flags?.contains(.command) == true {
+                
+                var other = ip._section == self.resultsController.numberOfSections - 1
+                    ? IndexPath.for(section: ip._section - 1)
+                    : IndexPath.for(section: ip._section + 1)
+                
+                let p2 = resultsController.sectionInfo(forSectionAt: other)?.object  as! Parent
+                let temp = p2.displayOrder
+                p2.displayOrder = section.displayOrder
+                section.displayOrder = temp
+                return
+            }
+            
             
             let newParent = Parent.create()
             var order = section.displayOrder.intValue
@@ -475,11 +510,10 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             cell.titleLabel.font = NSFont.systemFont(ofSize: 12, weight: NSFontWeightThin)
         }
         
-        cell.titleLabel.bind("stringValue", to: child, withKeyPath: "displayOrder", options: nil)
+//        cell.titleLabel.bind("stringValue", to: child, withKeyPath: "displayOrder", options: nil)
         cell.detailLabel.stringValue = "\(child.idString) \(child.dateString) -- \(indexPath)"
         
         return cell
-        
     }
     
     
@@ -487,14 +521,14 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     func collectionView(_ collectionView: CollectionView, gridLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> FlowLayoutItemStyle {
         
         if indexPath._item % 20 == 0 {
-            return .span(50)
+            return .span(CGSize(width: collectionView.frame.size.width, height: 50))
         }
         
         let item = resultsController.object(at: indexPath) as! Child
         
         let displaySize = (CGFloat(Int(item.second.floatValue/3 + 1)))
         
-        let size = (displaySize * (30 + (displaySize * 15))) + 80
+        let size : CGFloat = 100 // (displaySize * (30 + (displaySize * 15))) + 80
         return .flow(CGSize(width: size  + (50 * CGFloat(indexPath._item % 5)), height: size))
     }
     

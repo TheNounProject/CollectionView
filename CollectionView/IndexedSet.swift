@@ -9,7 +9,7 @@
 import Foundation
 
 
-public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStringConvertible {
+public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStringConvertible, ExpressibleByDictionaryLiteral {
     
     
     //    var table = MapTab
@@ -24,6 +24,11 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
     public var indexSet : Set<Index> {
         return Set(byIndex.keys)
     }
+    
+    public var dictionary : [Index:Value] {
+        return byIndex
+    }
+    
     public var values : [Value] {
         return Array(byIndex.values)
     }
@@ -44,6 +49,18 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
 
     
     public init() { }
+    
+    
+    public init(dictionaryLiteral elements: (Index, Value)...) {
+        for e in elements {
+            self.insert(e.1, with: e.0)
+        }
+    }
+    public init(_ dictionary: Dictionary<Index, Value>) {
+        for e in dictionary {
+            self.insert(e.1, with: e.0)
+        }
+    }
     
     public subscript(index: Index) -> Value? {
         get { return value(for: index) }
@@ -156,7 +173,13 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
 
 extension IndexedSet {
     
-    
+    func union(_ other: IndexedSet) -> IndexedSet {
+        var new = self
+        for e in other.byIndex {
+            new.insert(e.value, with: e.key)
+        }
+        return new
+    }
     
 }
 

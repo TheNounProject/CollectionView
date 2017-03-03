@@ -34,7 +34,7 @@ class GridCell : CollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        self.badgeLabel.unbind("value")
+//        self.badgeLabel.unbind("value")
     }
     
     var child: Child?
@@ -48,11 +48,11 @@ class GridCell : CollectionViewCell {
         if !self.reused {
             self.layer?.cornerRadius = 3
         }
-//        self.badgeLabel.stringValue = "\(child.displayOrder)"
+        self.badgeLabel.stringValue = "\(child.displayOrder)"
         self.titleLabel.stringValue = "Child \(child.idString)"
         self.detailLabel.stringValue = child.dateString
         
-        self.badgeLabel.bind("value", to: child, withKeyPath: "displayOrder", options: nil)
+//        self.badgeLabel.bind("value", to: child, withKeyPath: "displayOrder", options: nil)
     }
     
     override var description: String {

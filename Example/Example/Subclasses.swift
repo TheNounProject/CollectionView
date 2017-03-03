@@ -38,7 +38,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         let req = NSFetchRequest<Parent>(entityName: "Parent")
         req.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
         req.fetchLimit = 1
-        let _order = try! moc.fetch(req).first?.displayOrder.intValue ?? -1
+        let _order = try! moc.fetch(req).first?.displayOrder.intValue ?? 0
         
         let new = NSEntityDescription.insertNewObject(forEntityName: "Parent", into: moc) as! Parent
         new.displayOrder = NSNumber(value: _order + 1)

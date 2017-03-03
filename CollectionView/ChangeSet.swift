@@ -73,17 +73,16 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     }
     
     public var description: String {
-        return "Edit"
-//        switch self.operation {
-//        case let .move(origin):
-//            return "Edit: Move \(origin) to \(self.index) (\(self.value))"
-//        case let .substitution(target):
-//            return "Edit: Replace item at \(self.index) with (\(self.value)) - Target: \(target)"
-//        case .insertion:
-//            return "Edit: Insert \(self.value) at \(self.index)"
-//        case .deletion:
-//            return "Edit: Delete item at \(self.index) (was (\(self.value)))"
-//        }
+        switch self.operation {
+        case let .move(origin):
+            return "Edit: Move \(origin) to \(self.index)"
+        case let .substitution(target):
+            return "Edit: Replace item at \(self.index) - Target: \(target)"
+        case .insertion:
+            return "Edit: Insert \(self.value) at \(self.index)"
+        case .deletion:
+            return "Edit: Delete item at \(self.index)"
+        }
     }
 
     public var hashValue: Int { return value.hashValue }
@@ -255,7 +254,9 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                 else {
                     var adjust = insertions.count(in: 0...s) - deletions.count(in: 0...s)
 //                    print(adjust)
-                    if s + adjust == t && forceUpdates?.contains(value) != true { continue }
+                    if s + adjust == t && forceUpdates?.contains(value) != true {
+                        continue
+                    }
                     
 //                    print("Move \(value) from \(s) to \(t)")
 //                    _edits.append(Edit(.move(origin: s), value: value, index: t))
@@ -535,29 +536,34 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
     
     public mutating func reduceEdits() {
         
+        
+        var dIndex = IndexSet()
+        var iIndex = IndexSet()
+        
         for element in _shared {
             let temp = Edit(.insertion, value: element, index: 0)
             if let t = self.operationIndex.inserts.remove(temp),
                 let s = self.operationIndex.deletes.remove(temp) {
+                
                 let newEdit = Edit(.move(origin: s), value: element, index: t)
                 self.operationIndex.moves.insert(newEdit, with: t)
             }
         }
         
-        for d in self.operationIndex.deletes {
-            if let i = self.operationIndex.inserts.remove(d.value) {
-                self.operationIndex.deletes.remove(d.value)
-                let newEdit = Edit(.move(origin: d.value.index), value: d.value.value, index: i)
-//                print("Converted delete: \(d) and insert: \(i) to \(newEdit)")
-                self.operationIndex.moves.insert(newEdit, with: i)
-            }
-            else if let i = self.operationIndex.inserts.removeValue(for: d.index) {
-                self.operationIndex.deletes.remove(d.value)
-                let newEdit = Edit(.substitution, value: i.value, index: d.index)
-//                print("Converted delete: \(d) and insert: \(i) to \(newEdit)")
-                self.operationIndex.substitutions.insert(newEdit, with: d.index)
-            }
-        }
+//        for d in self.operationIndex.deletes {
+//            if let i = self.operationIndex.inserts.remove(d.value) {
+//                self.operationIndex.deletes.remove(d.value)
+//                let newEdit = Edit(.move(origin: d.value.index), value: d.value.value, index: i)
+////                print("Converted delete: \(d) and insert: \(i) to \(newEdit)")
+//                self.operationIndex.moves.insert(newEdit, with: i)
+//            }
+//            else if let i = self.operationIndex.inserts.removeValue(for: d.index) {
+//                self.operationIndex.deletes.remove(d.value)
+//                let newEdit = Edit(.substitution, value: i.value, index: d.index)
+////                print("Converted delete: \(d) and insert: \(i) to \(newEdit)")
+//                self.operationIndex.substitutions.insert(newEdit, with: d.index)
+//            }
+//        }
         
         self.edits = self.operationIndex.allEdits
         

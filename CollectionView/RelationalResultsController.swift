@@ -455,22 +455,26 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     // MARK: - Storage Manipulation
     /*-------------------------------------------------------------------------------*/
+    private func _ensureSectionCopy() {
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
+    }
     
     fileprivate func _insert(section: Section?) -> SectionInfo {
         if let s = self._sectionInfo(representing: section) { return s }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        _ensureSectionCopy()
         let s = SectionInfo(object: section, objects: [])
         _sections.add(s)
         return s
     }
     
-    private func _remove(_ section: Section?) {
-        guard let ip = self.indexPathOfSection(representing: section) else { return }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
+    private func _remove(_ section: Section?, ip: IndexPath? = nil) {
+        guard let ip = ip ?? self.indexPathOfSection(representing: section) else { return }
+        _ensureSectionCopy()
         _sections.remove(at: ip._section)
     }
     
     func sortSections() {
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
         self._sections.needsSort = false
         guard let sort = sectionFetchRequest.sortDescriptors, sort.count > 0 else {
             return
@@ -569,11 +573,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         
         if let oldSections = _sectionsCopy {
             var sectionChanges = ChangeSet(source: oldSections, target: _sections)
-//            print(oldSections)
-//            print(_sections)
-//            print(sectionChanges)
-            
+            print(oldSections)
+            print(_sections)
+            print(sectionChanges)
             sectionChanges.reduceEdits()
+            print(sectionChanges)
             for change in sectionChanges.edits {
                 switch change.operation {
                 case .insertion:
@@ -591,12 +595,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 }
             }
         }
-
-        
-        
-//        logSections()
-        
-//        queue.addOperation {
         
             var csrLog = "Performing Cross Section Reduction ------ "
             var indent = 0
@@ -969,7 +967,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             for obj in section._storage {
                 _objectSectionMap[obj] = nil
             }
-            _sections.remove(at: ip._section)
+            self._remove(object, ip: ip)
         }
     }
     

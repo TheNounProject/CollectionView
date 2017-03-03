@@ -125,10 +125,10 @@ class ResultsControllerCDManager {
             }
         }
         
-        print("CD Results Controller Dispatch")
-        for set in changeSets {
-            print(set.value)
-        }
+//        print("CD Results Controller Dispatch")
+//        for set in changeSets {
+//            print(set.value)
+//        }
         
         NotificationCenter.default.post(name: Dispatch.name, object: notification.object, userInfo: [
             ResultsControllerCDManager.Dispatch.changeSetKey : changeSets

@@ -8,9 +8,18 @@
 
 import CoreData
 
-// Test 2
 
 public extension Array where Element:Any {
+    
+    
+    /**
+     Returns the obejct at the given index, first validating the index
+
+     - Parameter index: An index
+     
+     - Returns: The object if the index is valid in the array
+
+    */
     public func object(at index: Int) -> Element? {
         if index >= 0 && index < self.count {
             return self[index]
@@ -36,6 +45,7 @@ extension NSNumber : CustomDisplayStringConvertible {
     public var displayDescription: String { return "\(self)" }
 }
 
+/// :nodoc:
 extension Int : CustomDisplayStringConvertible {
     public var displayDescription: String {
         return "\(self)"

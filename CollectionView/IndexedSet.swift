@@ -183,7 +183,7 @@ extension IndexedSet {
     
 }
 
-
+/// :nodoc:
 extension Array where Element:Hashable {
     public var indexedSet : IndexedSet<Int, Element> {
         var set = IndexedSet<Int, Element>()

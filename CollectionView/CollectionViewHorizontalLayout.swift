@@ -21,7 +21,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         return CollectionViewScrollDirection.horizontal
     }
     
-    open var delegate: CollectionViewDelegateHorizontalListLayout? {
+    private var delegate: CollectionViewDelegateHorizontalListLayout? {
         return self.collectionView?.delegate as? CollectionViewDelegateHorizontalListLayout
     }
     
@@ -38,7 +38,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         
         guard let cv = self.collectionView else { return }
         
-        let numSections = cv.numberOfSections()
+        let numSections = cv.numberOfSections
         assert(numSections <= 1, "Horizontal collection view cannot have more than 1 section")
         
         if numSections == 0 { return }
@@ -76,7 +76,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     }
     
     open override var collectionViewContentSize : CGSize {
-        let numberOfSections = self.collectionView!.numberOfSections()
+        let numberOfSections = self.collectionView!.numberOfSections
         if numberOfSections == 0{
             return CGSize.zero
         }

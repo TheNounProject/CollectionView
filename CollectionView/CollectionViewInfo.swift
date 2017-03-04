@@ -10,28 +10,39 @@ import Foundation
 
 
 
-internal struct CollectionViewSectionInfo {
-    var section: Int = 0
-    var frame : CGRect = CGRect.zero
-    var numberOfItems: Int = 0
-}
+
 
 internal final class CollectionViewInfo {
     
-    private unowned let collectionView : CollectionView
-    private(set) var numberOfSections : Int = 0
-    private(set) var sections : [Int: CollectionViewSectionInfo] = [:]
-    private(set) var contentSize: CGSize = CGSize.zero
     
-    var allIndexPaths = Set<IndexPath>()
+    internal struct SectionInfo {
+        var section: Int = 0
+        var frame : CGRect = CGRect.zero
+        var numberOfItems: Int = 0
+        
+        init(section: Int, items: Int) {
+            self.section = section
+            self.numberOfItems = items
+        }
+    }
+    
+    
+    private unowned let collectionView : CollectionView
+    internal var numberOfSections : Int { return sections.count }
+    
+    private var sections : [Int: SectionInfo] = [:]
+    private(set) var contentSize: CGSize = CGSize.zero
     
     init(collectionView: CollectionView) {
         self.collectionView = collectionView
     }
     
     func numberOfItems(in section: Int) -> Int {
-        if let count = sections[section]?.numberOfItems { return count }
-        return 0
+        return sections[section]?.numberOfItems ?? 0
+    }
+    
+    func sectionFrame(for section: Int) -> CGRect? {
+        return sections[section]?.frame
     }
     
     func recalculate() {
@@ -40,23 +51,20 @@ internal final class CollectionViewInfo {
         
         self.sections = [:]
         let layout = self.collectionView.collectionViewLayout
-        var totalNumberOfItems = 0
-        self.numberOfSections = self.collectionView.dataSource?.numberOfSections(in: self.collectionView) ?? 0
-        if self.numberOfSections > 0 {
-            for sIndex in 0..<self.numberOfSections {
+//        var totalNumberOfItems = 0
+        let sCount = self.collectionView.dataSource?.numberOfSections(in: self.collectionView) ?? 0
+//        if self.numberOfSections > 0 {
+            for sIndex in 0..<sCount {
                 let itemCount = self.collectionView.dataSource?.collectionView(self.collectionView, numberOfItemsInSection: sIndex) ?? 0
-                totalNumberOfItems += itemCount
-                self.sections[sIndex] = CollectionViewSectionInfo(section: sIndex, frame: CGRect.zero, numberOfItems: itemCount)
+                self.sections[sIndex] = SectionInfo(section: sIndex, items: itemCount)
             }
-        }
-//        else {
-//            
-//        }
-        
+//    }
+
+    
         self.collectionView.collectionViewLayout.prepare()
-        if self.sections.count == 0 { return }
         
-        self.allIndexPaths = self.collectionView.collectionViewLayout.allIndexPaths
+        
+//        self.allIndexPaths = self.collectionView.collectionViewLayout.allIndexPaths
         for sIndex in 0..<self.numberOfSections {
             
             // We're running through all of the items just to find the total size of each section.
@@ -69,12 +77,14 @@ internal final class CollectionViewInfo {
             // However, this wastage can be avoided if the collection view layout returns something other
             // than CGRectNull in -rectForSectionAtIndex:, which allows us to bypass this entire section iteration
             // and increase the speed of the layout reloading.
-            let potentialSectionFrame = layout.rectForSection(sIndex)
-            if !potentialSectionFrame.isEmpty {
-                self.sections[sIndex]?.frame = potentialSectionFrame
-                continue
-            }
-            
+            self.sections[sIndex]?.frame = layout.rectForSection(sIndex)
+            continue;
+//            let potentialSectionFrame = layout.rectForSection(sIndex)
+//            if !potentialSectionFrame.isEmpty {
+//                self.sections[sIndex]?.frame = potentialSectionFrame
+//                continue
+//            }
+            /*
             let section = self.sections[sIndex];
             if sections[sIndex]?.numberOfItems == 0 { continue }
             
@@ -92,6 +102,7 @@ internal final class CollectionViewInfo {
                 }
             }
             self.sections[sIndex]?.frame =  sectionFrame
+             */
         }
         self.contentSize = self.calculateContentSize()
     }

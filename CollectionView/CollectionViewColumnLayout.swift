@@ -81,32 +81,32 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     //MARK: - Default layout values
     
     /// The default column count
-    open var columnCount : NSInteger = 2 { didSet{ invalidateLayout() }}
+    open var columnCount : NSInteger = 2 { didSet{ invalidate() }}
 
     /// The spacing between each column
-    open var columnSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
+    open var columnSpacing : CGFloat = 8 { didSet{ invalidate() }}
     
     /// The vertical spacing between items in the same column
-    open var interitemSpacing : CGFloat = 8 { didSet{ invalidateLayout() }}
+    open var interitemSpacing : CGFloat = 8 { didSet{ invalidate() }}
 
     /// The height of section header views
-    open var headerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
+    open var headerHeight : CGFloat = 0.0 { didSet{ invalidate() }}
 
     /// The height of section footer views
-    open var footerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
+    open var footerHeight : CGFloat = 0.0 { didSet{ invalidate() }}
 
     /// The default height to apply to all items
-    open var itemHeight : CGFloat = 50 { didSet{ invalidateLayout() }}
+    open var itemHeight : CGFloat = 50 { didSet{ invalidate() }}
 
     /// If supplementary views should respect section insets or fill the CollectionView width
-    open var insetSupplementaryViews : Bool = false { didSet{ invalidateLayout() }}
+    open var insetSupplementaryViews : Bool = false { didSet{ invalidate() }}
 
     /// Default insets for all sections
-    open var sectionInset : EdgeInsets = EdgeInsets(top: 8, left: 8, bottom: 8, right: 8) { didSet{ invalidateLayout() }}
+    open var sectionInset : EdgeInsets = EdgeInsets(top: 8, left: 8, bottom: 8, right: 8) { didSet{ invalidate() }}
     
     // MARK: - Render Options
     /// A hint as to how to render items when deciding which column to place them in
-    open var itemRenderDirection : CollectionViewLayoutItemRenderDirection = .leftToRight { didSet{ invalidateLayout() }}
+    open var itemRenderDirection : CollectionViewLayoutItemRenderDirection = .leftToRight { didSet{ invalidate() }}
     
     open func numberOfColumnsInSection(_ section: Int) -> Int {
         if columnHeights.count > 0 && section >= 0 && section < columnHeights.count {
@@ -119,12 +119,11 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     
     // Internal caching
     fileprivate var _itemWidth : CGFloat = 0
-    fileprivate var _cvSize = CGSize.zero
     /// the calculated width of items based on the total width and number of columns (read only)
     open var itemWidth : CGFloat { get { return _itemWidth }}
     
     
-    fileprivate var numSections : Int { get { return self.collectionView!.numberOfSections() }}
+    fileprivate var numSections : Int { get { return self.collectionView!.numberOfSections }}
     fileprivate func columnsInSection(_ section : Int) -> Int {
         // Use the cache if available else ask the delegate
         var cols = sectionColumnAttributes[section]?.count
@@ -134,7 +133,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     }
     
     //  private property and method above.
-    fileprivate weak var delegate : CollectionViewDelegateColumnLayout? { get{ return self.collectionView!.delegate as? CollectionViewDelegateColumnLayout }}
+    private weak var delegate : CollectionViewDelegateColumnLayout? { return self.collectionView!.delegate as? CollectionViewDelegateColumnLayout }
     
     fileprivate var columnHeights : [[CGFloat]] = []
     fileprivate var sectionItemAttributes : [[CollectionViewLayoutAttributes]] = []
@@ -166,8 +165,14 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         return floor((width - (spaceColumCount*self.columnSpacing)) / CGFloat(colCount))
     }
     
+    
+    fileprivate var _cvWidth : CGFloat = 0
+    override open func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
+        defer { self._cvWidth = newBounds.size.width }
+        return _cvWidth != newBounds.size.width
+    }
+    
     override open func prepare(){
-        super.prepare()
         
         self.headersAttributes.removeAll()
         self.footersAttributes.removeAll()
@@ -179,10 +184,10 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         self.sectionColumnAttributes.removeAll()
         self.allIndexPaths.removeAll()
         
-        guard let _collectionView = self.collectionView, _collectionView.numberOfSections() > 0 else {
+        guard let _collectionView = self.collectionView, _collectionView.numberOfSections > 0 else {
             return
         }
-        let numberOfSections = _collectionView.numberOfSections()
+        let numberOfSections = _collectionView.numberOfSections
         
         var top : CGFloat = 0.0
         for section in 0..<numberOfSections {
@@ -289,11 +294,11 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     
     override open var collectionViewContentSize : CGSize {
         guard let cv = collectionView else { return CGSize.zero }
-        let numberOfSections = cv.numberOfSections()
+        let numberOfSections = cv.numberOfSections
         if numberOfSections == 0{ return CGSize.zero }
         
         var contentSize = cv.contentVisibleRect.size as CGSize
-        let height = self.sectionFrames[cv.numberOfSections() - 1]?.maxY ?? 0
+        let height = self.sectionFrames[cv.numberOfSections - 1]?.maxY ?? 0
         if height == 0 { return CGSize.zero }
         contentSize.height = height
         return  contentSize
@@ -302,15 +307,18 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     open override func rectForSection(_ section: Int) -> CGRect {
         return sectionFrames[section] ?? CGRect.zero
     }
+    open override func contentRectForSection(_ section: Int) -> CGRect {
+        return sectionFrames[section] ?? CGRect.zero
+    }
     
-    open override func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes]? {
+    open override func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
         var attrs : [CollectionViewLayoutAttributes] = []
         
-        guard let cv = self.collectionView else { return nil }
-        if rect.equalTo(CGRect.zero) || cv.numberOfSections() == 0 { return attrs }
-        for sectionIndex in 0...cv.numberOfSections() - 1 {
+        guard let cv = self.collectionView else { return attrs }
+        if rect.equalTo(CGRect.zero) || cv.numberOfSections == 0 { return attrs }
+        for sectionIndex in 0...cv.numberOfSections - 1 {
             
-            guard let sectionFrame = cv.frameForSection(sectionIndex),
+            guard let sectionFrame = cv.frameForSection(at: sectionIndex),
                 let columns = self.sectionColumnAttributes[sectionIndex] else { continue }
             if sectionFrame.isEmpty || !sectionFrame.intersects(rect) { continue }
             for column in columns {
@@ -362,13 +370,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         return nil
     }
     
-    override open func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
-        if !newBounds.size.equalTo(self._cvSize) {
-            self._cvSize = newBounds.size
-            return true
-        }
-        return false
-    }
+    
     
     
     open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
@@ -428,25 +430,25 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     }
 
     
-    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath]? {
-
+    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
+        guard let cv = self.collectionView else { return [] }
+        
         var indexPaths = [IndexPath]()
-        guard let cv = self.collectionView else { return nil }
-        if rect.equalTo(CGRect.zero) || cv.numberOfSections() == 0 { return indexPaths }
-        for sectionIndex in 0...cv.numberOfSections() - 1 {
+        if rect.equalTo(CGRect.zero) || cv.numberOfSections == 0 { return indexPaths }
+        for section in 0...cv.numberOfSections - 1 {
             
-            if cv.numberOfItems(in: sectionIndex) == 0 { continue }
+            if cv.numberOfItems(in: section) == 0 { continue }
             
-            guard let sectionFrame = cv.frameForSection(sectionIndex) else { continue }
+            guard let sectionFrame = cv.frameForSection(at: section) else { continue }
             if sectionFrame.isEmpty || !sectionFrame.intersects(rect) { continue }
             
             // If the section is completely show, add all the attrs
             if rect.contains(sectionFrame) {
-                if let ips = self.sectionIndexPaths[sectionIndex] {
+                if let ips = self.sectionIndexPaths[section] {
                     indexPaths.append(contentsOf: ips)
                 }
             }
-            else if let columns = self.sectionColumnAttributes[sectionIndex] , columns.count > 0 {
+            else if let columns = self.sectionColumnAttributes[section] , columns.count > 0 {
                 for column in columns {
                     for attr in column {
                         if attr.frame.intersects(rect) {
@@ -502,7 +504,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         var index = currentIndexPath._item
         var section = currentIndexPath._section
         
-        let numberOfSections = collectionView.numberOfSections()
+        let numberOfSections = collectionView.numberOfSections
         let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
         
         guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }

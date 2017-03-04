@@ -12,16 +12,41 @@ import Foundation
 
 
 
+/**
+ Provides support for OSX < 10.11 and provides some helpful additions
+*/
 public extension IndexPath {
+
     
+    /**
+     Create an index path with a given item and section
+     
+     - Parameter item: An item
+     - Parameter section: A section
+
+     - Returns: An initialized index path with the item and section
+     
+     - Note: item and section must be >= 0
+
+    */
     public static func `for`(item: Int = 0, section: Int) -> IndexPath {
         precondition(item >= 0, "Attempt to create an indexPath with negative item")
         precondition(section >= 0, "Attempt to create an indexPath with negative section")
         return IndexPath(indexes: [section, item])
     }
 
+    
     public static var zero : IndexPath { return IndexPath.for(item: 0, section: 0) }
+    
+    
+    /**
+     Returns the item of the index path
+    */
     public var _item: Int { return self[1] }
+    
+    /**
+     Returns the section of the index path
+     */
     public var _section: Int { return self[0] }
     public static func inRange(_ range: CountableRange<Int>, section: Int) -> [IndexPath] {
         var ips = [IndexPath]()
@@ -59,56 +84,14 @@ public extension IndexPath {
 }
 
 
-struct SupplementaryViewIdentifier: Hashable {
-    var indexPath: IndexPath?
-    var kind: String
-    var reuseIdentifier : String
-    
-    var hashValue: Int {
-        if let ip = self.indexPath {
-            return "\(ip._section)/\(self.kind)".hashValue
-        }
-        return "\(self.kind)/\(self.reuseIdentifier)".hashValue
-    }
-    init(kind: String, reuseIdentifier: String, indexPath: IndexPath? = nil) {
-        self.kind = kind
-        self.reuseIdentifier = reuseIdentifier
-        self.indexPath = indexPath
-    }
-    
-    func copy(with indexPath: IndexPath) -> SupplementaryViewIdentifier {
-        var s = self
-        s.indexPath = indexPath
-        return s
-    }
-    
-    static func ==(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {
-        return lhs.indexPath == rhs.indexPath && lhs.kind == rhs.kind && lhs.reuseIdentifier == rhs.reuseIdentifier
-    }
-}
 
-extension SupplementaryViewIdentifier : Comparable {
-    
-    static func <(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {
-        guard let l = lhs.indexPath, let r = rhs.indexPath else { return true }
-        return l < r
-    }
-    
-}
-
-
-
-
+/// :nodoc:
 extension Comparable {
-    
-    
     func compare(_ other: Self) -> ComparisonResult {
         if self == other { return .orderedSame }
         if self < other { return .orderedAscending }
         return .orderedDescending
     }
-    
-    
 }
 
 

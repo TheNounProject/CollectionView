@@ -457,7 +457,7 @@ public final class CollectionViewGridLayout : CollectionViewLayout {
         var index = currentIndexPath._item
         var section = currentIndexPath._section
         
-        let numberOfSections = collectionView.numberOfSections()
+        let numberOfSections = collectionView.numberOfSections
         let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
         
         guard let cellRect = collectionView.rectForItemAtIndexPath(currentIndexPath) else { return nil }

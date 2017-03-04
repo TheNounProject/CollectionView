@@ -35,24 +35,24 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     //MARK: - Default layout values
     
     /// The vertical spacing between items in the same column
-    public final var interitemSpacing : CGFloat = 0 { didSet{ invalidateLayout() }}
+    public final var interitemSpacing : CGFloat = 0 { didSet{ invalidate() }}
     
     /// The vertical spacing between items in the same column
-    public final var itemHeight : CGFloat = 36 { didSet{ invalidateLayout() }}
+    public final var itemHeight : CGFloat = 36 { didSet{ invalidate() }}
     
     /// The height of section header views
-    public final var headerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
+    public final var headerHeight : CGFloat = 0.0 { didSet{ invalidate() }}
     
     /// The height of section footer views
-    public final var footerHeight : CGFloat = 0.0 { didSet{ invalidateLayout() }}
+    public final var footerHeight : CGFloat = 0.0 { didSet{ invalidate() }}
     
     /// If supplementary views should respect section insets or fill the CollectionView width
-    public final var insetSupplementaryViews : Bool = false { didSet{ invalidateLayout() }}
+    public final var insetSupplementaryViews : Bool = false { didSet{ invalidate() }}
     
     /// Default insets for all sections
-    public final var sectionInsets : EdgeInsets = NSEdgeInsetsZero { didSet{ invalidateLayout() }}
+    public final var sectionInsets : EdgeInsets = NSEdgeInsetsZero { didSet{ invalidate() }}
     
-    fileprivate var numSections : Int { get { return self.collectionView?.numberOfSections() ?? 0 }}
+    fileprivate var numSections : Int { get { return self.collectionView?.numberOfSections ?? 0 }}
     
     //  private property and method above.
     fileprivate weak var delegate : CollectionViewDelegateListLayout? { get{ return self.collectionView!.delegate as? CollectionViewDelegateListLayout }}
@@ -72,8 +72,13 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         super.init()
     }
     
+    fileprivate var _cvWidth : CGFloat = 0
+    override open func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
+        defer { self._cvWidth = newBounds.size.width }
+        return _cvWidth != newBounds.size.width
+    }
+    
     override public func prepare(){
-        super.prepare()
         
         self.allIndexPaths.removeAll()
         self.sectionIndexPaths.removeAll()
@@ -195,15 +200,18 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     open override func rectForSection(_ section: Int) -> CGRect {
         return sectionFrames[section]
     }
+    public override func contentRectForSection(_ section: Int) -> CGRect {
+        return sectionContentFrames[section]
+    }
     
     
-    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath]? {
-        //        return nil
+    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         
+        guard let cv = self.collectionView else { return [] }
         var indexPaths = [IndexPath]()
-        guard let cv = self.collectionView else { return nil }
+        
         if rect.isEmpty || self.numSections == 0 { return indexPaths }
-        for sectionIndex in 0..<cv.numberOfSections() {
+        for sectionIndex in 0..<cv.numberOfSections {
             
             if cv.numberOfItems(in: sectionIndex) == 0 { continue }
             
@@ -227,22 +235,17 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     
     
-    open override func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes]? {
+    open override func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
         var attrs : [CollectionViewLayoutAttributes] = []
         
-        guard let cv = self.collectionView else { return nil }
-        if rect.isEmpty || cv.numberOfSections() == 0 { return attrs }
-        for sectionIdx in  0..<cv.numberOfSections() {
+        guard let cv = self.collectionView else { return [] }
+        if rect.isEmpty || cv.numberOfSections == 0 { return attrs }
+        for sectionIdx in  0..<cv.numberOfSections {
             
             let contentFrame = self.sectionContentFrames[sectionIdx]
             if contentFrame.isEmpty || !contentFrame.intersects(rect) { continue }
             
             let containsAll = rect.contains(contentFrame)
-//            if  {
-//                attrs.appendContentsOf(sectionItemAttributes[sectionIdx])
-//                continue
-//            }
-            
             for attr in sectionItemAttributes[sectionIdx] {
                 if containsAll || attr.frame.intersects(rect) {
                     attrs.append(attr.copy())
@@ -279,15 +282,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         }
         return nil
     }
-    
-    fileprivate var _cvSize = CGSize.zero
-    override public func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
-        if newBounds.size.width != self._cvSize.width {
-            self._cvSize = newBounds.size
-            return true
-        }
-        return false
-    }
+   
     
     
     public override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {

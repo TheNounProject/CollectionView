@@ -20,6 +20,7 @@ import Foundation
     @objc optional func collectionView(_ collectionView: CollectionView, dragContentsForItemAt indexPath: IndexPath) -> NSImage?
     @objc optional func collectionView(_ collectionView: CollectionView, dragRectForItemAt indexPath: IndexPath, withStartingRect rect: UnsafeMutablePointer<CGRect>)
 }
+
 @objc public protocol CollectionViewDelegate {
     
     @objc optional func collectionViewWillReloadData(_ collectionView: CollectionView)

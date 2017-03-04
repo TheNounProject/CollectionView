@@ -13,6 +13,7 @@
 		1C6E50981E2DD0CE00C85946 /* FetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */; };
 		1C6E509D1E2E8C2000C85946 /* RelationalResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */; };
 		DE13C18B1E4CE46100CEC80C /* FetchedResultsObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE13C18A1E4CE46100CEC80C /* FetchedResultsObserver.swift */; };
+		DE297DE01E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */; };
 		DE316FAD1CC72ABC00F763E6 /* ClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* ClipView.swift */; };
 		DE3E47561E4259B800F19D9E /* ChangeSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE3E47551E4259B800F19D9E /* ChangeSet.swift */; };
 		DE82E9571D78B6E700346B9E /* ScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82E9561D78B6E700346B9E /* ScrollView.swift */; };
@@ -30,7 +31,6 @@
 		DEF14B9C1CBDD83B00553CEF /* CollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072051CAC7FF000AD0E37 /* CollectionViewLayout.swift */; };
 		DEF14B9D1CBDD83B00553CEF /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072061CAC7FF000AD0E37 /* Helpers.swift */; };
 		DEF14B9E1CBDD83B00553CEF /* CollectionViewCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072071CAC7FF000AD0E37 /* CollectionViewCells.swift */; };
-		DEF14B9F1CBDD83B00553CEF /* CollectionViewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072081CAC7FF000AD0E37 /* CollectionViewInfo.swift */; };
 		DEF14BA01CBDD83B00553CEF /* CollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072091CAC7FF000AD0E37 /* CollectionView.swift */; };
 		DEF14BA11CBDD83B00553CEF /* CollectionViewDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90720A1CAC7FF000AD0E37 /* CollectionViewDocumentView.swift */; };
 /* End PBXBuildFile section */
@@ -42,6 +42,7 @@
 		1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsControllerHelpers.swift; sourceTree = "<group>"; };
 		1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedResultsController.swift; sourceTree = "<group>"; };
 		DE13C18A1E4CE46100CEC80C /* FetchedResultsObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedResultsObserver.swift; sourceTree = "<group>"; };
+		DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupplementaryViewIdentifier.swift; sourceTree = "<group>"; };
 		DE3E47551E4259B800F19D9E /* ChangeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeSet.swift; sourceTree = "<group>"; };
 		DE57F41E1CBC915A00F9E23C /* CollectionViewGridLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewGridLayout.swift; sourceTree = "<group>"; };
 		DE704B6D1E49B33A007C2F89 /* _OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _OrderedSet.swift; sourceTree = "<group>"; };
@@ -101,10 +102,10 @@
 			children = (
 				DE9072051CAC7FF000AD0E37 /* CollectionViewLayout.swift */,
 				DE9072031CAC7FF000AD0E37 /* CollectionViewColumnLayout.swift */,
-				DE57F41E1CBC915A00F9E23C /* CollectionViewGridLayout.swift */,
 				DEE3B5841D246CB100AD34F1 /* CollectionViewListLayout.swift */,
 				DE9072041CAC7FF000AD0E37 /* CollectionViewHorizontalLayout.swift */,
 				DECA70CB1D8751010006D795 /* CollectionViewFlowLayout.swift */,
+				DE57F41E1CBC915A00F9E23C /* CollectionViewGridLayout.swift */,
 			);
 			name = Layouts;
 			sourceTree = "<group>";
@@ -137,6 +138,7 @@
 				DEA6BA621D52E00900B3EF24 /* CollectionViewController.swift */,
 				DE82E9561D78B6E700346B9E /* ScrollView.swift */,
 				DE9072171CAC807900AD0E37 /* ClipView.swift */,
+				DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */,
 				DE9072061CAC7FF000AD0E37 /* Helpers.swift */,
 				DE82E95D1D78BFC900346B9E /* Constants.swift */,
 				DE9072081CAC7FF000AD0E37 /* CollectionViewInfo.swift */,
@@ -244,8 +246,8 @@
 				DEF14B9D1CBDD83B00553CEF /* Helpers.swift in Sources */,
 				DEF14BA01CBDD83B00553CEF /* CollectionView.swift in Sources */,
 				DE82E9571D78B6E700346B9E /* ScrollView.swift in Sources */,
-				DEF14B9F1CBDD83B00553CEF /* CollectionViewInfo.swift in Sources */,
 				DEAFE2A71E41655C00FCF9C6 /* OrderedSet.swift in Sources */,
+				DE297DE01E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift in Sources */,
 				DE3E47561E4259B800F19D9E /* ChangeSet.swift in Sources */,
 				DEF14B991CBDD83B00553CEF /* CollectionViewColumnLayout.swift in Sources */,
 				1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */,

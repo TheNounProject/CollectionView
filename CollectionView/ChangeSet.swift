@@ -249,7 +249,7 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
             if let s = sIdx, let t = tIdx {
                 
                 if s == t {
-//                    print("\(value): Non Op \(s)")
+                    
                 }
                 else {
                     var adjust = insertions.count(in: 0...s) - deletions.count(in: 0...s)
@@ -540,15 +540,25 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
         var dIndex = IndexSet()
         var iIndex = IndexSet()
         
-        for element in _shared {
-            let temp = Edit(.insertion, value: element, index: 0)
-            if let t = self.operationIndex.inserts.remove(temp),
-                let s = self.operationIndex.deletes.remove(temp) {
-                
-                let newEdit = Edit(.move(origin: s), value: element, index: t)
-                self.operationIndex.moves.insert(newEdit, with: t)
-            }
+        
+        
+        for target in self.operationIndex.inserts {
+            guard let source = self.operationIndex.deletes.remove(target.value) else { continue }
+            self.operationIndex.inserts.remove(target.value)
+            
+            let newEdit = Edit(.move(origin: source), value: target.value.value, index: target.index)
+            self.operationIndex.moves.insert(newEdit, with: target.index)
         }
+        
+//        for element in _shared {
+//            let temp = Edit(.insertion, value: element, index: 0)
+//            if let t = self.operationIndex.inserts.remove(temp),
+//                let s = self.operationIndex.deletes.remove(temp) {
+//                
+//                let newEdit = Edit(.move(origin: s), value: element, index: t)
+//                self.operationIndex.moves.insert(newEdit, with: t)
+//            }
+//        }
         
 //        for d in self.operationIndex.deletes {
 //            if let i = self.operationIndex.inserts.remove(d.value) {

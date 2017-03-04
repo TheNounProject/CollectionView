@@ -36,12 +36,11 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
     public var object : Any? { return self._value }
     public var objects: [Any] { return _storage.objects }
     
-    public var numberOfObjects : Int { return objects.count }
+    public var numberOfObjects : Int { return _storage.count }
     
     private(set) var _value : ValueType?
     private(set) var _storage = OrderedSet<Element>()
     private(set) var _storageCopy = OrderedSet<Element>()
-    
     
     internal init(value: ValueType?, objects: [Element] = []) {
         self._value = value
@@ -208,7 +207,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     }
     
     public func numberOfObjects(in section: Int) -> Int {
-        return self._sections[section].objects.count
+        return self._sections[section].numberOfObjects
     }
     
     public func sectionName(forSectionAt indexPath: IndexPath) -> String {
@@ -444,13 +443,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         guard let info = notification.userInfo else { return }
         self.context.reset()
         
-//        print("•••••••••••••••• Start ••••••••••••••••")
-//        print("\(_sections.count) Sections")
-//        for (idx, res) in _sections.enumerated() {
-//            print("\(idx) - \(res.objects.count) Objects")
-//        }
-//        print("---------------------------------------")
-        
         preprocess(notification: notification)
         
         if context.objectChanges.count == 0 {
@@ -553,36 +545,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
                 processedSections[targetSection]?.operationIndex.deletes.insert(insert, with: targetIP._item)
             }
-            
-            
-            /*
-             // sourceSection will be nil if it was deleted (ObjectChangeSet can only lookup by index for inserted/updated)
-             //
-             // If so, complete the move and handle the old target operation
-             //
-             // Note: since the old section was removed, no operations will be processed for it
-             // there is no need then to handle updating/removing the source edit
-             */
-            
-//            guard let sourceSection = self.context.sectionChangeSet.object(for: source._section),
-//                let sourceInfo = self._sectionInfo(representing: sourceSection),
-//                let sourceEdit = processedSections[sourceInfo]?.edit(withSource: source._item) else {
-//                    appendCSRLog("Source: nil")
-//                    return true
-//            }
-            
-//            processedSections[sourceInfo]?.operationIndex.deletes.remove(sourceEdit)
-//            appendCSRLog("Removed source edit")
-//            
-//            if case .substitution = sourceEdit.operation {
-//                if let ip = self.indexPath(of: sourceEdit.value) {
-//                    let insert = Edit(.insertion, value: sourceEdit.value, index: ip._item)
-//                    processedSections[sourceInfo]?.operationIndex.inserts.insert(insert, with: insert.index)
-//                    appendCSRLog("Adding insertion for \(ip)")
-//                }
-//                reduceCrossSectional(sourceEdit.value, targetEdit: sourceEdit)
-//            }
-            
             return true
         }
         
@@ -724,7 +686,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             section.ensureEditing()
             _ = section.remove(object)
             
-            if section.objects.count == 0 {
+            if section.numberOfObjects == 0 {
                 _remove(section._value)
             }
         }

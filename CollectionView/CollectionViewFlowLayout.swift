@@ -203,7 +203,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     
     public var insetSupplementaryViews = true
     
-    override open func prepareLayout() {
+    override open func prepare() {
         
         self.sectionAttributes.removeAll()
         guard let cv = self.collectionView else { return }

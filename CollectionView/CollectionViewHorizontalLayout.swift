@@ -32,8 +32,8 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     var cache : [CGRect] = []
     var contentWidth: CGFloat = 0
     
-    open override func prepareLayout() {
-        super.prepareLayout()
+    open override func prepare() {
+        super.prepare()
         cache = []
         
         guard let cv = self.collectionView else { return }

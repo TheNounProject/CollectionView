@@ -26,13 +26,33 @@ let dateGroupFormatter : DateFormatter = {
 
 
 
+
+
+
+
 class Parent : NSManagedObject, CustomDisplayStringConvertible {
     
+
     @NSManaged var children : Set<Child>
     @NSManaged var created: Date
+    
+	
+	
     @NSManaged var displayOrder : NSNumber
     
-    static func create(in moc : NSManagedObjectContext? = nil, withChild: Bool = true) -> Parent {
+    func test(stuff: String,
+              thing: ((_ blah: String)->Void)) -> String {
+        
+    }
+    
+    
+    /// <#Description#>
+    ///
+    /// - Parameters:
+    ///   - moc: <#moc description#>
+    ///   - child: <#child description#>
+    /// - Returns: <#return value description#>
+    static func create(in moc : NSManagedObjectContext? = nil, withChild child: Bool = true) -> Parent {
         
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let req = NSFetchRequest<Parent>(entityName: "Parent")
@@ -50,6 +70,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         return new
     }
     
+	
     func createChild() -> Child {
         let child = Child.createOrphan(in: self.managedObjectContext)
         

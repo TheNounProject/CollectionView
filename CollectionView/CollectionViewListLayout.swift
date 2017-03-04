@@ -72,8 +72,8 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         super.init()
     }
     
-    override public func prepareLayout(){
-        super.prepareLayout()
+    override public func prepare(){
+        super.prepare()
         
         self.allIndexPaths.removeAll()
         self.sectionIndexPaths.removeAll()

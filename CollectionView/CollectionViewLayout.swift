@@ -9,19 +9,54 @@
 import Foundation
 
 
+
+
+/**
+ 
+ The CollectionViewLayout class is an abstract base class that you subclass and use to generate layout information for a collection view. The job of a layout object is to determine the placement of cells, supplementary views inside the collection view’s bounds and to report that information to the collection view when asked. The collection view then applies the provided layout information to the corresponding views so that they can be presented onscreen.
+ 
+*/
 open class CollectionViewLayout : NSObject {
     
     // This is set internally when the layout is set on the CollectionView
-    public internal(set) weak var collectionView: CollectionView? { didSet { prepare() }}
+    open internal(set) weak var collectionView: CollectionView?
+    
+    
+    
+    // The direction that the collection view should scroll
     open var scrollDirection : CollectionViewScrollDirection { return .vertical }
     
-    /// Called when the collection view is set to do any initialization setup
-    open func prepare() { }
     
     open func invalidateLayout() { }
+    
+    
+    @available(*, unavailable, renamed: "prepare()")
     open func prepareLayout() { }
+    
+    /**
+     Tells the layout object to update the current layout.
+     
+     ## Discussion
+     Layout updates occur the first time the collection view presents its content and whenever the layout is invalidated explicitly or implicitly because of a change to the view. During each layout update, the collection view calls this method first to give your layout object a chance to prepare for the upcoming layout operation.
+     The default implementation of this method does nothing. Subclasses can override it and use it to set up data structures or perform any initial computations needed to perform the layout later.
+
+    */
+    open func prepare() { }
+    
+    
+    /**
+     If supporting views should be pinned to the top of the view
+    */
     open var pinHeadersToTop: Bool = true
+    
+    
+    /**
+     All the index paths to be displayed by the collection view
+     
+     Becuase the layout likely needs to process all items in the data, setting this during prepare() can cut out the overhead of the collection view having to do so itself.
+    */
     public var allIndexPaths = Set<IndexPath>()
+    
     
     open func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes]? { return nil } // return an array layout attributes instances for all the views in the given rect
     

@@ -126,7 +126,9 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     
     fileprivate var numSections : Int { get { return self.collectionView!.numberOfSections() }}
     fileprivate func columnsInSection(_ section : Int) -> Int {
-        var cols = self.delegate?.collectionView?(self.collectionView!, layout: self, numberOfColumnsInSection: section) ?? self.columnCount
+        // Use the cache if available else ask the delegate
+        var cols = sectionColumnAttributes[section]?.count
+            ?? self.delegate?.collectionView?(self.collectionView!, layout: self, numberOfColumnsInSection: section) ?? self.columnCount
         if cols <= 0 { cols = 1 }
         return cols
     }
@@ -164,8 +166,8 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         return floor((width - (spaceColumCount*self.columnSpacing)) / CGFloat(colCount))
     }
     
-    override open func prepareLayout(){
-        super.prepareLayout()
+    override open func prepare(){
+        super.prepare()
         
         self.headersAttributes.removeAll()
         self.footersAttributes.removeAll()
@@ -389,7 +391,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     :param: section The section to find the shortest column for.
     :returns: The index of the shortest column in the given section
     */
-    func shortestColumnIndexInSection(_ section: Int) -> NSInteger {
+    private func shortestColumnIndexInSection(_ section: Int) -> NSInteger {
         let min =  self.columnHeights[section].min()!
         return self.columnHeights[section].index(of: min)!
     }
@@ -400,7 +402,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     :param: section The section to find the longest column for.
     :returns: The index of the longest column in the given section
     */
-    func longestColumnIndexInSection(_ section: Int) -> NSInteger {
+    private func longestColumnIndexInSection(_ section: Int) -> NSInteger {
         let max =  self.columnHeights[section].max()!
         return self.columnHeights[section].index(of: max)!
     }
@@ -411,7 +413,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     :param: The indexPath of the section to look ahead of
     :returns: The index of the next column
     */
-    func nextColumnIndexForItem (_ indexPath : IndexPath) -> Int {
+    private func nextColumnIndexForItem (_ indexPath : IndexPath) -> Int {
         let colCount = self.columnsInSection(indexPath._section)
         var index = 0
         switch (self.itemRenderDirection){
@@ -427,8 +429,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
 
     
     open override func indexPathsForItems(in rect: CGRect) -> [IndexPath]? {
-//        return nil
-        
+
         var indexPaths = [IndexPath]()
         guard let cv = self.collectionView else { return nil }
         if rect.equalTo(CGRect.zero) || cv.numberOfSections() == 0 { return indexPaths }

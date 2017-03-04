@@ -53,7 +53,7 @@ internal final class CollectionViewInfo {
 //            
 //        }
         
-        self.collectionView.collectionViewLayout.prepareLayout()
+        self.collectionView.collectionViewLayout.prepare()
         if self.sections.count == 0 { return }
         
         self.allIndexPaths = self.collectionView.collectionViewLayout.allIndexPaths

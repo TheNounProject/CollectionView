@@ -22,17 +22,29 @@ extension IndexSet {
 
 open class CollectionView : ScrollView, NSDraggingSource {
     
+    
+    open override var mouseDownCanMoveWindow: Bool { return true }
+    
+    // MARK: - Data Source & Delegate
+    
+    
+    
+    /// The object that acts as the delegate to the collection view
+    open weak var delegate : CollectionViewDelegate?
+    
+    /// The object that provides data for the collection view
+    open weak var dataSource : CollectionViewDataSource?
+    
+    
+    
+    /**
+     The content view in which all cells and views are displayed
+    */
     public var contentDocumentView : CollectionViewDocumentView {
         return self.documentView as! CollectionViewDocumentView
     }
-    open override var mouseDownCanMoveWindow: Bool { return true }
     
-    
-    
-    // MARK: - Data Source & Delegate
-    open weak var delegate : CollectionViewDelegate?
-    open weak var dataSource : CollectionViewDataSource?
-    fileprivate weak var interactionDelegate : CollectionViewInteractionDelegate? {
+    private weak var interactionDelegate : CollectionViewInteractionDelegate? {
         return self.delegate as? CollectionViewInteractionDelegate
     }
     
@@ -50,7 +62,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.setup()
     }
     
-    func setup() {
+    private func setup() {
         
 //        self.acceptsTouchEvents = true
         collectionViewLayout.collectionView = self
@@ -65,9 +77,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.didScroll(_:)), name: NSNotification.Name.NSScrollViewDidLiveScroll, object: self)
         NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.willBeginScroll(_:)), name: NSNotification.Name.NSScrollViewWillStartLiveScroll, object: self)
         NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.didEndScroll(_:)), name: NSNotification.Name.NSScrollViewDidEndLiveScroll, object: self)
-        
-        // NSNotification.Name.NSPreferredScrollerStyleDidChange
-        
+
         self.addSubview(_floatingSupplementaryView, positioned: .above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
         _floatingSupplementaryView.frame = self.bounds
@@ -79,6 +89,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
         NotificationCenter.default.removeObserver(self)
         self._reusableCells.removeAll()
         self._reusableSupplementaryView.removeAll()
+        self._updateContext.reset()
+        self._pendingCellMap.removeAll()
+        self._finalizedCellMap.removeAll()
+        self._finalizedViewMap.removeAll()
         self.contentDocumentView.preparedCellIndex.removeAll()
         self.contentDocumentView.preparedSupplementaryViewIndex.removeAll()
         for view in self.contentDocumentView.subviews {
@@ -104,24 +118,50 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Registering reusable cells
     /*-------------------------------------------------------------------------------*/
     
-    fileprivate var _cellClasses : [String:CollectionViewCell.Type] = [:]
-    fileprivate var _cellNibs : [String:NSNib] = [:]
+    private var _cellClasses : [String:CollectionViewCell.Type] = [:]
+    private var _cellNibs : [String:NSNib] = [:]
     
-    fileprivate var _supplementaryViewClasses : [SupplementaryViewIdentifier:CollectionReusableView.Type] = [:]
-    fileprivate var _supplementaryViewNibs : [SupplementaryViewIdentifier:NSNib] = [:]
+    private var _supplementaryViewClasses : [SupplementaryViewIdentifier:CollectionReusableView.Type] = [:]
+    private var _supplementaryViewNibs : [SupplementaryViewIdentifier:NSNib] = [:]
     
     
+    /**
+     Register a class to be initialized when loading reusable cells
+
+     - Parameter cellClass: A CollectionViewCell subclass
+     - Parameter identifier: A reuse identifier to deque cells of this class
+
+    */
     public func register(class cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String) {
         assert(cellClass.isSubclass(of: CollectionViewCell.self), "CollectionView: Registered cells views must be subclasses of CollectionViewCell")
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = cellClass
         self._cellNibs[identifier] = nil
     }
+    
+    
+    /**
+     Register a nib to be loaded as reusable cells
+
+     - Parameter nib: The nib for the cell
+     - Parameter identifier: A reuse identifier to deque cells from this nib
+     
+    */
     public func register(nib: NSNib, forCellWithReuseIdentifier identifier: String) {
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = nil
         self._cellNibs[identifier] = nib
     }
+    
+    
+    /**
+     Register a class to be initialized when loading reusable supplementary views
+
+     - Parameter viewClass: A CollectionReusableview subclass
+     - Parameter elementKind: The kind of element the class represents
+     - Parameter identifier: A reuse identifier to deque views of this class
+
+    */
     public func register(class viewClass: CollectionReusableView.Type, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {
         assert(viewClass.isSubclass(of: CollectionReusableView.self), "CollectionView: Registered supplementary views must be subclasses of CollectionReusableview")
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
@@ -131,6 +171,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._registeredSupplementaryViewKinds.insert(kind)
         self._allSupplementaryViewIdentifiers.insert(id)
     }
+    
+    
+    
+    /**
+     Register a nib to be loaded as a supplementary view
+
+     - Parameter nib: The nib for the view
+     - Parameter elementKind: The kind of element this nib represents
+     - Parameter identifier: A reuse identifier to deque views from this nib
+     
+     - Note: The nib must contain a single view whose class is set to CollectionReusableview.
+
+    */
     public func register(nib: NSNib, forSupplementaryViewOfKind elementKind: String, withReuseIdentifier identifier: String) {
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
         let id = SupplementaryViewIdentifier(kind: elementKind, reuseIdentifier: identifier)
@@ -142,8 +195,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     internal var _allSupplementaryViewIdentifiers = Set<SupplementaryViewIdentifier>()
     internal var _registeredSupplementaryViewKinds = Set<String>()
-    
-    fileprivate func _firstObjectOfClass(_ aClass: AnyClass, inNib: NSNib) -> NSView? {
+    private func _firstObjectOfClass(_ aClass: AnyClass, inNib: NSNib) -> NSView? {
         var foundObject: AnyObject? = nil
         var topLevelObjects = NSArray()
         if inNib.instantiate(withOwner: self, topLevelObjects: &topLevelObjects) {
@@ -162,9 +214,21 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Dequeing reusable cells
     /*-------------------------------------------------------------------------------*/
     
-    fileprivate var _reusableCells : [String:Set<CollectionViewCell>] = [:]
-    fileprivate var _reusableSupplementaryView : [SupplementaryViewIdentifier:Set<CollectionReusableView>] = [:]
+    private var _reusableCells : [String:Set<CollectionViewCell>] = [:]
+    private var _reusableSupplementaryView : [SupplementaryViewIdentifier:Set<CollectionReusableView>] = [:]
     
+    
+    /**
+     Retrieve a cell for a given reuse identifier and index path. 
+     
+     If no reusable cell is available, one is created from the registered class/nib.
+
+     - Parameter identifier: The reuse identifier
+     - Parameter indexPath: The index path specifying the location of the supplementary view to load.
+
+     - Returns: A valid CollectionReusableView
+
+    */
     public final func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> CollectionViewCell {
         
         var cell = self.contentDocumentView.preparedCellIndex[indexPath] ?? self._reusableCells[identifier]?.removeOne()
@@ -186,6 +250,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         return cell!
     }
+    
+    
+    /**
+     Returns a reusable supplementary view located by its identifier and kind.
+
+     - Parameter elementKind: The kind of supplementary view to retrieve. This value is defined by the layout object. This parameter must not be nil.
+     - Parameter identifier: The reuse identifier for the specified view.
+     - Parameter indexPath: The index path specifying the location of the cell to load
+
+     - Returns: A valid CollectionViewCell
+
+    */
     public final func dequeueReusableSupplementaryView(ofKind elementKind: String, withReuseIdentifier identifier: String, for indexPath: IndexPath) -> CollectionReusableView {
         let id = SupplementaryViewIdentifier(kind: elementKind, reuseIdentifier: identifier)
         
@@ -201,11 +277,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
             view?.collectionView = self
         }
         else {
-            // self._reusableSupplementaryView[id]?.removeFirst()
             view?.prepareForReuse()
         }
         view?.reuseIdentifier = identifier
-//        view?.indexPath = indexPath
         return view!
     }
     
@@ -218,6 +292,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         self._reusableCells[id]?.insert(item)
     }
+    
     
     final func enqueueSupplementaryViewForReuse(_ view: CollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
         view.isHidden = true
@@ -251,8 +326,36 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Data
     /*-------------------------------------------------------------------------------*/
     fileprivate var info : CollectionViewInfo!
+    
+    
+    
+    /**
+     Returns the number of sections displayed by the collection view.
+
+     - Returns: The number of sections
+     
+    */
     open func numberOfSections() -> Int { return self.info.numberOfSections }
+    
+    
+    /**
+     Returns the number of items in the specified section.
+
+     - Parameter section: The index of the section for which you want a count of the items.
+
+     - Returns: The number of items in the specified section
+
+    */
     open func numberOfItems(in section: Int) -> Int { return self.info.numberOfItems(in: section) }
+    
+    
+    
+    /**
+     Returns the frame for the specified section
+
+     - Parameter indexPath: The index path of the section for which you want the frame
+
+    */
     open func frameForSection(at indexPath: IndexPath) -> CGRect? {
         return self.info.sections[indexPath._section]?.frame
     }
@@ -261,10 +364,22 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Floating View
     /*-------------------------------------------------------------------------------*/
     let _floatingSupplementaryView = FloatingSupplementaryView(frame: NSZeroRect)
+    
+    
+    /**
+     Adds the given view to the floating content view
+
+     - Parameter view: The view to add
+
+    */
     open func addAccessoryView(_ view: NSView) {
         self._floatingSupplementaryView.addSubview(view)
     }
     
+    
+    /**
+     A view atop the collection view used to display non-scrolling accessory views
+    */
     public var  floatingContentView : NSView {
         return _floatingSupplementaryView
     }
@@ -274,6 +389,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Layout
     /*-------------------------------------------------------------------------------*/
     
+    
+    
+    /**
+        The layout used to organize the collected view’s items.
+     
+     - Note: Assigning a new layout object to this property does **NOT** apply the layout to the collection view. Call reloadData() or reloadLayout(_:) to do so.
+     */
     open var collectionViewLayout : CollectionViewLayout = CollectionViewLayout() {
         didSet {
             collectionViewLayout.collectionView = self
@@ -282,10 +404,16 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }}
     
     
+    /// The visible rect of the document view that is visible
     open var contentVisibleRect : CGRect { return self.documentVisibleRect }
+    
+    
+    /// The total size of all items/views
     open override var contentSize: NSSize {
         return self.collectionViewLayout.collectionViewContentSize
     }
+    
+    /// The offset of the content view
     open var contentOffset : CGPoint {
         get{ return self.contentVisibleRect.origin }
         set {
@@ -298,13 +426,22 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
     }
     
-    /// Force layout of all items, not just those in the visible content area
+    
+    /**
+     Force layout of all items, not just those in the visible content area
+     
+     - Note: This is not recommended for large data sets. It can be useful for smaller collection views to better manage transitions/animations.
+     
+    */
     open var prepareAll : Bool = false
     
     // Used to track positioning during resize/layout
     private var _topIP: IndexPath?
     
-    /// Reloads all cells in the collection view
+    
+	/**
+	Reloads all the data and views in the collection view
+	*/
     open func reloadData() {
         self.contentDocumentView.reset()
         self.info.recalculate()
@@ -378,14 +515,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 absoluteCellFrames[v] = self.convert(v.frame, from: v.superview)
             }
         }
-        
-//        for cell in self.contentDocumentView.preparedCellIndex {
-//            absoluteCellFrames[cell.value] = self.convert(cell.value.frame, from: cell.value.superview)
-//        }
-//        for cell in self.contentDocumentView.preparedSupplementaryViewIndex {
-//            absoluteCellFrames[cell.1] = self.convert(cell.1.frame, from: cell.1.superview)
-//        }
-    
         let holdIP : IndexPath? = self.indexPathForFirstVisibleItem
             //?? self.indexPathsForSelectedItems().intersect(self.indexPathsForVisibleItems()).first
 
@@ -470,7 +599,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     open fileprivate(set) var scrollVelocity = CGPoint.zero
     open fileprivate(set) var peakScrollVelocity = CGPoint.zero
     
-    var _rectToPrepare : CGRect {
+    private var _rectToPrepare : CGRect {
         return prepareAll
             ?  CGRect(origin: CGPoint.zero, size: self.info.contentSize)
             : self.contentVisibleRect.insetBy(dx: 0, dy: -100)
@@ -556,21 +685,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Batch Updates
     /*-------------------------------------------------------------------------------*/
     
-    
     /// The duration of animations when performing animated layout changes
     open var animationDuration: TimeInterval = 0.4
     
-    
-    /// Perform multiple changes to be batched into one animated change
-    ///
-    /// - Parameters:
-    ///   - updates: A closure in which to apply the desired changes
-    ///   - completion: A closure to call when the animation finished
+	/**
+	Perform multiple updates to be applied together
+
+	- Parameter updates: A closure in which to apply the desired changes
+	- Parameter completion: A closure to call when the animation finished
+
+	*/
     open func performBatchUpdates(_ updates: (()->Void), completion: AnimationCompletion?) {
-        
         self.beginEditing()
         updates()
-//        self.relayout(true, scrollPosition: .none, completion: completion)
         self.endEditing(true, completion: completion)
         self.delegate?.collectionViewDidReloadData?(self)
     }
@@ -583,9 +710,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public func reloadSupplementaryViews(in sections: IndexSet, animated: Bool) {
         
         var prepared = [Int: [(id: SupplementaryViewIdentifier, view: CollectionReusableView)]]()
-        
-        
-        
         for supp in contentDocumentView.preparedSupplementaryViewIndex {
             guard let sec = supp.0.indexPath?._section, sections.contains(sec) else { continue }
             if prepared[sec] == nil { prepared[sec] = [(supp.key, supp.value)] }
@@ -610,6 +734,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     
+	/**
+	Insert sections at the given indexes
+
+	- Parameter sections: The sections to insert
+	- Parameter animated: If the update should be animated
+
+     - Note: If called within performBatchUpdate(_:completion:) sections should be the final indexes after other updates are applied
+	*/
     public func insertSections(_ sections: IndexSet, animated: Bool) {
         guard sections.count > 0 else { return }
         self.beginEditing()
@@ -617,6 +749,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
+	/**
+	Remove sections and their items
+
+	- Parameter sections: The sections to delete
+	- Parameter animated: If the update should be animated
+
+     - Note: If called within performBatchUpdate(_:completion:) sections should be the index prior to any other updates
+	*/
     public func deleteSections(_ sections: IndexSet, animated: Bool) {
         guard sections.count > 0 else { return }
         self.beginEditing()
@@ -624,6 +764,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
+    
+    /**
+     Move a section and its items
+     
+     - Parameter section: The source index of the section to move
+     - Parameter newSection: The destination index to move the section to
+     - Parameter animated: If the move should be animated
+     
+     - Note: If called within performBatchUpdate(_:completion:): 
+     - Source should be the index prior to any other updates
+     - Destination should be the final index after all other updates
+
+	*/
     public func moveSection(_ section: Int, to newSection: Int, animated: Bool) {
         self.beginEditing()
         self._updateContext.movedSection(from: section, to: newSection)
@@ -646,7 +799,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
 	- Parameter indexPaths: The index paths at which to insert items.
 	- Parameter animated: If the insertion should be animated
      
-     This is important
 	*/
     public func insertItems(at indexPaths: [IndexPath], animated: Bool) {
         guard indexPaths.count > 0 else { return }
@@ -655,6 +807,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
+    
+    /**
+     Deletes the items at the specified index paths.
+
+     - Parameter indexPaths: The index paths for the items you want to delete
+     - Parameter animated: If the updates should be animated
+
+    */
     public func deleteItems(at indexPaths: [IndexPath], animated: Bool) {
         guard indexPaths.count > 0 else { return }
         self.beginEditing()
@@ -662,6 +822,16 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
+    
+    /**
+     Reload the items and the given index paths. 
+     
+     The cells will be reloaded, asking the data source for the cell to replace with.
+
+     - Parameter indexPaths: The index paths for the items you want to reoad
+     - Parameter animated: If the updates should be animated
+
+    */
     public func reloadItems(at indexPaths: [IndexPath], animated: Bool) {
         guard indexPaths.count > 0 else { return }
         self.beginEditing()
@@ -669,6 +839,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
+    
+    /**
+     Moves the item from it's current index path to another
+     
+     - Parameter indexPath: The index path for the item to move
+     - Parameter destinationIndexPath: The index path to move the item to
+     - Parameter animated: If the update should be animated
+
+    */
     public func moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath, animated: Bool) {
         self.beginEditing()
         self._moveItem(at: indexPath, to: destinationIndexPath)
@@ -1591,7 +1770,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open var keySelectInterval: TimeInterval = 0.08
-    var lastEventTime : TimeInterval?
+    private var lastEventTime : TimeInterval?
     open fileprivate(set) var repeatKey : Bool = false
     
     open override func keyDown(with theEvent: NSEvent) {
@@ -1624,7 +1803,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.repeatKey = false
     }
     
-    
     open func moveSelectionLeft(_ extendSelection: Bool) {
         self.moveSelectionInDirection(.left, extendSelection: extendSelection)
     }
@@ -1643,6 +1821,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // MARK: - Selection options
     /*-------------------------------------------------------------------------------*/
+    
+    
+    /**
+     If the collection view should allow selection of its items
+    */
     open var allowsSelection: Bool = true
     
     

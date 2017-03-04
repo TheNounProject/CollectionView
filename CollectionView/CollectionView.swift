@@ -46,8 +46,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /// The object that provides data for the collection view
     open weak var dataSource : CollectionViewDataSource?
     
-    private weak var interactionDelegate : CollectionViewInteractionDelegate? {
-        return self.delegate as? CollectionViewInteractionDelegate
+    private weak var interactionDelegate : CollectionViewDragDelegate? {
+        return self.delegate as? CollectionViewDragDelegate
     }
     
     
@@ -1409,7 +1409,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         Swift.print("Remove replaced cell \(currentCell.attributes!.indexPath)")
         
         if let a = currentCell.attributes?.copyWithIndexPath(indexPath) {
-            newCell.applyLayoutAttributes(a, animated: false)
+            newCell.apply(a, animated: false)
         }
         if newCell.superview == nil {
             self.contentDocumentView.addSubview(newCell)

@@ -9,36 +9,92 @@
 import Foundation
 
 
+/**
+ An UICollectionViewLayoutAttributes object manages the layout-related attributes for a given item in a collection view. Layout objects create instances of this class when asked to do so by the collection view. In turn, the collection view uses the layout information to position cells and supplementary views inside its bounds.
+*/
 open class CollectionViewLayoutAttributes: CustomStringConvertible {
+    
+    
+    // MARK: - Identifying the Referenced Item
+    /*-------------------------------------------------------------------------------*/
+    
+    /// The index path of the item in the collection view.
+    open let indexPath: IndexPath
+    /// The type of the item.
+    open let representedElementCategory: CollectionElementCategory
+    /// The layout-specific identifier for the target view.
+    open let representedElementKind: String?
+    
+    
+    
+    // MARK: - Accessing the Layout Attributes
+    /*-------------------------------------------------------------------------------*/
+    
+    /// The frame rectangle of the item.
     open var frame: CGRect = CGRect.zero
+    
+    
+    /// The center point of the item.
     open var center: CGPoint {
         get { return CGPoint(x: frame.origin.x + frame.size.width/2, y: frame.origin.y + frame.size.height/2) }
         set { self.frame.origin = CGPoint(x: center.x - frame.size.width/2, y: center.y - frame.size.height/2) }
     }
+    
+    
+    /// The size of the item
     open var size: CGSize {
         get { return self.frame.size }
         set { self.frame.size = size }
     }
+    
+    /// The bounds of the item
     open var bounds: CGRect {
         get { return CGRect(origin: CGPoint.zero, size: self.frame.size) }
         set { self.frame.size = bounds.size }
     }
+    
+    /// The transparency of the item.
     open var alpha: CGFloat = 1
+    
+    /// Specifies the item’s position on the z axis.
     open var zIndex: CGFloat = 0
+    
+    /// Determines whether the item is currently displayed.
     open var hidden: Bool = false
+    
+    /// Specifies if the item it detached from the scroll view (SupplementaryViews only)
     open var floating: Bool = false
+
     
-    open let indexPath: IndexPath
-    open let representedElementCategory: CollectionElementCategory
-    open let representedElementKind: String?
     
-    public init(forCellWithIndexPath indexPath: IndexPath) {
+    // MARK: - Creating Layout Attributes
+    /*-------------------------------------------------------------------------------*/
+    
+    
+    /**
+     Creates and returns a layout attributes object that represents a cell with the specified index path.
+
+     - Parameter indexPath: The index path of the cell.
+
+    */
+    
+    public init(forCellWith indexPath: IndexPath) {
         self.representedElementCategory = .cell
         self.representedElementKind = nil
         self.zIndex = 1
         self.indexPath = indexPath
     }
-    public init(forSupplementaryViewOfKind elementKind: String, withIndexPath indexPath: IndexPath) {
+    
+    
+    
+    /**
+     Creates and returns a layout attributes object that represents the specified supplementary view.
+
+     - Parameter elementKind: A string that identifies the type of supplementary view.
+     - Parameter indexPath: The index path of the view.
+
+    */
+    public init(forSupplementaryViewOfKind elementKind: String, with indexPath: IndexPath) {
         self.representedElementCategory = .supplementaryView
         self.representedElementKind = elementKind
         self.zIndex = 1000
@@ -54,13 +110,21 @@ open class CollectionViewLayoutAttributes: CustomStringConvertible {
         return str
     }
     
+    
+    /**
+     Create a copy of the layout attributes
+
+     - Returns: An initialized object with the same attributes
+     
+     - Note: A CollectionViewLayout should copy attributes when returning them
+    */
     public func copy() -> CollectionViewLayoutAttributes {
         var attrs : CollectionViewLayoutAttributes!
         if self.representedElementCategory == .cell {
-            attrs = CollectionViewLayoutAttributes(forCellWithIndexPath: self.indexPath)
+            attrs = CollectionViewLayoutAttributes(forCellWith: self.indexPath)
         }
         else {
-            attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: self.representedElementKind!, withIndexPath: indexPath)
+            attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: self.representedElementKind!, with: indexPath)
         }
         attrs.frame = self.frame
         attrs.alpha = self.alpha
@@ -71,10 +135,10 @@ open class CollectionViewLayoutAttributes: CustomStringConvertible {
     internal func copyWithIndexPath(_ newIndexPath: IndexPath) -> CollectionViewLayoutAttributes {
         var attrs : CollectionViewLayoutAttributes!
         if self.representedElementCategory == .cell {
-            attrs = CollectionViewLayoutAttributes(forCellWithIndexPath: newIndexPath)
+            attrs = CollectionViewLayoutAttributes(forCellWith: newIndexPath)
         }
         else {
-            attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: self.representedElementKind!, withIndexPath: newIndexPath)
+            attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: self.representedElementKind!, with: newIndexPath)
         }
         attrs.frame = self.frame
         attrs.alpha = self.alpha

@@ -10,6 +10,9 @@ import Foundation
 
 
 
+/**
+ A helper object to easily track changes reported by a ResultsController and apply them to a CollectionView
+*/
 public struct ResultsChangeSet {
     
     var items = ItemChangeSet()
@@ -17,23 +20,50 @@ public struct ResultsChangeSet {
     
     public init() { }
     
+    
+    
+    /**
+     Add an item change
+     
+     - Parameter source: The source index path of the section
+     - Parameter changeType: The change type
+     
+     */
     public mutating func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         items.addChange(forItemAt: source, with: changeType)
     }
     
+    
+    
+    /**
+     Add a section change
+
+     - Parameter source: The source index path of the section
+     - Parameter changeType: The change type
+
+    */
     public mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         sections.addChange(forSectionAt: source, with: changeType)
     }
     
+    /// The count of changes in the set
     public var count : Int {
         return items.count + sections.count
     }
     
+    /// Remove all changes
     public mutating func removeAll() {
         items.reset()
         sections.reset()
     }
     
+    
+    /**
+     Merge this set with another
+
+     - Parameter other: Another change set
+
+    */
     public mutating func union(with other: ResultsChangeSet) {
         self.items.inserted.formUnion(other.items.inserted)
         self.items.deleted.formUnion(other.items.deleted)
@@ -130,6 +160,13 @@ struct SectionChangeSet {
 public extension CollectionView {
     
     
+    /**
+     Apply all changes in a change set to a collection view
+
+     - Parameter changeSet: The change set to apply
+     - Parameter completion: A close to call when the update finishes
+
+    */
     public func applyChanges(from changeSet: ResultsChangeSet, completion: AnimationCompletion? = nil) {
         guard changeSet.count > 0 else {
             completion?(true)

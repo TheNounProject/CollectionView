@@ -95,9 +95,6 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     }
 }
 
-/** Defines the type of an `Edit`.
- - note: I would have liked to make it an `Edit.Operation` subtype, but that's currently not allowed inside a generic type.
- */
 public enum EditOperation {
     case insertion
     case deletion

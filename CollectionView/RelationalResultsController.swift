@@ -161,6 +161,9 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
 }
 
 
+/**
+ A ResultsController that manages item and section CoreData objects independently.
+*/
 public class RelationalResultsController<Section: NSManagedObject, Element: NSManagedObject> : NSObject, ResultsController {
     
     fileprivate typealias SectionInfo = RelationalSectionInfo<Section, Element>

@@ -11,10 +11,8 @@ import Foundation
 
 
 
-/**
- An identifier for supplementary views
- */
 struct SupplementaryViewIdentifier: Hashable {
+    
     var indexPath: IndexPath?
     var kind: String
     var reuseIdentifier : String

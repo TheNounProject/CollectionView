@@ -151,6 +151,9 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
 
 
 
+/**
+ An item based results controller
+*/
 public class FetchedResultsController<Section: SectionRepresentable, Element: NSManagedObject> : NSObject, ResultsController {
     
     

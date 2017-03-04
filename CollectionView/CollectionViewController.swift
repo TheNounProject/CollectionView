@@ -8,6 +8,12 @@
 
 import Foundation
 
+
+
+
+/**
+ The UICollectionViewController class represents a view controller whose content consists of a collection view.
+*/
 open class CollectionViewController : NSViewController, CollectionViewDataSource, CollectionViewDelegate {
     
     public let collectionView = CollectionView()
@@ -33,31 +39,10 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
         collectionView.delegate = self
     }
     
-    open func adjustContentInsets(_ insets: EdgeInsets) {
-        
-        self.adjustConstraint(.top, value: insets.top)
-        self.adjustConstraint(.left, value: insets.left)
-        self.adjustConstraint(.right, value: insets.right)
-        self.adjustConstraint(.bottom, value: insets.bottom)
-        
-    }
     
-    // Must be .Top, .Right, .Bottom, or .Left
-    open func adjustConstraint(_ attribute: NSLayoutAttribute, value: CGFloat?) {
-        for constraint in self.view.constraints {
-            if (constraint.secondAttribute == attribute && (constraint.secondItem as? CollectionView) == collectionView)
-            || (constraint.firstAttribute == attribute && (constraint.firstItem as? CollectionView) == collectionView) {
-                if let val = value {
-                    constraint.constant = val
-                    constraint.isActive = true
-                }
-                else {
-                    constraint.isActive = false
-                }
-                return
-            }
-        }
-    }
+    
+    // MARK: - Data Source
+    /*-------------------------------------------------------------------------------*/
     
     open func numberOfSections(in collectionView: CollectionView) -> Int {
         return 0
@@ -71,6 +56,50 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
         assertionFailure("CollectionViewController must implement collectionView:cellForItemAt:")
         return CollectionViewCell()
     }
+    
+    
+    
+    // MARK: - Layout
+    /*-------------------------------------------------------------------------------*/
+    /**
+     Adjust the layout constraints for the collection view
+     
+     - Parameter insets: The insets to apply to the collection view
+     
+     */
+    open func adjustContentInsets(_ insets: EdgeInsets) {
+        
+        self.adjustConstraint(.top, value: insets.top)
+        self.adjustConstraint(.left, value: insets.left)
+        self.adjustConstraint(.right, value: insets.right)
+        self.adjustConstraint(.bottom, value: insets.bottom)
+        
+    }
+    
+    
+    /**
+     Adjust the constraints for the collection view
+     
+     - Parameter attribute: The layout attribute to adjust. Must be .Top, .Right, .Bottom, or .Left
+     - Parameter value: The constant to apply to the constraint
+     
+     */
+    open func adjustConstraint(_ attribute: NSLayoutAttribute, value: CGFloat?) {
+        for constraint in self.view.constraints {
+            if (constraint.secondAttribute == attribute && (constraint.secondItem as? CollectionView) == collectionView)
+                || (constraint.firstAttribute == attribute && (constraint.firstItem as? CollectionView) == collectionView) {
+                if let val = value {
+                    constraint.constant = val
+                    constraint.isActive = true
+                }
+                else {
+                    constraint.isActive = false
+                }
+                return
+            }
+        }
+    }
+    
 }
 
 

@@ -91,7 +91,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     
     
     open override func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
-        let attrs = CollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+        let attrs = CollectionViewLayoutAttributes(forCellWith: indexPath)
         attrs.alpha = 1
         attrs.zIndex = 1000
         

@@ -86,12 +86,12 @@
 				1C6E50821E2D9C2A00C85946 /* ResultsController.swift */,
 				DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */,
 				1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */,
+				1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */,
 				DE13C18A1E4CE46100CEC80C /* FetchedResultsObserver.swift */,
 				DE3E47551E4259B800F19D9E /* ChangeSet.swift */,
 				1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */,
 				1C2DC5161E329CA000EBC234 /* IndexedSet.swift */,
 				DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */,
-				1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */,
 				DE704B6D1E49B33A007C2F89 /* _OrderedSet.swift */,
 			);
 			name = ResultsController;
@@ -103,8 +103,8 @@
 				DE9072051CAC7FF000AD0E37 /* CollectionViewLayout.swift */,
 				DE9072031CAC7FF000AD0E37 /* CollectionViewColumnLayout.swift */,
 				DEE3B5841D246CB100AD34F1 /* CollectionViewListLayout.swift */,
-				DE9072041CAC7FF000AD0E37 /* CollectionViewHorizontalLayout.swift */,
 				DECA70CB1D8751010006D795 /* CollectionViewFlowLayout.swift */,
+				DE9072041CAC7FF000AD0E37 /* CollectionViewHorizontalLayout.swift */,
 				DE57F41E1CBC915A00F9E23C /* CollectionViewGridLayout.swift */,
 			);
 			name = Layouts;

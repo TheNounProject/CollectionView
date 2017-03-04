@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>CollectionViewDragDelegate Protocol Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Protocol/CollectionViewDragDelegate" class="dashAnchor"></a>
+    <a title="CollectionViewDragDelegate Protocol Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        CollectionViewDragDelegate Protocol Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionReusableView.html">CollectionReusableView</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionView.html">CollectionView</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionView.html#/s:OC14CollectionView14CollectionView13SelectionMode">– SelectionMode</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionViewCell.html">CollectionViewCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionViewColumnLayout.html#/s:OC14CollectionView26CollectionViewColumnLayout19ItemRenderDirection">– ItemRenderDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionViewController.html">CollectionViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/RelationalResultsController.html">RelationalResultsController</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:O14CollectionView25CollectionElementCategory">CollectionElementCategory</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:O14CollectionView23CollectionViewDirection">CollectionViewDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:O14CollectionView29CollectionViewScrollDirection">CollectionViewScrollDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:O14CollectionView28CollectionViewScrollPosition">CollectionViewScrollPosition</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/FlowLayoutItemStyle.html">FlowLayoutItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:O14CollectionView27ResultsControllerChangeType">ResultsControllerChangeType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums.html#/s:O14CollectionView22ResultsControllerError">ResultsControllerError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/s:Sa">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/s:Ps10Collection">Collection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/IndexPath.html">IndexPath</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/s:Si">Int</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/s:Ps8Sequence">Sequence</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions.html#/s:SS">String</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols.html#/s:P14CollectionView30CustomDisplayStringConvertible">CustomDisplayStringConvertible</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ResultsController.html">ResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols.html#/s:P14CollectionView25ResultsControllerDelegate">ResultsControllerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/ResultsControllerSectionInfo.html">ResultsControllerSectionInfo</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structs</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs.html#/s:V14CollectionView31CollectionViewLayoutElementKind">CollectionViewLayoutElementKind</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/ResultsChangeSet.html">ResultsChangeSet</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Typealiases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:14CollectionView19AnimationCompletion">AnimationCompletion</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>CollectionViewDragDelegate</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewDragDelegate</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a></span></code></pre>
+
+                </div>
+              </div>
+            <p>The CollectionViewDragDelegate</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Dragging%20Source"></a>
+                <a name="//apple_ref/swift/Section/Dragging Source" class="dashAnchor"></a>
+                <a href="#/Dragging%20Source">
+                  <h3 class="section-name">Dragging Source</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView21shouldBeginDraggingAtV10Foundation9IndexPath4withCSo7NSEvent_Sb"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:shouldBeginDraggingAt:with:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView21shouldBeginDraggingAtV10Foundation9IndexPath4withCSo7NSEvent_Sb">collectionView(_:shouldBeginDraggingAt:with:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">shouldBeginDraggingAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="n">with</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">NSEvent</span><span class="p">)</span> <span class="o">-&gt;</span><span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>indexPath</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#indexPath description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>event</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#event description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>&lt;#Bool return description#&gt;</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView25validateIndexPathsForDragGSaV10Foundation9IndexPath__GSaS3__"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:validateIndexPathsForDrag:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView25validateIndexPathsForDragGSaV10Foundation9IndexPath__GSaS3__">collectionView(_:validateIndexPathsForDrag:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">validateIndexPathsForDrag</span> <span class="nv">indexPaths</span><span class="p">:</span> <span class="p">[</span><span class="kt">IndexPath</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">IndexPath</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>&lt;#IndexPath return description#&gt;</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView15draggingSessionCSo17NSDraggingSession11willBeginAtVSC7CGPoint_T_"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:draggingSession:willBeginAt:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView15draggingSessionCSo17NSDraggingSession11willBeginAtVSC7CGPoint_T_">collectionView(_:draggingSession:willBeginAt:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">draggingSession</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">NSDraggingSession</span><span class="p">,</span> <span class="n">willBeginAt</span> <span class="nv">point</span><span class="p">:</span> <span class="kt">NSPoint</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>session</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#session description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>point</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#point description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView15draggingSessionCSo17NSDraggingSession8didEndAtVSC7CGPoint4withVSC15NSDragOperation17draggedIndexPathsGSaV10Foundation9IndexPath__T_"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:draggingSession:didEndAt:with:draggedIndexPaths:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView15draggingSessionCSo17NSDraggingSession8didEndAtVSC7CGPoint4withVSC15NSDragOperation17draggedIndexPathsGSaV10Foundation9IndexPath__T_">collectionView(_:draggingSession:didEndAt:with:draggedIndexPaths:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">draggingSession</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">NSDraggingSession</span><span class="p">,</span> <span class="n">didEndAt</span> <span class="nv">screenPoint</span><span class="p">:</span> <span class="kt">NSPoint</span><span class="p">,</span> <span class="n">with</span> <span class="nv">operation</span><span class="p">:</span> <span class="kt">NSDragOperation</span><span class="p">,</span> <span class="nv">draggedIndexPaths</span><span class="p">:</span> <span class="p">[</span><span class="kt">IndexPath</span><span class="p">])</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>session</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#session description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>screenPoint</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#screenPoint description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>operation</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#operation description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView15draggingSessionCSo17NSDraggingSession9didMoveToVSC7CGPoint_T_"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:draggingSession:didMoveTo:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView15draggingSessionCSo17NSDraggingSession9didMoveToVSC7CGPoint_T_">collectionView(_:draggingSession:didMoveTo:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">draggingSession</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">NSDraggingSession</span><span class="p">,</span> <span class="n">didMoveTo</span> <span class="nv">point</span><span class="p">:</span> <span class="kt">NSPoint</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>session</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#session description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>point</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#point description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Dragging%20Destination"></a>
+                <a name="//apple_ref/swift/Section/Dragging Destination" class="dashAnchor"></a>
+                <a href="#/Dragging%20Destination">
+                  <h3 class="section-name">Dragging Destination</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView11dragEnteredPSo14NSDraggingInfo__VSC15NSDragOperation"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:dragEntered:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView11dragEnteredPSo14NSDraggingInfo__VSC15NSDragOperation">collectionView(_:dragEntered:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">dragEntered</span> <span class="nv">dragInfo</span><span class="p">:</span> <span class="kt">NSDraggingInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NSDragOperation</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>dragInfo</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#dragInfo description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>&lt;#NSDragOperation return description#&gt;</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView11dragUpdatedPSo14NSDraggingInfo__VSC15NSDragOperation"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:dragUpdated:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView11dragUpdatedPSo14NSDraggingInfo__VSC15NSDragOperation">collectionView(_:dragUpdated:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">dragUpdated</span> <span class="nv">dragInfo</span><span class="p">:</span> <span class="kt">NSDraggingInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">NSDragOperation</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>dragInfo</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#dragInfo description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>&lt;#NSDragOperation return description#&gt;</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView10dragExitedGSqPSo14NSDraggingInfo___T_"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:dragExited:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView10dragExitedGSqPSo14NSDraggingInfo___T_">collectionView(_:dragExited:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">dragExited</span> <span class="nv">dragInfo</span><span class="p">:</span> <span class="kt">NSDraggingInfo</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>dragInfo</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#dragInfo description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView9dragEndedGSqPSo14NSDraggingInfo___T_"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:dragEnded:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView9dragEndedGSqPSo14NSDraggingInfo___T_">collectionView(_:dragEnded:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">dragEnded</span> <span class="nv">dragInfo</span><span class="p">:</span> <span class="kt">NSDraggingInfo</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>dragInfo</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#dragInfo description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView20performDragOperationPSo14NSDraggingInfo__Sb"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:performDragOperation:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView26CollectionViewDragDelegate14collectionViewFTCS_14CollectionView20performDragOperationPSo14NSDraggingInfo__Sb">collectionView(_:performDragOperation:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>&lt;#Description#&gt;</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">performDragOperation</span> <span class="nv">dragInfo</span><span class="p">:</span> <span class="kt">NSDraggingInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#collectionView description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>dragInfo</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>&lt;#dragInfo description#&gt;</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>&lt;#Bool return description#&gt;</p>
+
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2017-03-04)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

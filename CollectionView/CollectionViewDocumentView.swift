@@ -59,19 +59,6 @@ internal struct ItemUpdate : Hashable {
     }
 }
 
-//class SectionInfo : Hashable {
-//    let id = UUID()
-//    var index: Int = 0
-//    var _cellMap = [CollectionViewCell:Int]()
-//    var _cells = [CollectionViewCell]()
-//    
-//    
-//    // Hashable
-//    var hashValue: Int { return id.hashValue }
-//    static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {
-//        return lhs.id == rhs.id
-//    }
-//}
 
 final public class CollectionViewDocumentView : NSView {
 
@@ -171,12 +158,12 @@ final public class CollectionViewDocumentView : NSView {
                         self.collectionView._floatingSupplementaryView.addSubview(view)
                     }
                     attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
-                    view.applyLayoutAttributes(attrs, animated: false)
+                    view.apply(attrs, animated: false)
                 }
                 else if view.superview == self.collectionView._floatingSupplementaryView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
-                    view.applyLayoutAttributes(attrs, animated: false)
+                    view.apply(attrs, animated: false)
                 }
             }
             completion?(true)
@@ -227,7 +214,7 @@ final public class CollectionViewDocumentView : NSView {
                     
                     self.preparedCellIndex[ip] = nil
                     cell.layer?.zPosition = 0
-                    if animated  && !animating, let attrs =  cell.attributes ?? self.collectionView.layoutAttributesForItem(at: ip) {
+                    if animated  && !animating, let attrs = self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
                         updates.append(ItemUpdate(view: cell, attrs: attrs, type: .remove))
                     }
                     else {
@@ -268,7 +255,7 @@ final public class CollectionViewDocumentView : NSView {
                 self.addSubview(cell)
             }
             if animated {
-                cell.applyLayoutAttributes(attrs, animated: false)
+                cell.apply(attrs, animated: false)
                 cell.isHidden = true
                 cell.alphaValue = 0
             }
@@ -307,7 +294,7 @@ final public class CollectionViewDocumentView : NSView {
                     self.preparedSupplementaryViewIndex[identifier] = nil
                     view.layer?.zPosition = -100
                     
-                    if animated && !animating, let attrs = view.attributes ?? self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!) {
+                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!) ?? view.attributes {
                         updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: identifier))
                     }
                     else {
@@ -402,7 +389,7 @@ final public class CollectionViewDocumentView : NSView {
                             removals.append(item)
                             item.attrs.alpha = 0
                         }
-                        item.view.applyLayoutAttributes(item.attrs, animated: true)
+                        item.view.apply(item.attrs, animated: true)
                         if item.type == .insert {
                             item.view.viewDidDisplay()
                         }
@@ -427,7 +414,7 @@ final public class CollectionViewDocumentView : NSView {
                     removeItem(item)
                 }
                 else {
-                    item.view.applyLayoutAttributes(item.attrs, animated: false)
+                    item.view.apply(item.attrs, animated: false)
                     if item.type == .insert {
                         item.view.viewDidDisplay()
                     }

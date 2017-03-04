@@ -8,20 +8,75 @@
 
 import Foundation
 
+
+
+/**
+ CollectionViewDelegateListLayout
+*/
 @objc public protocol CollectionViewDelegateListLayout: CollectionViewDelegate {
     
+    /**
+     <#Description#>
+
+     - Parameter collectionView: <#collectionView description#>
+     - Parameter collectionViewLayout: <#collectionViewLayout description#>
+     - Parameter indexPath: <#indexPath description#>
+     
+     - Returns: <#CGFloat return description#>
+
+    */
     @objc optional func collectionView(_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
                                   heightForItemAt indexPath: IndexPath) -> CGFloat
     
+    /**
+     <#Description#>
+
+     - Parameter collectionView: <#collectionView description#>
+     - Parameter collectionViewLayout: <#collectionViewLayout description#>
+     - Parameter section: <#section description#>
+     
+     - Returns: <#CGFloat return description#>
+
+    */
     @objc optional func collectionView(_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
                                  interitemSpacingForItemsInSection section: Int) -> CGFloat
     
+    /**
+     <#Description#>
+
+     - Parameter collectionView: <#collectionView description#>
+     - Parameter collectionViewLayout: <#collectionViewLayout description#>
+     - Parameter section: <#section description#>
+     
+     - Returns: <#CGFloat return description#>
+
+    */
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                   heightForHeaderInSection section: Int) -> CGFloat
     
+    /**
+     <#Description#>
+
+     - Parameter collectionView: <#collectionView description#>
+     - Parameter collectionViewLayout: <#collectionViewLayout description#>
+     - Parameter section: <#section description#>
+     
+     - Returns: <#CGFloat return description#>
+
+    */
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                   heightForFooterInSection section: Int) -> CGFloat
     
+    /**
+     <#Description#>
+
+     - Parameter collectionView: <#collectionView description#>
+     - Parameter collectionViewLayout: <#collectionViewLayout description#>
+     - Parameter section: <#section description#>
+     
+     - Returns: <#EdgeInsets return description#>
+
+    */
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                   insetForSectionAt section: Int) -> EdgeInsets
 
@@ -29,7 +84,7 @@ import Foundation
 }
 
 
-/// A feature packed collection view layout with pinterest like layouts, aspect ratio sizing, and drag and drop.
+/// A list collection view layout for use in TableView style scroll views
 public final class CollectionViewListLayout : CollectionViewLayout  {
     
     //MARK: - Default layout values
@@ -54,8 +109,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     fileprivate var numSections : Int { get { return self.collectionView?.numberOfSections ?? 0 }}
     
-    //  private property and method above.
-    fileprivate weak var delegate : CollectionViewDelegateListLayout? { get{ return self.collectionView!.delegate as? CollectionViewDelegateListLayout }}
+    private weak var delegate : CollectionViewDelegateListLayout? { get{ return self.collectionView!.delegate as? CollectionViewDelegateListLayout }}
     
     
     fileprivate var sectionIndexPaths : [[IndexPath]] = []
@@ -114,7 +168,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
              */
             let heightHeader : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForHeaderInSection: section) ?? self.headerHeight
             if heightHeader > 0 {
-                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, withIndexPath: IndexPath.for(item: 0, section: section))
+                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, with: IndexPath.for(item: 0, section: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
                     CGRect(x: sectionInsets.left, y: top, width: self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, height: heightHeader)
@@ -149,7 +203,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
                     let ip = IndexPath.for(item:idx, section: section)
                     allIndexPaths.insert(ip)
                     
-                    let attrs = CollectionViewLayoutAttributes(forCellWithIndexPath: ip)
+                    let attrs = CollectionViewLayoutAttributes(forCellWith: ip)
                     let rowHeight : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAt: ip) ?? self.itemHeight
                     attrs.frame = NSRect(x: xPos, y: yPos, width: itemWidth, height: rowHeight)
                     newTop = yPos + rowHeight
@@ -165,7 +219,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
             
             let footerHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForFooterInSection: section) ?? self.footerHeight
             if footerHeight > 0 {
-                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, withIndexPath: IndexPath.for(item:0, section: section))
+                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(item:0, section: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
                     CGRect(x: sectionInsets.left, y: top, width: self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, height: footerHeight)

@@ -9,17 +9,93 @@
 import CoreData
 
 
-public extension Array where Element:Any {
+/**
+ A ResultsController manages data in a way that is usable by a collection view.
+ 
+ - FetchedResultsController
+ - RelationalResultsController
+ 
+*/
+public protocol ResultsController {
+
+    // MARK: - Delegate
+    /*-------------------------------------------------------------------------------*/
+    /// The delegate to notify about data changes
+    var delegate : ResultsControllerDelegate? { get set }
+    
+    
+    // MARK: - Data
+    /*-------------------------------------------------------------------------------*/
+    /// The number of sections in the results controller
+    var numberOfSections : Int { get }
     
     
     /**
-     Returns the obejct at the given index, first validating the index
+     Returns the number of objects in the specified section
 
-     - Parameter index: An index
+     - Parameter section: The section for which to count the objects
      
-     - Returns: The object if the index is valid in the array
+     - Returns: The number of objects
 
     */
+    func numberOfObjects(in section: Int) -> Int
+    
+    
+    /// Returns the section info for all sections in the controller
+    var sections : [ResultsControllerSectionInfo] { get }
+    
+    /**
+     Returns all objects in the controller
+     
+     **Warning:**   This is not fully implemented yet...
+    */
+    var allObjects : [Any] { get }
+    
+    // MARK: - Getting Items
+    /*-------------------------------------------------------------------------------*/
+    /**
+     Returns the section info for the specified index path
+
+     - Parameter sectionIndexPath: The section to retieve info for
+     
+     - Returns: The section info
+
+    */
+    func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo?
+
+    
+    /**
+     Returns the object at the specified index path
+
+     - Parameter indexPath: The index path
+     
+     - Returns: An object at the specfied index path
+
+    */
+    func object(at indexPath: IndexPath) -> Any?
+    
+    
+    /**
+     The name of the section at the specfied section
+
+     - Returns: A string representing the name of the section
+     
+     - Note: The object represented by the section must adopt CustomDisplayStringConvertible, otherwise this returns an empty string
+
+    */
+    func sectionName(forSectionAt indexPath :IndexPath) -> String
+    
+    /**
+     Execute a fetch to populate the controller
+
+    */
+    func performFetch() throws
+}
+
+
+
+
+public extension Array where Element:Any {
     public func object(at index: Int) -> Element? {
         if index >= 0 && index < self.count {
             return self[index]
@@ -28,11 +104,19 @@ public extension Array where Element:Any {
     }
 }
 
+
+/**
+ ResultsControllerError
+*/
 public enum ResultsControllerError: Error {
     case unknown
 }
 
 
+
+/**
+ CustomDisplayStringConvertible allows objects to return a custom description to display
+*/
 public protocol CustomDisplayStringConvertible  {
     var displayDescription : String { get }
 }
@@ -63,46 +147,90 @@ extension NSNumber : Comparable {
 }
 
 
-public protocol ResultsController {
-    
-    var delegate : ResultsControllerDelegate? { get set }
-    
-    var numberOfSections : Int { get }
-    func numberOfObjects(in section: Int) -> Int
-    
-    var sections : [ResultsControllerSectionInfo] { get }
-    var allObjects : [Any] { get }
-    
-    // MARK: - Getting Items
-    /*-------------------------------------------------------------------------------*/
-    func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo?
-    func object(at indexPath: IndexPath) -> Any?
-    
-//    func indexPath(of: Any) -> IndexPath?
-    
-    func sectionName(forSectionAt indexPath :IndexPath) -> String
-    
-    func performFetch() throws
-}
 
 
+
+/**
+ Information about the sections of a results controller
+*/
 public protocol ResultsControllerSectionInfo {
+    /**
+     The object represented by the section
+    */
     var object : Any? { get }
+    /**
+     The number of objects in the section
+    */
     var numberOfObjects : Int { get }
+    /**
+     The objects in the section
+     
+     - Note: Calling this method incurs large overhead and should be avoided. Use getter methods on the ResultsController instead.
+    */
     var objects : [Any] { get }
 }
 
+
+
+/**
+ The ResultsControllerDelegate defines methods that allow you to respond to changes in the results controller.
+ 
+ Use ResultChangeSet to easily track changes and apply them to a CollectionView
+*/
 public protocol ResultsControllerDelegate {
+    
+    /// Tells the delegate that the controller will change
+    ///
+    /// - Parameter controller: The controller that will change
     func controllerWillChangeContent(controller: ResultsController)
+    
+    /**
+     Tells the delegate that the an object was changed
+
+     - Parameter controller: The controller
+     - Parameter object: The object that changed
+     - Parameter indexPath: The source index path of the object
+     - Parameter changeType: The type of change
+
+    */
     func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    
+    
+    /**
+     Tells the delegate that a section was changed
+
+     - Parameter controller: The controller
+     - Parameter section: The info for the updated section
+     - Parameter indexPath: the source index path of the section
+     - Parameter changeType: The type of change
+
+    */
     func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSectionInfo, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    
+    
+    /**
+     Tells the delegate that it has process all changes
+
+     - Parameter controller: The controller that was changed
+
+    */
     func controllerDidChangeContent(controller: ResultsController)
 }
 
 
 
 
+/**
+ The types of changes reported to ResultsControllerDelegate
+ 
+ - delete: The item was deleted
+ - update: The item was updated
+ - insert: The item was inserted
+ - move: The item was moved
+
+ */
 public enum ResultsControllerChangeType {
+    
     case delete
     case update
     case insert(IndexPath)

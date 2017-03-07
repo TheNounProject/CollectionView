@@ -117,11 +117,14 @@ class ResultsControllerCDManager {
             }
         }
         
-        if let updated = info[NSUpdatedObjectsKey] as? Set<NSManagedObject> {
-            for obj in updated {
-                if changeSets[obj.entity]?.updated(obj) == nil {
-                    changeSets[obj.entity] = EntityChangeSet(updated: obj)
-                }
+        
+        var updated = info[NSUpdatedObjectsKey] as? Set<NSManagedObject> ?? Set<NSManagedObject>()
+        if let invalidated = info[NSRefreshedObjectsKey] as? Set<NSManagedObject> {
+            updated = updated.union(invalidated)
+        }
+        for obj in updated {
+            if changeSets[obj.entity]?.updated(obj) == nil {
+                changeSets[obj.entity] = EntityChangeSet(updated: obj)
             }
         }
         

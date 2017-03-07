@@ -229,12 +229,37 @@ public protocol ResultsControllerDelegate {
  - move: The item was moved
 
  */
-public enum ResultsControllerChangeType {
+public enum ResultsControllerChangeType  {
     
     case delete
     case update
     case insert(IndexPath)
     case move(IndexPath)
+    
+    public var isInsert : Bool {
+        switch self {
+        case .insert: return true
+        default: return false
+        }
+    }
+    public var isDelete : Bool {
+        switch self {
+        case .delete: return true
+        default: return false
+        }
+    }
+    public var isMove : Bool {
+        switch self {
+        case .move: return true
+        default: return false
+        }
+    }
+    public var isUpdate : Bool {
+        switch self {
+        case .update: return true
+        default: return false
+        }
+    }
 }
 
 

@@ -24,7 +24,7 @@ public protocol CollectionViewDelegateFlowLayout : CollectionViewDelegate {
      - Returns: <#FlowLayoutItemStyle return description#>
 
     */
-    func collectionView(_ collectionView: CollectionView, gridLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> FlowLayoutItemStyle
+    func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> FlowLayoutItemStyle
     
     /**
      <#Description#>
@@ -36,7 +36,7 @@ public protocol CollectionViewDelegateFlowLayout : CollectionViewDelegate {
      - Returns: <#CGFloat return description#>
 
     */
-    func collectionView (_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout,
+    func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
                                         heightForHeaderInSection section: Int) -> CGFloat
     
     /**
@@ -49,7 +49,7 @@ public protocol CollectionViewDelegateFlowLayout : CollectionViewDelegate {
      - Returns: <#CGFloat return description#>
 
     */
-    func collectionView (_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout,
+    func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
                                         heightForFooterInSection section: Int) -> CGFloat
     /**
      <#Description#>
@@ -61,8 +61,23 @@ public protocol CollectionViewDelegateFlowLayout : CollectionViewDelegate {
      - Returns: <#EdgeInsets return description#>
 
     */
-    func collectionView (_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout,
+    func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
                          insetsForSectionAt section: Int) -> EdgeInsets
+
+    
+    
+    /**
+     Asks the delegate if the content in the specified section should be centered
+
+     - Parameter collectionView: The collection requesting the information
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: The section in which to center content
+     
+     - Returns: If the content within the section should be centered
+
+    */
+//    func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
+//                         centerContentInSection section: Int) -> Bool
 }
 
 
@@ -88,6 +103,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     public var itemSpacing: CGFloat = 8
     /// The default insets for all sections
     public var sectionInsets : EdgeInsets = NSEdgeInsetsZero
+    
+    public var centerContent : Bool = false
     
     private struct RowAttributes : CustomStringConvertible {
         var frame = CGRect.zero
@@ -156,6 +173,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     private struct SectionAttributes  : CustomStringConvertible {
         var frame = CGRect.zero
         var insets : EdgeInsets = NSEdgeInsetsZero
+        var centerContent : Bool = false
         var contentFrame = CGRect.zero
         var header : CollectionViewLayoutAttributes?
         var footer : CollectionViewLayoutAttributes?
@@ -189,7 +207,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                         rows[rows.count - 1].add(attributes: attributes)
                     }
                     else {
-                        rows.last?.centerItems(between: insets.left, cv.frame.size.width - insets.right)
+                        if self.centerContent {
+                            rows.last?.centerItems(between: insets.left, cv.frame.size.width - insets.right)
+                        }
                         rows.append(RowAttributes(attributes: attributes))
                     }
                 }
@@ -218,12 +238,14 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             case let .span(size):
                 attributes.frame = CGRect(x: insets.left, y: contentFrame.maxY + (rows.count > 0 ? itemSpacing : 0), width: size.width, height: size.height)
                 //                adjustOversizedIfNeeded()
-                
-                rows.last?.centerItems(between: insets.left, cv.frame.size.width - insets.right)
+                if centerContent {
+                    rows.last?.centerItems(between: insets.left, cv.frame.size.width - insets.right)
+                }
                 let r = RowAttributes(attributes: attributes)
-                r.centerItems(between: insets.left, cv.frame.size.width - insets.right)
+                if self.centerContent {
+                    r.centerItems(between: insets.left, cv.frame.size.width - insets.right)
+                }
                 rows.append(r)
-                
                 rows.append(RowAttributes())
                 items.append(attributes)
                 contentFrame = contentFrame.union(attributes.frame)
@@ -279,7 +301,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             
             var sectionAttrs = SectionAttributes()
             
-            var sectionInsets = self.delegate?.collectionView(cv, gridLayout: self, insetsForSectionAt: sec) ?? self.sectionInsets
+            sectionAttrs.centerContent = self.centerContent
+            
+            var sectionInsets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.sectionInsets
             sectionAttrs.insets = sectionInsets
             let numItems = cv.numberOfItems(in: sec)
             
@@ -287,7 +311,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             sectionAttrs.contentFrame.origin.y = top
             
             
-            let heightHeader : CGFloat = self.delegate?.collectionView(cv, gridLayout: self, heightForHeaderInSection: sec) ?? 0
+            let heightHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? 0
             if heightHeader > 0 {
                 let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, with: IndexPath.for(section: sec))
                 attrs.frame = insetSupplementaryViews ?
@@ -305,7 +329,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 for item in 0..<numItems {
                     let ip = IndexPath.for(item: item, section: sec)
                     
-                    guard let style = self.delegate?.collectionView(cv, gridLayout: self, styleForItemAt: ip) else { continue }
+                    guard let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) else { continue }
                     var attrs = CollectionViewLayoutAttributes(forCellWith: ip)
                     top = sectionAttrs.addItem(with: attrs, using: style, in: cv, insets: sectionInsets, itemSpacing: itemSpacing)
                     widthOfLastRow = sectionAttrs.lastRowWidth
@@ -314,12 +338,12 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 if sectionAttrs.rows.last?.items.count == 0 {
                     sectionAttrs.rows.removeLast()
                 }
-                else {
+                else if centerContent {
                     sectionAttrs.rows.last?.centerItems(between: sectionInsets.left, cv.frame.size.width - sectionInsets.right)
                 }
             }
             
-            let footerHeader : CGFloat = self.delegate?.collectionView(cv, gridLayout: self, heightForFooterInSection: sec) ?? 0
+            let footerHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForFooterInSection: sec) ?? 0
             if heightHeader > 0 {
                 let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(section: sec))
                 attrs.frame = insetSupplementaryViews ?

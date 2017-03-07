@@ -146,6 +146,8 @@ SWIFT_CLASS("_TtC14CollectionView8ClipView")
 */
 SWIFT_CLASS("_TtC14CollectionView22CollectionReusableView")
 @interface CollectionReusableView : NSView
+- (nonnull instancetype)initWithFrame:(NSRect)frameRect OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
 /**
   A string that identifies the purpose of the view.
 */
@@ -159,12 +161,6 @@ SWIFT_CLASS("_TtC14CollectionView22CollectionReusableView")
 */
 @property (nonatomic, readonly) BOOL reused;
 /**
-  The background color of the cell
-*/
-@property (nonatomic, strong) NSColor * _Nullable backgroundColor;
-- (nonnull instancetype)initWithFrame:(NSRect)frameRect OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
-/**
   Performs any clean up necessary to prepare the view for use again.
 */
 - (void)prepareForReuse;
@@ -176,6 +172,10 @@ SWIFT_CLASS("_TtC14CollectionView22CollectionReusableView")
   Called just after the view was added to the collection view
 */
 - (void)viewDidDisplay;
+/**
+  The background color of the cell
+*/
+@property (nonatomic, strong) NSColor * _Nullable backgroundColor;
 - (void)updateLayer;
 - (void)drawRect:(NSRect)dirtyRect;
 @property (nonatomic) BOOL trackMouseMoved;
@@ -755,6 +755,8 @@ SWIFT_CLASS("_TtC14CollectionView14CollectionView")
 SWIFT_CLASS("_TtC14CollectionView18CollectionViewCell")
 @interface CollectionViewCell : CollectionReusableView
 - (BOOL)acceptsFirstMouse:(NSEvent * _Nullable)theEvent;
+- (nonnull instancetype)initWithFrame:(NSRect)frameRect OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
 /**
   The highlight state of the cell.
 */
@@ -763,8 +765,6 @@ SWIFT_CLASS("_TtC14CollectionView18CollectionViewCell")
   The selection state of the cell.
 */
 @property (nonatomic) BOOL selected;
-- (nonnull instancetype)initWithFrame:(NSRect)frameRect OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated;
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated;
 - (void)prepareForReuse;
@@ -1237,15 +1237,15 @@ SWIFT_CLASS("_TtC14CollectionView24CollectionViewController")
 @property (nonatomic, readonly, strong) CollectionView * _Nonnull collectionView;
 - (void)loadView;
 - (void)viewDidLoad;
+- (NSInteger)numberOfSectionsIn:(CollectionView * _Nonnull)collectionView;
+- (NSInteger)collectionView:(CollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+- (CollectionViewCell * _Nonnull)collectionView:(CollectionView * _Nonnull)collectionView cellForItemAt:(NSIndexPath * _Nonnull)indexPath;
 /**
   Adjust the layout constraints for the collection view
   \param insets The insets to apply to the collection view
 
 */
 - (void)adjustContentInsets:(NSEdgeInsets)insets;
-- (NSInteger)numberOfSectionsIn:(CollectionView * _Nonnull)collectionView;
-- (NSInteger)collectionView:(CollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
-- (CollectionViewCell * _Nonnull)collectionView:(CollectionView * _Nonnull)collectionView cellForItemAt:(NSIndexPath * _Nonnull)indexPath;
 - (nullable instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
 @end
@@ -1509,6 +1509,7 @@ SWIFT_CLASS("_TtC14CollectionView24CollectionViewFlowLayout")
   The default insets for all sections
 */
 @property (nonatomic) NSEdgeInsets sectionInsets;
+@property (nonatomic) BOOL centerContent;
 /**
   If supplementary views should be inset to section insets
 */

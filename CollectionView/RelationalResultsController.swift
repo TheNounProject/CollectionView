@@ -177,18 +177,53 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         }
         return objects
     }
+    
+    
+    /**
+     An array of all sections
+     
+     - Note: accessing the sections here incurs fairly large overhead, avoid if possible. Use `numberOfSections` and sectionInfo(forSectionAt:) when possible.
+    */
     public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
     
+    
+    /**
+     A fetch request used to fetch, filter, and sort the section results of the controller.
+     
+     This is used to validate the section objects. If `fetchSections` is true, section objects will be fetched independent of the child objects.
+     
+     A parent object that does not match the request here, may still be visible if it has children that match the predicate of fetchRequest.
+    */
     public let sectionFetchRequest : NSFetchRequest<Section>
+    
+    
+    /**
+     A fetch request used to fetch, filter, and sort the results of the controller.
+    */
     public let fetchRequest : NSFetchRequest<Element>
     
+    
+    /**
+     If true, sections will be fetched independent of objects using sectionFetchRequest.
+     
+     This is useful to populate the controller with section objects that may not have any children.
+    */
     public var fetchSections : Bool = true
     
-    private var _fetched: Bool = false
     
+    /**
+     If the controller should assume that sections with zero objects have a placholder.
+     
+     # Discussion
+     When displaying sections within a CollectionView, it can be helpful to fill empty sections with a placholder cell. This causes an issue when responding to updates from a results controller. For example, when an object is inserted into an empty section, the results controller will report a single insert change. The CollectionView though would need to remove the exisitng cell AND insert the new one. 
+     
+     Setting hasEmptySectionPlaceholders to true, will report changes as such, making it easy to propagate the reported changes to a CollectionView.
+    */
     public var hasEmptySectionPlaceholders : Bool = false
     
-    func setNeedsFetch() {
+    
+    private var _fetched: Bool = false
+    private func setNeedsFetch() {
         if _fetched {
             _fetched = false
             unregister()
@@ -196,11 +231,23 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     
-    /// Simple way to get the name from the section object
-    // Alternative method is to leave nil and conform class to CustomDisplayStringConvertible
+    /**
+     A keyPath of the section objects to get the displayable name
+     
+     For custom names, leave nil and conform your section objects to CustomDisplayStringConvertible
+    */
     public var sectionNameKeyPath : String?
     
+    
+    /**
+     The keyPath of the controllers objects which holds a to-one relationship to the section object
+    */
     public var sectionKeyPath: String = "" { didSet { setNeedsFetch() }}
+    
+    
+    /**
+     The managed object context to fetch from and observe for changes
+    */
     public private(set) var managedObjectContext: NSManagedObjectContext
     
     private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
@@ -208,6 +255,10 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
 //    internal var _fetchedObjects = OrderedSet<Element>()
     private var _sections = OrderedSet<SectionInfo>()
     
+    
+    /**
+     An object the report to when content in the controller changes
+    */
     public var delegate: ResultsControllerDelegate? {
         didSet {
             if (oldValue == nil) == (delegate == nil) { return }
@@ -215,6 +266,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             else if _fetched { register() }
         }
     }
+    
     
     public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionRequest: NSFetchRequest<Section>, sectionKeyPath keyPath: String) {
         
@@ -251,10 +303,23 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     // MARK: - Counts & Section Names
     /*-------------------------------------------------------------------------------*/
     
+    
+    /**
+     The number of sections in the controller
+    */
     public var numberOfSections : Int {
         return _sections.count
     }
     
+    
+    /**
+     The number of objects in a specified section
+
+     - Parameter section: The section to count objects in
+     
+     - Returns: The number of objects in the specified section
+
+    */
     public func numberOfObjects(in section: Int) -> Int {
         return self._sections[section].numberOfObjects
     }

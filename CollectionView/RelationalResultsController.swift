@@ -570,77 +570,79 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     func handleChangeNotification(_ notification: Notification) {
         
-        guard let delegate = self.delegate, self._fetched else {
-            print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
-            return
-        }
-        
-        _sectionsCopy = nil
-        self.context.reset()
-
-        preprocess(notification: notification)
-        
-        print(context.sectionChangeSet)
-        print(context.objectChangeSet)
-        
-        if context.sectionChangeSet.count == 0 && context.objectChangeSet.count == 0 {
-            return
-        }
-        
-        self.delegate?.controllerWillChangeContent(controller: self)
-
-        processDeletedSections()
-        processInsertedSections()
-        processUpdatedSections()
-        
-        processDeletedObjects()
-        processInsertedObjects()
-        processUpdatedObjects()
-        
-        if _sections.needsSort {
-            self.sortSections()
-        }
-        
-        // Hang on to the changes for each section to lookup sources for items
-        // that were move to a new section
-        var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
-        
-        for s in _sections {
-            if s.needsSort {
-                s.sortItems(using: fetchRequest.sortDescriptors ?? [])
+        managedObjectContext.perform {
+            
+            guard let delegate = self.delegate, self._fetched else {
+                print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
+                return
             }
-            if s.isEditing {
-                let set = s.endEditing(forceUpdates: self.context.objectChangeSet.updated.valuesSet)
-                processedSections[s] = set
-                print("\(self.indexPath(of: s)!) \(set)")
+            
+            self._sectionsCopy = nil
+            self.context.reset()
+            
+            self.preprocess(notification: notification)
+            
+//            print(self.context.sectionChangeSet)
+//            print(self.context.objectChangeSet)
+            
+            if self.context.sectionChangeSet.count == 0 && self.context.objectChangeSet.count == 0 {
+                return
             }
-        }
-        
-        if let oldSections = _sectionsCopy {
-            var sectionChanges = ChangeSet(source: oldSections, target: _sections)
-            print(oldSections)
-            print(_sections)
-            print(sectionChanges)
-            sectionChanges.reduceEdits()
-            print(sectionChanges)
-            for change in sectionChanges.edits {
-                switch change.operation {
-                case .insertion:
-                    let ip = IndexPath.for(section: change.index)
-                    self.delegate?.controller(self, didChangeSection: change.value, at: nil, for: .insert(ip))
-                case .deletion:
-                    let ip = IndexPath.for(section: change.index)
-                    self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .delete)
-                case .substitution:
-                    let ip = IndexPath.for(section: change.index)
-                    self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .update)
-                case let .move(origin):
-                    let ip = IndexPath.for(section: origin)
-                    self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .move(IndexPath.for(section: change.index)))
+            
+            self.delegate?.controllerWillChangeContent(controller: self)
+            
+            self.processDeletedSections()
+            self.processInsertedSections()
+            self.processUpdatedSections()
+            
+            self.processDeletedObjects()
+            self.processInsertedObjects()
+            self.processUpdatedObjects()
+            
+            if self._sections.needsSort {
+                self.sortSections()
+            }
+            
+            // Hang on to the changes for each section to lookup sources for items
+            // that were move to a new section
+            var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
+            
+            for s in self._sections {
+                if s.needsSort {
+                    s.sortItems(using: self.fetchRequest.sortDescriptors ?? [])
+                }
+                if s.isEditing {
+                    let set = s.endEditing(forceUpdates: self.context.objectChangeSet.updated.valuesSet)
+                    processedSections[s] = set
+                    print("\(self.indexPath(of: s)!) \(set)")
                 }
             }
-        }
-        
+            
+            if let oldSections = self._sectionsCopy {
+                var sectionChanges = ChangeSet(source: oldSections, target: self._sections)
+//                print(oldSections)
+//                print(self._sections)
+//                print(sectionChanges)
+                sectionChanges.reduceEdits()
+                print(sectionChanges)
+                for change in sectionChanges.edits {
+                    switch change.operation {
+                    case .insertion:
+                        let ip = IndexPath.for(section: change.index)
+                        self.delegate?.controller(self, didChangeSection: change.value, at: nil, for: .insert(ip))
+                    case .deletion:
+                        let ip = IndexPath.for(section: change.index)
+                        self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .delete)
+                    case .substitution:
+                        let ip = IndexPath.for(section: change.index)
+                        self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .update)
+                    case let .move(origin):
+                        let ip = IndexPath.for(section: origin)
+                        self.delegate?.controller(self, didChangeSection: change.value, at: ip, for: .move(IndexPath.for(section: change.index)))
+                    }
+                }
+            }
+            
             var csrLog = "Performing Cross Section Reduction ------ "
             var indent = 0
             
@@ -730,78 +732,76 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             while let obj = self.context.itemsWithSectionChange.first {
                 _ = reduceCrossSectional(obj)
             }
-        
-        if hasEmptySectionPlaceholders {
-            if self.emptySectionChanges == nil {
-                self.emptySectionChanges = ResultsChangeSet()
-            }
-            for sec in processedSections {
-                guard let sectionIndex = self.indexPath(of: sec.key)?._section else { continue }
-                
-                if sec.value.origin.count == 0 {
-                    let ip = IndexPath.for(section: sectionIndex)
-                    self.emptySectionChanges?.addChange(forItemAt: ip, with: .delete)
-                }
-                else if sec.value.destination.count == 0 {
-                    let ip = IndexPath.for(section: sectionIndex)
-                    self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(ip))
-                }
-            }
-        }
-        else {
-            self.emptySectionChanges = nil
-        }
-        
-        
             
-            self.managedObjectContext.perform({
-                for s in processedSections {
-                    var changes = s.value
-                    changes.reduceEdits()
-                    processedSections[s.key] = changes
+            if self.hasEmptySectionPlaceholders {
+                if self.emptySectionChanges == nil {
+                    self.emptySectionChanges = ResultsChangeSet()
+                }
+                for sec in processedSections {
+                    guard let sectionIndex = self.indexPath(of: sec.key)?._section else { continue }
                     
-                    guard let sectionIndex = self.indexPath(of: s.key)?._section else { continue }
-                    
-                    // Could merge all the edits together to dispatch the delegate calls in order of operation
-                    // but there is no apparent reason why order is important.
-                    
-                    for edit in changes.edits {
-                        
-                        print(edit)
-                        switch edit.operation {
-                            
-                        case let .move(origin: from):
-                            guard let source = self.context.objectChangeSet.updated.index(of: edit.value),
-                                //                    let sectionIndex = self._sections.index(for: s.key),
-                                let dest = self.indexPath(of: edit.value) else {
-                                    continue // I don't think this should happen
-                            }
-                            
-                            self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .move(dest))
-                            
-                        case .substitution:
-                            let ip = IndexPath.for(item: edit.index, section: sectionIndex)
-                            self.delegate?.controller(self, didChangeObject: edit.value, at: ip, for: .update)
-                            
-                        case .insertion:
-                            guard let ip = self.indexPath(of: edit.value) else {
-                                continue
-//                                fatalError("IndexPath not found for insertion")
-                            }
-                            self.delegate?.controller(self, didChangeObject: edit.value, at: nil, for: .insert(ip))
-                            
-                        case .deletion:
-                            let source = IndexPath.for(item: edit.index, section: sectionIndex)
-                            self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .delete)
-                        }
+                    if sec.value.origin.count == 0 {
+                        let ip = IndexPath.for(section: sectionIndex)
+                        self.emptySectionChanges?.addChange(forItemAt: ip, with: .delete)
+                    }
+                    else if sec.value.destination.count == 0 {
+                        let ip = IndexPath.for(section: sectionIndex)
+                        self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(ip))
                     }
                 }
-                
-                
-                self.delegate?.controllerDidChangeContent(controller: self)
+            }
+            else {
                 self.emptySectionChanges = nil
-                self._sectionsCopy = nil
-            })
+            }
+            
+            for s in processedSections {
+                var changes = s.value
+                changes.reduceEdits()
+                processedSections[s.key] = changes
+                
+                guard let sectionIndex = self.indexPath(of: s.key)?._section else { continue }
+                
+                // Could merge all the edits together to dispatch the delegate calls in order of operation
+                // but there is no apparent reason why order is important.
+                
+                for edit in changes.edits {
+                    
+                    print(edit)
+                    switch edit.operation {
+                        
+                    case let .move(origin: from):
+                        guard let source = self.context.objectChangeSet.updated.index(of: edit.value),
+                            //                    let sectionIndex = self._sections.index(for: s.key),
+                            let dest = self.indexPath(of: edit.value) else {
+                                continue // I don't think this should happen
+                        }
+                        
+                        self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .move(dest))
+                        
+                    case .substitution:
+                        let ip = IndexPath.for(item: edit.index, section: sectionIndex)
+                        self.delegate?.controller(self, didChangeObject: edit.value, at: ip, for: .update)
+                        
+                    case .insertion:
+                        guard let ip = self.indexPath(of: edit.value) else {
+                            continue
+                            //                                fatalError("IndexPath not found for insertion")
+                        }
+                        self.delegate?.controller(self, didChangeObject: edit.value, at: nil, for: .insert(ip))
+                        
+                    case .deletion:
+                        let source = IndexPath.for(item: edit.index, section: sectionIndex)
+                        self.delegate?.controller(self, didChangeObject: edit.value, at: source, for: .delete)
+                    }
+                }
+            }
+            
+            
+            self.delegate?.controllerDidChangeContent(controller: self)
+            self.emptySectionChanges = nil
+            self._sectionsCopy = nil
+        }
+        
     }
     
     

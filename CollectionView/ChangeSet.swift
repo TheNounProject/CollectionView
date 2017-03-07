@@ -79,7 +79,7 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
         case let .substitution(target):
             return "Edit: Replace item at \(self.index) - Target: \(target)"
         case .insertion:
-            return "Edit: Insert \(self.value) at \(self.index)"
+            return "Edit: Insert at \(self.index)"
         case .deletion:
             return "Edit: Delete item at \(self.index)"
         }

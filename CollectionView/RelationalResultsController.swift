@@ -259,7 +259,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /**
      An object the report to when content in the controller changes
     */
-    public var delegate: ResultsControllerDelegate? {
+    public weak var delegate: ResultsControllerDelegate? {
         didSet {
             if (oldValue == nil) == (delegate == nil) { return }
             if delegate == nil { unregister() }
@@ -665,7 +665,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     indent -= 1
                 }
                 
-                appendCSRLog("Reducing cross section edit for \(object.idSuffix):")
+//                appendCSRLog("Reducing cross section edit for \(object.idSuffix):")
                 
                 guard let source = self.context.objectChangeSet.updated.index(of: object),
                     let targetIP = self.indexPath(of: object),

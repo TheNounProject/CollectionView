@@ -183,7 +183,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     fileprivate var _fetchedObjects = [Element]()
     private var _sections = OrderedSet<SectionInfo>()
     
-    public var delegate: ResultsControllerDelegate? {
+    public weak var delegate: ResultsControllerDelegate? {
         didSet {
             if (oldValue == nil) == (delegate == nil) { return }
             if delegate == nil { unregister() }
@@ -204,6 +204,8 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         self.fetchRequest = request
         self.sectionKeyPath = sectionKeyPath
     }
+    
+     
     
     public var numberOfSections : Int {
         return _sections.count
@@ -398,8 +400,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         if _objects.count == 0 { return }
         
         if let keyPath = self.sectionKeyPath {
-            var unordered = [Section : SectionInfo]()
-            var orphans = [Element]()
             for object in _objects {
                 
                 let parentValue = object.value(forKey: keyPath) as? Section
@@ -441,8 +441,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             return
         }
         
-        delegate.controllerWillChangeContent(controller: self)
-        
         guard let info = notification.userInfo else { return }
         self.context.reset()
         
@@ -451,6 +449,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         if context.objectChanges.count == 0 {
             return
         }
+        delegate.controllerWillChangeContent(controller: self)
         
         processDeleted()
         processInserted()
@@ -517,7 +516,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 indent -= 1
             }
             
-            appendCSRLog("Reducing cross section edit for \(object.idSuffix):")
+//            appendCSRLog("Reducing cross section edit for \(object.idSuffix):")
             
             guard let source = self.context.objectChanges.updated.index(of: object),
                 let targetIP = self.indexPath(of: object),

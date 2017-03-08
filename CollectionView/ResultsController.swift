@@ -177,7 +177,7 @@ public protocol ResultsControllerSectionInfo {
  
  Use ResultChangeSet to easily track changes and apply them to a CollectionView
 */
-public protocol ResultsControllerDelegate {
+public protocol ResultsControllerDelegate: class {
     
     /// Tells the delegate that the controller will change
     ///

@@ -118,7 +118,7 @@ open class CollectionViewLayout : NSObject {
      - Parameter rect: The rect in which to look for elements
 
     */
-    open func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
+    open func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
         overrideWarning()
         var attrs = [CollectionViewLayoutAttributes]()
         for ip in self.allIndexPaths {

@@ -361,7 +361,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     }
     
     
-    override open func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
+    override open func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
         var attrs : [CollectionViewLayoutAttributes] = []
         
         guard let cv = self.collectionView else { return [] }

@@ -289,7 +289,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     
     
-    open override func layoutAttributesForElements(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
+    open override func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
         var attrs : [CollectionViewLayoutAttributes] = []
         
         guard let cv = self.collectionView else { return [] }

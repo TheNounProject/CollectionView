@@ -2323,22 +2323,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     */
     public func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         return self.collectionViewLayout.indexPathsForItems(in: rect)
-//        if let providedIndexPaths = self.collectionViewLayout.indexPathsForItems(in: rect) { return providedIndexPaths }
-//        if rect.equalTo(CGRect.zero) || self.numberOfSections == 0 { return [] }
-//        var indexPaths = [IndexPath]()
-//        for sectionIndex in 0...self.numberOfSections - 1 {
-//            guard let section = self.info.sections[sectionIndex] else { continue }
-//            if section.frame.isEmpty || !section.frame.intersects(rect) { continue }
-//            for item in 0...section.numberOfItems - 1 {
-//                let indexPath = IndexPath.for(item:item, section: sectionIndex)
-//                if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
-//                    if (attributes.frame.intersects(rect)) {
-//                        indexPaths.append(indexPath)
-//                    }
-//                }
-//            }
-//        }
-//        return indexPaths
     }
     
     internal final func rectForItem(at indexPath: IndexPath) -> CGRect? {

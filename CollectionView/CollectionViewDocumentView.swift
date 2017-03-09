@@ -39,17 +39,60 @@ internal struct ItemUpdate : Hashable {
     }
     
     let view : CollectionReusableView
-    let attrs : CollectionViewLayoutAttributes
+    let _attrs : CollectionViewLayoutAttributes?
+    let indexPath : IndexPath
     let type : Type
-    var identifier : SupplementaryViewIdentifier?
+    let identifier : SupplementaryViewIdentifier?
+    
+    fileprivate var attrs : CollectionViewLayoutAttributes {
+        if let a = _attrs { return a }
+        
+        guard let cv = self.view.collectionView else {
+            preconditionFailure("CollectionView Error: A view was returned without using a deque() method.")
+        }
+        var a : CollectionViewLayoutAttributes?
+        if let id = identifier {
+            a = cv.layoutAttributesForSupplementaryElement(ofKind: id.kind, atIndexPath: indexPath)
+        }
+        else if view is CollectionViewCell {
+            a = cv.layoutAttributesForItem(at: indexPath)
+        }
+        a = a ?? view.attributes
+        precondition(a != nil, "Internal error: unable to find layout attributes for view at \(indexPath)")
+        return a!
+    }
     
     var hashValue: Int {
         return view.hashValue
     }
     
-    init(view: CollectionReusableView, attrs: CollectionViewLayoutAttributes, type: Type, identifier: SupplementaryViewIdentifier? = nil) {
+    init(cell: CollectionViewCell, attrs: CollectionViewLayoutAttributes, type: Type) {
+        self.view = cell
+        self._attrs = attrs
+        self.indexPath = attrs.indexPath
+        self.identifier = nil
+        self.type = type
+    }
+    init(cell: CollectionViewCell, indexPath: IndexPath, type: Type) {
+        precondition(type != .remove, "Internal CollectionView Error: Cannot use UpdateItem(cell:indexPath:type:) for type remove")
+        self.view = cell
+        self._attrs = nil
+        self.indexPath = indexPath
+        self.identifier = nil
+        self.type = type
+    }
+    init(view: CollectionReusableView, attrs: CollectionViewLayoutAttributes, type: Type, identifier: SupplementaryViewIdentifier) {
         self.view = view
-        self.attrs = attrs
+        self._attrs = attrs
+        self.indexPath = attrs.indexPath
+        self.identifier = identifier
+        self.type = type
+    }
+    init(view: CollectionReusableView, indexPath: IndexPath, type: Type, identifier: SupplementaryViewIdentifier) {
+        precondition(type != .remove, "Internal CollectionView Error: Cannot use UpdateItem(view:indexPath:type:identifier) for type remove")
+        self.view = view
+        self._attrs = nil
+        self.indexPath = indexPath
         self.identifier = identifier
         self.type = type
     }
@@ -143,7 +186,7 @@ final public class CollectionViewDocumentView : NSView {
             for _view in self.preparedSupplementaryViewIndex {
                 let view = _view.1
                 let id = _view.0
-                guard let ip = id.indexPath, let attrs = self.collectionView.layoutAttributesForSupplementaryElement(ofKind: id.kind, atIndexPath: ip) else { continue }
+                guard let ip = id.indexPath, var attrs = self.collectionView.layoutAttributesForSupplementaryElement(ofKind: id.kind, atIndexPath: ip) else { continue }
                 
                 guard attrs.frame.intersects(self.preparedRect) else {
                     self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, ofElementKind: id.kind, at: ip)
@@ -157,6 +200,7 @@ final public class CollectionViewDocumentView : NSView {
                         view.removeFromSuperview()
                         self.collectionView._floatingSupplementaryView.addSubview(view)
                     }
+                    attrs = attrs.copy()
                     attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
                     view.apply(attrs, animated: false)
                 }
@@ -215,7 +259,7 @@ final public class CollectionViewDocumentView : NSView {
                     self.preparedCellIndex[ip] = nil
                     cell.layer?.zPosition = 0
                     if animated  && !animating, let attrs = self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
-                        updates.append(ItemUpdate(view: cell, attrs: attrs, type: .remove))
+                        updates.append(ItemUpdate(cell: cell, attrs: attrs, type: .remove))
                     }
                     else {
                         self.collectionView.enqueueCellForReuse(cell)
@@ -259,7 +303,7 @@ final public class CollectionViewDocumentView : NSView {
                 cell.isHidden = true
                 cell.alphaValue = 0
             }
-            updates.append(ItemUpdate(view: cell, attrs: attrs, type: .insert))
+            updates.append(ItemUpdate(cell: cell, attrs: attrs, type: .insert))
             
             self.preparedCellIndex[ip] = cell
         }
@@ -269,7 +313,7 @@ final public class CollectionViewDocumentView : NSView {
                 if let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItem(at: ip),
                 let cell = preparedCellIndex[ip] {
                     _rect = _rect.union(attrs.frame)
-                    updates.append(ItemUpdate(view: cell, attrs: attrs, type: .update))
+                    updates.append(ItemUpdate(cell: cell, attrs: attrs, type: .update))
                 }
             }
         }
@@ -311,7 +355,7 @@ final public class CollectionViewDocumentView : NSView {
                 
                 assert(view.collectionView != nil, "Attempt to insert a view without using deque:")
                 
-                guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!)
+                guard var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!)
                     else { continue }
                 _rect = _rect.union(attrs.frame)
                 
@@ -325,20 +369,21 @@ final public class CollectionViewDocumentView : NSView {
                     }
                 }
                 if view.superview == self.collectionView._floatingSupplementaryView{
+                    attrs = attrs.copy()
                     attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
                 }
                 if animated {
                     view.isHidden = true
                     view.frame = attrs.frame
                 }
-                updates.append(ItemUpdate(view: view, attrs: attrs, type: .insert))
+                updates.append(ItemUpdate(view: view, attrs: attrs, type: .insert, identifier: identifier))
                 self.preparedSupplementaryViewIndex[identifier] = view
             }
         }
         
         for id in updated {
             if let view = preparedSupplementaryViewIndex[id],
-                let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: id.kind, atIndexPath: id.indexPath!) {
+                var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: id.kind, atIndexPath: id.indexPath!) {
                 _rect = _rect.union(attrs.frame)
                 
                 if attrs.floating == true {
@@ -346,13 +391,15 @@ final public class CollectionViewDocumentView : NSView {
                         view.removeFromSuperview()
                         self.collectionView._floatingSupplementaryView.addSubview(view)
                     }
+                    attrs = attrs.copy()
                     attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
                 }
                 else if view.superview == self.collectionView._floatingSupplementaryView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
                 }
-                updates.append(ItemUpdate(view: view, attrs: attrs, type: .update))
+                log.debug(attrs)
+                updates.append(ItemUpdate(view: view, attrs: attrs, type: .update, identifier: id))
             }
         }
         
@@ -365,11 +412,9 @@ final public class CollectionViewDocumentView : NSView {
     internal func applyUpdates(_ updates: Set<ItemUpdate>, animated: Bool, completion: AnimationCompletion?) {
         
         var _updates = updates
-        
-        
-//        for u in updates {
-//            Swift.print("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type) - is view\(u.view)")
-//        }
+        for u in _updates {
+            log.debug("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type) - is view\(u.view)")
+        }
         
         if animated && !animating {
             let _animDuration = self.collectionView.animationDuration
@@ -385,11 +430,13 @@ final public class CollectionViewDocumentView : NSView {
                     context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
                     
                     for item in _updates {
+                        var attrs = item.attrs
                         if item.type == .remove {
                             removals.append(item)
-                            item.attrs.alpha = 0
+                            attrs = attrs.copy()
+                            attrs.alpha = 0
                         }
-                        item.view.apply(item.attrs, animated: true)
+                        item.view.apply(attrs, animated: true)
                         if item.type == .insert {
                             item.view.viewDidDisplay()
                         }
@@ -406,15 +453,16 @@ final public class CollectionViewDocumentView : NSView {
         else {
             if animated {
                 disableAnimationTimer?.invalidate()
-                disableAnimationTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(enableAnimations), userInfo: nil, repeats: false)
+                disableAnimationTimer = Timer.scheduledTimer(timeInterval: collectionView.animationDuration, target: self, selector: #selector(enableAnimations), userInfo: nil, repeats: false)
                 animating = true
             }
             for item in _updates {
                 if item.type == .remove {
                     removeItem(item)
                 }
-                else {
-                    item.view.apply(item.attrs, animated: false)
+                else  {
+                    let attrs = item.attrs
+                    item.view.apply(attrs, animated: false)
                     if item.type == .insert {
                         item.view.viewDidDisplay()
                     }

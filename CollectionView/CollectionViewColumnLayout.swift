@@ -334,7 +334,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             for column in columns {
                 for attr in column {
                     if attr.frame.intersects(rect) {
-                        attrs.append(attr.copy())
+                        attrs.append(attr)
                     }
                     else if attr.frame.origin.y > rect.maxY { break }
                 }
@@ -347,14 +347,14 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         if indexPath._section >= self.sectionItemAttributes.count{ return nil }
         if indexPath._item >= self.sectionItemAttributes[indexPath._section].count{ return nil }
         let list = self.sectionItemAttributes[indexPath._section]
-        return list[indexPath._item].copy()
+        return list[indexPath._item]
     }
     
     open override func layoutAttributesForSupplementaryView(ofKind elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         
         if elementKind == CollectionViewLayoutElementKind.SectionHeader {
-            let attrs = self.headersAttributes[indexPath._section]?.copy()
-            if pinHeadersToTop, let currentAttrs = attrs, let cv = self.collectionView {
+            var attrs = self.headersAttributes[indexPath._section]
+            if pinHeadersToTop, let currentAttrs = attrs?.copy(), let cv = self.collectionView {
                 
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
@@ -371,11 +371,12 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                     currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
                     currentAttrs.floating = indexPath._section == 0 || currentAttrs.frame.origin.y > frame.origin.y
                 }
+                attrs = currentAttrs
             }
             return attrs
         }
         else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
-            return self.footersAttributes[indexPath._section]?.copy()
+            return self.footersAttributes[indexPath._section]
         }
         return nil
     }

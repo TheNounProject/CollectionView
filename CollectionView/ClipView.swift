@@ -21,7 +21,7 @@ open class ClipView : NSClipView {
     
     var scrollEnabled : Bool = true
     
-    open var decelerationRate = ClipViewDecelerationRate {
+    var decelerationRate = ClipViewDecelerationRate {
         didSet {
             if decelerationRate > 1 { self.decelerationRate = 1 }
             else if decelerationRate < 0 { self.decelerationRate = 0 }

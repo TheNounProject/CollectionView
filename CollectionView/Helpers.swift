@@ -13,7 +13,9 @@ import Foundation
 struct Logger {
 
     static let logFiles = Set([
-        "RelationalResultsController"
+//        "CollectionView",
+//        "CollectionViewDocumentView",
+        "CollectionReusableView"
         ])
     
     static func verbose(_ message: Any, file: String = #file, function: String = #function, line: Int = #line) {
@@ -27,9 +29,6 @@ struct Logger {
     }
     
     private static func log(_ message: Any, type: String, file: String, funtion: String, line: Int) {
-        
-        
-        
         let fileName = file.components(separatedBy: "/").last!.components(separatedBy: ".").first!
         guard logFiles.count == 0 || logFiles.contains(fileName) else {
             return;

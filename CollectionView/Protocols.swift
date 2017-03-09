@@ -195,11 +195,11 @@ import Foundation
     
     
     /**
-     <#Description#>
+     Tells the delegate that the mouse was released in the specified index path
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
-     - Parameter event: <#event description#>
+     - Parameter collectionView: The collection view receiving the click
+     - Parameter indexPath: The index path of the item at the click location, or nil
+     - Parameter event: The click even
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView,
@@ -210,6 +210,17 @@ import Foundation
     
     // MARK: - Highlighting
     /*-------------------------------------------------------------------------------*/
+    
+    
+    /**
+     Asks the delegate if the item at the specified index path should highlight
+
+     - Parameter collectionView: <#collectionView description#>
+     - Parameter indexPath: <#indexPath description#>
+     
+     - Returns: <#Bool return description#>
+
+    */
     @objc optional func collectionView(_ collectionView: CollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool
     
     
@@ -218,7 +229,7 @@ import Foundation
     /*-------------------------------------------------------------------------------*/
     
     /**
-     <#Description#>
+     Tells the delegate
 
      - Parameter collectionView: <#collectionView description#>
      - Parameter indexPath: <#indexPath description#>

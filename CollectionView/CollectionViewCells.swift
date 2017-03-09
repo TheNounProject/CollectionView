@@ -41,15 +41,13 @@ open class CollectionReusableView : NSView {
     /// True if the view has been dequed from the reuse pool
     open internal(set) var reused : Bool = false
     
-    
-    
     // MARK: - Lifecycle
     /*-------------------------------------------------------------------------------*/
     
     /// Performs any clean up necessary to prepare the view for use again.
     override open func prepareForReuse() {
         self.reused = true
-        super.prepareForReuse()
+//        super.prepareForReuse()
     }
     
     /// Called just before the view is added to the collection view
@@ -195,13 +193,13 @@ open class CollectionViewCell : CollectionReusableView {
     fileprivate var _highlighted : Bool = false
     
     /// The highlight state of the cell.
-    open var highlighted: Bool {
+    public var highlighted: Bool {
         get { return _highlighted }
         set { self.setHighlighted(newValue, animated: false) }
     }
     
     /// The selection state of the cell.
-    open var selected : Bool {
+    public var selected : Bool {
         set { self.setSelected(newValue, animated: false) }
         get { return self._selected }
     }

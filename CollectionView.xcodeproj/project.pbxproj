@@ -59,7 +59,6 @@
 		DE9072051CAC7FF000AD0E37 /* CollectionViewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewLayout.swift; sourceTree = "<group>"; };
 		DE9072061CAC7FF000AD0E37 /* Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		DE9072071CAC7FF000AD0E37 /* CollectionViewCells.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewCells.swift; sourceTree = "<group>"; };
-		DE9072081CAC7FF000AD0E37 /* CollectionViewInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewInfo.swift; sourceTree = "<group>"; };
 		DE9072091CAC7FF000AD0E37 /* CollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionView.swift; sourceTree = "<group>"; };
 		DE90720A1CAC7FF000AD0E37 /* CollectionViewDocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewDocumentView.swift; sourceTree = "<group>"; };
 		DE9072171CAC807900AD0E37 /* ClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClipView.swift; sourceTree = "<group>"; };
@@ -144,7 +143,6 @@
 				DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */,
 				DE9072061CAC7FF000AD0E37 /* Helpers.swift */,
 				DE82E95D1D78BFC900346B9E /* Constants.swift */,
-				DE9072081CAC7FF000AD0E37 /* CollectionViewInfo.swift */,
 				1C6E50801E2D9C1000C85946 /* ResultsController */,
 				DE82E95A1D78BF6900346B9E /* Layouts */,
 				DE9071EE1CAC7FD800AD0E37 /* Info.plist */,

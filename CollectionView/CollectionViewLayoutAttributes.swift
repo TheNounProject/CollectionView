@@ -12,58 +12,56 @@ import Foundation
 /**
  An UICollectionViewLayoutAttributes object manages the layout-related attributes for a given item in a collection view. Layout objects create instances of this class when asked to do so by the collection view. In turn, the collection view uses the layout information to position cells and supplementary views inside its bounds.
 */
-open class CollectionViewLayoutAttributes: CustomStringConvertible {
+public class CollectionViewLayoutAttributes: CustomStringConvertible {
     
     
     // MARK: - Identifying the Referenced Item
     /*-------------------------------------------------------------------------------*/
     
     /// The index path of the item in the collection view.
-    open let indexPath: IndexPath
+    public let indexPath: IndexPath
     /// The type of the item.
-    open let representedElementCategory: CollectionElementCategory
+    public let representedElementCategory: CollectionElementCategory
     /// The layout-specific identifier for the target view.
-    open let representedElementKind: String?
-    
-    
+    public let representedElementKind: String?
     
     // MARK: - Accessing the Layout Attributes
     /*-------------------------------------------------------------------------------*/
     
     /// The frame rectangle of the item.
-    open var frame: CGRect = CGRect.zero
+    public var frame: CGRect = CGRect.zero
     
     
     /// The center point of the item.
-    open var center: CGPoint {
+    public var center: CGPoint {
         get { return CGPoint(x: frame.origin.x + frame.size.width/2, y: frame.origin.y + frame.size.height/2) }
         set { self.frame.origin = CGPoint(x: center.x - frame.size.width/2, y: center.y - frame.size.height/2) }
     }
     
     
     /// The size of the item
-    open var size: CGSize {
+    public var size: CGSize {
         get { return self.frame.size }
         set { self.frame.size = size }
     }
     
     /// The bounds of the item
-    open var bounds: CGRect {
+    public var bounds: CGRect {
         get { return CGRect(origin: CGPoint.zero, size: self.frame.size) }
         set { self.frame.size = bounds.size }
     }
     
     /// The transparency of the item.
-    open var alpha: CGFloat = 1
+    public var alpha: CGFloat = 1
     
     /// Specifies the item’s position on the z axis.
-    open var zIndex: CGFloat = 0
+    public var zIndex: CGFloat = 0
     
     /// Determines whether the item is currently displayed.
-    open var hidden: Bool = false
+    public var hidden: Bool = false
     
     /// Specifies if the item it detached from the scroll view (SupplementaryViews only)
-    open var floating: Bool = false
+    public var floating: Bool = false
 
     
     
@@ -105,11 +103,11 @@ open class CollectionViewLayoutAttributes: CustomStringConvertible {
         var str = "CollectionViewLayoutAttributes-"
         str += " IP: \(self.indexPath._section)-\(self.indexPath._item) "
         str += " Frame: \(self.frame)"
+        str += " Floating: \(self.floating) "
         str += " Alpha: \(self.alpha)"
         str += " Hidden: \(self.hidden)"
         return str
     }
-    
     
     /**
      Create a copy of the layout attributes

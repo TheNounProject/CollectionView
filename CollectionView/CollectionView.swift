@@ -1207,8 +1207,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             Swift.print("BEGIN EDITING: *************************************")
             
-            Swift.print("Cell Index: \(self.contentDocumentView.preparedCellIndex)")
-            Swift.print("Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
+            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex)")
+            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
             
             self._firstSelection = nil
             self._updateContext.reset()
@@ -1218,7 +1218,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._finalizedViewMap.removeAll()
             self._pendingCellMap.removeAll()
             self._updateSelections = Set<IndexPath>()
-            //            Swift.print(self.contentDocumentView.preparedCellIndex.orderedLog())
         }
         _editing += 1
     }
@@ -1238,8 +1237,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var newCellIndex = _finalizedCellMap
        
-        Swift.print("Remaining Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
-        Swift.print("Pending Cell Index: \(self._pendingCellMap.orderedLog())")
+        log.debug("Remaining Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
+        log.debug("Pending Cell Index: \(self._pendingCellMap.orderedLog())")
 
         var newViewIndex = _finalizedViewMap
         var sectionMap = [Int:Int]()
@@ -1254,7 +1253,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         for stale in viewsNeedingAdjustment {
             guard let ip = stale.index.indexPath else {
-                print("Collection View Error: A supplemenary view identifier has a nil indexPath when trying to adjust views")
+                log.error("Collection View Error: A supplemenary view identifier has a nil indexPath when trying to adjust views")
                 continue
             }
             
@@ -1263,7 +1262,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             let adjustedIP = IndexPath.for(section: adjusted)
             
             if adjustedIP._section > self.numberOfSections {
-                Swift.print("WRONG")
+                log.error("Invalid Adjustment ⚠️")
             }
             //            sectionMap[ip._section] = adjustedIP._section
             
@@ -1281,8 +1280,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
         }
         
-        Swift.print("\(_updateContext._sectionOperations)")
-        Swift.print(sectionMap)
+        log.debug("\(_updateContext._sectionOperations)")
+        log.debug(sectionMap)
         
         func adjustCells(in indexedSet: [IndexedSet<IndexPath, CollectionViewCell>.Iterator.Element], checkSections: Bool) {
             
@@ -1305,7 +1304,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 
                 
                 if adjustedIP._section > self.numberOfSections - 1 {
-                    Swift.print("WRONG \(stale.index)  -- \(adjustedIP)")
+                    log.error("WRONG \(stale.index)  -- \(adjustedIP)")
                 }
                 
                 if self._selectedIndexPaths.remove(stale.index) != nil {
@@ -1337,14 +1336,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
         adjustCells(in: preps , checkSections: viewsNeedingAdjustment.count > 0)
         adjustCells(in: _pendingCellMap.ordered(), checkSections: false)
         
-        Swift.print("\(_updateContext._sectionOperations)")
-        Swift.print(sectionMap)
+        log.debug("\(_updateContext._sectionOperations)")
+        log.debug(sectionMap)
         
-        Swift.print("After adjustment: \(newCellIndex.orderedLog())")
-        Swift.print("After adjustment: \(newViewIndex.orderedLog())")
+        log.debug("After adjustment: \(newCellIndex.orderedLog())")
+        log.debug("After adjustment: \(newViewIndex.orderedLog())")
 
-        
-        
         for sectionOps in self._updateContext._operations {
             let sectionIdx = sectionOps.key
             let ops = sectionOps.value
@@ -1364,9 +1361,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 }
             }
         }
-        Swift.print("UpdatedSelections: \(_updateSelections!)")
+        log.verbose("UpdatedSelections: \(_updateSelections!)")
         
-        //        Swift.print("New Cell Index: \(newIndex.orderedLog())")
         self._selectedIndexPaths = _updateSelections!
         self.contentDocumentView.pendingUpdates = _updateContext.updates
         self.contentDocumentView.preparedCellIndex = newCellIndex
@@ -1397,7 +1393,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
         self.contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
         
-        Swift.print("Loaded replacement cell \(newCell)")
+        log.debug("Loaded replacement cell \(newCell)")
         
         if newCell == currentCell {
             return newCell
@@ -1406,7 +1402,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         let removal = ItemUpdate(view: currentCell, attrs: currentCell.attributes!, type: .remove)
         //        _updateContext.updates.append(removal)
         self.contentDocumentView.removeItem(removal)
-        Swift.print("Remove replaced cell \(currentCell.attributes!.indexPath)")
+        log.debug("Remove replaced cell \(currentCell.attributes!.indexPath)")
         
         if let a = currentCell.attributes?.copyWithIndexPath(indexPath) {
             newCell.apply(a, animated: false)
@@ -2514,11 +2510,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 rect.origin.y = self.contentSize.height - self.frame.size.height + self.contentInsets.top
             }
         }
-        
-        
-//        Swift.print(rect)
-//        Swift.print(self.contentDocumentView.frame)
-//        Swift.print(self.contentInsets.top)
         
         if animated || prepare {
             self.contentDocumentView.prepareRect(rect.union(visibleRect), force: false)

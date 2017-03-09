@@ -33,7 +33,6 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     var contentWidth: CGFloat = 0
     
     open override func prepare() {
-        super.prepare()
         cache = []
         
         guard let cv = self.collectionView else { return }
@@ -89,6 +88,25 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         return layoutAttributesForItem(at: indexPath)?.frame
     }
     
+    open override func rectForSection(_ section: Int) -> CGRect {
+        guard let cv = self.collectionView else { return CGRect.zero }
+        let size = self.collectionViewContentSize
+        return CGRect(x: cv.contentInsets.left, y: 0, width:  size.width, height: size.height)
+    }
+    open override func contentRectForSection(_ section: Int) -> CGRect {
+        return rectForSection(section)
+    }
+    
+    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
+        var ips = [IndexPath]()
+        for idx in 0..<cache.count {
+            if rect.intersects(cache[idx]) {
+                let ip = IndexPath.for(item: idx, section: 0)
+                ips.append(ip)
+            }
+        }
+        return ips
+    }
     
     open override func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         let attrs = CollectionViewLayoutAttributes(forCellWith: indexPath)

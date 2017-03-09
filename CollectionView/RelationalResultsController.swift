@@ -570,13 +570,14 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     func handleChangeNotification(_ notification: Notification) {
         
+        guard let delegate = self.delegate, self._fetched else {
+            print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
+            return
+        }
+        
         managedObjectContext.perform {
             
-            guard let delegate = self.delegate, self._fetched else {
-                print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
-                return
-            }
-            
+            self.emptySectionChanges = nil
             self._sectionsCopy = nil
             self.context.reset()
             
@@ -612,6 +613,21 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     s.sortItems(using: self.fetchRequest.sortDescriptors ?? [])
                 }
                 if s.isEditing {
+                    
+                    if s.numberOfObjects == 0 {
+                        // If the section object matches the section predicat, keep it.
+                        let req = self.sectionFetchRequest
+                        if self.fetchSections,
+                            let obj = s._object,
+                             req.predicate == nil || req.predicate?.evaluate(with: obj) == true {
+                            // Do  nothing
+                        }
+                        else {
+                            self._remove(s._object)
+                            continue;
+                        }
+                    }
+                    
                     let set = s.endEditing(forceUpdates: self.context.objectChangeSet.updated.valuesSet)
                     processedSections[s] = set
                     print("\(self.indexPath(of: s)!) \(set)")
@@ -733,33 +749,30 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 _ = reduceCrossSectional(obj)
             }
             
-            if self.hasEmptySectionPlaceholders {
-                if self.emptySectionChanges == nil {
-                    self.emptySectionChanges = ResultsChangeSet()
-                }
-                for sec in processedSections {
-                    guard let sectionIndex = self.indexPath(of: sec.key)?._section else { continue }
-                    
-                    if sec.value.origin.count == 0 {
-                        let ip = IndexPath.for(section: sectionIndex)
-                        self.emptySectionChanges?.addChange(forItemAt: ip, with: .delete)
-                    }
-                    else if sec.value.destination.count == 0 {
-                        let ip = IndexPath.for(section: sectionIndex)
-                        self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(ip))
-                    }
-                }
+            if self.emptySectionChanges == nil {
+                self.emptySectionChanges = ResultsChangeSet()
             }
-            else {
-                self.emptySectionChanges = nil
-            }
-            
             for s in processedSections {
                 var changes = s.value
                 changes.reduceEdits()
                 processedSections[s.key] = changes
                 
                 guard let sectionIndex = self.indexPath(of: s.key)?._section else { continue }
+                
+                
+                let start = changes.origin.count
+                let end = changes.destination.count
+                log.debug("SECTION: \(sectionIndex) START: \(start) END: \(end)")
+                if start != end {
+                    if start == 0 {
+                        let ip = IndexPath.for(section: sectionIndex)
+                        self.emptySectionChanges?.addChange(forItemAt: ip, with: .delete)
+                    }
+                    else if end == 0 {
+                        let ip = IndexPath.for(section: sectionIndex)
+                        self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(ip))
+                    }
+                }
                 
                 // Could merge all the edits together to dispatch the delegate calls in order of operation
                 // but there is no apparent reason why order is important.
@@ -991,10 +1004,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 // Should items in inserted sections be included?
             }
             else {
-                // The section value doesn't exist yet, the section will be inserted
-                let sec = SectionInfo(object: sectionValue, objects: [object])
-//                newIP = IndexPath.for(item: 0, section: _sections.count)
-                self._sections.add(sec)
+                let sec = self._insert(section: sectionValue)
+                sec.add(object)
                 _objectSectionMap[object] = sec
             }
         }

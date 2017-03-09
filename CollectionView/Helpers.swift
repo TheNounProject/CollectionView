@@ -10,6 +10,38 @@ import Foundation
 
 
 
+struct Logger {
+
+    static let logFiles = Set([
+        "RelationalResultsController"
+        ])
+    
+    static func verbose(_ message: Any, file: String = #file, function: String = #function, line: Int = #line) {
+        log(message, type: "Verbose", file: file, funtion: function, line: line)
+    }
+    static func debug(_ message: Any, file: String = #file, function: String = #function, line: Int = #line) {
+        log(message, type: "Debug", file: file, funtion: function, line: line)
+    }
+    static func error(_ message: Any, file: String = #file, function: String = #function, line: Int = #line) {
+        log(message, type: "Error", file: file, funtion: function, line: line)
+    }
+    
+    private static func log(_ message: Any, type: String, file: String, funtion: String, line: Int) {
+        
+        
+        
+        let fileName = file.components(separatedBy: "/").last!.components(separatedBy: ".").first!
+        guard logFiles.count == 0 || logFiles.contains(fileName) else {
+            return;
+        }
+        print("\(fileName) @ \(line) \(type): \(message)")
+    }
+}
+
+typealias log = Logger
+
+
+
 
 
 /**

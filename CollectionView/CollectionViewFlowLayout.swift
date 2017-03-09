@@ -316,7 +316,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, with: IndexPath.for(section: sec))
                 attrs.frame = insetSupplementaryViews ?
                     CGRect(x: sectionInsets.left, y: top, width: cv.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, height: heightHeader)
-                    : CGRect(x: 0, y: top, width: cv.contentVisibleRect.size.width, height: heightHeader)
+                    : CGRect(x: 0, y: top, width: cv.frame.size.width, height: heightHeader)
                 sectionAttrs.header = attrs
                 sectionAttrs.frame = attrs.frame
                 top = attrs.frame.maxY

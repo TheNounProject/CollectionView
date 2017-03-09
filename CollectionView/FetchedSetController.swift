@@ -91,15 +91,12 @@ public class FetchedSetController : NSObject {
     
     
     
-    public func performFetch() throws {
+    public func performFetch() throws -> [NSManagedObject] {
         
         guard self.fetchRequest.entityName != nil else {
             assertionFailure("fetch request must have an entity when performing fetch")
             throw ResultsControllerError.unknown
         }
-        
-        fetchRequest.sortDescriptors = nil
-        fetchRequest.fetchLimit = 0
         
         if !_fetched && delegate != nil {
             register()
@@ -110,6 +107,7 @@ public class FetchedSetController : NSObject {
         
         let _objects = try managedObjectContext.fetch(self.fetchRequest)
         self._storage = Set(_objects)
+        return _objects
     }
     
     
@@ -124,17 +122,16 @@ public class FetchedSetController : NSObject {
         NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
     }
     
+    public var wait: Bool = true
+    
     func handleChangeNotification(_ notification: Notification) {
         
         guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
             return
         }
         
-        self.managedObjectContext.performAndWait {
-            
-            
-            if let itemChanges = changes[self.fetchRequest.entity!] {
-                
+        if let itemChanges = changes[self.fetchRequest.entity!] {
+        func run() {
                 var deleted = Set<Element>()
                 var inserted = Set<Element>()
                 var updated = Set<Element>()
@@ -176,7 +173,7 @@ public class FetchedSetController : NSObject {
                 self._storage.union(inserted)
                 
                 if self.delegate?.controllerWillChangeContent(self) == true {
-                
+                    
                     for o in deleted {
                         self.delegate?.controller(self, didChangeObject: o, for: .delete)
                     }
@@ -190,8 +187,14 @@ public class FetchedSetController : NSObject {
                 
                 self.delegate?.controllerDidChangeContent(self)
             }
+
+            if wait {
+                self.managedObjectContext.performAndWait { run() }
+            }
+            else {
+                self.managedObjectContext.perform { run() }
+            }
         }
-        
         
         
     }

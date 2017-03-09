@@ -128,6 +128,7 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
         attrs.alpha = self.alpha
         attrs.zIndex = self.zIndex
         attrs.hidden = self.hidden
+        attrs.floating = self.floating
         return attrs
     }
     internal func copyWithIndexPath(_ newIndexPath: IndexPath) -> CollectionViewLayoutAttributes {

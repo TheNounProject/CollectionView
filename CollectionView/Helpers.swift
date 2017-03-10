@@ -12,10 +12,10 @@ import Foundation
 
 struct Logger {
 
-    static let logFiles = Set([
+    static let logFiles = Set<String>([
 //        "CollectionView",
 //        "CollectionViewDocumentView",
-        "CollectionReusableView"
+//        "CollectionReusableView"
         ])
     
     static func verbose(_ message: Any, file: String = #file, function: String = #function, line: Int = #line) {
@@ -93,6 +93,9 @@ public extension IndexPath {
     }
     public var next : IndexPath {
         return IndexPath.for(item: self._item + 1, section: self._section)
+    }
+    public var nextSection : IndexPath {
+        return IndexPath.for(item: 0, section: self._section + 1)
     }
     
     var sectionCopy : IndexPath {
@@ -235,6 +238,15 @@ extension CGRect {
             self.origin.x = newValue.x - (self.size.width/2)
             self.origin.y = newValue.y - (self.size.height/2)
         }
+    }
+    
+    func scaled(by scale: CGFloat) -> CGRect {
+        var rect = CGRect()
+        rect.origin.x = self.origin.x * scale
+        rect.origin.y = self.origin.y * scale
+        rect.size.width = self.size.width * scale
+        rect.size.height = self.size.height * scale
+        return rect
     }
 }
 

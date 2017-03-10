@@ -583,6 +583,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             self.preprocess(notification: notification)
             
+            log.debug("Begin Relational Controller Update: •••••••••••••••••••••••")
+            
 //            print(self.context.sectionChangeSet)
 //            print(self.context.objectChangeSet)
             
@@ -636,9 +638,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             if let oldSections = self._sectionsCopy {
                 var sectionChanges = ChangeSet(source: oldSections, target: self._sections)
-//                print(oldSections)
-//                print(self._sections)
-//                print(sectionChanges)
+                print("OldSections: \(oldSections)")
+                print(self._sections)
+                print(sectionChanges)
                 sectionChanges.reduceEdits()
                 print(sectionChanges)
                 for change in sectionChanges.edits {
@@ -813,6 +815,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             self.delegate?.controllerDidChangeContent(controller: self)
             self.emptySectionChanges = nil
             self._sectionsCopy = nil
+            log.debug("End Relational Controller Update: •••••••••••••••••••••••")
         }
         
     }
@@ -975,15 +978,15 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             section.ensureEditing()
             _ = section.remove(object)
             
-            if section.numberOfObjects == 0 {
-                // If the section object matches the section predicat, keep it.
-                let req = self.sectionFetchRequest
-                if self.fetchSections,
-                    let obj = section._object {
-                    if req.predicate == nil || req.predicate?.evaluate(with: obj) == true { continue }
-                }
-                _remove(section._object)
-            }
+//            if section.numberOfObjects == 0 {
+//                // If the section object matches the section predicat, keep it.
+//                let req = self.sectionFetchRequest
+//                if self.fetchSections,
+//                    let obj = section._object {
+//                    if req.predicate == nil || req.predicate?.evaluate(with: obj) == true { continue }
+//                }
+//                _remove(section._object)
+//            }
         }
     }
     

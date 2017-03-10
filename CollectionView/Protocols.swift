@@ -144,7 +144,7 @@ import Foundation
      - Parameter collectionView: The collection view that will reload
 
     */
-    @objc optional func collectionViewWillReloadData(_ collectionView: CollectionView)
+//    @objc optional func collectionViewWillReloadData(_ collectionView: CollectionView)
     
     
     /**
@@ -153,7 +153,11 @@ import Foundation
      - Parameter collectionView: The collection view that was reloaded
 
     */
-    @objc optional func collectionViewDidReloadData(_ collectionView: CollectionView)
+//    @objc optional func collectionViewDidReloadData(_ collectionView: CollectionView)
+    
+    @objc optional func collectionViewWillReloadLayout(_ collectionView: CollectionView)
+    
+    @objc optional func collectionViewDidReloadLayout(_ collectionView: CollectionView)
     
     // MARK: - First Responder
     /*-------------------------------------------------------------------------------*/
@@ -292,7 +296,7 @@ import Foundation
      - Parameter event: <#event description#>
 
     */
-    @objc optional func collectionView(_ collectionView: CollectionView, didDoubleClickItemAt indexPath: IndexPath, with event: NSEvent)
+    @objc optional func collectionView(_ collectionView: CollectionView, didDoubleClickItemAt indexPath: IndexPath?, with event: NSEvent)
     
     /**
      <#Description#>
@@ -302,7 +306,7 @@ import Foundation
      - Parameter event: <#event description#>
 
     */
-    @objc optional func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath, with event: NSEvent)
+    @objc optional func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath?, with event: NSEvent)
     
     
     // MARK: - View Display

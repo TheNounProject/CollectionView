@@ -114,7 +114,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     open override var scrollerStyle: NSScrollerStyle {
         didSet {
-            log.debug("Scroller Style changed")
+//            log.debug("Scroller Style changed")
             self.reloadLayout(false)
         }
     }
@@ -404,7 +404,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.contentDocumentView.reset()
         
         self._reloadDataCounts()
-        //        self.collectionViewLayout.invalidate()
+        
+        self.delegate?.collectionViewWillReloadLayout?(self)
         self.collectionViewLayout.prepare()
         
         contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize
@@ -413,7 +414,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._selectedIndexPaths.formIntersection(self.allIndexPaths)
         self.contentDocumentView.prepareRect(_preperationRect, animated: false)
         
-        self.delegate?.collectionViewDidReloadData?(self)
+        self.delegate?.collectionViewDidReloadLayout?(self)
     }
 
     
@@ -543,7 +544,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             if reloadDataOnBoundsChange {
                 self._reloadDataCounts()
             }
-            
+            self.delegate?.collectionViewWillReloadLayout?(self)
             self.collectionViewLayout.prepare()
             setContentViewSize()
             
@@ -562,6 +563,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
             self.reflectScrolledClipView(self.clipView!)
             self.contentDocumentView.prepareRect(_preperationRect, force: true)
+            self.delegate?.collectionViewDidReloadLayout?(self)
         }
         else {
             self.contentDocumentView.prepareRect(_preperationRect, force: false)
@@ -583,6 +585,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
     
+        
         var absoluteCellFrames = [CollectionReusableView:CGRect]()
         
         for view in self.contentDocumentView.subviews {
@@ -599,6 +602,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             //?? self.indexPathsForSelectedItems().intersect(self.indexPathsForVisibleItems()).first
 
         if needsRecalculation {
+            self.delegate?.collectionViewWillReloadLayout?(self)
             self.collectionViewLayout.prepare()
         }
         let newContentSize = self.collectionViewLayout.collectionViewContentSize
@@ -645,6 +649,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         self.contentDocumentView.preparedRect = _preperationRect
         self.contentDocumentView.prepareRect(_preperationRect, animated: animated, force: true, completion: completion)
+        self.delegate?.collectionViewDidReloadLayout?(self)
     }
     
     
@@ -817,7 +822,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.beginEditing()
         updates()
         self.endEditing(true, completion: completion)
-        self.delegate?.collectionViewDidReloadData?(self)
     }
     
     // MARK: - Manipulating Sections
@@ -1004,6 +1008,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             _sectionDeletions.removeAll()
             _sectionInsertions.removeAll()
             _sectionMoves.removeAll()
+            _itemSectionCopy = nil
             
             _sectionOperations = IOSet()
             _operations.removeAll()
@@ -1069,9 +1074,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
                             let check = all[idx]
                             var prop = last + 1
                             let isGap = prop < check
-                            //                        let isLocked = ops._locked.contains(prop)
-                            //                        Swift.print("Open: \(ops._open.contains(prop))  Locked: \(ops._locked.contains(prop))")
-                            
                             if isGap || (self._open.contains(prop) && !self._locked.contains(prop)) {
                                 proposed = prop
                                 break;
@@ -1194,7 +1196,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             _operations[indexPath._section]?.deleted(at: indexPath._item, auto: true)
             
             let new = indexPath.with(item: prop)
-            log.debug("Adjusted \(indexPath)  to: \(new)")
+//            log.debug("Adjusted \(indexPath)  to: \(new)")
             return new
         }
         
@@ -1244,6 +1246,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         _editing = 0
         
         self._reloadDataCounts()
+        self.delegate?.collectionViewWillReloadLayout?(self)
         self.collectionViewLayout.prepare()
         
         self._processSectionInserts()
@@ -1260,15 +1263,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var checked = Set<Int>()
         
-        
         var viewsNeedingAdjustment = IndexedSet<SupplementaryViewIdentifier, CollectionReusableView>(self.contentDocumentView.preparedSupplementaryViewIndex).ordered()
         
         let preps = self.contentDocumentView.preparedCellIndex.ordered()
         
         var sectionCutoff = 0
         
-        log.debug("Views needing adjustment: \(viewsNeedingAdjustment)")
-        log.debug("Remaining Cell index adjustment: \(preps)")
+//        log.debug("Views needing adjustment: \(IndexedSet<SupplementaryViewIdentifier, CollectionReusableView>(self.contentDocumentView.preparedSupplementaryViewIndex).orderedLog())")
+//        log.debug("Remaining Cell index adjustment: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
         if let f = viewsNeedingAdjustment.first?.index.indexPath?._section {
             sectionCutoff = f
             _updateContext.lockSections(upTo: f)
@@ -1301,9 +1303,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
         }
         
-        log.debug("\(_updateContext._sectionOperations)")
-        log.debug("Section Map: \(sectionMap)")
-        log.debug("Section Cutoff: \(sectionCutoff)")
+//        log.debug("\(_updateContext._sectionOperations)")
+//        log.debug("Section Map: \(sectionMap)")
+//        log.debug("Section Cutoff: \(sectionCutoff)")
         
         func adjustCells(in indexedSet: [IndexedSet<IndexPath, CollectionViewCell>.Iterator.Element], checkSections: Bool) {
             
@@ -1311,7 +1313,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 
                 var adjusted = stale.index
                 
-                if adjusted._section > sectionCutoff {
+                if adjusted._section >= sectionCutoff {
                     if !checked.contains(stale.index._section) {
                         _updateContext.lock(upTo: stale.index)
                         checked.insert(stale.index._section)
@@ -1324,8 +1326,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     else if checkSections, let s = sectionMap[stale.index._section] {
                         adjusted = adjusted.with(section: s)
                     }
-                    adjusted = _updateContext.adjust(adjusted)
                 }
+                adjusted = _updateContext.adjust(adjusted)
                 
                 let numSections = self.numberOfSections
                 if adjusted._section > numSections - 1 {
@@ -1361,16 +1363,16 @@ open class CollectionView : ScrollView, NSDraggingSource {
             _updateContext.lockSections(upTo: f)
         }
         
-        log.debug("Section Cutoff: \(sectionCutoff)")
+//        log.debug("Section Cutoff: \(sectionCutoff)")
         
         adjustCells(in: preps , checkSections: viewsNeedingAdjustment.count > 0)
         adjustCells(in: _pendingCellMap.ordered(), checkSections: false)
         
-        log.debug("\(_updateContext._sectionOperations)")
-        log.debug(sectionMap)
-        
-        log.debug("After adjustment: \(newCellIndex.orderedLog())")
-        log.debug("After adjustment: \(newViewIndex.orderedLog())")
+//        log.debug("\(_updateContext._sectionOperations)")
+//        log.debug("Section Map: \(sectionMap)")
+//        
+//        log.debug("After adjustment: \(newCellIndex.orderedLog())")
+//        log.debug("After adjustment: \(newViewIndex.orderedLog())")
 
         // Update selections (needs work)
         for sectionOps in self._updateContext._operations {
@@ -1392,13 +1394,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 }
             }
         }
-        log.verbose("UpdatedSelections: \(_updateSelections!)")
-        
-        
-        
-        
-        
-        log.debug("CV Updates: \(_updateContext.updates)")
+//        log.verbose("UpdatedSelections: \(_updateSelections!)")
+//        log.debug("CV Updates: \(_updateContext.updates)")
         
         self._selectedIndexPaths = _updateSelections!
         self.contentDocumentView.pendingUpdates = _updateContext.updates
@@ -1406,14 +1403,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.contentDocumentView.preparedSupplementaryViewIndex = newViewIndex.dictionary
         self._reloadLayout(animated, scrollPosition: .none, completion: nil, needsRecalculation: false)
         
-        log.debug("END EDITING: *************************************")
+//        log.debug("END EDITING: *************************************")
     }
     
     
     
     private func _prepareReplacementCell(for currentCell: CollectionViewCell, at indexPath: IndexPath) -> CollectionViewCell {
         
-        log.debug("Preparing replacment cell for item at: \(indexPath)")
+//        log.debug("Preparing replacment cell for item at: \(indexPath)")
         
         // Update the cell index so the same cell be returned via deuque(_:)
         //        currentCell.attributes = currentCell.attributes?.copyWithIndexPath(indexPath)
@@ -1427,10 +1424,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
             assertionFailure("For some reason collection view tried to load cells without a data source")
             return currentCell
         }
-        assert(newCell.collectionView != nil, "Attempt to load cell without using deque:")
+        precondition(newCell.collectionView != nil, "Attempt to load cell without using deque:")
         self.contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
         
-        log.debug("Loaded replacement cell \(newCell)")
+//        log.debug("Loaded replacement cell \(newCell)")
         
         if newCell == currentCell {
             return newCell
@@ -1438,7 +1435,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         let removal = ItemUpdate(cell: currentCell, attrs: currentCell.attributes!, type: .remove)
         self.contentDocumentView.removeItem(removal)
-        log.debug("Remove replaced cell \(currentCell.attributes!.indexPath)")
+//        log.debug("Remove replaced cell \(currentCell.attributes!.indexPath)")
         
         if let a = currentCell.attributes?.copyWithIndexPath(indexPath) {
             newCell.apply(a, animated: false)
@@ -1667,16 +1664,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.delegate?.collectionView?(self, didChangeFirstResponderStatus: false)
         return true
     }
-    
-    
-    //    public override func pressureChangeWithEvent(event: NSEvent) {
-    //        Swift.print("Pressue: \(event.pressure)  -- \(event.stage)")
-    //
-    //        if let ip = mouseDownIP {
-    //            self.delegate?.collectionView?(self, pressureChanged: CGFloat(event.pressure), forItemAt: ip)
-    //        }
-    //    }
-    
+
     
     private func acceptClickEvent(_ event: NSEvent) -> Bool {
         if let view = self.window?.contentView?.hitTest(event.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
@@ -1720,12 +1708,20 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._deselectAllItems(true, notify: true)
         }
         
-        guard let ip = indexPath , ip == mouseDownIP else { return }
-        
         if theEvent.modifierFlags.contains(NSEventModifierFlags.control) {
             self.rightMouseDown(with: theEvent)
+            return
         }
-        else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.shift) {
+        
+        guard let ip = indexPath , ip == mouseDownIP else {
+            if theEvent.clickCount == 2 {
+                self.delegate?.collectionView?(self, didDoubleClickItemAt: nil, with: theEvent)
+            }
+            return
+        }
+        
+        
+        if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.shift) {
             self._selectItem(at: ip, atScrollPosition: .nearest, animated: true, selectionType: .extending)
         }
         else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.command) {
@@ -1753,9 +1749,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         guard self.acceptClickEvent(theEvent) else { return }
         let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
-        if let indexPath = self.indexPathForItem(at: point) {
-            self.delegate?.collectionView?(self, didRightClickItemAt: indexPath, with: theEvent)
-        }
+        self.delegate?.collectionView?(self, didRightClickItemAt: self.indexPathForItem(at: point), with: theEvent)
     }
     
     final func moveSelectionInDirection(_ direction: CollectionViewDirection, extendSelection: Bool) {
@@ -1776,7 +1770,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             if theEvent.isARepeat && keySelectInterval > 0 {
                 if let t = lastEventTime , (CACurrentMediaTime() - t) < keySelectInterval {
-                    //                    Swift.print(CACurrentMediaTime() - t)
                     return
                 }
                 lastEventTime = CACurrentMediaTime()
@@ -1863,7 +1856,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     */
     public internal(set) var indexPathForHighlightedItem: IndexPath? {
         didSet {
-            //            Swift.print("New: \(indexPathForHighlightedItem)  OLD: \(oldValue)")
             if oldValue == indexPathForHighlightedItem { return }
             if let ip = oldValue, let cell = self.cellForItem(at: ip) , cell.highlighted {
                 cell.setHighlighted(false, animated: true)
@@ -2576,13 +2568,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
         for indexPath in ips {
             var ip = indexPath
             
-            let selections = self.indexPathsForSelectedItems
-            if selections.count == 0 { return }
-            else if selections.count == 1 && mouseDown != ip {
-                self.deselectItem(at: ip, animated: true)
-                ip = mouseDown
-                self.selectItem(at: ip, animated: true)
-            }
+//            let selections = self.indexPathsForSelectedItems
+//            if selections.count == 0 { return }
+//            else if selections.count == 1 && mouseDown != ip {
+//                self.deselectItem(at: ip, animated: true)
+//                ip = mouseDown
+//                self.selectItem(at: ip, animated: true)
+//            }
             
             
             if let writer = self.dataSource?.collectionView?(self, pasteboardWriterForItemAt: ip) {

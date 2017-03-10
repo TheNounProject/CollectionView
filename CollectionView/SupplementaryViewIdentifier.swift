@@ -11,7 +11,7 @@ import Foundation
 
 
 
-struct SupplementaryViewIdentifier: Hashable {
+struct SupplementaryViewIdentifier: Hashable, CustomStringConvertible {
     
     var indexPath: IndexPath?
     var kind: String
@@ -37,6 +37,11 @@ struct SupplementaryViewIdentifier: Hashable {
     
     static func ==(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {
         return lhs.indexPath == rhs.indexPath && lhs.kind == rhs.kind && lhs.reuseIdentifier == rhs.reuseIdentifier
+    }
+    
+    var description: String {
+        return  "SupplementaryViewIdentifier: Kind \(kind), reuseID: \(reuseIdentifier) indexPath: \(indexPath?.description ?? "nil")"
+        
     }
 }
 

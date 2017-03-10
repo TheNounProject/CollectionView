@@ -460,6 +460,12 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 s.sortItems(using: fetchRequest.sortDescriptors ?? [])
             }
             if s.isEditing {
+                
+                if s.numberOfObjects == 0 {
+                    self._remove(s._value)
+                    continue;
+                }
+                
                 let set = s.endEditing(forceUpdates: self.context.objectChanges.updated.valuesSet)
                 processedSections[s] = set
 //                print("\(self.indexPath(of: s)!) \(set)")
@@ -686,10 +692,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             
             section.ensureEditing()
             _ = section.remove(object)
-            
-            if section.numberOfObjects == 0 {
-                _remove(section._value)
-            }
         }
     }
     

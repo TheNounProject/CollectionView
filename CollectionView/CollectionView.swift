@@ -1666,26 +1666,30 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
 
     
-    private func acceptClickEvent(_ event: NSEvent) -> Bool {
-        if let view = self.window?.contentView?.hitTest(event.locationInWindow) , view.isDescendant(of: self.contentDocumentView) == false {
-            if view == self.clipView || view.isDescendant(of: self) { self.window?.makeFirstResponder(self) }
-            return false
+    private func acceptClickEvent(_ event: NSEvent) -> (accept: Bool, itemSpecific: Bool) {
+        guard let view = self.window?.contentView?.hitTest(event.locationInWindow), view.isDescendant(of: self) else {
+            return (false, false)
         }
-        return true
+        if view.isDescendant(of: self._floatingSupplementaryView) { return (true, false) }
+//        if view == self.clipView || view.isDescendant(of: self) { self.window?.makeFirstResponder(self) }
+        return (true, true)
     }
     
     private var mouseDownIP: IndexPath?
     open override func mouseDown(with theEvent: NSEvent) {
         
         self.mouseDownIP = nil
-        guard acceptClickEvent(theEvent) else {
+        let accept = acceptClickEvent(theEvent)
+        guard accept.accept else {
             return
         }
         self.window?.makeFirstResponder(self)
         //        self.nextResponder?.mouseDown(theEvent)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
         let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
-        self.mouseDownIP = self.indexPathForItem(at: point)
+        if accept.itemSpecific {
+            self.mouseDownIP = self.indexPathForItem(at: point)
+        }
         self.delegate?.collectionView?(self, mouseDownInItemAt: self.mouseDownIP, with: theEvent)
     }
     
@@ -1702,7 +1706,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         let indexPath = self.indexPathForItem(at: point)
         self.delegate?.collectionView?(self, mouseUpInItemAt: indexPath, with: theEvent)
         
-        guard self.acceptClickEvent(theEvent) else { return }
+        guard self.acceptClickEvent(theEvent).accept == true else { return }
         
         if mouseDownIP == nil && allowsEmptySelection {
             self._deselectAllItems(true, notify: true)
@@ -1747,9 +1751,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
     open override func rightMouseDown(with theEvent: NSEvent) {
         super.rightMouseDown(with: theEvent)
         
-        guard self.acceptClickEvent(theEvent) else { return }
-        let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
-        self.delegate?.collectionView?(self, didRightClickItemAt: self.indexPathForItem(at: point), with: theEvent)
+        let res = self.acceptClickEvent(theEvent)
+        guard res.accept else { return }
+        var ip : IndexPath?
+        if res.itemSpecific {
+            let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
+            ip = self.indexPathForItem(at: point)
+        }
+        self.delegate?.collectionView?(self, didRightClickItemAt: ip, with: theEvent)
     }
     
     final func moveSelectionInDirection(_ direction: CollectionViewDirection, extendSelection: Bool) {
@@ -2557,7 +2566,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var items : [NSDraggingItem] = []
         
         guard let mouseDown = mouseDownIP else { return }
-        guard self.acceptClickEvent(theEvent) else { return }
+        guard self.acceptClickEvent(theEvent).itemSpecific else { return }
         
         if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAt: mouseDown, with: theEvent) != true { return }
         

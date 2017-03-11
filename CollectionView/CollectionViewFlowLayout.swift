@@ -382,6 +382,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     
     override open func prepare() {
         
+        self.allIndexPaths.removeAll()
         self.sectionAttributes.removeAll()
         guard let cv = self.collectionView else { return }
         
@@ -391,9 +392,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         var top : CGFloat = 0
         
         for sec in 0..<numSections {
-            
-            
-            
+           
             let insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
             let transform = self.delegate?.collectionView(cv, flowLayout: self, rowTransformForSectionAt: sec) ?? self.defaultRowTransform
             
@@ -432,7 +431,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 var forceBreak: Bool = false
                 for item in 0..<numItems {
-                    
+                    allIndexPaths.insert(IndexPath.for(item: item, section: sec))
                     let ip = IndexPath.for(item: item, section: sec)
                     let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
                     var attrs = CollectionViewLayoutAttributes(forCellWith: ip)

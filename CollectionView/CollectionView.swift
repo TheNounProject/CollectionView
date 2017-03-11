@@ -1676,6 +1676,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     private var mouseDownIP: IndexPath?
+    private var mouseDownLocation : CGPoint = CGPoint.zero
     open override func mouseDown(with theEvent: NSEvent) {
         
         self.mouseDownIP = nil
@@ -1686,7 +1687,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.window?.makeFirstResponder(self)
         //        self.nextResponder?.mouseDown(theEvent)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
+        mouseDownLocation = theEvent.locationInWindow
         let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
+        
         if accept.itemSpecific {
             self.mouseDownIP = self.indexPathForItem(at: point)
         }
@@ -2558,15 +2561,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     private var draggedIPs : [IndexPath] = []
+    public var isDragging : Bool = false
     
     override open func mouseDragged(with theEvent: NSEvent) {
         super.mouseDragged(with: theEvent)
         self.window?.makeFirstResponder(self)
+        
         self.draggedIPs = []
         var items : [NSDraggingItem] = []
         
         guard let mouseDown = mouseDownIP else { return }
         guard self.acceptClickEvent(theEvent).itemSpecific else { return }
+        
+        guard theEvent.locationInWindow.distance(to: mouseDownLocation) > 5 else { return }
         
         if self.interactionDelegate?.collectionView?(self, shouldBeginDraggingAt: mouseDown, with: theEvent) != true { return }
         
@@ -2622,6 +2629,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         
         if items.count > 0 {
+            self.isDragging = true
             let session = self.beginDraggingSession(with: items, event: theEvent, source: self)
             if items.count > 1 {
                 session.draggingFormation = .pile
@@ -2643,7 +2651,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
-//        self.mouseDownIP = nil
+        self.mouseDownIP = nil
+        delay(0.5) {
+            self.isDragging = false
+        }
         self.interactionDelegate?.collectionView?(self, draggingSession: session, didEndAt: screenPoint, with: operation, draggedIndexPaths: draggedIPs)
     }
     
@@ -2668,6 +2679,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         return sender.draggingSourceOperationMask()
     }
     open override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        self.isDragging = false
         if let perform = self.interactionDelegate?.collectionView?(self, performDragOperation: sender) {
             return perform
         }

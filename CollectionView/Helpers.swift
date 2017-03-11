@@ -10,6 +10,13 @@ import Foundation
 
 
 
+func delay(_ delay: TimeInterval, block: @escaping (()->Void)) {
+    let mDelay = DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+    DispatchQueue.main.asyncAfter(deadline: mDelay, execute: {
+        block()
+    })
+}
+
 struct Logger {
 
     static let logFiles = Set<String>([
@@ -229,6 +236,12 @@ extension CGPoint {
     func maxY(_ other: CGPoint) -> CGPoint {
         return CGPoint(x: self.x, y: max(self.y, other.y))
     }
+    
+        func distance(to other: CGPoint) -> CGFloat {
+            let xDist = self.x - other.x
+            let yDist = self.y - other.y
+            return CGFloat(sqrt((xDist * xDist) + (yDist * yDist)))
+        }
 }
 
 extension CGRect {

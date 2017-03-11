@@ -1401,7 +1401,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.contentDocumentView.pendingUpdates = _updateContext.updates
         self.contentDocumentView.preparedCellIndex = newCellIndex
         self.contentDocumentView.preparedSupplementaryViewIndex = newViewIndex.dictionary
-        self._reloadLayout(animated, scrollPosition: .none, completion: nil, needsRecalculation: false)
+        self._reloadLayout(animated, scrollPosition: .none, completion: completion, needsRecalculation: false)
         
 //        log.debug("END EDITING: *************************************")
     }

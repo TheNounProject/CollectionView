@@ -2494,8 +2494,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
             break;
         case .trailing:
             // make the bottom of our rect flush with the bottom of the visible bounds
+            let vHeight = self.contentDocumentView.visibleRect.size.height
+            rect.origin.y = (aRect.origin.y + aRect.size.height) - vHeight
             rect.size.height = visibleRect.height;
-            rect.origin.y -= visibleRect.height - contentInsets.top;
             break;
         case .none:
             // no scroll needed
@@ -2581,6 +2582,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         if let validated = self.interactionDelegate?.collectionView?(self, validateIndexPathsForDrag: ips) {
             ips = validated
         }
+        self.draggedIPs = ips
         for indexPath in ips {
             var ip = indexPath
             
@@ -2606,7 +2608,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 self.dataSource?.collectionView?(self, dragRectForItemAt: ip, withStartingRect: originalFrame)
                 let frame = originalFrame.pointee
                 
-                self.draggedIPs.append(ip)
+//                self.draggedIPs.append(ip)
                 let item = NSDraggingItem(pasteboardWriter: writer)
                 item.draggingFrame = frame
                 
@@ -2648,8 +2650,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     open func draggingSession(_ session: NSDraggingSession, movedTo screenPoint: NSPoint) {
         self.interactionDelegate?.collectionView?(self, draggingSession: session, didMoveTo: screenPoint)
+        
+        if let p = self.window?.convertFromScreen(NSRect(origin: screenPoint, size: CGSize.zero)).origin {
+            self.autoScroll(to: p)
+        }
     }
-    
+
     open func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
         self.mouseDownIP = nil
         delay(0.5) {
@@ -2676,6 +2682,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         if let operation = self.interactionDelegate?.collectionView?(self, dragUpdated: sender) {
             return operation
         }
+        self.autoScroll(to: sender.draggingLocation())
         return sender.draggingSourceOperationMask()
     }
     open override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
@@ -2685,6 +2692,40 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         return false
     }
+    
+    
+    public var isAutoscrollEnabled = false
+    public var autoscrollSize : CGFloat = 10
+    
+    func autoScroll(to dragPoint: CGPoint) {
+        
+        guard isAutoscrollEnabled  else { return }
+        
+        let loc = self.convert(dragPoint, from: nil)
+        let visible = self.visibleRect
+        guard visible.contains(loc) else { return }
+        
+        log.debug("Auto scroll \(loc) in \(visible)")
+        if loc.y > (self.bounds.size.height - self.contentInsets.bottom - autoscrollSize) {
+            log.debug("Dragging autoscroll: Down")
+            var cRect = self.contentVisibleRect
+            let newRect = CGRect(x: cRect.origin.x, y: cRect.maxY + 50, width: cRect.size.width, height: 50)
+            self.scrollRect(newRect, to: .trailing, animated: true, completion: nil)
+        }
+        else if loc.y > self.contentInsets.top && loc.y < (self.contentInsets.top + autoscrollSize) {
+            log.debug("Dragging autoscroll: Up")
+            
+            var cRect = self.contentVisibleRect
+            let newRect = CGRect(x: cRect.origin.x, y: cRect.minY - 5, width: cRect.size.width, height: 5)
+            self.scrollRect(newRect, to: .leading, animated: true, completion: nil)
+            
+//            var newRect = self.contentVisibleRect
+//            newRect.origin.y -= 5
+//            self.scrollRect(newRect, to: .nearest, animated: true, completion: nil)
+        }
+    }
+    
+    
     
 }
 

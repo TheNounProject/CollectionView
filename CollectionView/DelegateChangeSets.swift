@@ -46,6 +46,14 @@ public struct ResultsChangeSet {
         sections.addChange(forSectionAt: source, with: changeType)
     }
     
+    public func didInsertSection(at indexPath: IndexPath) -> Bool {
+        return self.sections.inserted.contains(indexPath._section)
+    }
+    
+    public func didInsertObject(at indexPath: IndexPath) -> Bool {
+        return self.items.inserted.contains(indexPath)
+    }
+    
     /// The count of changes in the set
     public var count : Int {
         return items.count + sections.count

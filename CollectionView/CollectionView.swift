@@ -783,13 +783,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var closest : IndexPath?
         for sectionIndex in 0..<self.numberOfSections  {
-            guard let frame = self.frameForSection(at: sectionIndex), !frame.isEmpty, frame.intersects(visibleRect) else { continue }
+            log.debug("Checking Section \(sectionIndex)")
+            guard let frame = self.frameForSection(at: sectionIndex), !frame.isEmpty, frame.intersects(visibleRect) else {
+                log.debug("Section miss for \(sectionIndex)")
+                continue
+            }
             
             let itemCount = self.numberOfItems(in: sectionIndex)
             for item in 0..<itemCount {
                 let indexPath = IndexPath.for(item:item, section: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
                     if (visibleRect.contains(attributes.frame)) {
+                        log.debug("Matched for \(indexPath)")
                         return indexPath
                     }
                     else if closest == nil && visibleRect.intersects(attributes.frame) {
@@ -1635,12 +1640,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open override func mouseExited(with theEvent: NSEvent) {
-        self.delegate?.collectionView?(self, mouseMovedToSection: nil)
+        if self.isScrolling || !trackSectionHover { return }
+        let loc = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
+        self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSection(at: loc))
     }
     
     open override func mouseMoved(with theEvent: NSEvent) {
         super.mouseMoved(with: theEvent)
-        if self.isScrolling { return }
+        if self.isScrolling || !trackSectionHover { return }
         let loc = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
         self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSection(at: loc))
     }
@@ -1743,8 +1750,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
         else if theEvent.clickCount == 2 {
             self.delegate?.collectionView?(self, didDoubleClickItemAt: ip, with: theEvent)
         }
-        else if self.selectionMode == .multi && self.itemAtIndexPathIsSelected(ip) {
+        else if self.selectionMode == .multi {
+            if self.itemAtIndexPathIsSelected(ip) {
             self._deselectItem(at: ip, animated: true, notifyDelegate: true)
+            }
+            else {
+                self._selectItem(at: ip, animated: true, scrollPosition: .none, with: theEvent, clear: false, notifyDelegate: true)
+            }
         }
         else {
             self._selectItem(at: ip, animated: true, scrollPosition: .none, with: theEvent, clear: true)
@@ -1979,7 +1991,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self.deselectAllItems()
         }
         
-        if self.allowsMultipleSelection == false {
+        if self.selectionMode != .multi && self.allowsMultipleSelection == false {
             self._selectedIndexPaths.remove(indexPath)
             self.deselectAllItems()
         }

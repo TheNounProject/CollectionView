@@ -34,6 +34,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     
     open override func prepare() {
         cache = []
+        self.allIndexPaths.removeAll()
         
         guard let cv = self.collectionView else { return }
         
@@ -47,7 +48,9 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         var xPos: CGFloat = sectionInsets.left - self.itemSpacing
         
         for row in 0...numRows-1 {
+            
             let ip = IndexPath.for(item: row, section: 0)
+            self.allIndexPaths.insert(ip)
             var height = cv.bounds.height 
             height = height - sectionInsets.top - sectionInsets.bottom
             

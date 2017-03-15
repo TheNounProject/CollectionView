@@ -92,7 +92,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
         self.addSubview(_floatingSupplementaryView, positioned: .above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
-        _floatingSupplementaryView.frame = self.bounds
+        self._floatingSupplementaryView.addConstraintsToMatchParent()
+//        _floatingSupplementaryView.frame = self.bounds
     }
     
     deinit {
@@ -537,7 +538,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open override func layout() {
-        _floatingSupplementaryView.frame = self.bounds
+        
         super.layout()
         
         if self.collectionViewLayout.shouldInvalidateLayout(forBoundsChange: self.contentVisibleRect) {
@@ -2390,6 +2391,23 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     */
     public final func indexPath(forSupplementaryView view: CollectionReusableView) -> IndexPath? { return view.attributes?.indexPath }
+    
+    
+    
+    
+    /**
+     Returns the visible supplementary view of the given kind at indexPath
+     
+     - Parameter kind: The kind of the supplementary view
+     - Parameter indexPath: The index path of the supplementary view
+     
+     - Returns: The view of kind at the given index path
+     
+     */
+    public final func supplementaryViews(forElementKind kind: String, at indexPath: IndexPath) -> CollectionReusableView? {
+        let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: indexPath)
+        return self.contentDocumentView.preparedSupplementaryViewIndex[id]
+    }
     
     
     /**

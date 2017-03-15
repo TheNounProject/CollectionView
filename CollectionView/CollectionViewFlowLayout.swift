@@ -456,7 +456,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                         if !forceBreak, let prev = sectionAttrs.rows.last?.items.last, prev.frame.size.height == size.height {
                             
                             // If there is enough space remaining, add it to the current row
-                            let rem = cv.frame.size.width  - prev.frame.maxX - itemSpacing - insets.right - insets.left
+                            let rem = cv.frame.size.width - prev.frame.maxX - itemSpacing - insets.right
                             if rem >= size.width {
                                 attrs.frame = CGRect(x: prev.frame.maxX + itemSpacing, y: prev.frame.origin.y, width: size.width, height: size.height)
                                 sectionAttrs.rows[sectionAttrs.rows.count - 1].add(attributes: attrs)

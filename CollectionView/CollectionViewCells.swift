@@ -97,6 +97,7 @@ open class CollectionReusableView : NSView {
     }
     
     open override func updateLayer() {
+        super.updateLayer()
         self.layer?.backgroundColor = self.backgroundColor?.cgColor
         if let c = self.layer?.cornerRadius, c > 0 {
             let l = CALayer()

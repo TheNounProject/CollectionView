@@ -439,12 +439,14 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
             return
         }
+        _sectionsCopy = nil
         
         guard let info = notification.userInfo else { return }
         self.context.reset()
         
         preprocess(notification: notification)
         
+        print(self.context.objectChanges)
         if context.objectChanges.count == 0 {
             return
         }
@@ -453,6 +455,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         processDeleted()
         processInserted()
         processUpdated()
+        
         
         var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
         for s in _sections {
@@ -475,7 +478,10 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         
         if let oldSections = _sectionsCopy {
             var sectionChanges = ChangeSet(source: oldSections, target: _sections)
+            print("OldSections: \(oldSections.count)")
+            print(self._sections)
             sectionChanges.reduceEdits()
+            print(sectionChanges)
             
             for change in sectionChanges.edits {
                 switch change.operation {

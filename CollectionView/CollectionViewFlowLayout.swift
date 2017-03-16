@@ -133,8 +133,10 @@ extension CollectionViewDelegateFlowLayout {
 open class CollectionViewFlowLayout : CollectionViewLayout {
     
     /// The default spacing between items in the same row and between rows
-    public var itemSpacing: CGFloat = 8
-    public var interSpanSpacing : CGFloat?
+    public var interitemSpacing: CGFloat = 8
+    public var interpanSpacing : CGFloat?
+    public var spanGroupSpacingBefore : CGFloat?
+    public var spanGroupSpacingAfter : CGFloat?
     
     public var defaultItemStyle = ItemStyle.flow(CGSize(width: 60, height: 60))
     public var defaultFooterHeight : CGFloat = 0
@@ -207,7 +209,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
             default: break;
             }
-            return frame.maxY + spacing
+            return frame.maxY
         }
         
         func index(of indexPath: IndexPath) -> Int? {
@@ -264,99 +266,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             self.insets = insets
             self.transform = transform
         }
-        
-//        mutating func addItem(with attributes: CollectionViewLayoutAttributes, using style: ItemStyle, in cv: CollectionView, insets: EdgeInsets, itemSpacing: CGFloat) -> CGFloat {
-//            
-//            let contentwidth = cv.frame.size.width -  insets.right - insets.right
-//            
-//            func adjustOversizedIfNeeded() {
-//                if attributes.frame.size.width > contentwidth {
-//                    let scale = contentwidth/attributes.frame.size.width
-//                    attributes.frame.size = CGSize(width: attributes.frame.size.width * scale, height: attributes.frame.size.height * scale)
-//                }
-//            }
-//            
-//            switch style {
-//            case let .flow(size):
-//                
-//                func newRow() {
-//                    let space = rows.count > 0 ? itemSpacing : 0
-//                    attributes.frame = CGRect(x: insets.left, y: contentFrame.maxY + space, width: size.width, height: size.height)
-//                    adjustOversizedIfNeeded()
-//                    if rows.last?.items.count == 0 {
-//                        rows[rows.count - 1].add(attributes: attributes)
-//                    }
-//                    else {
-//                        if rows.count > 0 {
-//                           attributes.frame.origin.y = rows[rows.count - 1].applyTransform(transform,
-//                                                  leftInset: insets.left,
-//                                                  width: contentwidth,
-//                                                  spacing: itemSpacing)
-//                        }
-//                        rows.append(RowAttributes(attributes: attributes))
-//                    }
-//                }
-//                
-//                if rows.count > 0, let prev = rows[rows.count - 1].items.last, prev.frame.size.height == size.height {
-//                    
-//                    let rem = cv.frame.size.width  - prev.frame.maxX - itemSpacing - insets.right - insets.left
-//                    if rem >= size.width {
-//                        attributes.frame = CGRect(x: prev.frame.maxX + itemSpacing, y: prev.frame.origin.y, width: size.width, height: size.height)
-//                        rows[rows.count - 1].add(attributes: attributes)
-//                    }
-//                    else {
-//                        newRow()
-//                    }
-//                }
-//                else {
-//                    newRow()
-//                }
-//                items.append(attributes)
-//                contentFrame = contentFrame.union(attributes.frame)
-//                if items.count == 1 {
-//                    contentFrame = attributes.frame
-//                }
-//                return attributes.frame.maxY
-//                
-//            case let .span(size):
-//                
-//                attributes.frame = CGRect(x: insets.left, y: contentFrame.maxY + (rows.count > 0 ? itemSpacing : 0), width: size.width, height: size.height)
-//                
-//                if rows.last?.items.count == 0 {
-//                    rows[rows.count - 1].add(attributes: attributes)
-//                }
-//                else {
-//                    if rows.count > 0 {
-//                        let top = rows[rows.count - 1].applyTransform(transform,
-//                                                                      leftInset: insets.left,
-//                                                                      width: contentwidth, spacing: itemSpacing)
-//                        attributes.frame.origin.y = top
-//                    }
-//                    rows.append(RowAttributes(attributes: attributes))
-//                }
-//                
-//                rows[rows.count - 1].applyTransform(transform,
-//                                                      leftInset: insets.left,
-//                                                      width: contentwidth, spacing: itemSpacing)
-//                
-//                rows.append(RowAttributes())
-//                items.append(attributes)
-//                contentFrame = contentFrame.union(attributes.frame)
-//                if items.count == 1 {
-//                    contentFrame = attributes.frame
-//                }
-//                return contentFrame.maxY
-//            }
-//        }
-        
-//        var lastRowWidth : CGFloat {
-//            for row in rows.reversed() {
-//                if row.items.count > 0 {
-//                    return row.frame.size.width
-//                }
-//            }
-//            return 0
-//        }
     }
     
     private var delegate : CollectionViewDelegateFlowLayout? {
@@ -440,51 +349,63 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     case let .flow(size):
                         
                         func newRow() {
-                            let space = sectionAttrs.rows.count > 0 ? itemSpacing : 0
-                            attrs.frame = CGRect(x: insets.left, y: sectionAttrs.contentFrame.maxY + space, width: size.width, height: size.height)
+                            
+                            
+                            var spacing : CGFloat = 0
+                            if sectionAttrs.rows.count > 0 {
+                                top = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
+                                                                                                    leftInset: insets.left,
+                                                                                                    width: contentWidth,
+                                                                                                    spacing: interitemSpacing)
+                                
+                                
+                                if let s = self.spanGroupSpacingAfter, previousStyle?.isSpan == true { spacing = s }
+                                else { spacing = interitemSpacing }
+                            }
+                            
+                            attrs.frame = CGRect(x: insets.left, y: top + spacing, width: size.width, height: size.height)
                             adjustOversizedIfNeeded(attrs)
-                                if sectionAttrs.rows.count > 0 {
-                                    attrs.frame.origin.y = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
-                                                                                                                         leftInset: insets.left,
-                                                                                                                         width: contentWidth,
-                                                                                                                         spacing: itemSpacing)
-                                }
-                                sectionAttrs.rows.append(RowAttributes(attributes: attrs))
+                            sectionAttrs.rows.append(RowAttributes(attributes: attrs))
                         }
                         
                         // Check if the last row (if any) matches this items height
                         if !forceBreak, let prev = sectionAttrs.rows.last?.items.last, prev.frame.size.height == size.height {
-                            
                             // If there is enough space remaining, add it to the current row
-                            let rem = cv.frame.size.width - prev.frame.maxX - itemSpacing - insets.right
+                            let rem = cv.frame.size.width - prev.frame.maxX - interitemSpacing - insets.right
                             if rem >= size.width {
-                                attrs.frame = CGRect(x: prev.frame.maxX + itemSpacing, y: prev.frame.origin.y, width: size.width, height: size.height)
+                                attrs.frame = CGRect(x: prev.frame.maxX + interitemSpacing, y: prev.frame.origin.y, width: size.width, height: size.height)
                                 sectionAttrs.rows[sectionAttrs.rows.count - 1].add(attributes: attrs)
                             }
                             else { newRow() }
                         }
                         else { newRow() }
-                        
                         forceBreak = false
                         
                     case let .span(size):
                         
-                        var spacing = itemSpacing
-                        if let s = self.interSpanSpacing, previousStyle?.isSpan == true {
-                            spacing = s
-                        }
-                        
-                        attrs.frame = CGRect(x: insets.left, y: sectionAttrs.contentFrame.maxY + (sectionAttrs.rows.count > 0 ? spacing : 0), width: size.width, height: size.height)
                         
                         if sectionAttrs.rows.count > 0 && previousStyle?.isSpan != true {
-                            let top = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
-                                                                                       leftInset: insets.left,
-                                                                                       width: contentWidth,
-                                                                                       spacing: itemSpacing)
-                            attrs.frame.origin.y = top
+                            top = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
+                                                                                                    leftInset: insets.left,
+                                                                                                    width: contentWidth,
+                                                                                                    spacing: interitemSpacing)
                         }
-                        sectionAttrs.rows.append(RowAttributes(attributes: attrs))
                         
+                        var spacing : CGFloat = 0
+                        if sectionAttrs.rows.count > 0 {
+                            if let s = self.spanGroupSpacingBefore, previousStyle?.isSpan == false {
+                                spacing = s
+                            }
+                            else if let s = self.interpanSpacing, previousStyle?.isSpan == true {
+                                spacing = s
+                            }
+                            else {
+                                spacing = interitemSpacing
+                            }
+                        }                        
+                        attrs.frame = CGRect(x: insets.left, y: top + spacing, width: size.width, height: size.height)
+                        
+                        sectionAttrs.rows.append(RowAttributes(attributes: attrs))
                         forceBreak = true
                     }
                     sectionAttrs.items.append(attrs)
@@ -492,46 +413,16 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     top = sectionAttrs.contentFrame.maxY
                     widthOfLastRow = sectionAttrs.rows.last?.frame.size.width
                     previousStyle = style
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-//                    let ip = IndexPath.for(item: item, section: sec)
-//                    
-//                    let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
-//                    var attrs = CollectionViewLayoutAttributes(forCellWith: ip)
-//                    var spacing = itemSpacing
-//                    if previousStyle?.isSpan == true && style.isSpan {
-//                        spacing = 4
-//                    }
-//                    previousStyle = style
-//                    top = sectionAttrs.addItem(with: attrs, using: style, in: cv, insets: insets, itemSpacing: spacing)
-//                    widthOfLastRow = sectionAttrs.lastRowWidth
                 }
+                
+                // Cleanup section
                 widthOfLastRow = nil
                 previousStyle = nil
                 if sectionAttrs.rows.count > 0 {
                     top = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
                                                                                   leftInset: insets.left,
                                                                                   width: contentWidth,
-                                                                                  spacing: itemSpacing)
+                                                                                  spacing: interitemSpacing)
                 }
             }
             

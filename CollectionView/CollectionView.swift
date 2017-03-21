@@ -2533,7 +2533,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             // TODO
             if self.collectionViewLayout.scrollDirection == .vertical {
                 rect.origin.x = 0
-                rect.origin.y = rect.center.y - (visibleRect.size.height/2)
+                rect.origin.y = rect.center.y + (visibleRect.size.height/2)
             }
             else {
                 rect.size.width = self.bounds.size.width

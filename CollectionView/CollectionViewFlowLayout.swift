@@ -562,7 +562,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
         let inset = (self.collectionView?.contentInsets.top ?? 0) - sectionAttributes[indexPath._section].insets.top
 //        let sectionInsets =
-        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, atIndexPath: indexPath.sectionCopy) {
+        if self.pinHeadersToTop && atPosition == .leading, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, atIndexPath: indexPath.sectionCopy) {
             let y = (frame.origin.y - attrs.frame.size.height) + inset
             
             let height = frame.size.height + attrs.frame.size.height

@@ -271,12 +271,12 @@ extension CGRect {
     -------------
    |\\\\ r1 \\\\\|
    |\\\\\\\\\\\\\|
-   |=============|
-   !    overlap  !
+   |-------------|
+   !   overlap   !
    !_____________!
-   I             I
-   I     r2      I
-   I=============I
+   I/////////////I
+   I//// r2 /////I
+   I-------------I
 */
 
 func CGRectSubtract(_ rect1: CGRect, rect2: CGRect, edge: CGRectEdge) -> CGRect {

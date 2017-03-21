@@ -795,9 +795,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var closest : IndexPath?
         for sectionIndex in 0..<self.numberOfSections  {
-            log.debug("Checking Section \(sectionIndex)")
+//            log.debug("Checking Section \(sectionIndex)")
             guard let frame = self.frameForSection(at: sectionIndex), !frame.isEmpty, frame.intersects(visibleRect) else {
-                log.debug("Section miss for \(sectionIndex)")
+//                log.debug("Section miss for \(sectionIndex)")
                 continue
             }
             
@@ -806,7 +806,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 let indexPath = IndexPath.for(item:item, section: sectionIndex)
                 if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
                     if (visibleRect.contains(attributes.frame)) {
-                        log.debug("Matched for \(indexPath)")
+//                        log.debug("Matched for \(indexPath)")
                         return indexPath
                     }
                     else if closest == nil && visibleRect.intersects(attributes.frame) {

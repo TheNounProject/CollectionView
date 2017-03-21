@@ -2666,7 +2666,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
                         
                         var image = self.dataSource?.collectionView?(self, dragContentsForItemAt: ip)
                         if image == nil, let cell = self.cellForItem(at: ip) {
-                            image = NSImage(data: cell.dataWithPDF(inside: cell.bounds))
+                            
+                            let rep = cell.bitmapImageRepForCachingDisplay(in: cell.bounds)!
+                            cell.cacheDisplay(in: cell.bounds, to: rep)
+                            
+                            image = NSImage(size: cell.bounds.size)
+                            image!.addRepresentation(rep)
+                            
+//                            image = NSImage(data: cell.dataWithPDF(inside: cell.bounds))
                         }
                         let comp = NSDraggingImageComponent(key: NSDraggingImageComponentIconKey)
                         comp.contents = image

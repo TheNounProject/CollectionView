@@ -37,13 +37,13 @@ class ResultsControllerCDManager {
             self.updated(obj)
         }
         
-        mutating func inserted(_ object: NSManagedObject) -> Bool {
+        @discardableResult mutating func inserted(_ object: NSManagedObject) -> Bool {
             return inserted.insert(object).inserted
         }
-        mutating func deleted(_ object: NSManagedObject) -> Bool {
+        @discardableResult mutating func deleted(_ object: NSManagedObject) -> Bool {
             return deleted.insert(object).inserted
         }
-        mutating func updated(_ object: NSManagedObject) -> Bool {
+        @discardableResult mutating func updated(_ object: NSManagedObject) -> Bool {
             return updated.insert(object).inserted
         }
         

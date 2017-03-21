@@ -178,8 +178,6 @@ open class CollectionViewLayout : NSObject {
         overrideWarning()
         var rect = self.contentRectForSection(section)
         guard let cv = self.collectionView else { return rect }
-        let itemCount = cv.numberOfItems(in: section)
-        
         for identifier in cv._allSupplementaryViewIdentifiers {
             if let attributes = self.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: IndexPath.for(item:0, section: section)) {
                 rect = rect.union(attributes.frame)

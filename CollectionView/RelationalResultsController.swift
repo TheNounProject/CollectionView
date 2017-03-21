@@ -487,7 +487,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         // Add the queried sections
         if self.fetchSections {
             for s in try managedObjectContext.fetch(self.sectionFetchRequest) {
-                self._insert(section: s)
+                _ = self._insert(section: s)
             }
         }
         
@@ -495,8 +495,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         // No need to sort since they were just fetched with the sort descriptors
         for object in _objects {
             let parent = object.value(forKey: sectionKeyPath) as? Section
-            var p = self._insert(section: parent)
-            p.insert(object)
+            let p = self._insert(section: parent)
+            _ = p.insert(object)
             _objectSectionMap[object] = p
         }
                                                         

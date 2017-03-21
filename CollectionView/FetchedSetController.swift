@@ -137,33 +137,28 @@ public class FetchedSetController : NSObject {
                 var updated = Set<Element>()
                 
                 for obj in itemChanges.deleted {
-                    guard let o = obj as? Element, let removes = self._storage.remove(o) else { continue }
-                    deleted.insert(o)
+                    guard let removes = self._storage.remove(obj) else { continue }
+                    deleted.insert(obj)
                 }
                 
-                
                 for obj in itemChanges.inserted {
-                    if let o = obj as? Element {
-                        if self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: o) == true {
-                            self._storage.insert(o)
-                            inserted.insert(o)
-                        }
+                    if self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: obj) == true {
+                        self._storage.insert(obj)
+                        inserted.insert(obj)
                     }
                 }
                 
                 for obj in itemChanges.updated {
-                    if let o = obj as? Element {
-                        
-                        let existed = self.contains(o)
-                        let match = self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: o) == true
-                        
-                        if existed {
-                            if !match { deleted.insert(o) }
-                            else { updated.insert(o) }
-                        }
-                        else if match {
-                            inserted.insert(o)
-                        }
+                    
+                    let existed = self.contains(obj)
+                    let match = self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: obj) == true
+                    
+                    if existed {
+                        if !match { deleted.insert(obj) }
+                        else { updated.insert(obj) }
+                    }
+                    else if match {
+                        inserted.insert(obj)
                     }
                 }
                 

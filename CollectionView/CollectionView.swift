@@ -598,29 +598,27 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
     
         
-        var absoluteCellFrames = [CollectionReusableView:CGRect]()
-        
-        for view in self.contentDocumentView.subviews {
-            if !view.isHidden, let v = view as? CollectionReusableView {
-                absoluteCellFrames[v] = self.convert(v.frame, from: v.superview)
-            }
-        }
-        for view in self.floatingContentView.subviews {
-            if !view.isHidden, let v = view as? CollectionReusableView {
-                absoluteCellFrames[v] = self.convert(v.frame, from: v.superview)
-            }
-        }
-        let holdIP : IndexPath? = self.indexPathForFirstVisibleItem
-            //?? self.indexPathsForSelectedItems().intersect(self.indexPathsForVisibleItems()).first
-
         if needsRecalculation {
             self.delegate?.collectionViewWillReloadLayout?(self)
             self.collectionViewLayout.prepare()
         }
         let newContentSize = self.collectionViewLayout.collectionViewContentSize
         if newContentSize != _lastViewSize {
+            
+            var absoluteCellFrames = [CollectionReusableView:CGRect]()
+            
+            for view in self.contentDocumentView.subviews {
+                if !view.isHidden, let v = view as? CollectionReusableView {
+                    absoluteCellFrames[v] = self.convert(v.frame, from: v.superview)
+                }
+            }
+            for view in self.floatingContentView.subviews {
+                if !view.isHidden, let v = view as? CollectionReusableView {
+                    absoluteCellFrames[v] = self.convert(v.frame, from: v.superview)
+                }
+            }
+            let holdIP : IndexPath? = self.indexPathForFirstVisibleItem
             setContentViewSize()
-//            contentDocumentView.frame.size = nContentSize
             
             if scrollPosition != .none, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {
                 self._scrollRect(rect, to: scrollPosition, animated: false, prepare: false, completion: nil)

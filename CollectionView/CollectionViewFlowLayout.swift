@@ -20,50 +20,54 @@ import Foundation
 public protocol CollectionViewDelegateFlowLayout  {
     
     /**
-     <#Description#>
+     Asks the delegate for the layout style for the item at the specified index path
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter gridLayout: <#gridLayout description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The collection view requesting the information
+     - Parameter gridLayout: The layout
+     - Parameter indexPath: The index path of the item to style
      
-     - Returns: <#FlowLayoutItemStyle return description#>
+     - Returns: A style to apply to the item
 
     */
     func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle
     
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter collectionViewLayout: <#collectionViewLayout description#>
-     - Parameter section: <#section description#>
+     Asks the delegate for the height of the header view in a specified section
      
-     - Returns: <#CGFloat return description#>
+     Return 0 for no header view
 
+     - Parameter collectionView: The collection view requesting the information
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: The section affected by this height
+     
+     - Returns: The height to apply to the header view in the specified section
+     
     */
     func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
                                         heightForHeaderInSection section: Int) -> CGFloat
     
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter collectionViewLayout: <#collectionViewLayout description#>
-     - Parameter section: <#section description#>
+     Asks the delegate for the height of the footer view in a specified section
      
-     - Returns: <#CGFloat return description#>
+     Return 0 for no footer view
+
+     - Parameter collectionView: The collection view requesting the information
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: The section affected by this height
+     
+     - Returns: The height to apply to the header view in the specified section
 
     */
     func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
                                         heightForFooterInSection section: Int) -> CGFloat
     /**
-     <#Description#>
+     Asks the delegate for the insets for the content of the specified index path
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter collectionViewLayout: <#collectionViewLayout description#>
-     - Parameter section: <#section description#>
+     - Parameter collectionView: The collection view requesting the information
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: Thhe section that the return value will be applied to
      
-     - Returns: <#EdgeInsets return description#>
+     - Returns: Edge insets for the specified section
 
     */
     func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
@@ -87,18 +91,6 @@ public protocol CollectionViewDelegateFlowLayout  {
 
 extension CollectionViewDelegateFlowLayout {
     
-    /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter flowLayout: <#flowLayout description#>
-     - Parameter indexPath: <#indexPath description#>
-     
-     - Returns: <#CollectionViewFlowLayout return description#>
-     
-     - Returns: <#ItemStyle return description#>
-
-    */
     public func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
         return flowLayout.defaultItemStyle
     }
@@ -577,6 +569,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             frame.size.height = height
             frame.origin.y = y
         }
+        else {
+            frame.origin.y = frame.origin.y + inset
+        }
         return frame
     }
     
@@ -597,7 +592,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
             var prev : RowAttributes?
             for row in sectionAttributes[section].rows {
-                if let idx = row.index(of: currentIndexPath) {
+                if let _ = row.index(of: currentIndexPath) {
                     guard let pRow = prev else {
                         guard let pSectionRow = sectionAttributes.object(at: section - 1)?.rows.last else { return nil }
                         return pSectionRow.item(verticallyAlignedTo: cAttrs)
@@ -614,7 +609,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
             var prev : RowAttributes?
             for row in sectionAttributes[section].rows.reversed() {
-                if let idx = row.index(of: currentIndexPath) {
+                if let _ = row.index(of: currentIndexPath) {
                     guard let pRow = prev else {
                         guard let pSectionRow = sectionAttributes.object(at: section + 1)?.rows.first else { return nil }
                         return pSectionRow.item(verticallyAlignedTo: cAttrs)

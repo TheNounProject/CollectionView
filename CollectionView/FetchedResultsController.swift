@@ -599,7 +599,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 for edit in changes.edits {
                     switch edit.operation {
                         
-                    case let .move(origin: from):
+                    case let .move(origin: _):
                         guard let source = self.context.objectChanges.updated.index(of: edit.value),
                             let dest = self.indexPath(of: edit.value) else {
                                 continue
@@ -746,14 +746,10 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     
     func processUpdated() {
         
-        
-        
-//        var updatedSections = Set<SectionInfo>()
-        
         for change in context.objectChanges.updated {
             
             let object = change.value
-            let sourceIP = change.index
+//            let sourceIP = change.index
             
             guard let tempIP = self.indexPath(of: object),
                 let currentSection = _sectionInfo(at: tempIP) else {
@@ -761,8 +757,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                     continue
             }
             currentSection.ensureEditing()
-            var destinationIP = tempIP
-            
             if let keyPath = self.sectionKeyPath {
                 let sectionValue = object.value(forKeyPath: keyPath) as? Section
                 

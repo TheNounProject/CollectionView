@@ -2200,6 +2200,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public final var visibleCells : [CollectionViewCell]  { return Array( self.contentDocumentView.preparedCellIndex.values) }
     
     
+    
+    
     /**
      Returns the index paths for all visible cells in the collection view
     */
@@ -2380,6 +2382,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
 //        }
 //        return nil
     }
+    
+    
+    /**
+     Returns all visible cells in the collection view
+     */
+    public final var visibleSupplementaryViews : [CollectionReusableView]  { return Array( self.contentDocumentView.preparedSupplementaryViewIndex.values) }
     
     
     /**

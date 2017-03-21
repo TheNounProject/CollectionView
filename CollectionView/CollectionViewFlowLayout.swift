@@ -426,8 +426,12 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 }
             }
             
+            top += insets.bottom
+            sectionAttrs.frame = sectionAttrs.frame.union(sectionAttrs.contentFrame)
+            sectionAttrs.frame.size.height += insets.bottom
+            
             let footerHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForFooterInSection: sec) ?? 0
-            if heightHeader > 0 {
+            if footerHeader > 0 {
                 let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(section: sec))
                 attrs.frame = insetSupplementaryViews
                     ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
@@ -437,7 +441,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 top = attrs.frame.maxY
             }
             
-            sectionAttrs.frame = sectionAttrs.frame.union(sectionAttrs.contentFrame)
+            
             sectionAttributes.append(sectionAttrs)
 
         }
@@ -551,7 +555,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     override open var collectionViewContentSize: CGSize {
         guard let cv = collectionView else { return CGSize.zero }
         let numberOfSections = cv.numberOfSections
-        if numberOfSections == 0{ return CGSize.zero }
+        if numberOfSections == 0 { return CGSize.zero }
         
         var contentSize = cv.contentVisibleRect.size as CGSize
         let height = self.sectionAttributes.last?.frame.maxY ?? 0

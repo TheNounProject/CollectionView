@@ -189,6 +189,8 @@ extension OrderedSet where Element:Comparable {
     }
     
     
+    
+    
 }
 
 extension OrderedSet where Element:Hashable & AnyObject {
@@ -211,18 +213,33 @@ extension OrderedSet where Element:Hashable & AnyObject {
     
     mutating func insert<C : Collection>(contentsOf newElements: C, using sortDescriptors: [NSSortDescriptor]) where C.Iterator.Element == Element {
         
-        var _fInsert = -1
-        for e in newElements {
-            _ = self.remove(e)
-            let idx = self._data.insert(e, using: sortDescriptors)
-            if idx < _fInsert || _fInsert == -1 {
-                _fInsert = idx
+        
+        var new = newElements.sorted(using: sortDescriptors)
+        var fMatch = self._data.count
+        
+        for obj in new.reversed() {
+            if let index = self.index(of: obj) {
+                if index < fMatch { fMatch = index }
+                self._data.remove(at: index)
             }
         }
         
-        if _fInsert > -1 {
-            self._remap(startingAt: _fInsert)
+        var checkIdx = 0
+        while new.count > 0, checkIdx < _data.count {
+            var check = _data[checkIdx]
+            if sortDescriptors.compare(new[0], to: check) == .orderedAscending {
+                if checkIdx < fMatch { fMatch = checkIdx }
+                _data.insert(new[0], at: checkIdx)
+                new.removeFirst()
+            }
+            checkIdx += 1
         }
+        
+        for n in new {
+            _data.append(n)
+        }
+        
+        self._remap(startingAt: fMatch)
     }
     
     

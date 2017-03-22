@@ -605,6 +605,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         let newContentSize = self.collectionViewLayout.collectionViewContentSize
         if newContentSize != _lastViewSize {
             
+            setContentViewSize()
             var absoluteCellFrames = [CollectionReusableView:CGRect]()
             
             for view in self.contentDocumentView.subviews {
@@ -618,7 +619,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 }
             }
             let holdIP : IndexPath? = self.indexPathForFirstVisibleItem
-            setContentViewSize()
             
             if scrollPosition != .none, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {
                 self._scrollRect(rect, to: scrollPosition, animated: false, prepare: false, completion: nil)
@@ -652,14 +652,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     }
                 }
                 
+                
+                
                 let cFrame = self.contentDocumentView.convert(item.1, from: self)
                 item.0.frame = cFrame
             }
+            
         }
-        
-        self.contentDocumentView.preparedRect = _preperationRect
-        self.contentDocumentView.prepareRect(_preperationRect, animated: animated, force: true, completion: completion)
-        self.delegate?.collectionViewDidReloadLayout?(self)
+            self.contentDocumentView.preparedRect = self._preperationRect
+            self.contentDocumentView.prepareRect(self._preperationRect, animated: animated, force: true, completion: completion)
+            self.delegate?.collectionViewDidReloadLayout?(self)
+    
     }
     
     
@@ -784,6 +787,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
         if let ip = self.delegate?.collectionViewLayoutAnchor?(self) {
             return ip
         }
+        
+        
+        return self.contentDocumentView.preparedCellIndex.indexes.min()
         
         var visibleRect = self.contentVisibleRect //.insetBy(dx: self.contentInsets.left + self.contentInsets.right, dy: self.contentInsets.top + self.contentInsets.bottom)
         visibleRect.origin.y += self.contentInsets.top

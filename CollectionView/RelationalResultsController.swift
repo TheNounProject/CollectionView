@@ -41,6 +41,8 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
     public var objects: [Any] { return _storage.objects  }
     public var numberOfObjects: Int { return _storage.count }
     
+    private unowned let controller : RelationalResultsController<Section,Element>
+    
     fileprivate let _object : Section?
     
     private(set) var isEditing: Bool = false
@@ -60,7 +62,8 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
         return lhs._object == rhs._object
     }
     
-    internal init(object: Section?, objects: [Element] = []) {
+    internal init(controller: RelationalResultsController<Section,Element>, object: Section?, objects: [Element] = []) {
+        self.controller = controller
         self._object = object
         _storage.add(contentsOf: objects)
     }
@@ -69,19 +72,21 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
         return _storage.index(of: object)
     }
     
-    func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor] = []) -> Int {
-        if self._storage.count == 0  {
-            self.add(object)
-            return 0
-        }
-        else if needsSort || sortDescriptors.count == 0 {
-            self.add(object)
-            return self._storage.count - 1
-        }
-        else {
-            let idx = _storage.insert(object, using: sortDescriptors)
-            return idx
-        }
+    func appendOrdered(_ object: Element) -> Int {
+        self._storage.add(object)
+        return self._storage.count - 1
+//        if self._storage.count == 0  {
+//            self.add(object)
+//            return 0
+//        }
+//        else if needsSort || sortDescriptors.count == 0 {
+//            self.add(object)
+//            return self._storage.count - 1
+//        }
+//        else {
+//            let idx = _storage.insert(object, using: sortDescriptors)
+//            return idx
+//        }
     }
     
     func remove(_ object: Element) -> Int? {
@@ -89,7 +94,13 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
     }
     
     func sortItems(using sortDescriptors: [NSSortDescriptor]) {
-        self.needsSort = false
+        
+        if self.isEditing {
+            Swift.print("Attempt to call sort items on relations section info while editing.")
+            return;
+        }
+        
+//        self.needsSort = false
         self._storage.sort(using: sortDescriptors)
     }
     
@@ -119,15 +130,15 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
     // MARK: - Editing
     /*-------------------------------------------------------------------------------*/
     
-    private(set) var needsSort : Bool = false
-//    private var _added = Set<Element>() // Tracks added items needing sort, if one do insert for performance
+//    private(set) var needsSort : Bool = false
+    private var _added = Set<Element>() // Tracks added items needing sort, if one do insert for performance
     
     
     func beginEditing() {
         assert(!isEditing, "Mutiple calls to beginEditing() for RelationalResultsControllerSection")
         isEditing = true
         _storageCopy = _storage
-//        _added.removeAll()
+        _added.removeAll()
     }
     
     func ensureEditing() {
@@ -137,26 +148,33 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
     
     func endEditing(forceUpdates: Set<Element>) -> ChangeSet<OrderedSet<Element>> {
         assert(isEditing, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
-        assert(!needsSort, "endEditing() called but the section still needs to be sorted.")
+        
+        if self._added.count > 0, let desc = controller.fetchRequest.sortDescriptors {
+            var ordered = self._added.sorted(using: desc)
+            _storage.insert(contentsOf: self._added, using: desc)
+        }
+        
         isEditing = false
-        self.needsSort = false
+//        self.needsSort = false
         let changes = ChangeSet(source: _storageCopy, target: _storage, forceUpdates: forceUpdates)
         self._storageCopy.removeAll()
         return changes
     }
     
-    func markNeedsSort() {
-        self.needsSort = true
+    func _modified(_ element: Element) {
+        assert(self.isEditing, "Attempt to call modified object while NOT editing")
+        self._added.insert(element)
     }
     
-    func add(_ element: Element) {
-        guard self._storage.contains(element) == false else {
-            let idx = _storage.index(of: element)!
-            return
-        }
-        self.needsSort = self._storage.count > 0
+    func _add(_ element: Element) {
+        assert(self.isEditing, "Attempt to call modified object while NOT editing")
+//        guard self._storage.contains(element) == false else {
+//            return
+//        }
+//        self.needsSort = self._storage.count > 0
 //        _added.insert(element)
-        self._storage.add(element)
+//        self._storage.add(element)
+        self._added.insert(element)
     }
 }
 
@@ -369,7 +387,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return nil
     }
     public func indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(object: sectionObject)
+        let _wrap = SectionInfo(controller: self, object: sectionObject)
         if let idx = _sections.index(of: _wrap) {
             return IndexPath.for(section: idx)
         }
@@ -404,7 +422,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /*-------------------------------------------------------------------------------*/
     
     private func contains(sectionObject: Section) -> Bool {
-        let _wrap = SectionInfo(object: sectionObject)
+        let _wrap = SectionInfo(controller: self, object: sectionObject)
         return _sections.contains(_wrap)
     }
     
@@ -496,7 +514,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         for object in _objects {
             let parent = object.value(forKey: sectionKeyPath) as? Section
             let p = self._insert(section: parent)
-            _ = p.insert(object)
+            _ = p.appendOrdered(object)
             _objectSectionMap[object] = p
         }
                                                         
@@ -518,7 +536,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     fileprivate func _insert(section: Section?) -> SectionInfo {
         if let s = self._sectionInfo(representing: section) { return s }
         _ensureSectionCopy()
-        let s = SectionInfo(object: section, objects: [])
+        let s = SectionInfo(controller: self, object: section, objects: [])
         _sections.add(s)
         return s
     }
@@ -611,9 +629,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
             
             for s in self._sections {
-                if s.needsSort {
-                    s.sortItems(using: self.fetchRequest.sortDescriptors ?? [])
-                }
+//                if s.needsSort {
+//                    s.sortItems(using: self.fetchRequest.sortDescriptors ?? [])
+//                }
                 if s.isEditing {
                     
                     if s.numberOfObjects == 0 {
@@ -888,6 +906,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             }
             
             for obj in itemChanges.updated {
+                
+                log.debug("Object: \(obj)")
+                log.debug("isFault: \(obj.isFault)")
+                log.debug("Event: \(obj.changedValuesForCurrentEvent())")
+                log.debug("Changed: \(obj.changedValues())")
+                
                 if let o = obj as? Element {
                     
                     let _ip = self.indexPath(of: o)
@@ -1001,14 +1025,14 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 let existingSection = self._sectionInfo(at: existingIP) {
                 
                 existingSection.ensureEditing()
-                existingSection.add(object)
+                existingSection._add(object)
                 _objectSectionMap[object] = existingSection
                 
                 // Should items in inserted sections be included?
             }
             else {
                 let sec = self._insert(section: sectionValue)
-                sec.add(object)
+                sec._add(object)
                 _objectSectionMap[object] = sec
             }
         }
@@ -1037,7 +1061,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             // Move within the same section
             if sectionValue == currentSection._object {
                 currentSection.ensureEditing()
-                currentSection.markNeedsSort()
+                currentSection._modified(object)
                 _objectSectionMap[object] = currentSection
             }
                 
@@ -1046,7 +1070,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 let newSection = self._sectionInfo(at: newSip) {
                 currentSection.remove(object)
                 newSection.ensureEditing()
-                newSection.add(object)
+                newSection._add(object)
                 self.context.itemsWithSectionChange.insert(object)
                 _objectSectionMap[object] = newSection
             }
@@ -1056,7 +1080,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 // The section value doesn't exist yet, the section will be inserted
                 let sec = self._insert(section: sectionValue)
                 sec.ensureEditing()
-                sec.add(object)
+                sec._add(object)
                 _objectSectionMap[object] = sec
             }
             

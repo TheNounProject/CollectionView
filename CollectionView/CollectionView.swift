@@ -521,10 +521,24 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /**
      Reload the data (section & item counts) when the collectionView bounds change. Defaults to false.
      
-     Set to `true` if the number of sections or items per section can change depending on the collection view's size
-     
      - Note:
      This will only be applied if the layout is also invalidated via `shouldInvalidateLayout(forBoundsChange:)`
+     
+     - Discussion:
+     Set to `true` if the number of sections or items per section can change depending on the collection view's size For example if you want to limit the size of a section but maintain item size, you can calculate the number of items that will fit in the section based on the size of the collection view and return that value in collectionView(_:numberOfItemsIn:) from the collection views data source.
+     
+     +----------+      +-----------------+
+     |          |      |                 |
+     |  +----+  |      |  +----+ +----+  |
+     |  |    |  |      |  |    | |    |  |
+     |  |    |  |      |  |    | |    |  |
+     |  +----+  | +--> |  +----+ +----+  |
+     |          |      |                 |
+     +----------+      +-----------------+
+     |Section 2 |      |Section 2        |
+     +----------+      +-----------------+
+     |          |      |                 |
+     +----------+      +-----------------+
      
     */
     public var reloadDataOnBoundsChange : Bool = false

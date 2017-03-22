@@ -145,6 +145,9 @@ open class CollectionViewLayout : NSObject {
     }
     
     
+    @available(*, unavailable, renamed: "layoutAttributesForSupplementaryView(ofKind:at:)")
+    open func layoutAttributesForSupplementaryView(ofKind elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? { return nil }
+    
     /**
      Returns the layout attributes for the supplementary view of the given kind and the given index path
      
@@ -155,7 +158,7 @@ open class CollectionViewLayout : NSObject {
      This must be override by a subclass
 
     */
-    open func layoutAttributesForSupplementaryView(ofKind elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    open func layoutAttributesForSupplementaryView(ofKind kind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         overrideWarning()
         return nil
     }
@@ -179,7 +182,7 @@ open class CollectionViewLayout : NSObject {
         var rect = self.contentRectForSection(section)
         guard let cv = self.collectionView else { return rect }
         for identifier in cv._allSupplementaryViewIdentifiers {
-            if let attributes = self.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: IndexPath.for(item:0, section: section)) {
+            if let attributes = self.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: IndexPath.for(item:0, section: section)) {
                 rect = rect.union(attributes.frame)
             }
         }

@@ -352,7 +352,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         return list[indexPath._item]
     }
     
-    open override func layoutAttributesForSupplementaryView(ofKind elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    open override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         
         if elementKind == CollectionViewLayoutElementKind.SectionHeader {
             var attrs = self.headersAttributes[indexPath._section]
@@ -389,7 +389,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
         let inset = (self.collectionView?.contentInsets.top ?? 0)
-        if self.pinHeadersToTop && atPosition == .leading, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, atIndexPath: IndexPath.for(item:0, section: indexPath._section)) {
+        if self.pinHeadersToTop && atPosition == .leading, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, at: IndexPath.for(item:0, section: indexPath._section)) {
             let y = (frame.origin.y - attrs.frame.size.height) + inset
             
             let height = frame.size.height + attrs.frame.size.height

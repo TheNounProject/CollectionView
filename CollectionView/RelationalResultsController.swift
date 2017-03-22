@@ -782,7 +782,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 
                 let start = changes.origin.count
                 let end = changes.destination.count
-                log.debug("SECTION: \(sectionIndex) START: \(start) END: \(end)")
+//                log.debug("SECTION: \(sectionIndex) START: \(start) END: \(end)")
                 if start != end {
                     if start == 0 {
                         let ip = IndexPath.for(section: sectionIndex)
@@ -833,7 +833,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             self.delegate?.controllerDidChangeContent(controller: self)
             self.emptySectionChanges = nil
             self._sectionsCopy = nil
-            log.debug("End Relational Controller Update: •••••••••••••••••••••••")
+//            log.debug("End Relational Controller Update: •••••••••••••••••••••••")
         }
         
     }
@@ -877,11 +877,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                         else if match {
                             sections.add(inserted: o)
                         }
-                        
-                        // TODO: Need to look into check if sort values changed
-//                        print(o.changedValuesForCurrentEvent())
-//                        print(o.changedValues())
-//                        print(o.committedValues(forKeys: []))
                     }
                     else if let ip = _ip {
                         sections.add(updated: o, for: ip._section)
@@ -906,12 +901,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             }
             
             for obj in itemChanges.updated {
-                
-                log.debug("Object: \(obj)")
-                log.debug("isFault: \(obj.isFault)")
-                log.debug("Event: \(obj.changedValuesForCurrentEvent())")
-                log.debug("Changed: \(obj.changedValues())")
-                
                 if let o = obj as? Element {
                     
                     let _ip = self.indexPath(of: o)

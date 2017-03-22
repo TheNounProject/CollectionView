@@ -507,8 +507,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public final func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         return self.collectionViewLayout.layoutAttributesForItem(at: indexPath)
     }
-    public final func layoutAttributesForSupplementaryElement(ofKind kind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes?  {
-        return self.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: kind, atIndexPath: indexPath)
+    
+    
+    
+    @available(*, unavailable, renamed: "layoutAttributesForSupplementaryView(ofKind:at:)")
+    public final func layoutAttributesForSupplementaryElement(ofKind kind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes?  { return nil }
+    
+    public final func layoutAttributesForSupplementaryView(ofKind kind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes?  {
+        return self.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: kind, at: indexPath)
     }
     
     
@@ -609,25 +615,26 @@ open class CollectionView : ScrollView, NSDraggingSource {
             var absoluteCellFrames = [CollectionReusableView:CGRect]()
             
             for view in self.contentDocumentView.subviews {
-                if !view.isHidden, let v = view as? CollectionReusableView {
-                    absoluteCellFrames[v] = self.convert(v.frame, from: v.superview)
+                if !view.isHidden, let v = view as? CollectionReusableView, let attrs = v.attributes {
+                    absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
                 }
             }
             for view in self.floatingContentView.subviews {
-                if !view.isHidden, let v = view as? CollectionReusableView {
-                    absoluteCellFrames[v] = self.convert(v.frame, from: v.superview)
+                if !view.isHidden, let v = view as? CollectionReusableView, let attrs = v.attributes {
+                    absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
                 }
             }
             let holdIP : IndexPath? = self.indexPathForFirstVisibleItem
             
-            if scrollPosition != .none, let ip = holdIP, let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {
+            if scrollPosition != .none, let ip = holdIP,
+                let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {
                 self._scrollRect(rect, to: scrollPosition, animated: false, prepare: false, completion: nil)
             }
             self.reflectScrolledClipView(self.clipView!)
             
             for item in absoluteCellFrames {
                 if let attrs = item.0.attributes , attrs.representedElementCategory == CollectionElementCategory.supplementaryView {
-                    if validateIndexPath(attrs.indexPath), let newAttrs = self.layoutAttributesForSupplementaryElement(ofKind: attrs.representedElementKind!, atIndexPath: attrs.indexPath as IndexPath) {
+                    if validateIndexPath(attrs.indexPath), let newAttrs = self.layoutAttributesForSupplementaryView(ofKind: attrs.representedElementKind!, at: attrs.indexPath) {
                         
                         if newAttrs.floating != attrs.floating {
                             if newAttrs.floating {
@@ -2455,7 +2462,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             for kind in self._registeredSupplementaryViewKinds {
                 let ip = IndexPath.for(item:0, section: section)
-                if let attrs = self.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: kind, atIndexPath: ip) {
+                if let attrs = self.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: kind, at: ip) {
                     if attrs.frame.intersects(rect) {
                         visibleIdentifiers.insert(SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: ip))
                     }

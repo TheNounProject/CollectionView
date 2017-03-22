@@ -52,7 +52,7 @@ internal struct ItemUpdate : Hashable {
         }
         var a : CollectionViewLayoutAttributes?
         if let id = identifier {
-            a = cv.layoutAttributesForSupplementaryElement(ofKind: id.kind, atIndexPath: indexPath)
+            a = cv.layoutAttributesForSupplementaryView(ofKind: id.kind, at: indexPath)
         }
         else if view is CollectionViewCell {
             a = cv.layoutAttributesForItem(at: indexPath)
@@ -186,7 +186,7 @@ final public class CollectionViewDocumentView : NSView {
             for _view in self.preparedSupplementaryViewIndex {
                 let view = _view.1
                 let id = _view.0
-                guard let ip = id.indexPath, var attrs = self.collectionView.layoutAttributesForSupplementaryElement(ofKind: id.kind, atIndexPath: ip) else { continue }
+                guard let ip = id.indexPath, var attrs = self.collectionView.layoutAttributesForSupplementaryView(ofKind: id.kind, at: ip) else { continue }
                 
                 guard attrs.frame.intersects(self.preparedRect) else {
                     self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, ofElementKind: id.kind, at: ip)
@@ -333,7 +333,7 @@ final public class CollectionViewDocumentView : NSView {
                     self.preparedSupplementaryViewIndex[identifier] = nil
                     view.layer?.zPosition = -100
                     
-                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!) ?? view.attributes {
+                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!) ?? view.attributes {
                         updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: identifier))
                     }
                     else {
@@ -350,7 +350,7 @@ final public class CollectionViewDocumentView : NSView {
                 
                 assert(view.collectionView != nil, "Attempt to insert a view without using deque:")
                 
-                guard var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, atIndexPath: identifier.indexPath!)
+                guard var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!)
                     else { continue }
                 _rect = _rect.union(attrs.frame)
                 
@@ -378,7 +378,7 @@ final public class CollectionViewDocumentView : NSView {
         
         for id in updated {
             if let view = preparedSupplementaryViewIndex[id],
-                var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: id.kind, atIndexPath: id.indexPath!) {
+                var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: id.kind, at: id.indexPath!) {
                 _rect = _rect.union(attrs.frame)
                 
                 if attrs.floating == true {

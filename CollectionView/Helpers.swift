@@ -253,6 +253,13 @@ extension CGRect {
         }
     }
     
+    
+    func sharedArea(with other: CGRect) -> CGFloat {
+        let intersect = self.intersection(other)
+        if intersect.isEmpty { return 0 }
+        return intersect.height * intersect.width
+    }
+    
     func scaled(by scale: CGFloat) -> CGRect {
         var rect = CGRect()
         rect.origin.x = self.origin.x * scale

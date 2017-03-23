@@ -410,8 +410,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         self._reloadDataCounts()
         
-        self.delegate?.collectionViewWillReloadLayout?(self)
-        self.collectionViewLayout.prepare()
+        doLayoutPrep()
         
         contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize
         self.reflectScrolledClipView(self.clipView!)
@@ -576,8 +575,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             if reloadDataOnBoundsChange {
                 self._reloadDataCounts()
             }
-            self.delegate?.collectionViewWillReloadLayout?(self)
-            self.collectionViewLayout.prepare()
+            doLayoutPrep()
             setContentViewSize()
             
             if let ip = _topIP, var rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: CollectionViewScrollPosition.leading) {
@@ -615,12 +613,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._reloadLayout(animated, scrollPosition: scrollPosition, completion: completion, needsRecalculation: true)
     }
     
+    private func doLayoutPrep() {
+        if !self.inLiveResize {
+            self._topIP = self.indexPathForFirstVisibleItem
+        }
+        self.delegate?.collectionViewWillReloadLayout?(self)
+        self.collectionViewLayout.prepare()
+    }
+    
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
     
         
         if needsRecalculation {
-            self.delegate?.collectionViewWillReloadLayout?(self)
-            self.collectionViewLayout.prepare()
+            doLayoutPrep()
         }
         let newContentSize = self.collectionViewLayout.collectionViewContentSize
         if newContentSize != _lastViewSize {
@@ -638,9 +643,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
                 }
             }
-            let holdIP : IndexPath? = self.indexPathForFirstVisibleItem
             
-            if scrollPosition != .none, let ip = holdIP,
+            
+            if scrollPosition != .none, let ip = self._topIP,
                 let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {
                 self._scrollRect(rect, to: scrollPosition, animated: false, prepare: false, completion: nil)
             }
@@ -808,39 +813,31 @@ open class CollectionView : ScrollView, NSDraggingSource {
         if let ip = self.delegate?.collectionViewLayoutAnchor?(self) {
             return ip
         }
-        
-        
-        return self.contentDocumentView.preparedCellIndex.indexes.min()
-        
-        var visibleRect = self.contentVisibleRect //.insetBy(dx: self.contentInsets.left + self.contentInsets.right, dy: self.contentInsets.top + self.contentInsets.bottom)
-        visibleRect.origin.y += self.contentInsets.top
-        visibleRect.origin.x += self.contentInsets.left
-        visibleRect.size.height -= (self.contentInsets.top + self.contentInsets.bottom)
-        visibleRect.size.width -= (self.contentInsets.left + self.contentInsets.right)
-        
-        var closest : IndexPath?
-        for sectionIndex in 0..<self.numberOfSections  {
-//            log.debug("Checking Section \(sectionIndex)")
-            guard let frame = self.frameForSection(at: sectionIndex), !frame.isEmpty, frame.intersects(visibleRect) else {
-//                log.debug("Section miss for \(sectionIndex)")
-                continue
-            }
-            
-            let itemCount = self.numberOfItems(in: sectionIndex)
-            for item in 0..<itemCount {
-                let indexPath = IndexPath.for(item:item, section: sectionIndex)
-                if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: indexPath) {
-                    if (visibleRect.contains(attributes.frame)) {
-//                        log.debug("Matched for \(indexPath)")
-                        return indexPath
-                    }
-                    else if closest == nil && visibleRect.intersects(attributes.frame) {
-                        closest = indexPath
+       return _indexPathForFirstVisibleItem
+    }
+    
+    
+    /**
+     Same as indexPathForFirstVisibleItem but doesn't ask the delegate for a suggestion. This is a convenient variable to use in collectionViewLayoutAnchor(_:) but asking the delegate within is not possibe.
+    */
+    open var _indexPathForFirstVisibleItem : IndexPath? {
+        var closest : (IndexPath, CGFloat)?
+        for ip in self.contentDocumentView.preparedCellIndex.orderedIndexes {
+            if let attributes = self.collectionViewLayout.layoutAttributesForItem(at: ip) {
+                
+                if (contentVisibleRect.contains(attributes.frame)) {
+                    return ip
+                }
+                else {
+                    let shared = contentVisibleRect.sharedArea(with: attributes.frame)
+                    if closest == nil || closest!.1 < shared {
+                        closest = (ip, shared)
                     }
                 }
             }
         }
-        return closest
+        return closest?.0
+        
     }
     
     
@@ -1288,8 +1285,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         _editing = 0
         
         self._reloadDataCounts()
-        self.delegate?.collectionViewWillReloadLayout?(self)
-        self.collectionViewLayout.prepare()
+        doLayoutPrep()
         
         self._processSectionInserts()
         self._processSectionDeletes()
@@ -2560,7 +2556,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
             // TODO
             if self.collectionViewLayout.scrollDirection == .vertical {
                 rect.origin.x = 0
-                rect.origin.y = rect.center.y + (visibleRect.size.height/2)
+                let y = rect.midY - (visibleRect.size.height/2)
+                rect.origin.y = max(y, 0)
             }
             else {
                 rect.size.width = self.bounds.size.width
@@ -2582,7 +2579,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 return
             }
             
-            if rect.origin.y < visibleRect.origin.y {
+            if rect.origin.y < visibleRect .origin.y {
                 rect = visibleRect.offsetBy(dx: 0, dy: rect.origin.y - visibleRect.origin.y - self.contentInsets.top)
             }
             else if rect.maxY >  visibleRect.maxY {

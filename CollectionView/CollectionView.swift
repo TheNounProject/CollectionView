@@ -2773,7 +2773,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     public var isAutoscrollEnabled = false
-    public var autoscrollSize : CGFloat = 10
+    public var autoscrollSize : CGFloat = 15
     
     func autoScroll(to dragPoint: CGPoint) {
         

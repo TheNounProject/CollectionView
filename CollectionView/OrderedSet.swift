@@ -226,11 +226,18 @@ extension OrderedSet where Element:Hashable & AnyObject {
         var new = newElements.sorted(using: sortDescriptors)
         var fMatch = self._data.count
         
+        var remove = IndexSet()
+        
         for obj in new.reversed() {
             if let index = self.index(of: obj) {
-                if index < fMatch { fMatch = index }
-                self._data.remove(at: index)
+                log.debug("Removing exisitng item at: \(index)")
+                remove.insert(index)
             }
+        }
+        
+        fMatch = remove.first ?? self._data.count
+        for idx in remove.reversed() {
+            _data.remove(at: idx)
         }
         
         var checkIdx = 0
@@ -239,7 +246,10 @@ extension OrderedSet where Element:Hashable & AnyObject {
             if sortDescriptors.compare(new[0], to: check) == .orderedAscending {
                 if checkIdx < fMatch { fMatch = checkIdx }
                 _data.insert(new[0], at: checkIdx)
+                log.debug("Inserting item item at: \(checkIdx)")
                 new.removeFirst()
+//                checkIdx += 1
+//                continue
             }
             checkIdx += 1
         }

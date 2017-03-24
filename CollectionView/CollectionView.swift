@@ -76,9 +76,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     private func setup() {
         
-//        self.acceptsTouchEvents = true
         collectionViewLayout.collectionView = self
-//        self.info = CollectionViewInfo(collectionView: self)
         self.wantsLayer = true
         let dView = CollectionViewDocumentView()
         dView.wantsLayer = true

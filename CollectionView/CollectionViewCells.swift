@@ -96,15 +96,20 @@ open class CollectionReusableView : NSView {
         self.attributes = layoutAttributes
     }
     
+    open var useMask: Bool = true
+    
     open override func updateLayer() {
         super.updateLayer()
         self.layer?.backgroundColor = self.backgroundColor?.cgColor
-        if let c = self.layer?.cornerRadius, c > 0 {
+        if useMask {
             let l = CALayer()
             l.backgroundColor = NSColor.white.cgColor
             l.frame = self.bounds
             l.cornerRadius = self.layer!.cornerRadius
             self.layer?.mask = l
+        }
+        else {
+            self.layer?.mask = nil
         }
     }
     
@@ -250,40 +255,39 @@ open class CollectionViewCell : CollectionReusableView {
         self.setHighlighted(false, animated: true)
     }
     
-}
-
-public extension CollectionViewCell {
+    
     
     // MARK: - Registration & Reuse Helpers
     /*-------------------------------------------------------------------------------*/
     
     /// Provide a reuse identifier for all cells of this class, defaults to the class name
-    public static var defaultReuseIdentifier : String { return self.className() }
+    open class var defaultReuseIdentifier : String { return self.className() }
     
     
     
     /**
      Register a CollectionViewCell subclass to a collection view using the class's defaultReuseIdentifier
-
+     
      - Parameter collectionView: The collection view to register the class in
-
-    */
-    public static func register(in collectionView: CollectionView) {
+     
+     */
+    open class func register(in collectionView: CollectionView) {
         let id = defaultReuseIdentifier
         collectionView.register(class: self, forCellWithReuseIdentifier: id)
     }
     
     /**
      Deque a cell of this class from a collection view. Uses defaultReuseIdentifier
-
+     
      - Parameter indexPath: The indexPath to deque the cell for
      - Parameter collectionView: The collection view to deque the cell from
      
      - Returns: A valid CollectionViewCell
-
-    */
-    public static func deque(for indexPath: IndexPath, in collectionView: CollectionView) -> CollectionViewCell {
+     
+     */
+    open class func deque(for indexPath: IndexPath, in collectionView: CollectionView) -> CollectionViewCell {
         return collectionView.dequeueReusableCell(withReuseIdentifier: defaultReuseIdentifier, for: indexPath)
     }
     
 }
+

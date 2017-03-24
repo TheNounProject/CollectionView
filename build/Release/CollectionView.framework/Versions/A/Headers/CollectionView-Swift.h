@@ -116,8 +116,8 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #endif
 #if defined(__has_feature) && __has_feature(modules)
 @import AppKit;
-@import CoreGraphics;
 @import Foundation;
+@import CoreGraphics;
 @import ObjectiveC;
 @import CoreData;
 #endif
@@ -129,7 +129,6 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 
 SWIFT_CLASS("_TtC14CollectionView8ClipView")
 @interface ClipView : NSClipView
-@property (nonatomic) CGFloat decelerationRate;
 - (nonnull instancetype)initWithFrame:(NSRect)frameRect SWIFT_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
 - (void)viewWillMoveToWindow:(NSWindow * _Nullable)newWindow;
@@ -176,6 +175,7 @@ SWIFT_CLASS("_TtC14CollectionView22CollectionReusableView")
   The background color of the cell
 */
 @property (nonatomic, strong) NSColor * _Nullable backgroundColor;
+@property (nonatomic) BOOL useMask;
 - (void)updateLayer;
 - (void)drawRect:(NSRect)dirtyRect;
 @property (nonatomic) BOOL trackMouseMoved;
@@ -367,14 +367,31 @@ SWIFT_CLASS("_TtC14CollectionView14CollectionView")
 @property (nonatomic) BOOL prepareAll;
 /**
   Reload the data (section & item counts) when the collectionView bounds change. Defaults to false.
-  Set to \code
-  true
-  \endcode if the number of sections or items per section can change depending on the collection view’s size
   note:
 
   This will only be applied if the layout is also invalidated via \code
   shouldInvalidateLayout(forBoundsChange:)
   \endcode
+  <ul>
+    <li>
+      Discussion:
+      Set to \code
+      true
+      \endcode if the number of sections or items per section can change depending on the collection view’s size For example if you want to limit the size of a section but maintain item size, you can calculate the number of items that will fit in the section based on the size of the collection view and return that value in collectionView(_:numberOfItemsIn:) from the collection views data source.
+    </li>
+  </ul>
+  +–––––+      +—————–+
+  |          |      |                 |
+  |  +––+  |      |  +––+ +––+  |
+  |  |    |  |      |  |    | |    |  |
+  |  |    |  |      |  |    | |    |  |
+  |  +––+  | +–> |  +––+ +––+  |
+  |          |      |                 |
+  +–––––+      +—————–+
+  |Section 2 |      |Section 2        |
+  +–––––+      +—————–+
+  |          |      |                 |
+  +–––––+      +—————–+
 */
 @property (nonatomic) BOOL reloadDataOnBoundsChange;
 - (void)layout;
@@ -426,6 +443,10 @@ SWIFT_CLASS("_TtC14CollectionView14CollectionView")
   Returns the lowest index path of all visible items
 */
 @property (nonatomic, readonly, copy) NSIndexPath * _Nullable indexPathForFirstVisibleItem;
+/**
+  Same as indexPathForFirstVisibleItem but doesn’t ask the delegate for a suggestion. This is a convenient variable to use in collectionViewLayoutAnchor(_:) but asking the delegate within is not possibe.
+*/
+@property (nonatomic, readonly, copy) NSIndexPath * _Nullable _indexPathForFirstVisibleItem;
 /**
   The duration of animations when performing animated layout changes
 */
@@ -709,6 +730,10 @@ SWIFT_CLASS("_TtC14CollectionView14CollectionView")
 */
 - (NSIndexPath * _Nullable)indexPathForSectionAt:(CGPoint)point;
 /**
+  Returns all visible cells in the collection view
+*/
+@property (nonatomic, readonly, copy) NSArray<CollectionReusableView *> * _Nonnull visibleSupplementaryViews;
+/**
   Returns the index path for a supplementary view
   \param view The supplementary view for which you want the index path
 
@@ -727,11 +752,23 @@ SWIFT_CLASS("_TtC14CollectionView14CollectionView")
   returns:
   The view of kind at the given index path
 */
+- (CollectionReusableView * _Nullable)supplementaryViewsForElementKind:(NSString * _Nonnull)kind at:(NSIndexPath * _Nonnull)indexPath;
+/**
+  Returns the visible supplementary view of the given kind at indexPath
+  \param kind The kind of the supplementary view
+
+  \param indexPath The index path of the supplementary view
+
+
+  returns:
+  The view of kind at the given index path
+*/
 - (CollectionReusableView * _Nullable)supplementaryViewForElementKind:(NSString * _Nonnull)kind at:(NSIndexPath * _Nonnull)indexPath;
 /**
   The index paths for items included in the currect dragging session
 */
 @property (nonatomic, readonly, copy) NSArray<NSIndexPath *> * _Nonnull indexPathsForDraggingItems;
+@property (nonatomic) BOOL isDragging;
 - (void)mouseDragged:(NSEvent * _Nonnull)theEvent;
 - (NSDragOperation)draggingSession:(NSDraggingSession * _Nonnull)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context;
 - (void)draggingSession:(NSDraggingSession * _Nonnull)session willBeginAtPoint:(NSPoint)screenPoint;
@@ -742,6 +779,8 @@ SWIFT_CLASS("_TtC14CollectionView14CollectionView")
 - (void)draggingEnded:(id <NSDraggingInfo> _Nullable)sender;
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo> _Nonnull)sender;
 - (BOOL)performDragOperation:(id <NSDraggingInfo> _Nonnull)sender;
+@property (nonatomic) BOOL isAutoscrollEnabled;
+@property (nonatomic) CGFloat autoscrollSize;
 @end
 
 
@@ -770,10 +809,6 @@ SWIFT_CLASS("_TtC14CollectionView18CollectionViewCell")
 - (void)prepareForReuse;
 - (void)mouseEntered:(NSEvent * _Nonnull)theEvent;
 - (void)mouseExited:(NSEvent * _Nonnull)theEvent;
-@end
-
-
-@interface CollectionViewCell (SWIFT_EXTENSION(CollectionView))
 /**
   Provide a reuse identifier for all cells of this class, defaults to the class name
 */
@@ -920,18 +955,8 @@ SWIFT_CLASS("_TtC14CollectionView26CollectionViewColumnLayout")
 SWIFT_PROTOCOL("_TtP14CollectionView22CollectionViewDelegate_")
 @protocol CollectionViewDelegate
 @optional
-/**
-  Tells the delegate that the collection view will reload it’s data
-  \param collectionView The collection view that will reload
-
-*/
-- (void)collectionViewWillReloadData:(CollectionView * _Nonnull)collectionView;
-/**
-  Tells the delegate that is completed reloading it’s data
-  \param collectionView The collection view that was reloaded
-
-*/
-- (void)collectionViewDidReloadData:(CollectionView * _Nonnull)collectionView;
+- (void)collectionViewWillReloadLayout:(CollectionView * _Nonnull)collectionView;
+- (void)collectionViewDidReloadLayout:(CollectionView * _Nonnull)collectionView;
 /**
   Tells the delegate that the collection view became or resigned first responder
   \param collectionView The collection view changing status
@@ -961,18 +986,28 @@ SWIFT_PROTOCOL("_TtP14CollectionView22CollectionViewDelegate_")
 */
 - (void)collectionView:(CollectionView * _Nonnull)collectionView mouseDownInItemAt:(NSIndexPath * _Nullable)indexPath with:(NSEvent * _Nonnull)event;
 /**
-  <#Description#>
+  Tells the delegate that the mouse was released in the specified index path
+  \param collectionView The collection view receiving the click
+
+  \param indexPath The index path of the item at the click location, or nil
+
+  \param event The click even
+
+*/
+- (void)collectionView:(CollectionView * _Nonnull)collectionView mouseUpInItemAt:(NSIndexPath * _Nullable)indexPath with:(NSEvent * _Nonnull)event;
+/**
+  Asks the delegate if the item at the specified index path should highlight
   \param collectionView <#collectionView description#>
 
   \param indexPath <#indexPath description#>
 
-  \param event <#event description#>
 
+  returns:
+  <#Bool return description#>
 */
-- (void)collectionView:(CollectionView * _Nonnull)collectionView mouseUpInItemAt:(NSIndexPath * _Nullable)indexPath with:(NSEvent * _Nonnull)event;
 - (BOOL)collectionView:(CollectionView * _Nonnull)collectionView shouldHighlightItemAt:(NSIndexPath * _Nonnull)indexPath;
 /**
-  <#Description#>
+  Tells the delegate
   \param collectionView <#collectionView description#>
 
   \param indexPath <#indexPath description#>
@@ -1030,7 +1065,7 @@ SWIFT_PROTOCOL("_TtP14CollectionView22CollectionViewDelegate_")
   \param event <#event description#>
 
 */
-- (void)collectionView:(CollectionView * _Nonnull)collectionView didDoubleClickItemAt:(NSIndexPath * _Nonnull)indexPath with:(NSEvent * _Nonnull)event;
+- (void)collectionView:(CollectionView * _Nonnull)collectionView didDoubleClickItemAt:(NSIndexPath * _Nullable)indexPath with:(NSEvent * _Nonnull)event;
 /**
   <#Description#>
   \param collectionView <#collectionView description#>
@@ -1040,7 +1075,7 @@ SWIFT_PROTOCOL("_TtP14CollectionView22CollectionViewDelegate_")
   \param event <#event description#>
 
 */
-- (void)collectionView:(CollectionView * _Nonnull)collectionView didRightClickItemAt:(NSIndexPath * _Nonnull)indexPath with:(NSEvent * _Nonnull)event;
+- (void)collectionView:(CollectionView * _Nonnull)collectionView didRightClickItemAt:(NSIndexPath * _Nullable)indexPath with:(NSEvent * _Nonnull)event;
 - (void)collectionView:(CollectionView * _Nonnull)collectionView willDisplayCell:(CollectionViewCell * _Nonnull)cell forItemAt:(NSIndexPath * _Nonnull)indexPath;
 /**
   <#Description#>
@@ -1504,12 +1539,10 @@ SWIFT_CLASS("_TtC14CollectionView24CollectionViewFlowLayout")
 /**
   The default spacing between items in the same row and between rows
 */
-@property (nonatomic) CGFloat itemSpacing;
-/**
-  The default insets for all sections
-*/
-@property (nonatomic) NSEdgeInsets sectionInsets;
-@property (nonatomic) BOOL centerContent;
+@property (nonatomic) CGFloat interitemSpacing;
+@property (nonatomic) CGFloat defaultFooterHeight;
+@property (nonatomic) CGFloat defaultHeaderHeight;
+@property (nonatomic) NSEdgeInsets defaultSectionInsets;
 /**
   If supplementary views should be inset to section insets
 */
@@ -1532,6 +1565,9 @@ SWIFT_CLASS("_TtC14CollectionView34CollectionViewHorizontalListLayout")
 - (void)prepare;
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds;
 @property (nonatomic, readonly) CGSize collectionViewContentSize;
+- (CGRect)rectForSection:(NSInteger)section;
+- (CGRect)contentRectForSection:(NSInteger)section;
+- (NSArray<NSIndexPath *> * _Nonnull)indexPathsForItemsIn:(CGRect)rect;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -1573,6 +1609,131 @@ SWIFT_CLASS("_TtC14CollectionView24CollectionViewListLayout")
 - (CGRect)rectForSection:(NSInteger)section;
 - (CGRect)contentRectForSection:(NSInteger)section;
 - (NSArray<NSIndexPath *> * _Nonnull)indexPathsForItemsIn:(CGRect)rect;
+@end
+
+
+/**
+  A default implementation of CollectionViewPreviewTransitionCell
+*/
+SWIFT_CLASS("_TtC14CollectionView25CollectionViewPreviewCell")
+@interface CollectionViewPreviewCell : CollectionViewCell
+- (void)scrollWheel:(NSEvent * _Nonnull)event;
+- (void)prepareForReuse;
+@property (nonatomic, readonly) BOOL isTransitioning;
+- (void)finishTransitionFromItemAt:(NSIndexPath * _Nonnull)indexPath in:(CollectionView * _Nonnull)collectionView;
+- (void)prepareForTransitionToItemAt:(NSIndexPath * _Nonnull)indexPath in:(CollectionView * _Nonnull)collectionView;
+- (void)transitionToItemAt:(NSIndexPath * _Nonnull)indexPath in:(CollectionView * _Nonnull)collectionView;
+- (void)finishTransitionToItemAt:(NSIndexPath * _Nonnull)indexPath in:(CollectionView * _Nonnull)collectView;
+- (nonnull instancetype)initWithFrame:(NSRect)frameRect OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class CollectionViewPreviewLayout;
+
+/**
+  An easy to use CollectionViewController that transitions from a source collection view.
+  <h3>Presentation & Data</h3>
+  The controller is presented from a source collection view. The data source of the source collection view is used to load data for the preview collection view. The preview controller will act as a proxy between the preview collection view and your source colleciton views data source.
+  important:
+  The data source for the collection view you pass to present(in:) must conform to CollectionViewPreviewControllerDelegate
+  <h3>Transitions</h3>
+  The preview controller manages the transitions to and from the source and allows the preview cell to customize the transition.
+  Although the The preview controller will accept any cell class, supporting transitions requires a small amount of additional setup.
+  The simplest way to support transitions is to create your subclass from CollectionViewPreviewCell. CollectionViewPreviewCell will animate the frame of the cell from the source and back.
+  For custom transitions, if you subclass CollectionViewPreviewCell you can simply override the the transition methods, otherwise conform your CollectionViewCell subclass and implement the methods yourself. See CollectionViewPreviewTransitionCell for more about how to implement custom transitions
+*/
+SWIFT_CLASS("_TtC14CollectionView31CollectionViewPreviewController")
+@interface CollectionViewPreviewController : CollectionViewController
+- (void)loadView;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
+/**
+  The background color of the view when the items are displayed
+*/
+@property (nonatomic, strong) NSColor * _Nonnull backgroundColor;
+/**
+  CollectionViewDelegatePreviewLayout
+*/
+- (void)viewDidLoad;
+/**
+  The  collection view the receiver was presented from
+*/
+@property (nonatomic, readonly, strong) CollectionView * _Nullable sourceCollectionView;
+/**
+  The index path the receiver was presented from
+*/
+@property (nonatomic, readonly, copy) NSIndexPath * _Nullable sourceIndexPath;
+/**
+  The index path for the currently displayed item
+*/
+@property (nonatomic, readonly, copy) NSIndexPath * _Nullable currentIndexPath;
+- (void)reloadData;
+/**
+  The duration of present/dismiss transitions
+*/
+@property (nonatomic) NSTimeInterval transitionDuration;
+/**
+  Present the preview controller, transitioning from an item at indexPath in the source collectionView
+  <em>Data Source</em>
+  The DataSource of the preview collection view will the same as the provided source collection view.
+  <em>Excluding items from preview</em>
+  Because the preview collection view must share a data source with it’s source, it can be useful to keep some items displayed in the source from being previewed. See \code
+  collectionViewPreviewController(_:canPreviewItemAt:)
+  \endcode in CollectionViewPreviewControllerDelegate
+  \param controller The ViewController to present in
+
+  \param sourceCollectionView A collectionView to transition from
+
+  \param indexPath The index path of the item to transition with
+
+  \param completion A block to call when the transition is complete
+
+*/
+- (void)presentIn:(NSViewController * _Nonnull)controller source:(CollectionView * _Nonnull)sourceCollectionView indexPath:(NSIndexPath * _Nonnull)indexPath completion:(void (^ _Nullable)(BOOL))completion;
+/**
+  Dismiss the preview controller, transitioning the current item back to its source
+  \param animated If the dismiss should be animated
+
+  \param completion A block to call when the tranision is complete
+
+*/
+- (void)dismissWithAnimated:(BOOL)animated completion:(void (^ _Nullable)(BOOL))completion;
+- (NSInteger)numberOfSectionsIn:(CollectionView * _Nonnull)collectionView;
+- (NSInteger)collectionView:(CollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section;
+- (BOOL)previewLayout:(CollectionViewPreviewLayout * _Nonnull)layout canPreviewItemAt:(NSIndexPath * _Nonnull)indexPath;
+- (CollectionViewCell * _Nonnull)collectionView:(CollectionView * _Nonnull)collectionView cellForItemAt:(NSIndexPath * _Nonnull)indexPath;
+- (nullable instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC14CollectionView27CollectionViewPreviewLayout")
+@interface CollectionViewPreviewLayout : CollectionViewLayout
+/**
+  The vertical spacing between items in the same column
+*/
+@property (nonatomic) CGFloat interItemSpacing;
+- (void)invalidate;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+- (void)prepare;
+@property (nonatomic, readonly) CGSize collectionViewContentSize;
+- (CGRect)rectForSection:(NSInteger)section;
+- (NSArray<NSIndexPath *> * _Nonnull)indexPathsForItemsIn:(CGRect)rect;
+- (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds;
+@end
+
+@class NSManagedObjectContext;
+
+SWIFT_CLASS("_TtC14CollectionView20FetchedSetController")
+@interface FetchedSetController : NSObject
+- (nonnull instancetype)initWithContext:(NSManagedObjectContext * _Nonnull)context entityName:(NSString * _Nonnull)entityName;
+- (nonnull instancetype)initWithContext:(NSManagedObjectContext * _Nonnull)context request:(NSFetchRequest<NSManagedObject *> * _Nonnull)request OBJC_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly, strong) NSManagedObjectContext * _Nonnull managedObjectContext;
+@property (nonatomic, readonly, strong) NSFetchRequest<NSManagedObject *> * _Nonnull fetchRequest;
+- (void)reset;
+- (BOOL)setManagedObjectContext:(NSManagedObjectContext * _Nonnull)moc error:(NSError * _Nullable * _Nullable)error;
+- (NSArray<NSManagedObject *> * _Nullable)performFetchAndReturnError:(NSError * _Nullable * _Nullable)error;
+@property (nonatomic) BOOL wait;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end
 
 

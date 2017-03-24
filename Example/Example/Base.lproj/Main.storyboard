@@ -417,6 +417,12 @@ CA
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="View" id="HyV-fh-RgO">
                                     <items>
+                                        <menuItem title="Preview" keyEquivalent=" " id="esk-qv-l0X">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="togglePreview:" target="Ady-hI-5gd" id="l5V-pr-aOL"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem title="Reload" keyEquivalent="r" id="PEt-1R-6ap">
                                             <connections>
                                                 <action selector="reload:" target="Ady-hI-5gd" id="mMp-Zd-thW"/>

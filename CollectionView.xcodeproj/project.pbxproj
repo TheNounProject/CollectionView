@@ -26,6 +26,9 @@
 		DEAFE2A71E41655C00FCF9C6 /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */; };
 		DEB0F4401E4105D100C2260B /* DelegateChangeSets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */; };
 		DEB4D5631E64EEC00044026F /* CollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECA70CB1D8751010006D795 /* CollectionViewFlowLayout.swift */; };
+		DEB7366A1E8599E7008467F8 /* CollectionViewPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB736671E8599E7008467F8 /* CollectionViewPreviewController.swift */; };
+		DEB7366B1E8599E7008467F8 /* CollectionViewPreviewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB736681E8599E7008467F8 /* CollectionViewPreviewLayout.swift */; };
+		DEB7366C1E8599E7008467F8 /* CollectionViewPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB736691E8599E7008467F8 /* CollectionViewPreviewCell.swift */; };
 		DEE3B5851D246CB100AD34F1 /* CollectionViewListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE3B5841D246CB100AD34F1 /* CollectionViewListLayout.swift */; };
 		DEF14B991CBDD83B00553CEF /* CollectionViewColumnLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072031CAC7FF000AD0E37 /* CollectionViewColumnLayout.swift */; };
 		DEF14B9B1CBDD83B00553CEF /* CollectionViewHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072041CAC7FF000AD0E37 /* CollectionViewHorizontalLayout.swift */; };
@@ -66,6 +69,9 @@
 		DEA6BA621D52E00900B3EF24 /* CollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
 		DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelegateChangeSets.swift; sourceTree = "<group>"; };
+		DEB736671E8599E7008467F8 /* CollectionViewPreviewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewPreviewController.swift; sourceTree = "<group>"; };
+		DEB736681E8599E7008467F8 /* CollectionViewPreviewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewPreviewLayout.swift; sourceTree = "<group>"; };
+		DEB736691E8599E7008467F8 /* CollectionViewPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewPreviewCell.swift; sourceTree = "<group>"; };
 		DECA70CB1D8751010006D795 /* CollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		DEE3B5841D246CB100AD34F1 /* CollectionViewListLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewListLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -144,10 +150,21 @@
 				DE9072061CAC7FF000AD0E37 /* Helpers.swift */,
 				DE82E95D1D78BFC900346B9E /* Constants.swift */,
 				1C6E50801E2D9C1000C85946 /* ResultsController */,
+				DEB736661E8598DF008467F8 /* Preview */,
 				DE82E95A1D78BF6900346B9E /* Layouts */,
 				DE9071EE1CAC7FD800AD0E37 /* Info.plist */,
 			);
 			path = CollectionView;
+			sourceTree = "<group>";
+		};
+		DEB736661E8598DF008467F8 /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				DEB736671E8599E7008467F8 /* CollectionViewPreviewController.swift */,
+				DEB736681E8599E7008467F8 /* CollectionViewPreviewLayout.swift */,
+				DEB736691E8599E7008467F8 /* CollectionViewPreviewCell.swift */,
+			);
+			name = Preview;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -236,6 +253,7 @@
 				DE98600B1E6F956100B6A3EC /* FetchedSetController.swift in Sources */,
 				DEE3B5851D246CB100AD34F1 /* CollectionViewListLayout.swift in Sources */,
 				1C6E50861E2D9C2A00C85946 /* ResultsControllerHelpers.swift in Sources */,
+				DEB7366A1E8599E7008467F8 /* CollectionViewPreviewController.swift in Sources */,
 				DEF14B9E1CBDD83B00553CEF /* CollectionViewCells.swift in Sources */,
 				DEF14B9B1CBDD83B00553CEF /* CollectionViewHorizontalLayout.swift in Sources */,
 				DEF14B9C1CBDD83B00553CEF /* CollectionViewLayout.swift in Sources */,
@@ -246,11 +264,13 @@
 				DEA6BA631D52E00900B3EF24 /* CollectionViewController.swift in Sources */,
 				DE13C18B1E4CE46100CEC80C /* FetchedResultsObserver.swift in Sources */,
 				DEF14B9D1CBDD83B00553CEF /* Helpers.swift in Sources */,
+				DEB7366B1E8599E7008467F8 /* CollectionViewPreviewLayout.swift in Sources */,
 				DEF14BA01CBDD83B00553CEF /* CollectionView.swift in Sources */,
 				DE82E9571D78B6E700346B9E /* ScrollView.swift in Sources */,
 				DEAFE2A71E41655C00FCF9C6 /* OrderedSet.swift in Sources */,
 				DE297DE01E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift in Sources */,
 				DE3E47561E4259B800F19D9E /* ChangeSet.swift in Sources */,
+				DEB7366C1E8599E7008467F8 /* CollectionViewPreviewCell.swift in Sources */,
 				DEF14B991CBDD83B00553CEF /* CollectionViewColumnLayout.swift in Sources */,
 				1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */,
 				DE82E9591D78B78300346B9E /* CollectionViewLayoutAttributes.swift in Sources */,

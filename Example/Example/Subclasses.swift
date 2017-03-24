@@ -40,18 +40,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
 	
     @NSManaged var displayOrder : NSNumber
     
-    func test(stuff: String,
-              thing: ((_ blah: String)->Void)) -> String {
-        
-    }
     
-    
-    /// <#Description#>
-    ///
-    /// - Parameters:
-    ///   - moc: <#moc description#>
-    ///   - child: <#child description#>
-    /// - Returns: <#return value description#>
     static func create(in moc : NSManagedObjectContext? = nil, withChild child: Bool = true) -> Parent {
         
         let moc = moc ?? AppDelegate.current.managedObjectContext
@@ -64,7 +53,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         new.displayOrder = NSNumber(value: _order + 1)
         new.created = Date()
         
-        if withChild {
+        if child {
             _ = new.createChild()
         }
         return new

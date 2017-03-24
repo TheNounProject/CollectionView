@@ -9,7 +9,7 @@
 import Foundation
 import CollectionView
 
-class GridCell : CollectionViewCell {
+class GridCell : PreviewCell {
     
     
     
@@ -18,19 +18,10 @@ class GridCell : CollectionViewCell {
     @IBOutlet weak var detailLabel : NSTextField!
     
     
-//    override var wantsUpdateLayer: Bool { return true }
-    
-    
-//    override func updateLayer() {
-//        super.updateLayer()
-//        
-//    }
-    
-//    override func viewWillDisplay() {
-//         super.viewWillDisplay()
-//        self.layer?.borderColor = NSColor(white: 0.9, alpha: 1).cgColor
-//        
-//    }
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        self.useMask = false
+    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -54,6 +45,12 @@ class GridCell : CollectionViewCell {
         
 //        self.badgeLabel.bind("value", to: child, withKeyPath: "displayOrder", options: nil)
     }
+
+    
+    override class func register(in collectionView: CollectionView) {
+        collectionView.register(nib: NSNib(nibNamed: "GridCell", bundle: nil)!, forCellWithReuseIdentifier: self.defaultReuseIdentifier)
+    }
+    
     
     override var description: String {
         return "GridCell: \(child?.description ?? nil)"
@@ -69,6 +66,10 @@ class GridCell : CollectionViewCell {
         self.layer?.borderColor = NSColor(white: 0.9, alpha: 1).cgColor
     }
     
+    
+    
+    // MARK: - Selection & Highlighting
+    /*-------------------------------------------------------------------------------*/
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
@@ -86,24 +87,6 @@ class GridCell : CollectionViewCell {
     }
     
     
-    override func applyLayoutAttributes(_ layoutAttributes: CollectionViewLayoutAttributes, animated: Bool) {
-        super.applyLayoutAttributes(layoutAttributes, animated: animated)
-        
-        let ip = layoutAttributes.indexPath
-//        let color = self.collectionView?.numberOfItems(in: ip._section) ?? 10
-        
-        if self.child?.isDeleted != false || self.child?.displayOrder.intValue != ip._item {
-            self.bgColor = NSColor.orange
-        }
-        else {
-            self.bgColor = NSColor(white: 0.98, alpha: 1)
-        }
-        self.backgroundColor = bgColor
-        self.needsDisplay = true
-        
-    }
-    
-    
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
         
@@ -115,4 +98,28 @@ class GridCell : CollectionViewCell {
     }
     
     
+    
+    // MARK: - Apply Layout Attributes
+    /*-------------------------------------------------------------------------------*/
+    
+    override func apply(_ layoutAttributes: CollectionViewLayoutAttributes, animated: Bool) {
+        super.apply(layoutAttributes, animated: animated)
+        
+        let ip = layoutAttributes.indexPath
+        
+        if self.child?.isDeleted != false || self.child?.displayOrder.intValue != ip._item {
+            self.bgColor = NSColor.orange
+        }
+        else {
+            self.bgColor = NSColor(white: 0.98, alpha: 1)
+        }
+        self.backgroundColor = bgColor
+        self.needsDisplay = true
+        
+    }
+
+
+    
 }
+
+

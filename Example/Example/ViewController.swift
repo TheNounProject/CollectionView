@@ -55,7 +55,7 @@ extension Array {
 
 
 
-class ViewController: CollectionViewController, ResultsControllerDelegate, BasicHeaderDelegate, CollectionViewDelegateColumnLayout, CollectionViewDelegateFlowLayout {
+class ViewController: CollectionViewController, ResultsControllerDelegate, BasicHeaderDelegate, CollectionViewDelegateColumnLayout, CollectionViewDelegateFlowLayout, CollectionViewPreviewControllerDelegate {
 
     var relational: Bool = false
     
@@ -81,18 +81,15 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
 
         let creationSort = NSSortDescriptor(key: "created", ascending: true)
         fetchedResultsController.fetchRequest.sortDescriptors = [creationSort]
-//        fetchedResultsController.sectionKeyPath = "second"
         fetchedResultsController.delegate = self
         
         try! resultsController.performFetch()
         
         relationalResultsController.fetchRequest.sortDescriptors = [
             NSSortDescriptor(key: "displayOrder", ascending: true)
-//            NSSortDescriptor(key: "created", ascending: false)
         ]
         relationalResultsController.sectionFetchRequest.sortDescriptors = [
             NSSortDescriptor(key: "displayOrder", ascending: true)
-//            NSSortDescriptor(key: "created", ascending: false)
         ]
         
         relationalResultsController.sectionKeyPath = "parent"
@@ -103,18 +100,20 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         listLayout.itemHeight = 36
         listLayout.headerHeight = 36
         
-//        gridLayout.headerHeight = 36
-//        gridLayout.itemHeight = 80
-        
         collectionView.collectionViewLayout = listLayout
         
+        
+        // The default way of registering cells
         collectionView.register(nib: NSNib(nibNamed: "GridCell", bundle: nil)!, forCellWithReuseIdentifier: "GridCell")
+        
+        // A shortcut way to register cells
         ListCell.register(collectionView)
         BasicHeaderView.register(collectionView)
         
+        
+        // Reload to get started
         collectionView.reloadData()
         
-    
         
         if let t = self.test {
             let moc = AppDelegate.current.managedObjectContext
@@ -518,7 +517,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     
     
     
-    func collectionView(_ collectionView: CollectionView, gridLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> FlowLayoutItemStyle {
+    func collectionView(_ collectionView: CollectionView, gridLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
         
         if indexPath._item % 20 == 0 {
             return .span(CGSize(width: collectionView.frame.size.width, height: 50))
@@ -532,14 +531,14 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         return .flow(CGSize(width: size  + (50 * CGFloat(indexPath._item % 5)), height: size))
     }
     
-    func collectionView(_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout, insetsForSectionAt section: Int) -> EdgeInsets {
+    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, insetsForSectionAt section: Int) -> EdgeInsets {
         return EdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
     }
     
-    func collectionView(_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout, heightForFooterInSection section: Int) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, heightForFooterInSection section: Int) -> CGFloat {
         return 0
     }
-    func collectionView(_ collectionView: CollectionView, gridLayout collectionViewLayout: CollectionViewFlowLayout, heightForHeaderInSection section: Int) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, heightForHeaderInSection section: Int) -> CGFloat {
         return 50
     }
     
@@ -552,11 +551,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         let f = Float(self.view.frame.size.width/150)
         return Int(floor(f))
     }
-    
-//    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, aspectRatioForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: 1, height: 1)
-//    }
-    
+
 
     // MARK: - Collection View Delegate
     /*-------------------------------------------------------------------------------*/
@@ -750,6 +745,68 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     }
     
 
+    
+    
+    
+    lazy var previewController : CollectionViewPreviewController = {
+        let controller =  CollectionViewPreviewController()
+        GridCell.register(in: controller.collectionView)
+        return controller
+    }()
+    
+    var isPreviewing = false
+    
+    @IBAction func togglePreview(_ sender: AnyObject) {
+        if isPreviewing {
+            closePreview()
+        }
+        else if let ip = collectionView.indexPathsForSelectedItems.first {
+            enterPreview(for: ip)
+        }
+    }
+    
+    func enterPreview(for indexPath: IndexPath) {
+        if isPreviewing { return }
+
+        // If you need to restrict which items can be previewed
+//        let isItemPreviewable: Bool = true
+//        if !isItemPreviewable { return }
+        
+        self.isPreviewing = true
+        self.previewController.present(in: self, source: self.collectionView, indexPath: indexPath)
+    }
+    
+    func closePreview(animated: Bool = true) {
+        if !isPreviewing { return }
+        isPreviewing = false
+        
+        // Scrolls the source collection view to the item that was being previewed
+        if let final = self.previewController.currentIndexPath, let source = self.previewController.sourceIndexPath  {
+            if final != source && !self.collectionView.itemAtIndexPathIsVisible(final) {
+                self.collectionView.scrollItem(at:final, to: .centered, animated: false, completion: nil)
+            }
+            self.collectionView.deselectAllItems()
+            self.collectionView.selectItem(at: final, animated: false, scrollPosition: .nearest)
+        }
+        
+        self.previewController.dismiss(animated: true)
+        self.view.window?.makeFirstResponder(self.collectionView)
+    }
+    
+    func collectionViewPreviewController(_ controller: CollectionViewPreviewController, canPreviewItemAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func collectionViewPreviewController(_ controller: CollectionViewPreviewController, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
+        
+        let child = resultsController.object(at: indexPath) as! Child
+        let cell = GridCell.deque(for: indexPath, in: controller.collectionView) as! GridCell
+        
+        cell.setup(with: child)
+        return cell
+    }
+    
+    
 
 
     // MARK: - ResultsController

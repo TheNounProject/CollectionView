@@ -803,6 +803,23 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
 
     
+
+    /**
+     Returns the lowest index path of all visible items
+     */
+    open var indexPathsForVisibleSections : [IndexPath] {
+        
+        var ips = [IndexPath]()
+        
+        var visible = self.contentVisibleRect
+        for idx in 0..<self.numberOfSections {
+            if let rect = self.frameForSection(at: idx), visible.intersects(rect) {
+                ips.append(IndexPath.for(section: idx))
+            }
+        }
+        return ips
+    }
+    
     
     /**
      Returns the lowest index path of all visible items

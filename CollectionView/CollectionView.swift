@@ -852,7 +852,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
         }
         return closest?.0
-        
     }
     
     

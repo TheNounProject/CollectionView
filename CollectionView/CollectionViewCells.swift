@@ -96,7 +96,7 @@ open class CollectionReusableView : NSView {
         self.attributes = layoutAttributes
     }
     
-    open var useMask: Bool = true
+    open var useMask: Bool = false
     
     open override func updateLayer() {
         super.updateLayer()
@@ -107,9 +107,6 @@ open class CollectionReusableView : NSView {
             l.frame = self.bounds
             l.cornerRadius = self.layer!.cornerRadius
             self.layer?.mask = l
-        }
-        else {
-            self.layer?.mask = nil
         }
     }
     

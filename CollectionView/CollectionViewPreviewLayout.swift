@@ -10,6 +10,8 @@ import Foundation
 import CollectionView
 
 
+
+
 protocol CollectionViewDelegatePreviewLayout: class {
     func previewLayout(_ layout: CollectionViewPreviewLayout, canPreviewItemAt indexPath: IndexPath) -> Bool
 }
@@ -86,7 +88,7 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
                 for idx in 0..<itemCount {
                     
                     let ip = IndexPath.for(item:idx, section: sectionIdx)
-                    allIndexPaths.insert(ip)
+                    allIndexPaths.add(ip)
                     
                     guard self.delegate?.previewLayout(self, canPreviewItemAt: ip) != false else {
                         section.itemAttributes.append(nil)

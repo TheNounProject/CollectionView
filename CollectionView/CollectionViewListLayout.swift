@@ -201,7 +201,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
                 for idx in 0..<itemCount {
                     
                     let ip = IndexPath.for(item:idx, section: section)
-                    allIndexPaths.insert(ip)
+                    allIndexPaths.add(ip)
                     
                     let attrs = CollectionViewLayoutAttributes(forCellWith: ip)
                     let rowHeight : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAt: ip) ?? self.itemHeight

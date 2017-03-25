@@ -247,7 +247,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             for idx in 0..<itemCount {
                 let indexPath = IndexPath.for(item:idx, section: section)
                 sIndexPaths.insert(indexPath)
-                allIndexPaths.insert(indexPath)
+                allIndexPaths.add(indexPath)
                 
                 let columnIndex = self.nextColumnIndexForItem(indexPath)
                 let xOffset = sectionInsets.left + round((itemWidth + colSpacing) * CGFloat(columnIndex))

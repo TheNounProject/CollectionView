@@ -48,14 +48,6 @@ public protocol CollectionViewPreviewControllerDelegate: class {
     
 }
 
-extension CollectionViewDelegatePreviewLayout {
-    func collectionViewPreviewController(_ controller: CollectionViewPreviewController, canPreviewItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-}
-
-
 class BackgroundView : NSView {
     var backgroundColor: NSColor?
     

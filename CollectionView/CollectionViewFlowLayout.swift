@@ -332,7 +332,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 var forceBreak: Bool = false
                 for item in 0..<numItems {
-                    allIndexPaths.insert(IndexPath.for(item: item, section: sec))
+                    allIndexPaths.add(IndexPath.for(item: item, section: sec))
                     let ip = IndexPath.for(item: item, section: sec)
                     let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
                     var attrs = CollectionViewLayoutAttributes(forCellWith: ip)
@@ -587,40 +587,44 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         
         guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }
         
+        var startingIP = currentIndexPath
+        
+        
         switch direction {
         case .up:
             guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
+            
+            var proposed : IndexPath?
             var prev : RowAttributes?
             for row in sectionAttributes[section].rows {
                 if let _ = row.index(of: currentIndexPath) {
                     guard let pRow = prev else {
                         guard let pSectionRow = sectionAttributes.object(at: section - 1)?.rows.last else { return nil }
-                        return pSectionRow.item(verticallyAlignedTo: cAttrs)
+                        proposed = pSectionRow.item(verticallyAlignedTo: cAttrs)
+                        break;
                     }
-                    return pRow.item(verticallyAlignedTo: cAttrs)
+                    proposed = pRow.item(verticallyAlignedTo: cAttrs)
+                    break;
                 }
                 prev = row
             }
-            return nil
-            
-        case .down:
-            
-            
-            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
-            var prev : RowAttributes?
-            for row in sectionAttributes[section].rows.reversed() {
-                if let _ = row.index(of: currentIndexPath) {
-                    guard let pRow = prev else {
-                        guard let pSectionRow = sectionAttributes.object(at: section + 1)?.rows.first else { return nil }
-                        return pSectionRow.item(verticallyAlignedTo: cAttrs)
-                    }
-                    return pRow.item(verticallyAlignedTo: cAttrs)
-                }
-                prev = row
-            }
-            return nil
+            guard let ip = proposed else { return nil }
+            if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: ip, with: NSApp.currentEvent) != false { return proposed }
+            startingIP = ip
+            fallthrough
             
         case .left:
+            var ip = startingIP
+            while true {
+                guard let prop = self.allIndexPaths.object(before: ip) else { return nil }
+                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
+                    return prop
+                }
+                ip = prop
+            }
+            return nil;
+            
+            /*
             if section == 0 && index == 0 {
                 return currentIndexPath
             }
@@ -631,7 +635,44 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 index = collectionView.numberOfItems(in: currentIndexPath._section - 1) - 1
             }
             return IndexPath.for(item:index, section: section)
+            */
+            
+        case .down:
+            guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
+            
+            var proposed : IndexPath?
+            var prev : RowAttributes?
+            for row in sectionAttributes[section].rows.reversed() {
+                if let _ = row.index(of: currentIndexPath) {
+                    guard let pRow = prev else {
+                        guard let pSectionRow = sectionAttributes.object(at: section + 1)?.rows.first else { return nil }
+                        proposed = pSectionRow.item(verticallyAlignedTo: cAttrs)
+                        break;
+                    }
+                    proposed = pRow.item(verticallyAlignedTo: cAttrs)
+                    break;
+                }
+                prev = row
+            }
+            guard let ip = proposed else { return nil }
+            if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: ip, with: NSApp.currentEvent) != false { return proposed }
+            startingIP = ip
+            fallthrough
+            
+        
         case .right :
+            
+            var ip = startingIP
+            while true {
+                guard let prop = self.allIndexPaths.object(after: ip) else { return nil }
+                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
+                    return prop
+                }
+                ip = prop
+            }
+            return nil;
+            
+            /*
             if section == numberOfSections - 1 && index == numberOfItemsInSection - 1 {
                 return currentIndexPath
             }
@@ -642,6 +683,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 index = 0
             }
             return IndexPath.for(item:index, section: section)
+            */
         }
     }
     

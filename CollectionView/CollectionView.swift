@@ -626,70 +626,98 @@ open class CollectionView : ScrollView, NSDraggingSource {
             doLayoutPrep()
         }
         let newContentSize = self.collectionViewLayout.collectionViewContentSize
-        if newContentSize != _lastViewSize {
-            
-            setContentViewSize()
-            var absoluteCellFrames = [CollectionReusableView:CGRect]()
-            
-            for view in self.contentDocumentView.subviews {
-                if !view.isHidden, let v = view as? CollectionReusableView, let attrs = v.attributes {
-                    absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
+        
+        
+        // If the size changed we need to do some extra prep
+        let sizeChanged = newContentSize != _lastViewSize
+        
+        setContentViewSize()
+        
+        struct ViewSpec {
+            let view: CollectionReusableView
+            let frame : CGRect
+            let newIP : IndexPath
+        }
+        
+        // var absoluteCellFrames = [CollectionReusableView:CGRect]()
+        var viewSpecs = [ViewSpec]()
+        if sizeChanged {
+            for view in self.contentDocumentView.preparedCellIndex {
+                if !view.value.isHidden, let v = view.value as? CollectionReusableView, let attrs = v.attributes {
+                    let newRect = self.convert(attrs.frame, from: v.superview)
+                    viewSpecs.append(ViewSpec(view: v, frame: newRect, newIP: view.index))
+                    // absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
                 }
             }
+            /*
             for view in self.floatingContentView.subviews {
                 if !view.isHidden, let v = view as? CollectionReusableView, let attrs = v.attributes {
                     absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
                 }
             }
-            
-            
+             */
+        }
+        
+            for view in self.contentDocumentView.preparedSupplementaryViewIndex {
+                let v = view.value
+                if !view.value.isHidden, let attrs = v.attributes {
+                    let newRect = self.convert(attrs.frame, from: v.superview)
+                    viewSpecs.append(ViewSpec(view: v, frame: newRect, newIP: view.key.indexPath!))
+                    // absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
+                }
+            }
+        
+        
+        
+        
+        
+        if sizeChanged {
             if scrollPosition != .none, let ip = self._topIP,
                 let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {
                 self._scrollRect(rect, to: scrollPosition, animated: false, prepare: false, completion: nil)
             }
             self.reflectScrolledClipView(self.clipView!)
-            
-            for item in absoluteCellFrames {
-                if let attrs = item.0.attributes , attrs.representedElementCategory == CollectionElementCategory.supplementaryView {
-                    if validateIndexPath(attrs.indexPath), let newAttrs = self.layoutAttributesForSupplementaryView(ofKind: attrs.representedElementKind!, at: attrs.indexPath) {
-                        
-                        if newAttrs.floating != attrs.floating {
-                            if newAttrs.floating {
-                                item.0.removeFromSuperview()
-                                self._floatingSupplementaryView.addSubview(item.0)
-                                item.0.frame = item.1
-                            }
-                            else {
-                                item.0.removeFromSuperview()
-                                self.contentDocumentView.addSubview(item.0)
-                                item.0.frame = self.contentDocumentView.convert(item.1, from: self)
-                            }
-                        }
-                        else if newAttrs.floating {
-                            item.0.frame = item.1
+        }
+        
+        for spec in viewSpecs {
+            if let attrs = spec.view.attributes , attrs.representedElementCategory == CollectionElementCategory.supplementaryView {
+                if validateIndexPath(spec.newIP), let newAttrs = self.layoutAttributesForSupplementaryView(ofKind: attrs.representedElementKind!, at: spec.newIP) {
+                    
+                    if newAttrs.floating != attrs.floating {
+                        spec.view.removeFromSuperview()
+                        if newAttrs.floating {
+                            self._floatingSupplementaryView.addSubview(spec.view)
+                            spec.view.frame = self._floatingSupplementaryView.convert(spec.frame, from: self)
                         }
                         else {
-                            let cFrame = self.contentDocumentView.convert(item.1, from: self)
-                            item.0.frame = cFrame
+                            self.contentDocumentView.addSubview(spec.view)
+                            spec.view.frame = self.contentDocumentView.convert(spec.frame, from: self)
                         }
-                        continue
                     }
+                    else if newAttrs.floating {
+                        spec.view.frame = self._floatingSupplementaryView.convert(spec.frame, from: self)
+                    }
+                    else {
+                        let cFrame = self.contentDocumentView.convert(spec.frame, from: self)
+                        spec.view.frame = cFrame
+                    }
+                    // If the view is going back into the document view, let it fall through, it's the same as for cells
+                    continue
                 }
                 
-                
-                
-                let cFrame = self.contentDocumentView.convert(item.1, from: self)
-                item.0.frame = cFrame
             }
             
+            let cFrame = self.contentDocumentView.convert(spec.frame, from: self)
+            spec.view.frame = cFrame
         }
-            self.contentDocumentView.preparedRect = self._preperationRect
-            self.contentDocumentView.prepareRect(self._preperationRect, animated: animated, force: true, completion: completion)
-            self.delegate?.collectionViewDidReloadLayout?(self)
-    
+        
+        self.contentDocumentView.preparedRect = self._preperationRect
+        self.contentDocumentView.prepareRect(self._preperationRect, animated: animated, force: true, completion: completion)
+        self.delegate?.collectionViewDidReloadLayout?(self)
+        
     }
-    
-    
+
+
     // MARK: - Live Resize
     /*-------------------------------------------------------------------------------*/
     private var _resizeStartBounds : CGRect = CGRect.zero
@@ -1319,11 +1347,24 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         let preps = self.contentDocumentView.preparedCellIndex.ordered()
         
+        
+        log.debug("\(_updateContext._sectionOperations)")
+        
+        
         var sectionCutoff = 0
+        func setCutoff(_ value: Int) {
+            for idx in 0..<value {
+                if sectionMap[idx] == nil {
+                    sectionMap[idx] = idx
+                }
+            }
+            if value < sectionCutoff { sectionCutoff = value }
+        }
         
 //        log.debug("Views needing adjustment: \(IndexedSet<SupplementaryViewIdentifier, CollectionReusableView>(self.contentDocumentView.preparedSupplementaryViewIndex).orderedLog())")
 //        log.debug("Remaining Cell index adjustment: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
         if let f = viewsNeedingAdjustment.first?.index.indexPath?._section {
+            setCutoff(f)
             sectionCutoff = f
             _updateContext.lockSections(upTo: f)
         }
@@ -1383,11 +1424,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 
                 let numSections = self.numberOfSections
                 if adjusted._section > numSections - 1 {
-                    log.error("⚠️ Invalid indexpath adjustment from \(stale.index)  -- \(adjusted). Section \(adjusted._section) is greater than or equal the number of sections in the collection view \(numSections)")
+                    log.error("⚠️ Invalid indexpath adjustment from \(stale.index)  -- \(adjusted). Section \(adjusted._section) is greater than or equal the number of sections in the collection view (\(numSections))")
                 }
                 let numItems = self.numberOfItems(in: adjusted._section) - 1
                 if adjusted._item > numItems {
-                    log.error("⚠️ Invalid indexpath adjustment from \(stale.index)  -- \(adjusted). Item (\(adjusted._item)) is greater than or equal the number of items in the section \(numItems)")
+                    log.error("⚠️ Invalid indexpath adjustment from \(stale.index)  -- \(adjusted). Item (\(adjusted._item)) is greater than or equal the number of items in the section \((numItems))")
                 }
                 
                 if self._selectedIndexPaths.remove(stale.index) != nil {
@@ -1411,7 +1452,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         
         if let f = preps.first?.index._section {
-            sectionCutoff = min(f, sectionCutoff)
+            setCutoff(f)
             _updateContext.lockSections(upTo: f)
         }
         
@@ -2236,7 +2277,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
      - Note: This must be provided by the collectionViewLayout
      
     */
-    internal final var allIndexPaths : Set<IndexPath> { return self.collectionViewLayout.allIndexPaths }
+    internal final var allIndexPaths : OrderedSet<IndexPath> { return self.collectionViewLayout.allIndexPaths }
     
     
     

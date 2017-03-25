@@ -1021,6 +1021,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             }
             else {
                 let sec = self._insert(section: sectionValue)
+                sec.ensureEditing()
                 sec._add(object)
                 _objectSectionMap[object] = sec
             }

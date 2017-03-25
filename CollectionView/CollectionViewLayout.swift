@@ -94,7 +94,7 @@ open class CollectionViewLayout : NSObject {
      
      Becuase the layout likely needs to process all items in the data, setting this during prepare() can cut out the overhead of the collection view having to do so itself.
     */
-    public var allIndexPaths = Set<IndexPath>()
+    public var allIndexPaths = OrderedSet<IndexPath>()
     
     open func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         overrideWarning()
@@ -206,7 +206,6 @@ open class CollectionViewLayout : NSObject {
         
         for itemIndex in 0..<itemCount {
             let indexPath = IndexPath.for(item: itemIndex, section: section)
-            allIndexPaths.insert(indexPath)
             if let attributes = self.layoutAttributesForItem(at: indexPath) {
                 rect = rect.union(attributes.frame);
             }

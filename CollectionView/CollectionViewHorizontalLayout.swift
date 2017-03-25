@@ -50,7 +50,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         for row in 0...numRows-1 {
             
             let ip = IndexPath.for(item: row, section: 0)
-            self.allIndexPaths.insert(ip)
+            self.allIndexPaths.add(ip)
             var height = cv.bounds.height 
             height = height - sectionInsets.top - sectionInsets.bottom
             

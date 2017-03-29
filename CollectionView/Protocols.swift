@@ -148,7 +148,9 @@ import Foundation
     
     
     /**
-     Tells the delegate that is completed reloading it's data
+     Tells the delegate that the collection view will reload it's layout
+     
+     It can be assumed that the data has been reloaded
 
      - Parameter collectionView: The collection view that was reloaded
 
@@ -157,6 +159,15 @@ import Foundation
     
     @objc optional func collectionViewWillReloadLayout(_ collectionView: CollectionView)
     
+    
+	/**
+	Tells the delegate that the collection view finished reloading it's layout
+     
+     It can be assumed that the data has been reloaded
+
+	- Parameter collectionView: The collection view
+
+	*/
     @objc optional func collectionViewDidReloadLayout(_ collectionView: CollectionView)
     
     // MARK: - First Responder

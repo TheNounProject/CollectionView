@@ -1428,9 +1428,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         adjustCells(in: preps , checkSections: viewsNeedingAdjustment.count > 0)
         adjustCells(in: _pendingCellMap.ordered(), checkSections: false)
         
-        
         for selection in self._selectedIndexPaths {
-            guard let s = sectionMap[selection._section] else { continue }
+            guard let s = sectionMap[selection._section], s >= 0 else { continue }
             if let item = itemShifts[s]?._map[selection._item] {
                 if item >= 0 {
                     _updateSelections?.insert(IndexPath.for(item: item, section: s))

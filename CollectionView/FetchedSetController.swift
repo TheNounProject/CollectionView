@@ -29,6 +29,8 @@ public class FetchedSetController : NSObject {
     private var _storage = Set<Element>()
     
     
+    public var numberOfObjects : Int { return _storage.count }
+    
     convenience public init(context: NSManagedObjectContext, entityName: String) {
         let req = NSFetchRequest<NSManagedObject>(entityName: entityName)
         self.init(context: context, request: req)

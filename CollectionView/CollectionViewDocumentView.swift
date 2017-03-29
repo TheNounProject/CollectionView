@@ -333,7 +333,19 @@ final public class CollectionViewDocumentView : NSView {
                     self.preparedSupplementaryViewIndex[identifier] = nil
                     view.layer?.zPosition = -100
                     
-                    if animated && !animating, let attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!) ?? view.attributes {
+                    if animated && !animating, var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!) ?? view.attributes {
+                        if attrs.floating == true {
+                            if view.superview != self.collectionView._floatingSupplementaryView {
+                                view.removeFromSuperview()
+                                self.collectionView._floatingSupplementaryView.addSubview(view)
+                            }
+                            attrs = attrs.copy()
+                            attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
+                        }
+                        else if view.superview == self.collectionView._floatingSupplementaryView {
+                            view.removeFromSuperview()
+                            self.collectionView.contentDocumentView.addSubview(view)
+                        }
                         updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: identifier))
                     }
                     else {

@@ -340,3 +340,201 @@ public extension NSView {
 
 
 
+
+/*
+ struct IOSet : CustomStringConvertible {
+ var _open = IndexSet()
+ var _locked = IndexSet()
+ 
+ var _union : IndexSet {
+ return _open.union(_locked)
+ }
+ var _lastIndex : Int? { return _locked.last }
+ var _firstIndex : Int? {
+ if let o = _open.first, let l = _locked.first {
+ return min(o, l)
+ }
+ if let o = _open.first { return o }
+ return _locked.first
+ }
+ var _deleteCount = 0
+ var _insertCount = 0
+ 
+ init() { }
+ init(d index: Int) { self.deleted(at: index) }
+ init(i index: Int) { self.inserted(at: index) }
+ 
+ mutating func moved(_ source: Int, to destination: Int) {
+ self.deleted(at: source)
+ self.inserted(at: destination)
+ }
+ 
+ mutating func lock(upTo index: Int) {
+ guard index > 0 else { return }
+ var idx = index - 1
+ guard let start = self._firstIndex else {
+ _locked.insert(integersIn: 0...idx)
+ return
+ }
+ guard start < idx else {
+ return
+ }
+ var idxSet = IndexSet(integersIn: start...idx)
+ idxSet.subtract(_open)
+ self._locked = _locked.union(idxSet)
+ }
+ 
+ 
+ mutating func nextOpening(for index: Int) -> Int {
+ var all = self._union
+ var idx = all.startIndex
+ var last = self._open[idx]
+ var proposed = index
+ 
+ if proposed >= last {
+ proposed = last
+ 
+ if self._locked.contains(last) {
+ 
+ while idx < all.endIndex {
+ let check = all[idx]
+ var prop = last + 1
+ let isGap = prop < check
+ if isGap || (self._open.contains(prop) && !self._locked.contains(prop)) {
+ proposed = prop
+ break;
+ }
+ proposed = check + 1
+ idx = all.index(after: idx)
+ last = check
+ }
+ }
+ }
+ self.inserted(at: proposed, auto: true)
+ return proposed
+ }
+ 
+ // Auto is set to true when inserting  as the result of an adjustment
+ // This keeps it from being counted when adjusting IP out of the edit area
+ mutating func deleted(at index: Int, auto: Bool = false) -> IOSet {
+ if !auto {
+ _deleteCount += 1
+ }
+ if _locked.contains(index) {
+ return self
+ }
+ _open.insert(index)
+ return self
+ }
+ 
+ // Auto is set to true when inserting  as the result of an adjustment
+ // This keeps it from being counted when adjusting IP out of the edit area
+ mutating func inserted(at index: Int, auto: Bool = false) -> IOSet {
+ _locked.insert(index)
+ if !auto {
+ _insertCount += 1
+ }
+ return self
+ }
+ 
+ var description: String {
+ var str = "Section Ops\n"
+ 
+ var open = [Int]()
+ var locked = [Int]()
+ 
+ let union = _open.union(_locked)
+ 
+ str += "Union \(union.indices)\n"
+ if union.count > 0 {
+ for idx in union {
+ open.append(_open.contains(idx) ? 1 : 0)
+ locked.append(_locked.contains(idx) ? 1 : 0)
+ }
+ }
+ str += "Open: \(open)\n"
+ str += "Lock: \(locked)"
+ return str
+ }
+ }
+ 
+ 
+ mutating func lockSections(upTo index: Int) {
+ _sectionOperations.lock(upTo: index)
+ }
+ 
+ mutating func lock(upTo indexPath: IndexPath) {
+ _operations[indexPath._section]?.lock(upTo: indexPath._item)
+ }
+ 
+ 
+ mutating func deletedSections(at indexSet: IndexSet) {
+ _sectionDeletions.formUnion(indexSet)
+ for idx in indexSet {
+ _sectionOperations.deleted(at: idx)
+ }
+ }
+ mutating func insertedSections(at indexSet: IndexSet) {
+ _sectionInsertions.formUnion(indexSet)
+ //            for idx in indexSet {
+ //                _sectionOperations.inserted(at: idx)
+ //            }
+ }
+ mutating func movedSection(from source: Int, to destination: Int) {
+ //            _sectionDeletions.insert(source)
+ //            _sectionInsertions.insert(destination)
+ _sectionMoves[source] = destination
+ //            _sectionOperations.inserted(at: destination)
+ //            _sectionOperations.deleted(at: source)
+ }
+ 
+ mutating func deletedItem(at indexPath: IndexPath) {
+ //            let s = indexPath._section, i = indexPath._item
+ //            if _operations[s]?.deleted(at: i) == nil {
+ //                _operations[s] = IOSet(d: i)
+ //            }
+ }
+ mutating func insertedItem(at indexPath: IndexPath) {
+ let s = indexPath._section, i = indexPath._item
+ if _operations[s]?.inserted(at: i) == nil {
+ _operations[s] = IOSet(i: i)
+ }
+ }
+ 
+ mutating func movedItem(from source: IndexPath, to destination: IndexPath) {
+ deletedItem(at: source)
+ insertedItem(at: destination)
+ }
+ 
+ 
+ var _itemSectionCopy : IOSet?
+ 
+ mutating func adjust(_ indexPath: IndexPath) -> IndexPath {
+ 
+ if _itemSectionCopy == nil {
+ _itemSectionCopy = _sectionOperations
+ }
+ guard let prop = _operations[indexPath._section]?.nextOpening(for: indexPath._item) else {
+ return indexPath
+ }
+ // Open up this space to be filled by another item
+ // If it has already been locked, this does nothing
+ _operations[indexPath._section]?.deleted(at: indexPath._item, auto: true)
+ 
+ let new = indexPath.with(item: prop)
+ //            log.debug("Adjusted \(indexPath)  to: \(new)")
+ return new
+ }
+ 
+ mutating func adjust(section index: Int) -> Int {
+ return _sectionOperations.nextOpening(for: index)
+ }
+ 
+ var description: String {
+ return  ""// "Insertions : \(_insertions)  \n Deletions: \(_deletions)
+ }
+ */
+
+
+
+

@@ -106,6 +106,7 @@ open class ClipView : NSClipView {
             var o = rect.origin
             o.y -= self.contentInsets.top
             self.scroll(to: o)
+            completion?(true)
             return true
         }
         

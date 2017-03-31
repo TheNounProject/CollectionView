@@ -1214,7 +1214,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private func beginEditing() {
         if _editing == 0 {
             
-            log.debug("BEGIN EDITING: *************************************")
+//            log.debug("BEGIN EDITING: *************************************")
             
 //            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex)")
 //            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
@@ -2655,16 +2655,16 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         
-        log.debug("Auto scroll \(loc) in \(visible)")
+//        log.debug("Auto scroll \(loc) in \(visible)")
         if loc.y > (self.bounds.size.height - self.contentInsets.bottom - autoscrollSize) {
-            log.debug("Dragging autoscroll: Down")
+//            log.debug("Dragging autoscroll: Down")
             var cRect = self.contentVisibleRect
             let newRect = CGRect(x: cRect.origin.x, y: cRect.maxY + 50, width: cRect.size.width, height: 50)
             self.scrollRect(newRect, to: .trailing, animated: true, completion: nil)
             valid()
         }
         else if loc.y > self.contentInsets.top && loc.y < (self.contentInsets.top + autoscrollSize) {
-            log.debug("Dragging autoscroll: Up")
+//            log.debug("Dragging autoscroll: Up")
             
             var cRect = self.contentVisibleRect
             let newRect = CGRect(x: cRect.origin.x, y: cRect.minY - 5, width: cRect.size.width, height: 5)

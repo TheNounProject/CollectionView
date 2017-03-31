@@ -601,11 +601,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             self.preprocess(notification: notification)
             
-            log.debug("Begin Relational Controller Update: •••••••••••••••••••••••")
-            
-//            print(self.context.sectionChangeSet)
-//            print(self.context.objectChangeSet)
-            
             if self.context.sectionChangeSet.count == 0 && self.context.objectChangeSet.count == 0 {
                 return
             }
@@ -650,17 +645,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     
                     let set = s.endEditing(forceUpdates: self.context.objectChangeSet.updated.valuesSet)
                     processedSections[s] = set
-                    print("\(self.indexPath(of: s)!) \(set)")
                 }
             }
             
             if let oldSections = self._sectionsCopy {
                 var sectionChanges = ChangeSet(source: oldSections, target: self._sections)
-                print("OldSections: \(oldSections)")
-                print(self._sections)
-                print(sectionChanges)
                 sectionChanges.reduceEdits()
-                print(sectionChanges)
                 for change in sectionChanges.edits {
                     switch change.operation {
                     case .insertion:
@@ -798,8 +788,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 // but there is no apparent reason why order is important.
                 
                 for edit in changes.edits {
-                    
-                    print(edit)
                     switch edit.operation {
                         
                     case let .move(origin: from):

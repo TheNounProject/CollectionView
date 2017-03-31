@@ -118,29 +118,6 @@ open class ClipView : NSClipView {
         return success
     }
     
-//    open override func wantsScrollEventsForSwipeTracking(on axis: NSEventGestureAxis) -> Bool {
-//        return true
-//    }
-//    
-//    open override func wantsForwardedScrollEvents(for axis: NSEventGestureAxis) -> Bool {
-//        return true
-//    }
-//    
-//    open override func beginGesture(with event: NSEvent) {
-//        Swift.print("Begin gesture")
-//        super.beginGesture(with: event)
-//    }
-//    open override func endGesture(with event: NSEvent) {
-//        Swift.print("End gesture")
-//        super.endGesture(with: event)
-//    }
-    
-    open override func animation(forKey key: String) -> Any? {
-        let anim = super.animation(forKey: key)
-//        Swift.print("Animation for: \(key): \(anim)")
-        return anim
-    }
-    
     func finishedScrolling(_ success: Bool) {
         self.completionBlock?(success)
         self.completionBlock = nil;

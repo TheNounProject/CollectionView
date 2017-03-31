@@ -446,7 +446,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         
         preprocess(notification: notification)
         
-        print(self.context.objectChanges)
         if context.objectChanges.count == 0 {
             return
         }
@@ -476,10 +475,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         
         if let oldSections = _sectionsCopy {
             var sectionChanges = ChangeSet(source: oldSections, target: _sections)
-            print("OldSections: \(oldSections.count)")
-            print(self._sections)
             sectionChanges.reduceEdits()
-            print(sectionChanges)
             
             for change in sectionChanges.edits {
                 switch change.operation {
@@ -503,16 +499,16 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         
         
         
-        var csrLog = "Performing Cross Section Reduction ------ "
-        var indent = 0
-        
+//        var csrLog = "Performing Cross Section Reduction ------ "
+//        var indent = 0
+//        
         func appendCSRLog(_ string: String) {
             return;
-            csrLog += "\n"
-            for _ in 0..<indent {
-                csrLog += "\t"
-            }
-            csrLog += string
+//            csrLog += "\n"
+//            for _ in 0..<indent {
+//                csrLog += "\t"
+//            }
+//            csrLog += string
         }
         func reduceCrossSectional(_ object: Element, targetEdit tEdit: Edit<Element>? = nil) -> Bool {
             
@@ -520,10 +516,10 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 return false
             }
             
-            indent += 1
-            defer {
-                indent -= 1
-            }
+//            indent += 1
+//            defer {
+//                indent -= 1
+//            }
             
 //            appendCSRLog("Reducing cross section edit for \(object.idSuffix):")
             
@@ -563,7 +559,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             _ = reduceCrossSectional(obj)
         }
         
-        log.debug("has empty: \(hasEmptyPlaceholder)   \(_previousSectionCount)")
         if hasEmptyPlaceholder, let old = _previousSectionCount {
             
             if self.emptySectionChanges == nil {
@@ -583,7 +578,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         
         
         self.managedObjectContext.perform({
-            //                print("\nReport To Delegate 📢")
             for s in processedSections {
                 var changes = s.value
                 changes.reduceEdits()
@@ -621,20 +615,10 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                     }
                 }
             }
-            
-//            print("\nList of operations reported above")
-//            for s in processedSections {
-//                print("\(self.indexPath(of: s.key)) \(s.value)")
-//            }
-            
+
             delegate.controllerDidChangeContent(controller: self)
             self.emptySectionChanges = nil
         })
-        
-        
-        print("----------------- AFTER ----------------")
-        logSections()
-        print("•••••••••••••••• END •••••••••••••••••••")
         
     }
     

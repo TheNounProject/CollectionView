@@ -468,10 +468,8 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                     self._remove(s._value)
                     continue;
                 }
-                
                 let set = s.endEditing(forceUpdates: self.context.objectChanges.updated.valuesSet)
                 processedSections[s] = set
-//                print("\(self.indexPath(of: s)!) \(set)")
             }
         }
         
@@ -565,7 +563,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             _ = reduceCrossSectional(obj)
         }
         
-        
+        log.debug("has empty: \(hasEmptyPlaceholder)   \(_previousSectionCount)")
         if hasEmptyPlaceholder, let old = _previousSectionCount {
             
             if self.emptySectionChanges == nil {

@@ -186,6 +186,10 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         return collectionView.indexPathsForSelectedItems.first ?? self.collectionView.indexPathForFirstVisibleItem
     }
     
+    public var isEmpty : Bool {
+        return self.collectionView.indexPathsForVisibleItems.count == 0
+    }
+    
     open func reloadData() {
         self.collectionView.reloadData()
     }

@@ -2587,6 +2587,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         delay(0.5) {
             self.isDragging = false
         }
+        self.interactionDelegate?.collectionView?(self, draggingSession: session, didEndAt: screenPoint, with: operation, draggedIndexPaths: self.draggedIPs)
     }
     
     

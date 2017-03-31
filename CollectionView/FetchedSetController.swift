@@ -127,7 +127,6 @@ public class FetchedSetController : NSObject {
     public var wait: Bool = true
     
     func handleChangeNotification(_ notification: Notification) {
-        
         guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
             return
         }
@@ -167,7 +166,7 @@ public class FetchedSetController : NSObject {
                 if deleted.count == 0, updated.count == 0, inserted.count == 0 { return }
                 
                 self._storage.subtract(deleted)
-                self._storage.union(inserted)
+                self._storage.formUnion(inserted)
                 
                 if self.delegate?.controllerWillChangeContent(self) == true {
                     

@@ -230,7 +230,6 @@ extension OrderedSet where Element:Hashable & AnyObject {
         
         for obj in new.reversed() {
             if let index = self.index(of: obj) {
-                log.debug("Removing exisitng item at: \(index)")
                 remove.insert(index)
             }
         }
@@ -246,10 +245,7 @@ extension OrderedSet where Element:Hashable & AnyObject {
             if sortDescriptors.compare(new[0], to: check) == .orderedAscending {
                 if checkIdx < fMatch { fMatch = checkIdx }
                 _data.insert(new[0], at: checkIdx)
-                log.debug("Inserting item item at: \(checkIdx)")
                 new.removeFirst()
-//                checkIdx += 1
-//                continue
             }
             checkIdx += 1
         }

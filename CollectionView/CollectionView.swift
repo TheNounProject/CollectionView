@@ -1156,11 +1156,16 @@ open class CollectionView : ScrollView, NSDraggingSource {
             open.insert(value)
         }
         
+        
+        private var _populatedMap: [Int:Int]?
         mutating func populateMap(count: Int) -> [Int:Int] {
             
             var cursor: Int = 0
             var adjust : Int = 0
             
+            if let m = _populatedMap { return m }
+            
+            log.debug(storage)
             for idx in 0..<max(storage.count, count) {
                 if _map[idx] != nil {
                     continue
@@ -1188,6 +1193,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 open.insert(idx)
                 locked.insert(idx + adjust)
             }
+            _populatedMap = _map
             return _map
         }
     }
@@ -1266,11 +1272,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var sectionMap = sectionShift.populateMap(count: self.numberOfSections)
         
         
+        func countIn(section: Int) -> Int {
+            return max(oldDataCounts[section] ?? 0, self.numberOfItems(in: section))
+        }
+        
         // Item shifting
         for ip in _updateContext.deletedItems {
             let s = sectionMap[ip._section] ?? ip._section
             if itemShifts[s] == nil {
-                itemShifts[s] = ShiftSet(count: self.numberOfItems(in: s), remove: ip._item)
+                itemShifts[s] = ShiftSet(count: countIn(section: s), remove: ip._item)
             }
             else {
                 itemShifts[s]?.remove(at: ip._item)
@@ -1284,7 +1294,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         for ip in _updateContext.insertedItems {
             if itemShifts[ip._section] == nil {
-                itemShifts[ip._section] = ShiftSet(count: self.numberOfItems(in: ip._section), insert: ip._item)
+                itemShifts[ip._section] = ShiftSet(count: countIn(section: ip._section), insert: ip._item)
             }
             else {
                 itemShifts[ip._section]?.insert(at: ip._item)
@@ -1297,7 +1307,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             let aFrom = sectionMap[from._section] ?? -1
             if to._section == aFrom {
                 if itemShifts[to._section] == nil {
-                    itemShifts[to._section] = ShiftSet(count:  self.numberOfItems(in: to._section), move: from._item, to: to._item)
+                    itemShifts[to._section] = ShiftSet(count:  countIn(section: to._section), move: from._item, to: to._item)
                 }
                 else {
                     itemShifts[to._section]?.move(from._item, to: to._item)
@@ -1305,13 +1315,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
             else {
                 if itemShifts[aFrom] == nil {
-                    itemShifts[aFrom] = ShiftSet(count: self.numberOfItems(in: aFrom), remove: from._item)
+                    itemShifts[aFrom] = ShiftSet(count: countIn(section: aFrom), remove: from._item)
                 }
                 else {
                     itemShifts[aFrom]?.remove(at: from._item)
                 }
                 if itemShifts[to._section] == nil {
-                    itemShifts[to._section] = ShiftSet(count: self.numberOfItems(in: to._section), insert: to._item)
+                    itemShifts[to._section] = ShiftSet(count: countIn(section: to._section), insert: to._item)
                 }
                 else {
                     itemShifts[to._section]?.insert(at: to._item)
@@ -1378,7 +1388,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 
                 var adjusted = stale.index
 
-                let s = sectionMap[adjusted._section] ?? adjusted._section
+                let s = { () -> Int in
+                    if let v = sectionMap[adjusted._section] { return v }
+                    let n = sectionMap.count
+                    sectionMap[n] = n
+                    return n
+                }()
                 
                 // The section was deleted
                 if s < 0 {

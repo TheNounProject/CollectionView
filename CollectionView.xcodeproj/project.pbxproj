@@ -30,6 +30,7 @@
 		DEB7366B1E8599E7008467F8 /* CollectionViewPreviewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB736681E8599E7008467F8 /* CollectionViewPreviewLayout.swift */; };
 		DEB7366C1E8599E7008467F8 /* CollectionViewPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB736691E8599E7008467F8 /* CollectionViewPreviewCell.swift */; };
 		DEE3B5851D246CB100AD34F1 /* CollectionViewListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE3B5841D246CB100AD34F1 /* CollectionViewListLayout.swift */; };
+		DEE5F7AE1E92D79A0002079C /* MergedFetchedResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE5F7AD1E92D79A0002079C /* MergedFetchedResultsController.swift */; };
 		DEF14B991CBDD83B00553CEF /* CollectionViewColumnLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072031CAC7FF000AD0E37 /* CollectionViewColumnLayout.swift */; };
 		DEF14B9B1CBDD83B00553CEF /* CollectionViewHorizontalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072041CAC7FF000AD0E37 /* CollectionViewHorizontalLayout.swift */; };
 		DEF14B9C1CBDD83B00553CEF /* CollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072051CAC7FF000AD0E37 /* CollectionViewLayout.swift */; };
@@ -74,6 +75,7 @@
 		DEB736691E8599E7008467F8 /* CollectionViewPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewPreviewCell.swift; sourceTree = "<group>"; };
 		DECA70CB1D8751010006D795 /* CollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		DEE3B5841D246CB100AD34F1 /* CollectionViewListLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewListLayout.swift; sourceTree = "<group>"; };
+		DEE5F7AD1E92D79A0002079C /* MergedFetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MergedFetchedResultsController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 				1C6E50821E2D9C2A00C85946 /* ResultsController.swift */,
 				DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */,
 				1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */,
+				DEE5F7AD1E92D79A0002079C /* MergedFetchedResultsController.swift */,
 				1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */,
 				DE13C18A1E4CE46100CEC80C /* FetchedResultsObserver.swift */,
 				DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */,
@@ -263,6 +266,7 @@
 				1C6E50851E2D9C2A00C85946 /* ResultsController.swift in Sources */,
 				DEA6BA631D52E00900B3EF24 /* CollectionViewController.swift in Sources */,
 				DE13C18B1E4CE46100CEC80C /* FetchedResultsObserver.swift in Sources */,
+				DEE5F7AE1E92D79A0002079C /* MergedFetchedResultsController.swift in Sources */,
 				DEF14B9D1CBDD83B00553CEF /* Helpers.swift in Sources */,
 				DEB7366B1E8599E7008467F8 /* CollectionViewPreviewLayout.swift in Sources */,
 				DEF14BA01CBDD83B00553CEF /* CollectionView.swift in Sources */,

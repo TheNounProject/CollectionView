@@ -211,7 +211,7 @@ extension OrderedSet where Element:Hashable & AnyObject {
         if sortDescriptors.count > 0 {
             for (idx, element) in self.enumerated() {
                 if sortDescriptors.compare(object, to: element) == .orderedAscending {
-                    self.insert(object, at: idx)
+                    _ = self.insert(object, at: idx)
                     return idx
                 }
             }
@@ -241,7 +241,7 @@ extension OrderedSet where Element:Hashable & AnyObject {
         
         var checkIdx = 0
         while new.count > 0, checkIdx < _data.count {
-            var check = _data[checkIdx]
+            let check = _data[checkIdx]
             if sortDescriptors.compare(new[0], to: check) == .orderedAscending {
                 if checkIdx < fMatch { fMatch = checkIdx }
                 _data.insert(new[0], at: checkIdx)

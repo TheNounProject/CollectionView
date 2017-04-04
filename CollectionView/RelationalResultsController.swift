@@ -75,18 +75,6 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
     func appendOrdered(_ object: Element) -> Int {
         self._storage.add(object)
         return self._storage.count - 1
-//        if self._storage.count == 0  {
-//            self.add(object)
-//            return 0
-//        }
-//        else if needsSort || sortDescriptors.count == 0 {
-//            self.add(object)
-//            return self._storage.count - 1
-//        }
-//        else {
-//            let idx = _storage.insert(object, using: sortDescriptors)
-//            return idx
-//        }
     }
     
     func remove(_ object: Element) -> Int? {
@@ -1019,12 +1007,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     func processUpdatedObjects() {
         
-        var updatedSections = Set<SectionInfo>()
-        
         for change in context.objectChangeSet.updated {
             
             let object = change.value
-            let sourceIP = change.index
             
             guard let tempIP = self.indexPath(of: object),
                 let currentSection = _sectionInfo(at: tempIP) else {
@@ -1032,7 +1017,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     continue
             }
             currentSection.ensureEditing()
-            var destinationIP = tempIP
             
             let sectionValue = object.value(forKeyPath: sectionKeyPath) as? Section
             
@@ -1046,7 +1030,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 // Moved to another section
             else if let newSip = self.indexPathOfSection(representing: sectionValue),
                 let newSection = self._sectionInfo(at: newSip) {
-                currentSection.remove(object)
+                _ = currentSection.remove(object)
                 newSection.ensureEditing()
                 newSection._add(object)
                 self.context.itemsWithSectionChange.insert(object)

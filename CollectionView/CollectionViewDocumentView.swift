@@ -290,6 +290,7 @@ final public class CollectionViewDocumentView : NSView {
             _rect = _rect.union(attrs.frame.insetBy(dx: -1, dy: -1) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAt: ip)
+            cell.viewWillDisplay()
             if cell.superview == nil {
                 self.addSubview(cell)
             }

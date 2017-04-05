@@ -728,6 +728,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     open override func viewDidEndLiveResize() {
         _topIP = nil
         self.delegate?.collectionViewDidEndLiveResize?(self)
+        self.contentDocumentView.preparedRect = self._preperationRect
     }
 
     
@@ -2470,7 +2471,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
         }
         
-        if animated || prepare {
+        if animated && prepare {
             self.contentDocumentView.prepareRect(rect.union(visibleRect), force: false)
         }
         self.clipView?.scrollRectToVisible(rect, animated: animated, completion: completion)

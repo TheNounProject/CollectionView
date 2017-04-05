@@ -1165,7 +1165,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             if let m = _populatedMap { return m }
             
-            log.debug(storage)
+//            log.debug(storage)
             for idx in 0..<max(storage.count, count) {
                 if _map[idx] != nil {
                     continue

@@ -7,9 +7,6 @@
 //
 
 import Foundation
-import CollectionView
-
-
 
 
 protocol CollectionViewDelegatePreviewLayout: class {

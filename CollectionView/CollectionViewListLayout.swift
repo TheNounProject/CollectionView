@@ -355,8 +355,6 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     public override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
         guard let collectionView = self.collectionView else { fatalError() }
-        
-        let numberOfSections = self.numSections
         guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }
         
         switch direction {
@@ -369,7 +367,6 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
                 }
                 ip = prop
             }
-            return nil;
             
 //            if let ip = currentIndexPath.previous {
 //                return ip
@@ -399,8 +396,6 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
                 }
                 ip = prop
             }
-            return nil;
-            
             
             
 //            if currentIndexPath._item < self.sectionIndexPaths[currentIndexPath._section].count - 1 {

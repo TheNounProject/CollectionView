@@ -76,11 +76,11 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
         return _storage.index(of: object)
     }
     
-    func appendOrdered(_ object: Element) -> Int {
+    @discardableResult func appendOrdered(_ object: Element) -> Int {
         self._storage.add(object)
         return self._storage.count - 1
     }
-    func remove(_ object: Element) -> Int? {
+    @discardableResult func remove(_ object: Element) -> Int? {
         return _storage.remove(object)
     }
     
@@ -112,8 +112,8 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
         assert(isEditing, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
         
         if self._added.count > 0 {
-            var ordered = self._added.sorted(using: controller.sortDescriptors)
-            _storage.insert(contentsOf: self._added, using: controller.sortDescriptors)
+            let ordered = self._added.sorted(using: controller.sortDescriptors)
+            _storage.insert(contentsOf: ordered, using: controller.sortDescriptors)
         }
         
         isEditing = false
@@ -233,7 +233,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     
     public func indexPath(of object: Element) -> IndexPath? {
         
-        if let keyPath = self.sectionKeyPath {
+        if self.sectionKeyPath != nil {
             guard let section = self._objectSectionMap[object],
                 let sIndex = self._sections.index(of: section),
                 let idx = section.index(of: object) else { return nil }
@@ -530,7 +530,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             
             if targetIP._item != proposedEdit.index {
                 let old = processedSections[targetSection]?.edit(withSource: targetIP._item)
-                appendCSRLog("Old edit at move to position: \(old)")
+                appendCSRLog("Old edit at move to position: \(old?.description ?? "nil")")
             }
             else if case .substitution = proposedEdit.operation, let obj = self.context.objectChanges.object(for: targetIP) {
                 let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
@@ -575,7 +575,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
                 for edit in changes.edits {
                     switch edit.operation {
                         
-                    case let .move(origin: _):
+                    case .move(origin: _):
                         guard let source = self.context.objectChanges.updated.index(of: edit.value),
                             let dest = self.indexPath(of: edit.value) else {
                                 continue

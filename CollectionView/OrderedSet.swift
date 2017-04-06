@@ -29,7 +29,6 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
             guard _map[e] == nil else {
                 continue
             }
-            Set<Int>()
             _data.append(e)
             _map[e] = idx
         }

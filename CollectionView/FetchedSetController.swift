@@ -93,7 +93,7 @@ public class FetchedSetController : NSObject {
     
     
     
-    public func performFetch() throws -> [NSManagedObject] {
+    @discardableResult public func performFetch() throws -> [NSManagedObject] {
         
         guard self.fetchRequest.entityName != nil else {
             assertionFailure("fetch request must have an entity when performing fetch")
@@ -138,7 +138,7 @@ public class FetchedSetController : NSObject {
                 var updated = Set<Element>()
                 
                 for obj in itemChanges.deleted {
-                    guard let removes = self._storage.remove(obj) else { continue }
+                    guard let _ = self._storage.remove(obj) else { continue }
                     deleted.insert(obj)
                 }
                 

@@ -214,7 +214,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var topLevelObjects = NSArray()
         if inNib.instantiate(withOwner: self, topLevelObjects: &topLevelObjects) {
             for obj in topLevelObjects {
-                if let o = obj as? AnyObject, o.isKind(of: aClass) {
+                if let o = obj as? NSView, o.isKind(of: aClass) {
                     foundObject = o
                     break
                 }
@@ -575,7 +575,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             doLayoutPrep()
             setContentViewSize()
             
-            if let ip = _topIP, var rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: CollectionViewScrollPosition.leading) {
+            if let ip = _topIP {
                 self._scrollItem(at: ip, to: .leading, animated: false, prepare: false, completion: nil)
 //                if self.collectionViewLayout.scrollDirection == .vertical {
 //                    rect = CGRect(origin: rect.origin, size: self.bounds.size)
@@ -642,10 +642,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var viewSpecs = [ViewSpec]()
         if sizeChanged {
             for view in self.contentDocumentView.preparedCellIndex {
-                if !view.value.isHidden, let v = view.value as? CollectionReusableView, let attrs = v.attributes {
+                let v = view.value
+                if !v.isHidden, let attrs = v.attributes {
                     let newRect = self.convert(attrs.frame, from: v.superview)
                     viewSpecs.append(ViewSpec(view: v, frame: newRect, newIP: view.index))
-                    // absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
                 }
             }
             /*
@@ -839,7 +839,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var ips = [IndexPath]()
         
-        var visible = self.contentVisibleRect
+        let visible = self.contentVisibleRect
         for idx in 0..<self.numberOfSections {
             if let rect = self.frameForSection(at: idx), visible.intersects(rect) {
                 ips.append(IndexPath.for(section: idx))
@@ -922,8 +922,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var updates = [ItemUpdate]()
         
         for item in prepared {
-            let sec = item.key
-            
             for viewRef in item.value {
                 let id = viewRef.id
                 let oldView = viewRef.view
@@ -1290,7 +1288,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._selectedIndexPaths.remove(ip)
             if let cell = self.cellForItem(at: ip) {
                 _updateContext.updates.append(ItemUpdate(cell: cell, attrs: cell.attributes!, type: .remove))
-                contentDocumentView.preparedCellIndex.removeValue(for: ip)
+                _ = contentDocumentView.preparedCellIndex.removeValue(for: ip)
             }
         }
         for ip in _updateContext.insertedItems {
@@ -2513,24 +2511,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         self.draggedIPs = ips
         for indexPath in ips {
-            var ip = indexPath
-            
-//            let selections = self.indexPathsForSelectedItems
-//            if selections.count == 0 { return }
-//            else if selections.count == 1 && mouseDown != ip {
-//                self.deselectItem(at: ip, animated: true)
-//                ip = mouseDown
-//                self.selectItem(at: ip, animated: true)
-//            }
-            
+            let ip = indexPath
             
             if let writer = self.dataSource?.collectionView?(self, pasteboardWriterForItemAt: ip) {
-//                let cell = self.cellForItem(at: ip) as? AssetCell
                 guard let rect = self.rectForItem(at: ip) else { continue }
                 // The frame of the cell in relation to the document. This is where the dragging
                 // image should start.
                 
-//                UnsafeMutablePointer<CGRect>
                 let originalFrame = UnsafeMutablePointer<CGRect>.allocate(capacity: 1)
                 let oFrame = self.convert( rect, from: self.documentView)
                 originalFrame.initialize(to: oFrame)
@@ -2667,18 +2654,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         
-//        log.debug("Auto scroll \(loc) in \(visible)")
         if loc.y > (self.bounds.size.height - self.contentInsets.bottom - autoscrollSize) {
-//            log.debug("Dragging autoscroll: Down")
-            var cRect = self.contentVisibleRect
+            let cRect = self.contentVisibleRect
             let newRect = CGRect(x: cRect.origin.x, y: cRect.maxY + 50, width: cRect.size.width, height: 50)
             self.scrollRect(newRect, to: .trailing, animated: true, completion: nil)
             valid()
         }
         else if loc.y > self.contentInsets.top && loc.y < (self.contentInsets.top + autoscrollSize) {
-//            log.debug("Dragging autoscroll: Up")
-            
-            var cRect = self.contentVisibleRect
+            let cRect = self.contentVisibleRect
             let newRect = CGRect(x: cRect.origin.x, y: cRect.minY - 5, width: cRect.size.width, height: 5)
             self.scrollRect(newRect, to: .leading, animated: true, completion: nil)
             valid()

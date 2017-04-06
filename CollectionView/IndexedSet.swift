@@ -115,7 +115,7 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
         assert(byIndex.count == byValue.count)
     }
     
-    public mutating func removeValue(for index: Index) -> Value? {
+    @discardableResult public mutating func removeValue(for index: Index) -> Value? {
         guard let object = byIndex.removeValue(forKey: index) else {
             return nil
         }
@@ -123,7 +123,7 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
         assert(byIndex.count == byValue.count)
         return object
     }
-    mutating func remove(_ value: Value) -> Index? {
+    @discardableResult mutating func remove(_ value: Value) -> Index? {
         guard let index = byValue.removeValue(forKey: value) else {
             return nil
         }
@@ -135,10 +135,6 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
     public mutating func removeAll() {
         byValue.removeAll()
         byIndex.removeAll()
-        
-        for i in self {
-            
-        }
     }
     
     

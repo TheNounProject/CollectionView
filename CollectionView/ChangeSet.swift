@@ -21,7 +21,7 @@ public struct Matrix2D<T> : CustomStringConvertible {
     }
     
     public init(rows: Int, columns: Int, default value: T) {
-        var sub = [T](repeating: value, count: rows)
+        let sub = [T](repeating: value, count: rows)
         _storage = [[T]](repeating: sub, count: columns)
     }
     
@@ -224,13 +224,10 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
         self.origin = s
         self.destination = t
         
-        let m = s.count
-        let n = t.count
-        
         self._shared = Set(s).intersection(t)
         
-        var sourceSet = s.indexedSet
-        var targetSet = t.indexedSet
+        let sourceSet = s.indexedSet
+        let targetSet = t.indexedSet
         
         var insertions = IndexSet()
         var deletions = IndexSet()
@@ -249,14 +246,10 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                     
                 }
                 else {
-                    var adjust = insertions.count(in: 0...s) - deletions.count(in: 0...s)
-//                    print(adjust)
+                    let adjust = insertions.count(in: 0...s) - deletions.count(in: 0...s)
                     if s + adjust == t && forceUpdates?.contains(value) != true {
                         continue
                     }
-                    
-//                    print("Move \(value) from \(s) to \(t)")
-//                    _edits.append(Edit(.move(origin: s), value: value, index: t))
                     _edits.append(Edit(.deletion, value: value, index: s))
                     _edits.append(Edit(.insertion, value: value, index: t))
                     insertions.insert(t)
@@ -264,17 +257,14 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
                 }
             }
             else if let idx = sIdx {
-//                print("Delete \(value) at \(idx)")
                 _edits.append(Edit(.deletion, value: value, index: idx))
                 deletions.insert(idx)
             }
             else if let idx = tIdx {
-//                print("Insert \(value) at \(idx)")
                 _edits.append(Edit(.insertion, value: value, index: idx))
                 insertions.insert(idx)
             }
         }
-//        print(_edits)
         self.edits = _edits
         return;
         
@@ -534,8 +524,8 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
     public mutating func reduceEdits() {
         
         
-        var dIndex = IndexSet()
-        var iIndex = IndexSet()
+//        var dIndex = IndexSet()
+//        var iIndex = IndexSet()
         
         
         

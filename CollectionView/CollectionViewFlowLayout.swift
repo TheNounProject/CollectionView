@@ -219,7 +219,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         func item(verticallyAlignedTo attrs: CollectionViewLayoutAttributes) -> IndexPath? {
             
             guard self.items.count > 1,
-                let f = self.items.first,
+                let _ = self.items.first,
                 let l = self.items.last else { return items.last?.indexPath }
             
             let center = attrs.frame.midX
@@ -579,11 +579,11 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     open override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
         guard let collectionView = self.collectionView else { fatalError() }
         
-        var index = currentIndexPath._item
-        var section = currentIndexPath._section
+//        var index = currentIndexPath._item
+        let section = currentIndexPath._section
         
-        let numberOfSections = collectionView.numberOfSections
-        let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
+//        let numberOfSections = collectionView.numberOfSections
+//        let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
         
         guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }
         
@@ -622,7 +622,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 }
                 ip = prop
             }
-            return nil;
             
             /*
             if section == 0 && index == 0 {

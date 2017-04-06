@@ -76,7 +76,7 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
         return _storage.index(of: object)
     }
     
-    func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor] = []) -> Int {
+    @discardableResult func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor] = []) -> Int {
         
         if self._storage.count == 0  {
             self.add(object)
@@ -91,7 +91,7 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
             return idx
         }
     }
-    func remove(_ object: Element) -> Int? {
+    @discardableResult func remove(_ object: Element) -> Int? {
         return _storage.remove(object)
     }
     
@@ -138,7 +138,7 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
     
     func add(_ element: Element) {
         guard self._storage.contains(element) == false else {
-            let idx = _storage.index(of: element)!
+            let _ = _storage.index(of: element)
             return
         }
         self.needsSort = self._storage.count > 0
@@ -248,7 +248,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     
     public func indexPath(of object: Element) -> IndexPath? {
         
-        if let keyPath = self.sectionKeyPath {
+        if self.sectionKeyPath != nil {
             guard let section = self._objectSectionMap[object],
                 let sIndex = self._sections.index(of: section),
                 let idx = section.index(of: object) else { return nil }
@@ -498,55 +498,27 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         _sectionsCopy = nil
         
         
-        
-//        var csrLog = "Performing Cross Section Reduction ------ "
-//        var indent = 0
-//        
-        func appendCSRLog(_ string: String) {
-            return;
-//            csrLog += "\n"
-//            for _ in 0..<indent {
-//                csrLog += "\t"
-//            }
-//            csrLog += string
-        }
         func reduceCrossSectional(_ object: Element, targetEdit tEdit: Edit<Element>? = nil) -> Bool {
             
             guard self.context.itemsWithSectionChange.remove(object) != nil else {
                 return false
             }
-            
-//            indent += 1
-//            defer {
-//                indent -= 1
-//            }
-            
-//            appendCSRLog("Reducing cross section edit for \(object.idSuffix):")
-            
             guard let source = self.context.objectChanges.updated.index(of: object),
                 let targetIP = self.indexPath(of: object),
                 let targetSection = self._sectionInfo(at: targetIP) else {
-                    appendCSRLog("No source/target for cross")
                     return true
             }
             
             guard let proposedEdit = tEdit ?? processedSections[targetSection]?.edit(for: object) else {
-                appendCSRLog("Target: nil")
                 return true
             }
             
-            appendCSRLog("Target: \(targetIP) \(proposedEdit)")
-            
             let newEdit = Edit(.move(origin: source._item), value: object, index: targetIP._item)
             processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: targetIP._item)
-            appendCSRLog("Added move from \(source) to \(proposedEdit)")
-            
             processedSections[targetSection]?.remove(edit: proposedEdit)
-            appendCSRLog("Removed proposed edit \(proposedEdit)")
             
             if targetIP._item != proposedEdit.index {
-                let old = processedSections[targetSection]?.edit(withSource: targetIP._item)
-                appendCSRLog("Old edit at move to position: \(old)")
+                let _ = processedSections[targetSection]?.edit(withSource: targetIP._item)
             }
             else if case .substitution = proposedEdit.operation, let obj = self.context.objectChanges.object(for: targetIP) {
                 let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
@@ -591,7 +563,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 for edit in changes.edits {
                     switch edit.operation {
                         
-                    case let .move(origin: _):
+                    case .move(origin: _):
                         guard let source = self.context.objectChanges.updated.index(of: edit.value),
                             let dest = self.indexPath(of: edit.value) else {
                                 continue

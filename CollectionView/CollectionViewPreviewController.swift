@@ -7,11 +7,6 @@
 //
 
 import Foundation
-import CollectionView
-
-
-
-
 
 /**
  a CollectionViewPreviewControllerDelegate is responsible for providing data to a CollectionViewPreviewController.
@@ -74,13 +69,12 @@ class BackgroundView : NSView {
         
         if !self.isHidden, let c = backgroundColor {
             NSGraphicsContext.saveGraphicsState()
-            self.backgroundColor?.set()
+            c.set()
             NSRectFill(dirtyRect)
             NSGraphicsContext.restoreGraphicsState()
         }
     }
 }
-
 
 
 /**

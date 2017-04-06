@@ -419,7 +419,7 @@ final public class CollectionViewDocumentView : NSView {
     var disableAnimationTimer : Timer?
     internal func applyUpdates(_ updates: Set<ItemUpdate>, animated: Bool, completion: AnimationCompletion?) {
         
-        var _updates = updates
+        let _updates = updates
 //        for u in _updates {
 //            log.debug("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type) - is view\(u.view)")
 //        }

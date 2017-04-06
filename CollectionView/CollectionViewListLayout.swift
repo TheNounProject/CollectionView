@@ -361,43 +361,65 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         
         switch direction {
         case .up, .left:
-            
-            if currentIndexPath._item > 0 {
-                return IndexPath.for(item: currentIndexPath._item - 1, section: currentIndexPath._section)
-            }
-            else if currentIndexPath._section == 0 {
-                return nil
-            }
-            
-            var ip : IndexPath?
-            var section = currentIndexPath._section - 1
-            while ip == nil && section >= 0 {
-                if let _ip = self.sectionIndexPaths[section].last {
-                    ip = _ip
-                    break
+            var ip = currentIndexPath
+            while true {
+                guard let prop = self.allIndexPaths.object(before: ip) else { return nil }
+                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
+                    return prop
                 }
-                section -= 1
+                ip = prop
             }
-            return ip
+            return nil;
+            
+//            if let ip = currentIndexPath.previous {
+//                return ip
+//            }
+//            else if currentIndexPath._section == 0 {
+//                return nil
+//            }
+//            
+//            var ip : IndexPath?
+//            var section = currentIndexPath._section - 1
+//            while ip == nil && section >= 0 {
+//                if let _ip = self.sectionIndexPaths[section].last {
+//                    ip = _ip
+//                    break
+//                }
+//                section -= 1
+//            }
+//            return ip
             
         case .down, .right:
-            if currentIndexPath._item < self.sectionIndexPaths[currentIndexPath._section].count - 1 {
-                return IndexPath.for(item: currentIndexPath._item + 1, section: currentIndexPath._section)
-            }
-            else if currentIndexPath._section == numberOfSections - 1 {
-                return nil
-            }
             
-            var ip : IndexPath?
-            var section = currentIndexPath._section + 1
-            while ip == nil && section < numberOfSections {
-                if let _ip = self.sectionIndexPaths[section].first {
-                    ip = _ip
-                    break
+            var ip = currentIndexPath
+            while true {
+                guard let prop = self.allIndexPaths.object(after: ip) else { return nil }
+                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
+                    return prop
                 }
-                section += 1
+                ip = prop
             }
-            return ip
+            return nil;
+            
+            
+            
+//            if currentIndexPath._item < self.sectionIndexPaths[currentIndexPath._section].count - 1 {
+//                return IndexPath.for(item: currentIndexPath._item + 1, section: currentIndexPath._section)
+//            }
+//            else if currentIndexPath._section == numberOfSections - 1 {
+//                return nil
+//            }
+//            
+//            var ip : IndexPath?
+//            var section = currentIndexPath._section + 1
+//            while ip == nil && section < numberOfSections {
+//                if let _ip = self.sectionIndexPaths[section].first {
+//                    ip = _ip
+//                    break
+//                }
+//                section += 1
+//            }
+//            return ip
         }
         
     }

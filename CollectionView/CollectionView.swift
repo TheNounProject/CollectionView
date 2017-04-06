@@ -1425,12 +1425,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     _updateSelections?.insert(adjusted)
                 }
                 
-                var view = _updateContext.reloadedItems.contains(stale.index)
+                let view = _updateContext.reloadedItems.contains(stale.index)
                     ? _prepareReplacementCell(for: stale.value, at: adjusted)
                     : stale.value
                 
                 // TODO: Not sure if this actually needs to happen, it will just be reset below
-                self.contentDocumentView.preparedCellIndex.remove(view)
+                _ = self.contentDocumentView.preparedCellIndex.remove(view)
                 newCellIndex[adjusted] = view
                 
                 if adjusted != stale.index {
@@ -1473,8 +1473,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         //        currentCell.attributes = currentCell.attributes?.copyWithIndexPath(indexPath)
         //        self.contentDocumentView.preparedCellIndex[indexPath] = currentCell
         defer {
-            self.contentDocumentView.preparedCellIndex.remove(currentCell)
-            self.contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
+            _ = self.contentDocumentView.preparedCellIndex.remove(currentCell)
+            _ = self.contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
         }
         
         guard let newCell = self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
@@ -1482,9 +1482,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return currentCell
         }
         precondition(newCell.collectionView != nil, "Attempt to load cell without using deque:")
-        self.contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
-        
-//        log.debug("Loaded replacement cell \(newCell)")
         
         if newCell == currentCell {
             return newCell
@@ -1492,7 +1489,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         let removal = ItemUpdate(cell: currentCell, attrs: currentCell.attributes!, type: .remove)
         self.contentDocumentView.removeItem(removal)
-//        log.debug("Remove replaced cell \(currentCell.attributes!.indexPath)")
         
         if let a = currentCell.attributes?.copyWithIndexPath(indexPath) {
             newCell.apply(a, animated: false)

@@ -79,343 +79,343 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 118,
+      "line": 117,
       "symbol": "CollectionView.scrollerStyle",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 125,
+      "line": 124,
       "symbol": "CollectionView.wantsUpdateLayer",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 127,
+      "line": 126,
       "symbol": "CollectionView.updateLayer()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 500,
+      "line": 499,
       "symbol": "CollectionView.frameForSection(at:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 504,
+      "line": 503,
       "symbol": "CollectionView.layoutAttributesForItem(at:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 513,
+      "line": 512,
       "symbol": "CollectionView.layoutAttributesForSupplementaryView(ofKind:at:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 561,
+      "line": 560,
       "symbol": "CollectionView.layout()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 696,
+      "line": 723,
       "symbol": "CollectionView.viewWillStartLiveResize()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 701,
+      "line": 728,
       "symbol": "CollectionView.viewDidEndLiveResize()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 709,
+      "line": 737,
       "symbol": "CollectionView.isCompatibleWithResponsiveScrolling()",
       "symbol_kind": "source.lang.swift.decl.function.method.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 711,
+      "line": 739,
       "symbol": "CollectionView.isScrollEnabled",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 867,
+      "line": 911,
       "symbol": "CollectionView.SectionMove",
       "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 869,
+      "line": 913,
       "symbol": "CollectionView.reloadSupplementaryViews(in:animated:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 952,
+      "line": 994,
       "symbol": "CollectionView.Move",
       "symbol_kind": "source.lang.swift.decl.typealias",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1016,
+      "line": 1059,
       "symbol": "CollectionView.moveItems(_:animated:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1669,
+      "line": 1527,
       "symbol": "CollectionView.updateTrackingAreas()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1673,
+      "line": 1531,
       "symbol": "CollectionView.mouseExited(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1679,
+      "line": 1537,
       "symbol": "CollectionView.mouseMoved(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1692,
+      "line": 1550,
       "symbol": "CollectionView.acceptsFirstResponder",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1693,
+      "line": 1551,
       "symbol": "CollectionView.acceptsFirstMouse(for:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1694,
+      "line": 1552,
       "symbol": "CollectionView.becomeFirstResponder()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1700,
+      "line": 1558,
       "symbol": "CollectionView.resignFirstResponder()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1718,
+      "line": 1576,
       "symbol": "CollectionView.mouseDown(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1738,
+      "line": 1596,
       "symbol": "CollectionView.mouseUp(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1797,
+      "line": 1655,
       "symbol": "CollectionView.rightMouseDown(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1818,
+      "line": 1676,
       "symbol": "CollectionView.keySelectInterval",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1820,
+      "line": 1678,
       "symbol": "CollectionView.repeatKey",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1822,
+      "line": 1680,
       "symbol": "CollectionView.keyDown(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1846,
+      "line": 1704,
       "symbol": "CollectionView.keyUp(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1851,
+      "line": 1709,
       "symbol": "CollectionView.moveSelectionLeft(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1854,
+      "line": 1712,
       "symbol": "CollectionView.moveSelectionRight(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1857,
+      "line": 1715,
       "symbol": "CollectionView.moveSelectionUp(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1860,
+      "line": 1718,
       "symbol": "CollectionView.moveSelectionDown(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1882,
+      "line": 1740,
       "symbol": "CollectionView.SelectionMode.default",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 1883,
+      "line": 1741,
       "symbol": "CollectionView.SelectionMode.multi",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2502,
+      "line": 2360,
       "symbol": "CollectionView._scrollItem(at:to:animated:prepare:completion:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2634,
+      "line": 2492,
       "symbol": "CollectionView.isDragging",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2636,
+      "line": 2494,
       "symbol": "CollectionView.mouseDragged(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2718,
+      "line": 2565,
       "symbol": "CollectionView.draggingSession(_:sourceOperationMaskFor:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2723,
+      "line": 2570,
       "symbol": "CollectionView.draggingSession(_:willBeginAt:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2727,
+      "line": 2574,
       "symbol": "CollectionView.draggingSession(_:movedTo:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2735,
+      "line": 2583,
       "symbol": "CollectionView.draggingSession(_:endedAt:operation:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2745,
+      "line": 2596,
       "symbol": "CollectionView.draggingEntered(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2751,
+      "line": 2602,
       "symbol": "CollectionView.draggingExited(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2754,
+      "line": 2606,
       "symbol": "CollectionView.draggingEnded(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2757,
+      "line": 2609,
       "symbol": "CollectionView.draggingUpdated(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2764,
+      "line": 2616,
       "symbol": "CollectionView.performDragOperation(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2773,
+      "line": 2625,
       "symbol": "CollectionView.isAutoscrollEnabled",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift",
-      "line": 2774,
+      "line": 2626,
       "symbol": "CollectionView.autoscrollSize",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -457,77 +457,77 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 116,
+      "line": 113,
       "symbol": "CollectionReusableView.draw(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 133,
+      "line": 130,
       "symbol": "CollectionReusableView.trackingOptions",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 135,
+      "line": 132,
       "symbol": "CollectionReusableView.trackMouseMoved",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 162,
+      "line": 159,
       "symbol": "CollectionReusableView.updateTrackingAreas()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 180,
+      "line": 177,
       "symbol": "CollectionViewCell.acceptsFirstMouse(for:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 184,
+      "line": 181,
       "symbol": "CollectionViewCell.init(frame:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 189,
+      "line": 186,
       "symbol": "CollectionViewCell.init(coder:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 214,
+      "line": 211,
       "symbol": "CollectionViewCell.setSelected(_:animated:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 218,
+      "line": 215,
       "symbol": "CollectionViewCell.setHighlighted(_:animated:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 231,
+      "line": 228,
       "symbol": "CollectionViewCell.mouseEntered(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewCells.swift",
-      "line": 252,
+      "line": 249,
       "symbol": "CollectionViewCell.mouseExited(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -779,91 +779,98 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewCell.swift",
-      "line": 108,
+      "line": 104,
       "symbol": "CollectionViewPreviewCell.scrollWheel(with:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewCell.swift",
-      "line": 117,
+      "line": 113,
       "symbol": "CollectionViewPreviewCell.TransitionState",
       "symbol_kind": "source.lang.swift.decl.enum",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewCell.swift",
-      "line": 124,
+      "line": 120,
       "symbol": "CollectionViewPreviewCell.transitionState",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewCell.swift",
-      "line": 125,
+      "line": 121,
       "symbol": "CollectionViewPreviewCell.isTransitioning",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
-      "line": 131,
+      "line": 117,
       "symbol": "CollectionViewPreviewController.loadView()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
-      "line": 138,
+      "line": 124,
       "symbol": "CollectionViewPreviewController.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
-      "line": 142,
+      "line": 128,
       "symbol": "CollectionViewPreviewController.init(coder:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
-      "line": 197,
+      "line": 183,
+      "symbol": "CollectionViewPreviewController.isEmpty",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
+      "line": 187,
       "symbol": "CollectionViewPreviewController.reloadData()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
-      "line": 325,
+      "line": 315,
       "symbol": "CollectionViewPreviewController.numberOfSections(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
-      "line": 329,
+      "line": 319,
       "symbol": "CollectionViewPreviewController.collectionView(_:numberOfItemsInSection:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
-      "line": 334,
+      "line": 324,
       "symbol": "CollectionViewPreviewController.previewLayout(_:canPreviewItemAt:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewController.swift",
-      "line": 338,
+      "line": 328,
       "symbol": "CollectionViewPreviewController.collectionView(_:cellForItemAt:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewLayout.swift",
-      "line": 19,
+      "line": 18,
       "symbol": "CollectionViewPreviewLayout",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
@@ -1192,15 +1199,134 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/IndexedSet.swift",
-      "line": 188,
+      "line": 184,
       "symbol": "Array.indexedSet",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/IndexedSet.swift",
-      "line": 198,
+      "line": 194,
       "symbol": "Collection.indexedSet",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 154,
+      "symbol": "MergedFetchedResultsController.hasEmptyPlaceholder",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 156,
+      "symbol": "MergedFetchedResultsController.managedObjectContext",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 158,
+      "symbol": "MergedFetchedResultsController.fetchRequests",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 159,
+      "symbol": "MergedFetchedResultsController.sortDescriptors",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 160,
+      "symbol": "MergedFetchedResultsController.sectionKeyPath",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 177,
+      "symbol": "MergedFetchedResultsController.init(context:sortDescriptors:sectionKeyPath:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 185,
+      "symbol": "MergedFetchedResultsController.addRequest(_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 215,
+      "symbol": "MergedFetchedResultsController.object(forSectionAt:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 226,
+      "symbol": "MergedFetchedResultsController.indexPath(of:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 234,
+      "symbol": "MergedFetchedResultsController.indexPath(of:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 247,
+      "symbol": "MergedFetchedResultsController.indexPathOfSection(representing:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 271,
+      "symbol": "MergedFetchedResultsController._object(forSectionAt:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 275,
+      "symbol": "MergedFetchedResultsController._object(at:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 278,
+      "symbol": "MergedFetchedResultsController._indexPathOfSection(representing:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 339,
+      "symbol": "MergedFetchedResultsController.pendingChangeCount",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 342,
+      "symbol": "MergedFetchedResultsController.pendingItemChangeCount",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift",
+      "line": 422,
+      "symbol": "MergedFetchedResultsController.emptySectionChanges",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
@@ -1227,112 +1353,105 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/OrderedSet.swift",
-      "line": 285,
+      "line": 280,
       "symbol": "Collection.orderedSet(using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/Protocols.swift",
-      "line": 158,
+      "line": 160,
       "symbol": "CollectionViewDelegate.collectionViewWillReloadLayout(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/Protocols.swift",
-      "line": 160,
-      "symbol": "CollectionViewDelegate.collectionViewDidReloadLayout(_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/Protocols.swift",
-      "line": 315,
+      "line": 326,
       "symbol": "CollectionViewDelegate.collectionView(_:willDisplayCell:forItemAt:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 289,
+      "line": 277,
       "symbol": "RelationalResultsController.init(context:request:sectionRequest:sectionKeyPath:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 364,
+      "line": 352,
       "symbol": "RelationalResultsController.object(forSectionAt:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 374,
+      "line": 362,
       "symbol": "RelationalResultsController.indexPath(of:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 382,
+      "line": 370,
       "symbol": "RelationalResultsController.indexPath(of:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 389,
+      "line": 377,
       "symbol": "RelationalResultsController.indexPathOfSection(representing:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 411,
+      "line": 399,
       "symbol": "RelationalResultsController._object(forSectionAt:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 415,
+      "line": 403,
       "symbol": "RelationalResultsController._object(at:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 474,
+      "line": 462,
       "symbol": "RelationalResultsController.setManagedObjectContext(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 576,
+      "line": 564,
       "symbol": "RelationalResultsController.emptySectionChanges",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 578,
+      "line": 566,
       "symbol": "RelationalResultsController.pendingChangeCount",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 581,
+      "line": 569,
       "symbol": "RelationalResultsController.pendingItemChangeCount",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 584,
+      "line": 572,
       "symbol": "RelationalResultsController.pendingSectionChangeCount",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -1430,49 +1549,49 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/ResultsControllerHelpers.swift",
-      "line": 29,
+      "line": 28,
       "symbol": "Array.description(of:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/ResultsControllerHelpers.swift",
-      "line": 53,
+      "line": 52,
       "symbol": "Array.forEachKey(describing:do:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/ResultsControllerHelpers.swift",
-      "line": 72,
+      "line": 71,
       "symbol": "Array.compare(_:to:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/ResultsControllerHelpers.swift",
-      "line": 102,
+      "line": 101,
       "symbol": "Sequence.sorted(using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/ResultsControllerHelpers.swift",
-      "line": 115,
+      "line": 114,
       "symbol": "Array.sort(using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/ResultsControllerHelpers.swift",
-      "line": 122,
+      "line": 121,
       "symbol": "Array.insertionIndex(of:using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/ResultsControllerHelpers.swift",
-      "line": 131,
+      "line": 130,
       "symbol": "Array.insert(_:using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"

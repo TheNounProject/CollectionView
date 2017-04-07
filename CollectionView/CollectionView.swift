@@ -1744,10 +1744,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /// Determines what happens when an item is clicked
     public var selectionMode: SelectionMode = .default
     
-    /// allows the selection of multiple items via modifier keys (command & shift)
+    /// allows the selection of multiple items via modifier keys (command & shift) (default true)
     public var allowsMultipleSelection: Bool = true
     
-    /// If true, clicking empty space will deselect all items
+    /// If true, clicking empty space will deselect all items (default true)
     public var allowsEmptySelection: Bool = true
     
     

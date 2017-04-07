@@ -1,6 +1,6 @@
-version: "Apple Swift version 3.0.2 (swiftlang-800.0.63 clang-800.0.42.1)"
-options: "711d9d678f92715f105bb3b8029f17dd"
-build_time: [543703521, 142697000]
+version: "Apple Swift version 3.1 (swiftlang-802.0.48 clang-802.0.38)"
+options: "56ee39a3abb6597cd16d0d8d4db030bb"
+build_time: [544917088, 371881000]
 inputs:
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/Protocols.swift": [9223372036854775807, 0]
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift": [9223372036854775807, 0]
@@ -18,6 +18,7 @@ inputs:
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/ResultsController.swift": [9223372036854775807, 0]
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewController.swift": [9223372036854775807, 0]
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/FetchedResultsObserver.swift": [9223372036854775807, 0]
+  "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/MergedFetchedResultsController.swift": [9223372036854775807, 0]
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/Helpers.swift": [9223372036854775807, 0]
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewPreviewLayout.swift": [9223372036854775807, 0]
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionView.swift": [9223372036854775807, 0]

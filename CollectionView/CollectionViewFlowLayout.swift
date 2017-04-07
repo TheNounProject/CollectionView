@@ -669,7 +669,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 }
                 ip = prop
             }
-            return nil;
             
             /*
             if section == numberOfSections - 1 && index == numberOfItemsInSection - 1 {

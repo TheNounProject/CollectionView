@@ -99,7 +99,6 @@ open class CollectionReusableView : NSView {
     open var useMask: Bool = false
     
     open override func updateLayer() {
-        super.updateLayer()
         self.layer?.backgroundColor = self.backgroundColor?.cgColor
         if useMask {
             let l = CALayer()

@@ -626,7 +626,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         let newContentSize = self.collectionViewLayout.collectionViewContentSize
         
-        
         // If the size changed we need to do some extra prep
         let sizeChanged = newContentSize != _lastViewSize
         
@@ -1616,13 +1615,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         
-        guard let ip = indexPath , ip == mouseDownIP else {
+        guard let ip = indexPath else {
             if theEvent.clickCount == 2 {
                 self.delegate?.collectionView?(self, didDoubleClickItemAt: nil, with: theEvent)
             }
             return
         }
         
+        guard ip == mouseDownIP else { return }
         
         if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.shift) {
             self._selectItem(at: ip, atScrollPosition: .nearest, animated: true, selectionType: .extending)
@@ -1939,9 +1939,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     }
                 }
             }
-            else {
-                indexesToSelect.insert(IndexPath.zero)
-            }
+//            else {
+//                indexesToSelect.insert(IndexPath.zero)
+//            }
             indexesToSelect.insert(indexPath)
         }
         
@@ -2012,6 +2012,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private func _deselectAllItems(_ animated: Bool, notify: Bool) {
         let anIP = self._selectedIndexPaths.first
         self._lastSelection = nil
+        self._firstSelection = nil
         
         let ips = self._selectedIndexPaths.intersection(Set(self.indexPathsForVisibleItems))
         
@@ -2342,7 +2343,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Programatic Scrollin
     /*-------------------------------------------------------------------------------*/
     
+
     
+    public func scrollToTop(animated: Bool = false, completion: AnimationCompletion? = nil) {
+        guard self.numberOfSections > 0 && self.numberOfItems(in: 0) > 0 else { return }
+        self.scrollItem(at: IndexPath.zero, to: .leading, animated: animated, completion: completion)
+    }
     
     /**
      Scroll an item into view

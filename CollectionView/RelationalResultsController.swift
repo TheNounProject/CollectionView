@@ -121,6 +121,9 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
 //    private(set) var needsSort : Bool = false
     private var _added = Set<Element>() // Tracks added items needing sort, if one do insert for performance
     
+    var isEmpty : Bool {
+        return self.numberOfObjects == 0 && _added.count == 0
+    }
     
     func beginEditing() {
         assert(!isEditing, "Mutiple calls to beginEditing() for RelationalResultsControllerSection")
@@ -617,7 +620,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
 //                }
                 if s.isEditing {
                     
-                    if s.numberOfObjects == 0 {
+                    if s.isEmpty {
                         // If the section object matches the section predicat, keep it.
                         let req = self.sectionFetchRequest
                         if self.fetchSections,
@@ -630,7 +633,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                             continue;
                         }
                     }
-                    
                     let set = s.endEditing(forceUpdates: self.context.objectChangeSet.updated.valuesSet)
                     processedSections[s] = set
                 }
@@ -954,6 +956,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             if let existingIP = self.indexPathOfSection(representing: sectionValue),
                 let existingSection = self._sectionInfo(at: existingIP) {
+                log.debug("\(sectionValue) -- \(sections.count)")
                 
                 existingSection.ensureEditing()
                 existingSection._add(object)

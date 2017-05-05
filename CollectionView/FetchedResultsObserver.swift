@@ -54,7 +54,6 @@ class ResultsControllerCDManager {
             + "\(self.updated.count) Updated, "
             
         }
-        
     }
 
     

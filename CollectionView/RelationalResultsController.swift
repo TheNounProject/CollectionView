@@ -257,7 +257,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /**
      The managed object context to fetch from and observe for changes
     */
-    public private(set) var managedObjectContext: NSManagedObjectContext
+    public private(set) unowned var managedObjectContext: NSManagedObjectContext
     
     private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
     
@@ -273,6 +273,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             if (oldValue == nil) == (delegate == nil) { return }
             if delegate == nil { unregister() }
             else if _fetched { register() }
+        }
+    }
+    
+    deinit {
+        if _fetched {
+            unregister()
         }
     }
     

@@ -171,7 +171,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     public var sortDescriptors: [NSSortDescriptor]? {
         return fetchRequest.sortDescriptors
     }
-    public let managedObjectContext: NSManagedObjectContext
+    public unowned let managedObjectContext: NSManagedObjectContext
     
     public var sectionKeyPath: String?
 
@@ -205,7 +205,11 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         self.sectionKeyPath = sectionKeyPath
     }
     
-     
+    deinit {
+        if _fetched {
+            unregister()
+        }
+    }
     
     public var numberOfSections : Int {
         return _sections.count

@@ -43,7 +43,11 @@ public class FetchedSetController : NSObject {
         validateRequest()
     }
     
-    
+    deinit {
+        if _fetched {
+            unregister()
+        }
+    }
     
     public private(set) var managedObjectContext : NSManagedObjectContext
     public weak var delegate: FetchedSetControllerDelegate? {

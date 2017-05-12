@@ -8,6 +8,72 @@
 
 import Foundation
 
+fileprivate let nilKeyHash = UUID().hashValue
+
+fileprivate struct RefKeyTable<Key:Hashable & AnyObject, Value:Any> : Sequence, ExpressibleByDictionaryLiteral {
+    
+    
+    
+    private struct KeyRef : Hashable {
+        
+        weak var key: Key?
+        var keyHash : Int
+        
+        init(val: Key) {
+            self.key = val
+            self.keyHash = val.hashValue
+            
+        }
+        
+        var hashValue: Int {
+            return keyHash ?? nilKeyHash
+        }
+        static func ==(lhs: KeyRef, rhs: KeyRef) -> Bool {
+            return lhs.key == rhs.key
+        }
+        
+    }
+    private var storage = [KeyRef:Value]()
+    
+    subscript(key: Key) -> Value? {
+        get {
+            let k = KeyRef(val: key)
+            return self.storage[k]
+        }
+        set {
+            let k = KeyRef(val: key)
+            if let val = newValue {
+                self.storage[k] = val
+            } else {
+                self.storage.removeValue(forKey: k)
+            }
+        }
+    }
+    
+    init(dictionaryLiteral elements: (Key, Value)...) {
+        for e in elements {
+            self.storage[KeyRef(val: e.0)] = e.1
+        }
+    }
+    
+    mutating func removeValue(forKey key: Key) -> Value? {
+        return self.storage.removeValue(forKey: KeyRef(val: key))
+    }
+    
+    public typealias Iterator = AnyIterator<(index: Key?, value: Value)>
+    public func makeIterator() -> Iterator {
+        var it = storage.makeIterator()
+        return AnyIterator {
+            if let val = it.next() {
+                return (val.key.key, val.value)
+            }
+            return nil
+        }
+    }
+    
+}
+
+
 
 class ResultsControllerCDManager {
     
@@ -57,7 +123,7 @@ class ResultsControllerCDManager {
     }
 
     
-    var contexts = [NSManagedObjectContext:Int]()
+    private var contexts = RefKeyTable<NSManagedObjectContext,Int>()
     
     class var shared : ResultsControllerCDManager {
         struct Static { static let instance = ResultsControllerCDManager() }
@@ -81,10 +147,9 @@ class ResultsControllerCDManager {
     
     func remove(context: NSManagedObjectContext) {
         let count = contexts[context] ?? 0
-        
         if count <= 1 {
             NotificationCenter.default.removeObserver(self, name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
-            contexts.removeValue(forKey: context)
+            _ = contexts.removeValue(forKey: context)
         }
         else {
             contexts[context] = count - 1

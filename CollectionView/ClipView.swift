@@ -17,7 +17,7 @@ open class ClipView : NSClipView {
     
     var shouldAnimateOriginChange = false
     var destinationOrigin = CGPoint.zero
-    var scrollView : NSScrollView { return self.enclosingScrollView ?? self.superview as! NSScrollView }
+    var scrollView : NSScrollView? { return self.enclosingScrollView ?? self.superview as? NSScrollView }
     
     var scrollEnabled : Bool = true
     
@@ -135,8 +135,9 @@ open class ClipView : NSClipView {
         } else if self.scrollEnabled || manualScroll {
             // Otherwise, we stop any scrolling that is currently occurring (if needed) and let
             // super's implementation handle a normal scroll.
-            self.endScrolling()
+            
             super.scroll(to: newOrigin)
+            self.endScrolling()
 //            self.scrollView.reflectScrolledClipView(self)
         }
     }
@@ -168,7 +169,7 @@ open class ClipView : NSClipView {
 //                cv.delegate?.collectionViewDidScroll?(cv)
 //            }
             // Make this call so that we can force an update of the scroller positions.
-            self.scrollView.reflectScrolledClipView(self)
+            self.scrollView?.reflectScrolledClipView(self)
             NotificationCenter.default.post(name: Notification.Name.NSScrollViewDidLiveScroll, object: self.scrollView)
         }
         

@@ -590,7 +590,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             return
         }
         
-        managedObjectContext.perform {
+        managedObjectContext.perform { [unowned self] in
             
             self.emptySectionChanges = nil
             self._sectionsCopy = nil

@@ -252,7 +252,6 @@ final public class CollectionViewDocumentView : NSView {
                     if removedRect.isEmpty { removedRect = cell.frame }
                     else { removedRect = removedRect.union(cell.frame) }
                     
-                    self.preparedCellIndex[ip] = nil
                     cell.layer?.zPosition = 0
                     if animated  && !animating, let attrs = self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
                         updates.append(ItemUpdate(cell: cell, attrs: attrs, type: .remove))
@@ -261,6 +260,7 @@ final public class CollectionViewDocumentView : NSView {
                         self.collectionView.enqueueCellForReuse(cell)
                         self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: ip)
                     }
+                    self.preparedCellIndex[ip] = nil
                 }
             }
             
@@ -331,7 +331,6 @@ final public class CollectionViewDocumentView : NSView {
         if !extending {
             for identifier in removed {
                 if let view = self.preparedSupplementaryViewIndex[identifier] {
-                    self.preparedSupplementaryViewIndex[identifier] = nil
                     view.layer?.zPosition = -100
                     
                     if animated && !animating, var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!) ?? view.attributes {
@@ -353,6 +352,7 @@ final public class CollectionViewDocumentView : NSView {
                         self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, ofElementKind: identifier.kind, at: identifier.indexPath!)
                         self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
                     }
+                    self.preparedSupplementaryViewIndex[identifier] = nil
                 }
             }
         }

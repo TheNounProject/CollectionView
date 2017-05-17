@@ -206,6 +206,9 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     }
     
     deinit {
+        self._sections.removeAll()
+        self.fetchRequest.predicate = nil
+        
         if _fetched {
             unregister()
         }

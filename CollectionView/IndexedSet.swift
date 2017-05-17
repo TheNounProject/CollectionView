@@ -46,10 +46,8 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
     public func index(of value: Value) -> Index? {
         return byValue[value]
     }
-
     
     public init() { }
-    
     
     public init(dictionaryLiteral elements: (Index, Value)...) {
         for e in elements {
@@ -69,15 +67,6 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
             else { _ = removeValue(for: index) }
         }
     }
-    
-    // Collection Protocol
-//    typealias Index = IndexedSetIndex<Index, Value>
-//    public func index(after i: Index) -> Index {
-//        return byValue.index(after: i)
-//    }
-//    public var startIndex: Index { return byValue.startIndex }
-//    public var endIndex: Index { return byValue.endIndex }
-    
     
     public var description: String {
         var str = "\(type(of: self)) [\n"

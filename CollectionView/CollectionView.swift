@@ -1135,7 +1135,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             ensureStorage(capacity: from)
             storage[from] -= 1
-            let t = to > from ? to + 1 : to
+            let t = to // to > from ? to + 1 : to
             ensureStorage(capacity: t)
             storage[t] += 1
             locked.insert(to)
@@ -1165,7 +1165,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
 //            log.debug(storage)
             for idx in 0..<max(storage.count, count) {
+                
+                
+                func catchup() {
+                    while cursor < storage.count && cursor <= idx {
+                        let val = storage[cursor]
+                        adjust += val
+                        cursor += 1
+                    }
+                }
+                
                 if _map[idx] != nil {
+                    catchup()
                     continue
                 }
                 
@@ -1174,12 +1185,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     _map[idx] = idx + adjust
                     open.insert(idx)
                     locked.insert(idx + adjust)
+                    catchup()
                     continue
                 }
                 if let f = open.subtracting(locked).first, f <= idx, !locked.contains(f) {
                     _map[idx] = f
                     open.insert(idx)
                     locked.insert(f)
+                    catchup()
                     continue
                 }
                 while cursor < storage.count && (cursor <= idx || locked.contains(idx + adjust)) {
@@ -1252,21 +1265,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
         doLayoutPrep()
         
         // Section shifting
-        if _updateContext.insertedSections.count > 0 {
-            for insert in _updateContext.insertedSections {
-                sectionShift.insert(at: insert)
-            }
+        
+        for insert in _updateContext.insertedSections {
+            sectionShift.insert(at: insert)
         }
-        if _updateContext.deletedSections.count > 0 {
-            for d in _updateContext.deletedSections {
-                sectionShift.remove(at: d)
-            }
+        for d in _updateContext.deletedSections {
+            sectionShift.remove(at: d)
         }
-        if _updateContext.movedSections.count > 0 {
-            for m in _updateContext.movedSections {
-                sectionShift.move(m.index, to: m.value)
-            }
+        for m in _updateContext.movedSections {
+            sectionShift.move(m.index, to: m.value)
         }
+        
         var sectionMap = sectionShift.populateMap(count: self.numberOfSections)
         
         

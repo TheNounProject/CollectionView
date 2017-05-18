@@ -9,7 +9,7 @@
 import Foundation
 
 
-public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStringConvertible, ExpressibleByDictionaryLiteral {
+public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDebugStringConvertible, ExpressibleByDictionaryLiteral {
     
     
     //    var table = MapTab
@@ -68,7 +68,7 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
         }
     }
     
-    public var description: String {
+    public var debugDescription: String {
         var str = "\(type(of: self)) [\n"
         for i in self {
             str += "\(i.index) : \(i.value)\n"
@@ -76,6 +76,8 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomStr
         str += "]"
         return str
     }
+    
+    
     
     public func contains(_ object: Value) -> Bool {
         return byValue[object] != nil

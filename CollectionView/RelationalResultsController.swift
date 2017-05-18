@@ -965,8 +965,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             
             if let existingIP = self.indexPathOfSection(representing: sectionValue),
                 let existingSection = self._sectionInfo(at: existingIP) {
-                log.debug("\(sectionValue) -- \(sections.count)")
-                
                 existingSection.ensureEditing()
                 existingSection._add(object)
                 _objectSectionMap[object] = existingSection

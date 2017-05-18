@@ -254,13 +254,14 @@ final public class CollectionViewDocumentView : NSView {
                     
                     cell.layer?.zPosition = 0
                     if animated  && !animating, let attrs = self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
+                        self.preparedCellIndex[ip] = nil
                         updates.append(ItemUpdate(cell: cell, attrs: attrs, type: .remove))
                     }
                     else {
                         self.collectionView.enqueueCellForReuse(cell)
+                        self.preparedCellIndex[ip] = nil
                         self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: ip)
                     }
-                    self.preparedCellIndex[ip] = nil
                 }
             }
             

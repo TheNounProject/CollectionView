@@ -1266,14 +1266,21 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         // Section shifting
         
-        for insert in _updateContext.insertedSections {
-            sectionShift.insert(at: insert)
+        // Need to check for empty. Crashes
+        if _updateContext.insertedSections.count > 0 {
+            for i in _updateContext.insertedSections {
+                sectionShift.insert(at: i)
+            }
         }
-        for d in _updateContext.deletedSections {
-            sectionShift.remove(at: d)
+        if _updateContext.deletedSections.count > 0 {
+            for d in _updateContext.deletedSections {
+                sectionShift.remove(at: d)
+            }
         }
-        for m in _updateContext.movedSections {
-            sectionShift.move(m.index, to: m.value)
+        if _updateContext.movedSections.count > 0 {
+            for m in _updateContext.movedSections {
+                sectionShift.move(m.index, to: m.value)
+            }
         }
         
         var sectionMap = sectionShift.populateMap(count: self.numberOfSections)

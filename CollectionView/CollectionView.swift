@@ -256,12 +256,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             assert(cell != nil, "CollectionView: No cell could be dequed with identifier '\(identifier) for item: \(indexPath._item) in section \(indexPath._section)'. Make sure you have registered your cell class or nib for that identifier.")
             cell?.collectionView = self
         }
-        else {
-            cell?.prepareForReuse()
-        }
         cell?.reuseIdentifier = identifier
-//        cell?.indexPath = indexPath
-        
         return cell!
     }
     
@@ -290,14 +285,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
             assert(view != nil, "CollectionView: No view could be dequed for supplementary view of kind \(elementKind) with identifier '\(identifier) in section \(indexPath._section)'. Make sure you have registered your view class or nib for that identifier.")
             view?.collectionView = self
         }
-        else {
-            view?.prepareForReuse()
-        }
         view?.reuseIdentifier = identifier
         return view!
     }
     
     final func enqueueCellForReuse(_ item: CollectionViewCell) {
+        item.prepareForReuse()
         item.isHidden = true
 //        item.indexPath = nil
         guard let id = item.reuseIdentifier else { return }
@@ -309,6 +302,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     final func enqueueSupplementaryViewForReuse(_ view: CollectionReusableView, withIdentifier: SupplementaryViewIdentifier) {
+        view.prepareForReuse()
         view.isHidden = true
 //        view.indexPath = nil
         let newID = SupplementaryViewIdentifier(kind: withIdentifier.kind, reuseIdentifier: view.reuseIdentifier ?? withIdentifier.reuseIdentifier)

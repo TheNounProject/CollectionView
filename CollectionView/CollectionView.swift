@@ -665,6 +665,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 }
             }
         
+        // TODO: Get removed items from pending updates and adjust them
         
         
         

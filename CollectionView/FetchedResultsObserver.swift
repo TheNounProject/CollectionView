@@ -31,8 +31,8 @@ fileprivate struct RefKeyTable<Key:Hashable & AnyObject, Value:Any> : Sequence, 
         static func ==(lhs: KeyRef, rhs: KeyRef) -> Bool {
             return lhs.key == rhs.key
         }
-        
     }
+    
     private var storage = [KeyRef:Value]()
     
     subscript(key: Key) -> Value? {

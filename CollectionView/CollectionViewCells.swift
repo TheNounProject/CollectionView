@@ -220,17 +220,24 @@ open class CollectionViewCell : CollectionReusableView {
     
     open override func prepareForReuse() {
         super.prepareForReuse()
-        self.setSelected(false, animated: false)
-        self.setHighlighted(false, animated: false)
+        if self.selected {
+            self.setSelected(false, animated: false)
+        }
+        if self.highlighted {
+            self.setHighlighted(false, animated: false)
+        }
     }
     
     override open func mouseEntered(with theEvent: NSEvent) {
+        super.mouseEntered(with: theEvent)
         
         // Validate self and the event
         guard let cv = self.collectionView, let ip = self.attributes?.indexPath else { return }
         guard theEvent.type == NSEventType.mouseEntered && (theEvent.trackingArea?.owner as? CollectionViewCell) == self else { return }
         
         // Make sure the event is inside self
+        
+        guard self.highlighted == false else { return }
         guard let window = self.window else { return }
         let mLoc = window.convertFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSize.zero)).origin
         if !self.bounds.contains(self.convert(mLoc, from: nil)) { return }
@@ -239,7 +246,6 @@ open class CollectionViewCell : CollectionReusableView {
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {
             if view.isDescendant(of: self) {
                 if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAt: ip) , h == false { return }
-                super.mouseEntered(with: theEvent)
                 self.setHighlighted(true, animated: true)
             }
         }
@@ -247,6 +253,7 @@ open class CollectionViewCell : CollectionReusableView {
     
     override open func mouseExited(with theEvent: NSEvent) {
         super.mouseExited(with: theEvent)
+        guard self.highlighted == true else { return }
         guard theEvent.type == NSEventType.mouseExited && (theEvent.trackingArea?.owner as? CollectionViewCell) == self else { return }
         self.setHighlighted(false, animated: true)
     }

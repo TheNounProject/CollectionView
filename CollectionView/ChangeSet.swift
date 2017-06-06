@@ -268,7 +268,6 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
         self.edits = _edits
         return;
         
-        
         /*
         
         

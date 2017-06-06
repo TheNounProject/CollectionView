@@ -201,7 +201,7 @@ extension OrderedSet where Element:Comparable {
     
 }
 
-extension OrderedSet where Element:Hashable & AnyObject {
+extension OrderedSet where Element: AnyObject {
     
     public mutating func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor]) -> Int {
         

@@ -211,9 +211,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
     internal var _registeredSupplementaryViewKinds = Set<String>()
     private func _firstObjectOfClass(_ aClass: AnyClass, inNib: NSNib) -> NSView? {
         var foundObject: AnyObject? = nil
-        var topLevelObjects : NSArray? = NSArray()
+        var topLevelObjects = NSArray()
         if inNib.instantiate(withOwner: self, topLevelObjects: &topLevelObjects) {
-            for obj in topLevelObjects! {
+            for obj in topLevelObjects {
                 if let o = obj as? NSView, o.isKind(of: aClass) {
                     foundObject = o
                     break
@@ -363,7 +363,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // MARK: - Data
     /*-------------------------------------------------------------------------------*/
-//    fileprivate var info : CollectionViewInfo!
     
     private var sections = [Int:Int]()
     

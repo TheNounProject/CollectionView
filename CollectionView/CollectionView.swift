@@ -90,11 +90,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
         self.addSubview(_floatingSupplementaryView, positioned: .above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
-        if #available(OSX 10.12, *) {
-            self._floatingSupplementaryView.addConstraintsToMatchParent()
-        } else {
+//        if #available(OSX 10.12, *) {
+//            self._floatingSupplementaryView.addConstraintsToMatchParent()
+//        } else {
             _floatingSupplementaryView.frame = self.bounds
-        }
+//        }
     }
     
     deinit {
@@ -552,12 +552,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     open override func layout() {
         
-        if #available(OSX 10.12, *) {
-            // Do nothing
-        }
-        else {
+//        if #available(OSX 10.12, *) {
+//            // Do nothing
+//        }
+//        else {
             _floatingSupplementaryView.frame = self.bounds
-        }
+//         }
         
         super.layout()
         

@@ -22,7 +22,6 @@ fileprivate struct RefKeyTable<Key:Hashable & AnyObject, Value:Any> : Sequence, 
         init(val: Key) {
             self.key = val
             self.keyHash = val.hashValue
-            
         }
         
         var hashValue: Int {

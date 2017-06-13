@@ -1017,9 +1017,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             else {
                 // The section value doesn't exist yet, the section will be inserted
                 let sec = self._insert(section: sectionValue)
+                _ = currentSection.remove(object)
                 sec.ensureEditing()
                 sec._add(object)
                 _objectSectionMap[object] = sec
+                self.context.itemsWithSectionChange.insert(object)
             }
             
         }

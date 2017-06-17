@@ -330,8 +330,14 @@ final public class CollectionViewDocumentView : NSView {
         let updated = inserted.remove(oldIdentifiers)
         
         if !extending {
+            var removedRect = CGRect.zero
+            
             for identifier in removed {
                 if let view = self.preparedSupplementaryViewIndex[identifier] {
+                    
+                    if removedRect.isEmpty { removedRect = view.frame }
+                    else { removedRect = removedRect.union(view.frame) }
+                    
                     view.layer?.zPosition = -100
                     
                     if animated && !animating, var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!) ?? view.attributes {
@@ -354,6 +360,16 @@ final public class CollectionViewDocumentView : NSView {
                         self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
                     }
                     self.preparedSupplementaryViewIndex[identifier] = nil
+                }
+            }
+            if !removedRect.isEmpty {
+                if self.collectionView.collectionViewLayout.scrollDirection == .vertical {
+                    let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.minYEdge : CGRectEdge.maxYEdge
+                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                }
+                else {
+                    let edge = self.visibleRect.origin.x > removedRect.origin.x ? CGRectEdge.minXEdge : CGRectEdge.maxXEdge
+                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
                 }
             }
         }

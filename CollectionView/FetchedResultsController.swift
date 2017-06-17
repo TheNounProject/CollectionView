@@ -424,12 +424,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         }
     }
     
-    
-    
-    func pause() {
-        
-    }
-    
 
     
     

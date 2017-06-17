@@ -523,6 +523,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     
+    public func reset() {
+        self._sections.removeAll()
+        self._objectSectionMap.removeAll()
+    }
+    
 
     
     

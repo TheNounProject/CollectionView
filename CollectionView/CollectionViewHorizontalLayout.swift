@@ -47,7 +47,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         
         var xPos: CGFloat = sectionInsets.left - self.itemSpacing
         
-        for row in 0...numRows-1 {
+        for row in 0..<numRows {
             
             let ip = IndexPath.for(item: row, section: 0)
             self.allIndexPaths.add(ip)

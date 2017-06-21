@@ -252,11 +252,8 @@ extension OrderedSet where Element: AnyObject {
         for n in new {
             _data.append(n)
         }
-        
         self._remap(startingAt: fMatch)
     }
-    
-    
     
     public mutating func sort(using sortDescriptors: [NSSortDescriptor]) {
         guard sortDescriptors.count > 0 else { return }
@@ -274,6 +271,21 @@ extension OrderedSet where Element: AnyObject {
         new.sort(using: sortDescriptors)
         return new
     }
+    
+    public mutating func sort(by sort: ((Element, Element)-> Bool)) {
+        self._data = self._data.sorted(by: sort)
+        self._map.removeAll(keepingCapacity: true)
+        for (idx, obj) in self._data.enumerated() {
+            self._map[obj] = idx
+        }
+    }
+    
+    public func sorted(by sort: ((Element, Element)-> Bool)) -> OrderedSet<Element> {
+        let data = self._data.sorted(by: sort)
+        return OrderedSet(elements: data)
+    }
+    
+    
 }
 
 extension Collection where Iterator.Element:AnyObject & Hashable {

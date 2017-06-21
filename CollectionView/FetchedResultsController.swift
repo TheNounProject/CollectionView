@@ -99,8 +99,11 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
         self.needsSort = false
         self._storage.sort(using: sortDescriptors)
     }
-    
-    
+    func sort(using sorter: FetchedResultsController<ValueType, Element>.Sorter) {
+        self._storage.sort(by: { (e1, e2) -> Bool in
+            return sorter(e1, e2)
+        })
+    }
     
     
     // MARK: - Editing
@@ -189,6 +192,12 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             if delegate == nil { unregister() }
             else if _fetched { register() }
         }
+    }
+    
+    public typealias Sorter = (Element, Element) -> Bool
+    public var sort : Sorter?
+    public func sortBy(_ sorter: Sorter?) {
+        self.sort = sorter
     }
     
     public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionKeyPath: String? = nil) {
@@ -402,9 +411,15 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         
         self._sections.removeAll()
         
-        let _objects = try managedObjectContext.fetch(self.fetchRequest)
+        var _objects = try managedObjectContext.fetch(self.fetchRequest)
         self.fetchedObjects = Set(_objects)
         if _objects.count == 0 { return }
+        
+        if let s = self.sort {
+            _objects.sort(by: { (e1, e2) -> Bool in
+                return s(e1, e2)
+            })
+        }
         
         if let keyPath = self.sectionKeyPath {
             for object in _objects {
@@ -460,7 +475,12 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
         for s in _sections {
             if s.needsSort {
-                s.sortItems(using: fetchRequest.sortDescriptors ?? [])
+                if let sorter = self.sort {
+                    s.sort(using: sorter)
+                }
+                else {
+                    s.sortItems(using: fetchRequest.sortDescriptors ?? [])
+                }
             }
             if s.isEditing {
                 

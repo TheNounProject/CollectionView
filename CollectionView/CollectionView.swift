@@ -2353,6 +2353,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Programatic Scrollin
     /*-------------------------------------------------------------------------------*/
     
+    public  func cancelScrollAnimation() {
+        self.clipView?.cancelScrollAnimation()
+    }
 
     
     public func scrollToTop(animated: Bool = false, completion: AnimationCompletion? = nil) {

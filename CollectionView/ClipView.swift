@@ -142,6 +142,10 @@ open class ClipView : NSClipView {
         }
     }
     
+    func cancelScrollAnimation() {
+        self.destinationOrigin = self.bounds.origin
+    }
+    
     func updateOrigin() {
         if self.window == nil {
             self.endScrolling()

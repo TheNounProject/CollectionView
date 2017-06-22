@@ -159,6 +159,15 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
     
     open func prepareForTransition(toItemAt indexPath: IndexPath, in collectionView: CollectionView) {
         self.transitionState = .disappearing
+        
+        guard let attrs = self.collectionView?.layoutAttributesForItem(at: indexPath),
+            let converted = self.collectionView?.convert(attrs.frame, from: self.collectionView?.contentDocumentView) else {
+                self.animator().alphaValue = 0
+                return
+        }
+        self.removeFromSuperview()
+        self.collectionView?.addSubview(self)
+        self.frame = converted
     }
 
     open func transition(toItemAt indexPath: IndexPath, in collectionView: CollectionView) {
@@ -174,6 +183,7 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
         if transitionState == .disappearing {
             self.transitionState = .disappeared
         }
+        self.removeFromSuperview()
     }
     
     

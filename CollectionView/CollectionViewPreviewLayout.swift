@@ -113,7 +113,7 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
         
         var size = CGSize()
         size.width = contentWidth
-        size.height = cv.contentVisibleRect.size.height - cv.contentInsets.top - cv.contentInsets.bottom
+        size.height = cv.contentVisibleRect.size.height - (cv.contentInsets.top + cv.contentInsets.bottom)
         return size
     }
     

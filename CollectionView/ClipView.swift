@@ -10,10 +10,12 @@
 import AppKit
 import Quartz
 
-let ClipViewDecelerationRate : CGFloat = 0.78
+
 //typealias DisplayLinkCallback = @convention(block) ( CVDisplayLink!, UnsafePointer<CVTimeStamp>, UnsafePointer<CVTimeStamp>, CVOptionFlags, UnsafeMutablePointer<CVOptionFlags>, UnsafeMutablePointer<Void>)->Void
 
 open class ClipView : NSClipView {
+    
+    static let DefaultDecelerationRate : CGFloat = 0.78
     
     var shouldAnimateOriginChange = false
     var destinationOrigin = CGPoint.zero
@@ -21,7 +23,12 @@ open class ClipView : NSClipView {
     
     var scrollEnabled : Bool = true
     
-    var decelerationRate = ClipViewDecelerationRate {
+    
+    
+    /**
+     The rate of deceleration for animated scrolls. Higher is slower. default is 0.78
+    */
+    public var decelerationRate = DefaultDecelerationRate {
         didSet {
             if decelerationRate > 1 { self.decelerationRate = 1 }
             else if decelerationRate < 0 { self.decelerationRate = 0 }
@@ -184,7 +191,7 @@ open class ClipView : NSClipView {
             
             // Make sure we always finish out the animation with the actual coordinates
             DispatchQueue.main.async(execute: { 
-                self.scroll(to: self.destinationOrigin)
+                super.scroll(to: self.destinationOrigin)
                 self.finishedScrolling(true)
                 if let cv = self.scrollView as? CollectionView {
                     cv.delegate?.collectionViewDidEndScrolling?(cv, animated: true)

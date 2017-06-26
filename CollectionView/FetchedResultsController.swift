@@ -144,7 +144,8 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
             let _ = _storage.index(of: element)
             return
         }
-        self.needsSort = self._storage.count > 0
+        
+        self.needsSort = self.needsSort || self._storage.count > 0
 //        _added.insert(element)
         self._storage.add(element)
     }

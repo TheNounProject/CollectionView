@@ -175,7 +175,11 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     public var sortDescriptors: [NSSortDescriptor]? {
         return fetchRequest.sortDescriptors
     }
-    public unowned let managedObjectContext: NSManagedObjectContext
+    
+    private weak var _managedObjectContext: NSManagedObjectContext?
+    public var managedObjectContext: NSManagedObjectContext {
+        return self._managedObjectContext!
+    }
     
     public var sectionKeyPath: String?
 
@@ -210,7 +214,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         
         request.returnsObjectsAsFaults = false
         
-        self.managedObjectContext = context
+        self._managedObjectContext = context
         self.fetchRequest = request
         self.sectionKeyPath = sectionKeyPath
     }
@@ -376,12 +380,14 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     // MARK: - Notification Registration
     /*-------------------------------------------------------------------------------*/
     func register() {
+        guard let moc = self._managedObjectContext else { return }
         ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)    }
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: moc)    }
     
     func unregister() {
-        ResultsControllerCDManager.shared.remove(context: self.managedObjectContext)
-        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
+        guard let moc = self._managedObjectContext else { return }
+        ResultsControllerCDManager.shared.remove(context: moc)
+        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: moc)
     }
     
     

@@ -257,7 +257,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /**
      The managed object context to fetch from and observe for changes
     */
-    public private(set) var managedObjectContext: NSManagedObjectContext
+    private weak var _managedObjectContext : NSManagedObjectContext?
+    
+    public var managedObjectContext: NSManagedObjectContext {
+        return self._managedObjectContext!
+    }
     
     private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
     
@@ -288,7 +292,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionRequest: NSFetchRequest<Section>, sectionKeyPath keyPath: String) {
         
-        self.managedObjectContext = context
+        self._managedObjectContext = context
         self.fetchRequest = request
         self.sectionFetchRequest = sectionRequest
         
@@ -459,12 +463,14 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     /*-------------------------------------------------------------------------------*/
     
     func register() {
-        ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)    }
+        guard let moc = self._managedObjectContext else { return }
+        ResultsControllerCDManager.shared.add(context: moc)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: moc)    }
     
     func unregister() {
-        ResultsControllerCDManager.shared.remove(context: self.managedObjectContext)
-        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
+        guard let moc = self._managedObjectContext else { return }
+        ResultsControllerCDManager.shared.remove(context: moc)
+        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: moc)
     }
     
     
@@ -474,8 +480,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
         guard moc != self.managedObjectContext else { return }
         self.setNeedsFetch()
-        self.managedObjectContext = moc
-        
+        self._managedObjectContext = moc
         validateRequests()
         
         try self.performFetch()
@@ -593,12 +598,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     func handleChangeNotification(_ notification: Notification) {
         
-        guard let delegate = self.delegate, self._fetched else {
+        guard let moc = self._managedObjectContext, let delegate = self.delegate, self._fetched else {
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
             return
         }
         
-        managedObjectContext.perform { [unowned self] in
+        moc.perform { [unowned self] in
             
             self.emptySectionChanges = nil
             self._sectionsCopy = nil
@@ -941,23 +946,14 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             let oldIP = change.index
             
             // If the section was deleted, ignore the items
-            guard self.context.sectionChangeSet.deleted.containsValue(for: oldIP._section) == false else {
+            guard self.context.sectionChangeSet.deleted.containsValue(for: oldIP._section) == false,
+            let section = self._objectSectionMap[object] else {
                 continue
             }
             
-            let section = self._sections[oldIP._section]
             section.ensureEditing()
             _ = section.remove(object)
             
-//            if section.numberOfObjects == 0 {
-//                // If the section object matches the section predicat, keep it.
-//                let req = self.sectionFetchRequest
-//                if self.fetchSections,
-//                    let obj = section._object {
-//                    if req.predicate == nil || req.predicate?.evaluate(with: obj) == true { continue }
-//                }
-//                _remove(section._object)
-//            }
         }
     }
     

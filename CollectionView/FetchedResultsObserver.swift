@@ -162,6 +162,13 @@ class ResultsControllerCDManager {
             return
         }
         
+        if info[NSInvalidatedAllObjectsKey] != nil {
+            if let moc = notification.object as? NSManagedObjectContext {
+                self.remove(context: moc)
+            }
+            return
+        }
+        
         var deleted = (info[NSDeletedObjectsKey] as? Set<NSManagedObject>) ?? Set<NSManagedObject>()
         if let invalidated = info[NSInvalidatedObjectsKey] as? Set<NSManagedObject> {
             deleted = deleted.union(invalidated)
@@ -190,11 +197,6 @@ class ResultsControllerCDManager {
                 changeSets[obj.entity] = EntityChangeSet(updated: obj)
             }
         }
-        
-//        print("CD Results Controller Dispatch")
-//        for set in changeSets {
-//            print(set.value)
-//        }
         
         NotificationCenter.default.post(name: Dispatch.name, object: notification.object, userInfo: [
             ResultsControllerCDManager.Dispatch.changeSetKey : changeSets

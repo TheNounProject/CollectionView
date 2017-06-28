@@ -500,7 +500,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             }
         }
         
-        
         if let oldSections = _sectionsCopy {
             var sectionChanges = ChangeSet(source: oldSections, target: _sections)
             sectionChanges.reduceEdits()
@@ -523,8 +522,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             }
         }
         let _previousSectionCount = _sectionsCopy?.count
-        _sectionsCopy = nil
-        
         
         func reduceCrossSectional(_ object: Element, targetEdit tEdit: Edit<Element>? = nil) -> Bool {
             
@@ -545,6 +542,11 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: targetIP._item)
             processedSections[targetSection]?.remove(edit: proposedEdit)
             
+            if let s = self._sectionsCopy?.object(at: source._section) ?? _sections._object(at: source._section),
+                let e = processedSections[s]?.edit(for: object) {
+                processedSections[s]?.remove(edit: e)
+            }
+            
             if targetIP._item != proposedEdit.index {
                 let _ = processedSections[targetSection]?.edit(withSource: targetIP._item)
             }
@@ -558,6 +560,8 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         while let obj = self.context.itemsWithSectionChange.first {
             _ = reduceCrossSectional(obj)
         }
+        
+        _sectionsCopy = nil
         
         if hasEmptyPlaceholder, let old = _previousSectionCount {
             
@@ -580,6 +584,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         self.managedObjectContext.perform({
             for s in processedSections {
                 var changes = s.value
+                
                 changes.reduceEdits()
                 processedSections[s.key] = changes
                 
@@ -618,6 +623,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
 
             delegate.controllerDidChangeContent(controller: self)
             self.emptySectionChanges = nil
+            self._sectionsCopy = nil
         })
         
     }
@@ -761,6 +767,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                     // Move to new section
                 else {
                     // The section value doesn't exist yet, the section will be inserted
+                    currentSection.remove(object)
                     let sec = self._insert(section: sectionValue)
                     sec.ensureEditing()
                     sec.add(object)

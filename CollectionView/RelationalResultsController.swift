@@ -772,7 +772,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                         
                     case .move(origin: _):
                         guard let source = self.context.objectChangeSet.updated.index(of: edit.value),
-                            //                    let sectionIndex = self._sections.index(for: s.key),
                             let dest = self.indexPath(of: edit.value) else {
                                 continue // I don't think this should happen
                         }

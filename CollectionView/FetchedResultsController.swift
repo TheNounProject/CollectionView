@@ -100,6 +100,8 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
         self._storage.sort(using: sortDescriptors)
     }
     func sort(using sorter: FetchedResultsController<ValueType, Element>.Sorter) {
+        self.needsSort = false
+        
         self._storage.sort(by: { (e1, e2) -> Bool in
             return sorter(e1, e2)
         })

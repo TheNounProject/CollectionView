@@ -846,10 +846,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
      Returns the lowest index path of all visible items
     */
     open var indexPathForFirstVisibleItem : IndexPath? {
-        if let ip = self.delegate?.collectionViewLayoutAnchor?(self) {
-            return ip
+        
+        if self.delegate?.collectionViewLayoutAnchor == nil {
+            return  _indexPathForFirstVisibleItem
         }
-       return _indexPathForFirstVisibleItem
+        return self.delegate?.collectionViewLayoutAnchor?(self)
     }
     
     

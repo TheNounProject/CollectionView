@@ -177,6 +177,12 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             frame = frame.union(attributes.frame)
         }
         
+        func contains(_ indexPath: IndexPath) -> Bool {
+            guard let f = items.first?.indexPath._item, f <= indexPath._item else { return false }
+            guard let l = items.last?.indexPath._item, l >= indexPath._item else { return false }
+            return true
+        }
+        
         mutating func applyTransform(_ transform: RowTransform, leftInset: CGFloat, width: CGFloat, spacing: CGFloat) -> CGFloat {
             
             switch transform {
@@ -560,18 +566,22 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     
     open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
-        let inset = (self.collectionView?.contentInsets.top ?? 0) - sectionAttributes[indexPath._section].insets.top
-//        let sectionInsets =
-        if self.pinHeadersToTop && atPosition == .leading, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, at: indexPath.sectionCopy) {
-            let y = (frame.origin.y - attrs.frame.size.height) + inset
+        
+        let section = self.sectionAttributes[indexPath._section]
+        let inset = (self.collectionView?.contentInsets.top ?? 0) - section.insets.top
+        
+        if let headerHeight = section.header?.frame.size.height {
+            var y = frame.origin.y
+            if pinHeadersToTop || section.rows.first?.contains(indexPath) == true {
+                 y = (frame.origin.y - headerHeight)
+            }
             
-            let height = frame.size.height + attrs.frame.size.height
+            let height = frame.size.height + headerHeight
             frame.size.height = height
             frame.origin.y = y
         }
-        else {
-            frame.origin.y = frame.origin.y + inset
-        }
+        
+        frame.origin.y = frame.origin.y + inset
         return frame
     }
     

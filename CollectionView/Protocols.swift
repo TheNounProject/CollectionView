@@ -441,7 +441,6 @@ import Foundation
 
 
 
-
 @available(*, unavailable, renamed: "CollectionViewDragDelegate")
 public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
 

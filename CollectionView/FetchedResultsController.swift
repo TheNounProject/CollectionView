@@ -448,6 +448,19 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         }
     }
     
+    
+    public func reset() {
+        self._fetched = false
+        self.unregister()
+        
+        self._sections.removeAll()
+        self.fetchedObjects.removeAll()
+        self._fetchedObjects.removeAll()
+        self._sectionsCopy = nil
+        self._fetchedObjects.removeAll()
+        self._objectSectionMap.removeAll()
+        
+    }
 
     
     

@@ -90,6 +90,13 @@ public protocol ResultsController {
 
     */
     func performFetch() throws
+    
+    
+    /**
+     Clear all storage for the controller and stop all observing
+
+    */
+    func reset()
 }
 
 

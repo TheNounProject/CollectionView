@@ -343,6 +343,19 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         return context.objectChanges.count
     }
     
+    
+    public func reset() {
+        self.unregister()
+        self._fetched = false
+        self._sections.removeAll()
+        self._objectSectionMap.removeAll()
+        self._fetchedObjects.removeAll()
+        self.fetchedObjects.removeAll()
+        
+        
+        
+    }
+    
     public func performFetch() throws {
         
         self._sections.removeAll()

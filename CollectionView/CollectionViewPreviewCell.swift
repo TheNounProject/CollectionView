@@ -160,14 +160,21 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
     open func prepareForTransition(toItemAt indexPath: IndexPath, in collectionView: CollectionView) {
         
         if self.transitionState == .appeaered {
-            guard let attrs = self.collectionView?.layoutAttributesForItem(at: indexPath),
-                let converted = self.collectionView?.convert(attrs.frame, from: self.collectionView?.contentDocumentView) else {
+            guard let converted = self.collectionView?.convert(self.frame, from: self.superview) else {
                     self.animator().alphaValue = 0
                     return
             }
+            
             self.removeFromSuperview()
             self.collectionView?.addSubview(self)
+            
+            
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
             self.frame = converted
+            CATransaction.flush()
+            CATransaction.commit()
+            
         }
         self.transitionState = .disappearing
     }

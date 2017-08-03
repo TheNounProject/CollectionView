@@ -23,7 +23,7 @@
         <a class="header-link" href="../index.html">
            Docs
         </a>
-         (61% documented)
+         (59% documented)
       </p>
     
       <p class="header-col--secondary">
@@ -91,6 +91,9 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes.html#/s:C14CollectionView20FetchedSetController">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
@@ -248,7 +251,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate if a dragging session should be started</p>
 
                       </div>
                       <div class="declaration">
@@ -271,7 +274,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view</p>
 
                                 </div>
                               </td>
@@ -284,7 +287,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#indexPath description#&gt;</p>
+                                  <p>The indexpath at the location of the drag</p>
 
                                 </div>
                               </td>
@@ -297,7 +300,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#event description#&gt;</p>
+                                  <p>The mouse event</p>
 
                                 </div>
                               </td>
@@ -307,7 +310,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#Bool return description#&gt;</p>
+                        <p>True if a dragging session should begin</p>
 
                       </div>
                     </section>
@@ -326,7 +329,9 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate to validate the selected items for drag.</p>
+
+<p>This provides an opputunity to exclude some of the selected index paths from being dragged</p>
 
                       </div>
                       <div class="declaration">
@@ -349,7 +354,20 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view that began the drag</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>indexPaths</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The selected index paths when the drag began</p>
 
                                 </div>
                               </td>
@@ -359,7 +377,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#IndexPath return description#&gt;</p>
+                        <p>The index paths that should be included in the drag.</p>
 
                       </div>
                     </section>
@@ -378,7 +396,9 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Tells the delegate that a dragging session will begin</p>
+
+<p>If collectionView(:shouldBeginDraggingAt:with) returns false this will not be called</p>
 
                       </div>
                       <div class="declaration">
@@ -401,7 +421,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view</p>
 
                                 </div>
                               </td>
@@ -414,7 +434,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#session description#&gt;</p>
+                                  <p>The dragging session</p>
 
                                 </div>
                               </td>
@@ -427,7 +447,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#point description#&gt;</p>
+                                  <p>The location of the drag</p>
 
                                 </div>
                               </td>
@@ -451,7 +471,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Tells the delegate that a dragging session ended</p>
 
                       </div>
                       <div class="declaration">
@@ -474,7 +494,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view</p>
 
                                 </div>
                               </td>
@@ -487,7 +507,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#session description#&gt;</p>
+                                  <p>The drag session</p>
 
                                 </div>
                               </td>
@@ -500,7 +520,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#screenPoint description#&gt;</p>
+                                  <p>The screen point at which the drag ended</p>
 
                                 </div>
                               </td>
@@ -513,7 +533,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#operation description#&gt;</p>
+                                  <p>The dragging operation at the time the drag ended</p>
 
                                 </div>
                               </td>
@@ -537,7 +557,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Tells the delegate that a dragging session moved</p>
 
                       </div>
                       <div class="declaration">
@@ -560,7 +580,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view</p>
 
                                 </div>
                               </td>
@@ -573,7 +593,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#session description#&gt;</p>
+                                  <p>The drag session</p>
 
                                 </div>
                               </td>
@@ -586,7 +606,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#point description#&gt;</p>
+                                  <p>The location of the drag</p>
 
                                 </div>
                               </td>
@@ -621,7 +641,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate for an operation for the drag at its current state when it enters the collection view</p>
 
                       </div>
                       <div class="declaration">
@@ -644,7 +664,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view</p>
 
                                 </div>
                               </td>
@@ -657,7 +677,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#dragInfo description#&gt;</p>
+                                  <p>The drag info</p>
 
                                 </div>
                               </td>
@@ -667,7 +687,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#NSDragOperation return description#&gt;</p>
+                        <p>A drag operation indicating how the drag should be handled</p>
 
                       </div>
                     </section>
@@ -686,7 +706,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate for an operation for the drag at its current state as it updates</p>
 
                       </div>
                       <div class="declaration">
@@ -709,7 +729,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view</p>
 
                                 </div>
                               </td>
@@ -722,7 +742,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#dragInfo description#&gt;</p>
+                                  <p>The drag info</p>
 
                                 </div>
                               </td>
@@ -732,7 +752,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#NSDragOperation return description#&gt;</p>
+                        <p>A drag operation indicating how the drag should be handled</p>
 
                       </div>
                     </section>
@@ -751,7 +771,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Tells the delegate that a drag exited the collection view as a dragging destination</p>
 
                       </div>
                       <div class="declaration">
@@ -774,7 +794,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view</p>
 
                                 </div>
                               </td>
@@ -787,7 +807,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#dragInfo description#&gt;</p>
+                                  <p>The drag info</p>
 
                                 </div>
                               </td>
@@ -811,7 +831,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Tells the delegate that a drag ended in the collection view as a dragging destination</p>
 
                       </div>
                       <div class="declaration">
@@ -834,7 +854,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view</p>
 
                                 </div>
                               </td>
@@ -847,7 +867,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#dragInfo description#&gt;</p>
+                                  <p>The drag info</p>
 
                                 </div>
                               </td>
@@ -871,7 +891,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate to handle the drop in the collection view</p>
 
                       </div>
                       <div class="declaration">
@@ -894,7 +914,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
+                                  <p>The collection view (dragging destination) the drag ended in</p>
 
                                 </div>
                               </td>
@@ -907,7 +927,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#dragInfo description#&gt;</p>
+                                  <p>The drag info</p>
 
                                 </div>
                               </td>
@@ -917,7 +937,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#Bool return description#&gt;</p>
+                        <p>True if the drag is completed. False to cancel the drag</p>
 
                       </div>
                     </section>
@@ -931,7 +951,7 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-04-07)</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-02)</p>
       <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>

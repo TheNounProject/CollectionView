@@ -1,6 +1,6 @@
-version: "Apple Swift version 3.1 (swiftlang-802.0.48 clang-802.0.38)"
+version: "Apple Swift version 3.1 (swiftlang-802.0.53 clang-802.0.42)"
 options: "56ee39a3abb6597cd16d0d8d4db030bb"
-build_time: [544917088, 371881000]
+build_time: [555049264, 229032000]
 inputs:
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/Protocols.swift": [9223372036854775807, 0]
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift": [9223372036854775807, 0]

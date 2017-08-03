@@ -11,7 +11,7 @@ import Foundation
 
 
 /**
- CollectionViewDelegateListLayout
+ A vertical list based layout similiar to a native table view
 */
 @objc public protocol CollectionViewDelegateListLayout: CollectionViewDelegate {
     

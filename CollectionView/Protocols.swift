@@ -230,10 +230,10 @@ import Foundation
     /**
      Asks the delegate if the item at the specified index path should highlight
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The asking collection view
+     - Parameter indexPath: The index path of the item to highlight
      
-     - Returns: <#Bool return description#>
+     - Returns: True if the item should highlight
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool
@@ -244,49 +244,49 @@ import Foundation
     /*-------------------------------------------------------------------------------*/
     
     /**
-     Tells the delegate
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
-     - Parameter event: <#event description#>
+     Asks the delegate if the item at a given index path should be selected
      
-     - Returns: <#Bool return description#>
+     - Parameter collectionView: The asking collection view
+     - Parameter indexPath: The index path of the item potentially being selected
+     - Parameter event: The event that cause the selection
+     
+     - Returns: True if the item should be selected
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, shouldSelectItemAt indexPath: IndexPath, with event: NSEvent?) -> Bool
     
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
-
+     Tells the delegate that an item has been selected
+     
+     - Parameter collectionView: The reporting collection view
+     - Parameter indexPath: The index path of the item that was selected
+     
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath)
     
     /**
-     <#Description#>
+     Asks the delegate if the item at a given index path should be deselected
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The asking collection view
+     - Parameter indexPath: The index path of the item
      
-     - Returns: <#Bool return description#>
+     - Returns: True if the item should be deselected
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool
     
     /**
-     <#Description#>
+     Tells the delegate that an item was deselected
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The reporting collection view
+     - Parameter indexPath: The index path of the item that was deselected
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didDeselectItemAt indexPath: IndexPath)
     
     
     /**
-     <#Description#>
+     Not implemented
 
      - Parameter collectionView: <#collectionView description#>
      - Parameter pressure: <#pressure description#>
@@ -300,21 +300,21 @@ import Foundation
     
     
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
-     - Parameter event: <#event description#>
+     Tells the delegate that an item was double clicked
+     
+     - Parameter collectionView: The collection view containing the clicked item
+     - Parameter indexPath: The index path of the clicked item
+     - Parameter event: The click event that double clicked the item
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didDoubleClickItemAt indexPath: IndexPath?, with event: NSEvent)
     
     /**
-     <#Description#>
+     Tells the delegate that an item was right clicked
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
-     - Parameter event: <#event description#>
+     - Parameter collectionView: The collection view containing the clicked item
+     - Parameter indexPath: The index path of the clicked item
+     - Parameter event: The click event
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath?, with event: NSEvent)
@@ -327,34 +327,34 @@ import Foundation
     
     
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter elementKind: <#elementKind description#>
-     - Parameter indexPath: <#indexPath description#>
+     Tells the delegate that a supplementary view will bw displayed
+     
+     - Parameter collectionView: The collection view containing the supplementary view
+     - Parameter elementKind: The element kind of the view
+     - Parameter indexPath: The index path of the view
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, willDisplaySupplementaryView view:CollectionReusableView, ofElementKind elementKind: String, at indexPath: IndexPath)
     
     
     /**
-     <#Description#>
+     Tells the delegate that a cell was removed from view
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter cell: <#cell description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The collection view containing the cell
+     - Parameter cell: The cell that was removed
+     - Parameter indexPath: The index path of the removed cell
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didEndDisplayingCell cell: CollectionViewCell, forItemAt indexPath: IndexPath)
     
     
     /**
-     <#Description#>
+     Tells the delegate that a supplementary view was removed from view
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter view: <#view description#>
-     - Parameter elementKind: <#elementKind description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The collection view containing the supplementary view
+     - Parameter view: The view that was removed
+     - Parameter elementKind: The kind of the removed element
+     - Parameter indexPath: The index path of the removed view
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didEndDisplayingSupplementaryView view: CollectionReusableView, ofElementKind elementKind: String, at indexPath: IndexPath)
@@ -365,11 +365,13 @@ import Foundation
     
     
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
+     Asks the delegate for an index path to anchor when resizing
      
-     - Returns: <#IndexPath return description#>
+     - Parameter collectionView: The collection view
+     
+     - Returns: The index path to anchor to when resizing
+     
+     Defaults to an index path for one of the first visible items
 
     */
     @objc optional func collectionViewLayoutAnchor(_ collectionView: CollectionView) -> IndexPath?
@@ -379,9 +381,9 @@ import Foundation
     
     
     /**
-     <#Description#>
+     Tells the delegate that the collection view did begin resizing
 
-     - Parameter collectionView: <#collectionView description#>
+     - Parameter collectionView: The collection view
 
     */
     @objc optional func collectionViewDidEndLiveResize(_ collectionView: CollectionView)
@@ -391,49 +393,51 @@ import Foundation
     
     
     /**
-     <#Description#>
+     Asks the delegate if the collection view should scroll to an item
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The collection view
+     - Parameter indexPath: The index path that may be scrolled to
      
-     - Returns: <#Bool return description#>
+     - Returns: True if the collection view should perform the scroll
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, shouldScrollToItemAt indexPath: IndexPath) -> Bool
     
     /**
-     <#Description#>
+     Tells the delgate that the collection view did complete a scrolling action
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The collection view that performed a scrolling animation
+     - Parameter indexPath: The index path that was scrolled to
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didScrollToItemAt indexPath: IndexPath)
 
     
     /**
-     <#Description#>
+     Tells the delegate that the collection view was scrolled
 
-     - Parameter collectionView: <#collectionView description#>
+     - Parameter collectionView: The collection view that was scrolled
+     
+     Because this is called continuously as the scroll position is changed, beware of performance.
 
     */
     @objc optional func collectionViewDidScroll(_ collectionView: CollectionView)
     
     
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
+     Tells the delegate that the collection view will begin scrolling
+     
+     - Parameter collectionView: The collection view that will begin scrolling
 
     */
     @objc optional func collectionViewWillBeginScrolling(_ collectionView: CollectionView)
     
     
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter animated: <#animated description#>
+     Tells the delegate that the collection view did end scrolling
+     
+     - Parameter collectionView: The collection view that was scrolled
+     - Parameter animated: True if the scroll was animated (false for user driven scrolling)
 
     */
     @objc optional func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: Bool)
@@ -454,55 +458,60 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
     /*-------------------------------------------------------------------------------*/
     
     /**
-     <#Description#>
+     Asks the delegate if a dragging session should be started
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter indexPath: <#indexPath description#>
-     - Parameter event: <#event description#>
+     - Parameter collectionView: The collection view
+     - Parameter indexPath: The indexpath at the location of the drag
+     - Parameter event: The mouse event
      
-     - Returns: <#Bool return description#>
+     - Returns: True if a dragging session should begin
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, with event: NSEvent) ->Bool
     
     
     /**
-     <#Description#>
+     Asks the delegate to validate the selected items for drag.
 
-     - Parameter collectionView: <#collectionView description#>
+     - Parameter collectionView: The collection view that began the drag
+     - Parameter indexPaths: The selected index paths when the drag began
      
-     - Returns: <#IndexPath return description#>
+     - Returns: The index paths that should be included in the drag.
+     
+     This provides an opputunity to exclude some of the selected index paths from being dragged
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, validateIndexPathsForDrag indexPaths: [IndexPath]) -> [IndexPath]
     
     /**
-     <#Description#>
+     Tells the delegate that a dragging session will begin
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter session: <#session description#>
-     - Parameter point: <#point description#>
+     - Parameter collectionView: The collection view
+     - Parameter session: The dragging session
+     - Parameter point: The location of the drag
+     
+     If collectionView(:shouldBeginDraggingAt:with) returns false this will not be called
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, willBeginAt point: NSPoint)
     
     /**
-     <#Description#>
+     Tells the delegate that a dragging session ended
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter session: <#session description#>
-     - Parameter screenPoint: <#screenPoint description#>
-     - Parameter operation: <#operation description#>
+     - Parameter collectionView: The collection view
+     - Parameter session: The drag session
+     - Parameter screenPoint: The screen point at which the drag ended
+     - Parameter operation: The dragging operation at the time the drag ended
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, didEndAt screenPoint: NSPoint, with operation: NSDragOperation, draggedIndexPaths: [IndexPath])
     
     /**
-     <#Description#>
+     Tells the delegate that a dragging session moved
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter session: <#session description#>
-     - Parameter point: <#point description#>
+     - Parameter collectionView: The collection view
+     - Parameter session: The drag session
+     - Parameter point: The location of the drag
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, didMoveTo point: NSPoint)
@@ -511,50 +520,50 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
     /*-------------------------------------------------------------------------------*/
     
     /**
-     <#Description#>
+     Asks the delegate for an operation for the drag at its current state when it enters the collection view
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter dragInfo: <#dragInfo description#>
+     - Parameter collectionView: The collection view
+     - Parameter dragInfo: The drag info
      
-     - Returns: <#NSDragOperation return description#>
+     - Returns: A drag operation indicating how the drag should be handled
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, dragEntered dragInfo: NSDraggingInfo) -> NSDragOperation
     /**
-     <#Description#>
+     Asks the delegate for an operation for the drag at its current state as it updates
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter dragInfo: <#dragInfo description#>
+     - Parameter collectionView: The collection view
+     - Parameter dragInfo: The drag info
      
-     - Returns: <#NSDragOperation return description#>
+     - Returns: A drag operation indicating how the drag should be handled
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, dragUpdated dragInfo: NSDraggingInfo) -> NSDragOperation
     /**
-     <#Description#>
+     Tells the delegate that a drag exited the collection view as a dragging destination
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter dragInfo: <#dragInfo description#>
+     - Parameter collectionView: The collection view
+     - Parameter dragInfo: The drag info
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, dragExited dragInfo: NSDraggingInfo?)
     
     /**
-     <#Description#>
+     Tells the delegate that a drag ended in the collection view as a dragging destination
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter dragInfo: <#dragInfo description#>
-
+     - Parameter collectionView: The collection view
+     - Parameter dragInfo: The drag info
+     
     */
     @objc optional func collectionView(_ collectionView: CollectionView, dragEnded dragInfo: NSDraggingInfo?)
     
     /**
-     <#Description#>
+     Asks the delegate to handle the drop in the collection view
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter dragInfo: <#dragInfo description#>
+     - Parameter collectionView: The collection view (dragging destination) the drag ended in
+     - Parameter dragInfo: The drag info
      
-     - Returns: <#Bool return description#>
+     - Returns: True if the drag is completed. False to cancel the drag 
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, performDragOperation dragInfo: NSDraggingInfo) -> Bool

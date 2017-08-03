@@ -138,7 +138,9 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
 
 
 /**
- An item based results controller
+ An item based results controller that merges NSManagedObjects that have shared properties.
+ 
+ A fetch request is supplied for each entity type but they are sorted and managed as the same type. Each entity included must share properties used for sorting.
 */
 public class MergedFetchedResultsController<Section: SectionRepresentable, Element: NSManagedObject> : NSObject, ResultsController {
     

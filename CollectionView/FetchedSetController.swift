@@ -23,6 +23,10 @@ public protocol FetchedSetControllerDelegate : class {
     func controllerDidChangeContent(_ controller: FetchedSetController)
 }
 
+
+/**
+ A results controller that does not concern itself with the order of objects, but only their membership to the supplied fetch request.
+*/
 public class FetchedSetController : NSObject {
     
     typealias Element = NSManagedObject

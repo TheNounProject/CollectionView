@@ -215,80 +215,11 @@
         <section class="section">
           <div class="section-content">
             
-            <a href='#lingo' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='lingo'>Lingo</h1>
+            <a href='#collectionview' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='collectionview'>CollectionView</h1>
 
-<p>Lingo is the cloud connected visual asset library that empowers creation and ensures visual consistency for entire team.</p>
-<a href='#sketch-plugin' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='sketch-plugin'>Sketch Plugin</h1>
+<p>A highly customizable collection view similiar to NS/UICollectionView.</p>
 
-<p>The sketch plugin uses a mix of Cocoascript and Objective-C to allow users to send sketch objects to Lingo and paste sketch assets as full fidelity sketch objects.</p>
-
-<p>Due to the lack of saftey in Cocoascript the goal in the code structure is to have as much on the objC side as possible. A bulk of the UI and functionality comes from <code>SKLManager</code> and <code>SKLToolbarController</code>.</p>
-
-<p><code>SKLManager</code> and <code>SKLToolbarWindow</code> manage the lifecylce of the plugin for each document.</p>
-
-<p><code>SKLToolbarController</code> is the main controller for each document and uses a COSTarget to request data that must be provided from sketch classes.</p>
-
-<p>Here is the main startup call on the CS side:
-&ldquo;`
-// called from the plugin menu
-function openToolbar(context) {
-    var doc = context.docuemnt;
-    // Loads the framework and returns the singleton manager
-    var manager = loadManager(context);</p>
-<pre class="highlight plaintext"><code>// Doc is stored as NSObject and some of it's properties can be accessed via valueForKey()
-var toolbar = manager.toolbarForDocument(doc);
-
-// Just a flag on the toolbar so we don't do this every time
-if (toolbar.isSetup() == false) {
-    // target() creates a Cocoascript JS function wraper that we can call from ObjC
-    var handler = target(function(action) {
-
-        var name = action.name();
-        var obj = action.object();
-
-        if (name == "doThis") {
-            // Do some work...
-            log("The object: " + obj);
-            action.success("Did This");
-        }
-        else if (name == "doThat") {
-            // Do some work...
-            action.success("Did That");
-        }
-        else {
-            log("Oops, an action was called, but not handled");
-            action.errorWithTitle_message("Error", "An error happened");
-        }
-    })
-    toolbar.setupWithHandler(handler);
-}
-toolbar.show();
-</code></pre>
-
-<p>}
-&rdquo;`</p>
-
-<p>On the ObjC side
-&ldquo;`
-// in SKLToolbarController&hellip;</p>
-
-<p>@property (strong, nonatomic) NSObject * actionHandler;</p>
-
-<p>-(void) buttonSelected:(id)sender {
-    SKLAction * action = [[SKLAction alloc] initWithName:@<q>doThis</q> data:@<q>This is the data</q> handler:^(id result, SKLError * err) {
-        if (result)
-            NSLog(@<q>Finished action with result: %@</q>, result);
-        }
-        else {
-            [self showAlertWithTitle: err.title message: err.message];
-        }
-    }];
-    // JSHandler is the target we setup with in openToolbar
-    [self.actionHandler callJSAction:action];
-}
-&rdquo;`</p>
-
-<p><code>SKLToolbarController</code> can then send actions to the CS code to perform logic that cannot be done in the framework.</p>
+<p>Docs: <a href="https://thenounproject.github.io/CollectionView/">https://thenounproject.github.io/CollectionView/</a></p>
 
           </div>
         </section>

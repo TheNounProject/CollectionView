@@ -40,6 +40,7 @@ open class ClipView : NSClipView {
         super.init(frame: clipView.frame)
         self.backgroundColor = clipView.backgroundColor
         self.drawsBackground = clipView.drawsBackground
+        self.setup()
     }
     
     deinit {
@@ -49,12 +50,17 @@ open class ClipView : NSClipView {
     
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        self.wantsLayer = true
+        self.setup()
     }
 
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
+        self.setup()
+    }
+    
+    func setup() {
         self.wantsLayer = true
+        
     }
     
     override open func viewWillMove(toWindow newWindow: NSWindow?) {
@@ -67,23 +73,29 @@ open class ClipView : NSClipView {
         }
     }
     
-    lazy var displayLink : CVDisplayLink = {
+    var _displayLink : CVDisplayLink?
+    
+    var displayLink : CVDisplayLink {
+        if let link = _displayLink { return link }
         
-        var linkCallback : CVDisplayLinkOutputCallback = {( displayLink, _, _, _, _, displayLinkContext) -> CVReturn in
+        let linkCallback : CVDisplayLinkOutputCallback = {( displayLink, _, _, _, _, displayLinkContext) -> CVReturn in
             unsafeBitCast(displayLinkContext, to: ClipView.self).updateOrigin()
             return kCVReturnSuccess
         }
-        
         var link : CVDisplayLink?
         CVDisplayLinkCreateWithActiveCGDisplays(&link)
         CVDisplayLinkSetOutputCallback(link!, linkCallback, UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()))
+        self._displayLink = link
         return link!
-    }()
+    }
     
     
 
     
     func updateCVDisplay(_ note: Notification) {
+        
+        guard self._displayLink != nil else { return }
+        
         if let screen = self.window?.screen {
             let screenDictionary = screen.deviceDescription
             let screenID = screenDictionary["NSScreenNumber"] as! NSNumber
@@ -96,15 +108,10 @@ open class ClipView : NSClipView {
     }
     
     var manualScroll = false
-//    @discardableResult open func scrollRectToVisible(_ aRect: NSRect, animated: Bool) -> Bool {
-//        manualScroll = true
-//        self.shouldAnimateOriginChange = animated
-//        return super.scrollToVisible(aRect)
-//    }
-    
+
     @discardableResult open func scrollRectToVisible(_ rect: CGRect, animated: Bool, completion: AnimationCompletion? = nil) -> Bool {
         
-        manualScroll = true
+        manualScroll = false
         shouldAnimateOriginChange = animated
         if animated == false {
             
@@ -143,8 +150,10 @@ open class ClipView : NSClipView {
             // super's implementation handle a normal scroll.
             
             super.scroll(to: newOrigin)
-            self.endScrolling()
-//            self.scrollView.reflectScrolledClipView(self)
+            // Can't remember why this is here, it may be to cleanup if needed
+            if !manualScroll {
+                self.endScrolling()
+            }
         }
     }
     

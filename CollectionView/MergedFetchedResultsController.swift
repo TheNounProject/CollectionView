@@ -146,35 +146,12 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     
     
     fileprivate typealias SectionInfo = FetchedSectionInfo<Section, Element>
+
     
-    // MARK: - Results Controller Protocol
+    
+    
+    // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
-    
-    public var allObjects: [Any] { return Array(fetchedObjects) }
-    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
-    
-    public var hasEmptyPlaceholder : Bool = false
-    
-    public let managedObjectContext: NSManagedObjectContext
-
-    public var fetchRequests = [NSFetchRequest<Element>]()
-    public var sortDescriptors = [NSSortDescriptor]()
-    public var sectionKeyPath: String?
-
-    fileprivate var fetchedObjects = Set<Element>()
-    
-    fileprivate var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
-    
-    fileprivate var _fetchedObjects = [Element]()
-    private var _sections = OrderedSet<SectionInfo>()
-    
-    public weak var delegate: ResultsControllerDelegate? {
-        didSet {
-            if (oldValue == nil) == (delegate == nil) { return }
-            if delegate == nil { unregister() }
-            else if _fetched { register() }
-        }
-    }
     
     public init(context: NSManagedObjectContext, sortDescriptors: [NSSortDescriptor] = [], sectionKeyPath: String? = nil) {
         
@@ -184,180 +161,15 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     }
     
     
-    public func addRequest(_ request: NSFetchRequest<Element>) {
-        assert(request.entityName != nil, "request is missing entity name")
-        let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: self.managedObjectContext)
-        assert(objectEntity != nil, "Unable to load entity description for object \(request.entityName!)")
-        request.entity = objectEntity
-        request.returnsObjectsAsFaults = false
-        fetchRequests.append(request)
-    }
-     
-    
-    public var numberOfSections : Int {
-        return _sections.count
-    }
-    
-    public func numberOfObjects(in section: Int) -> Int {
-        return self._sections[section].numberOfObjects
-    }
-    
-    public func sectionName(forSectionAt indexPath: IndexPath) -> String {
-        return _sectionInfo(at: indexPath)?._value?.displayDescription ?? ""
-    }
-    
-    
-    
-    // MARK: - Public Item Accessors
-    /*-------------------------------------------------------------------------------*/
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
-        return self._sectionInfo(at: sectionIndexPath)
-    }
-    
-    public func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
-        return self._object(forSectionAt: sectionIndexPath)
-    }
-    public func object(at indexPath: IndexPath) -> Any? {
-        return self._object(at: indexPath)
-    }
-    
-    
-    // MARK: - Getting IndexPaths
-    /*-------------------------------------------------------------------------------*/
-    
-    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
-        guard let info = sectionInfo as? SectionInfo else { return nil }
-        if let idx = _sections.index(of: info) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    public func indexPath(of object: Element) -> IndexPath? {
-        
-        if self.sectionKeyPath != nil {
-            guard let section = self._objectSectionMap[object],
-                let sIndex = self._sections.index(of: section),
-                let idx = section.index(of: object) else { return nil }
-            return IndexPath.for(item: idx, section: sIndex)
-        }
-        else if let idx = _sections.first?.index(of: object) {
-            return IndexPath.for(item: idx, section: 0)
-        }
-        return nil
-    }
-    public func indexPathOfSection(representing sectionValue: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(controller: self, value: sectionValue)
-        if let idx =  _sections.index(of: _wrap) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    
-    // MARK: - Private Accessors
-    /*-------------------------------------------------------------------------------*/
-    private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
-        return self._sectionInfo(at: sectionIndexPath._section)
-    }
-    private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
-        guard sectionIndex < self.numberOfSections else { return nil }
-        return self._sections.object(at: sectionIndex)
-    }
-    
-    private func _sectionInfo(representing section: Section?) -> SectionInfo? {
-        guard let ip = self._indexPathOfSection(representing: section) else { return nil }
-        return self._sectionInfo(at: ip)
-    }
-    
-    public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
-        return self._sectionInfo(at: sectionIndexPath)?._value
-    }
-    
-    public func _object(at indexPath: IndexPath) -> Element? {
-        return self._sectionInfo(at: indexPath)?._storage.object(at: indexPath._item)
-    }
-    public func _indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(controller: self, value: sectionObject)
-        if let idx = _sections.index(of: _wrap) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    
-    
-    
-    
-    // MARK: - Helpers
-    /*-------------------------------------------------------------------------------*/
-    private func contains(object: Element) -> Bool {
-        return _fetchedObjects.contains(object)
-    }
-    
-    
-    // MARK: - Storage Manipulation
-    /*-------------------------------------------------------------------------------*/
-    
-    fileprivate func _insert(section: Section?) -> SectionInfo {
-        if let s = self._sectionInfo(representing: section) { return s }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
-        let s = SectionInfo(controller: self, value: section, objects: [])
-        _sections.add(s)
-        return s
-    }
-    
-    private func _remove(_ section: Section?) {
-        guard let ip = self._indexPathOfSection(representing: section) else { return }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
-        _sections.remove(at: ip._section)
-    }
-    
-    func sortSections() {
-        self._sections.sort()
-    }
-    
-    
-    
-    
-    // MARK: - Notification Registration
-    /*-------------------------------------------------------------------------------*/
-    func register() {
-        ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)    }
-    
-    func unregister() {
-        ResultsControllerCDManager.shared.remove(context: self.managedObjectContext)
-        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
-    }
-    
-    
-    
-    // MARK: - Perform Fetch
-    /*-------------------------------------------------------------------------------*/
     
     private var _fetched: Bool = false
     
-    public var pendingChangeCount : Int {
-        return pendingItemChangeCount
-    }
-    public var pendingItemChangeCount : Int {
-        return context.objectChanges.count
-    }
     
-    
-    public func reset() {
-        self.unregister()
-        self._fetched = false
-        self._sections.removeAll()
-        self._objectSectionMap.removeAll()
-        self._fetchedObjects.removeAll()
-        self.fetchedObjects.removeAll()
-        
-        
-        
-    }
-    
+    /**
+     Performs the provided fetch request to populate the controller. Calling again resets the controller.
+     
+     - Throws: If the fetch request is invalid or the fetch fails
+     */
     public func performFetch() throws {
         
         self._sections.removeAll()
@@ -421,20 +233,241 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     }
     
     
+    /// Clears all data and stops monitoring for changes in the context.
+    public func reset() {
+        self.unregister()
+        self._fetched = false
+        self._sections.removeAll()
+        self._objectSectionMap.removeAll()
+        self._fetchedObjects.removeAll()
+        self.fetchedObjects.removeAll()
+    }
     
-    func pause() {
-        
+    
+    public func addRequest(_ request: NSFetchRequest<Element>) {
+        assert(request.entityName != nil, "request is missing entity name")
+        let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: self.managedObjectContext)
+        assert(objectEntity != nil, "Unable to load entity description for object \(request.entityName!)")
+        request.entity = objectEntity
+        request.returnsObjectsAsFaults = false
+        fetchRequests.append(request)
+    }
+    
+    
+    // MARK: - Configuration
+    /*-------------------------------------------------------------------------------*/
+    
+    public let managedObjectContext: NSManagedObjectContext
+    
+    public var fetchRequests = [NSFetchRequest<Element>]()
+    public var sortDescriptors = [NSSortDescriptor]()
+    public var sectionKeyPath: String?
+    
+    
+    public weak var delegate: ResultsControllerDelegate? {
+        didSet {
+            if (oldValue == nil) == (delegate == nil) { return }
+            if delegate == nil { unregister() }
+            else if _fetched { register() }
+        }
+    }
+    
+    
+    
+    // MARK: - Controller Contents
+    /*-------------------------------------------------------------------------------*/
+    
+    private var fetchedObjects = Set<Element>()
+    
+    private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
+    
+    private var _fetchedObjects = [Element]()
+    private var _sections = OrderedSet<SectionInfo>()
+
+    
+    
+    public var numberOfSections : Int {
+        return _sections.count
+    }
+    
+    public func numberOfObjects(in section: Int) -> Int {
+        return self._sections[section].numberOfObjects
+    }
+    
+    public func sectionName(forSectionAt indexPath: IndexPath) -> String {
+        return _sectionInfo(at: indexPath)?._value?.displayDescription ?? ""
+    }
+    
+    
+    public var allObjects: [Any] { return Array(fetchedObjects) }
+    
+    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
+    
+    
+    // MARK: - Querying Sections & Objects
+    /*-------------------------------------------------------------------------------*/
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
+        return self._sectionInfo(at: sectionIndexPath)
+    }
+    
+    public func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
+        return self._object(forSectionAt: sectionIndexPath)
+    }
+    
+    public func object(at indexPath: IndexPath) -> Any? {
+        return self._object(at: indexPath)
     }
     
 
+    
+    // MARK: - Typed Getters
+    /*-------------------------------------------------------------------------------*/
+    
+    public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
+        return self._sectionInfo(at: sectionIndexPath)?._value
+    }
+    
+    public func _object(at indexPath: IndexPath) -> Element? {
+        return self._sectionInfo(at: indexPath)?._storage.object(at: indexPath._item)
+    }
+    
+    public func _indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {
+        let _wrap = SectionInfo(controller: self, value: sectionObject)
+        if let idx = _sections.index(of: _wrap) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
+    
+
+    
+    // MARK: - Getting IndexPaths
+    /*-------------------------------------------------------------------------------*/
+    
+    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
+        guard let info = sectionInfo as? SectionInfo else { return nil }
+        if let idx = _sections.index(of: info) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
+    public func indexPath(of object: Element) -> IndexPath? {
+        
+        if self.sectionKeyPath != nil {
+            guard let section = self._objectSectionMap[object],
+                let sIndex = self._sections.index(of: section),
+                let idx = section.index(of: object) else { return nil }
+            return IndexPath.for(item: idx, section: sIndex)
+        }
+        else if let idx = _sections.first?.index(of: object) {
+            return IndexPath.for(item: idx, section: 0)
+        }
+        return nil
+    }
+    
+    public func indexPathOfSection(representing sectionValue: Section?) -> IndexPath? {
+        let _wrap = SectionInfo(controller: self, value: sectionValue)
+        if let idx =  _sections.index(of: _wrap) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
+    
+    
+    
+    // MARK: - Helpers
+    /*-------------------------------------------------------------------------------*/
+    private func contains(object: Element) -> Bool {
+        return _fetchedObjects.contains(object)
+    }
+    
+    private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
+        return self._sectionInfo(at: sectionIndexPath._section)
+    }
+    
+    private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
+        guard sectionIndex < self.numberOfSections else { return nil }
+        return self._sections.object(at: sectionIndex)
+    }
+    
+    private func _sectionInfo(representing section: Section?) -> SectionInfo? {
+        guard let ip = self._indexPathOfSection(representing: section) else { return nil }
+        return self._sectionInfo(at: ip)
+    }
+
+    
+    
+    // MARK: - Storage Manipulation
+    /*-------------------------------------------------------------------------------*/
+    
+    private  func _insert(section: Section?) -> SectionInfo {
+        if let s = self._sectionInfo(representing: section) { return s }
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        let s = SectionInfo(controller: self, value: section, objects: [])
+        _sections.add(s)
+        return s
+    }
+    
+    private func _remove(_ section: Section?) {
+        guard let ip = self._indexPathOfSection(representing: section) else { return }
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        _sections.remove(at: ip._section)
+    }
+    
+    private func sortSections() {
+        self._sections.sort()
+    }
+    
+    
+    
+    
+    // MARK: - Notification Registration
+    /*-------------------------------------------------------------------------------*/
+    private func register() {
+        ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)    }
+    
+    private func unregister() {
+        ResultsControllerCDManager.shared.remove(context: self.managedObjectContext)
+        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
+    }
+
+
+
+    
+    
+    // MARK: - Empty Sections
+    /*-------------------------------------------------------------------------------*/
+    
+    /// If true, changes reported to the delegate account for a placeholer cell that is not reported in the controllers data
+    public var hasEmptyPlaceholder : Bool = false
+    
+    /// A special set of changes if hasEmptyPlaceholder is true that can be passed along to a Collection View
+    public private(set) var placeholderChanges : ResultsChangeSet?
+    
+    
     
     
     // MARK: - Handling Changes
     /*-------------------------------------------------------------------------------*/
     
+    /// Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)
+    public var pendingChangeCount : Int {
+        return pendingItemChangeCount
+    }
+    
+    /// Same as pendingChangeCount. Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)
+    public var pendingItemChangeCount : Int {
+        return context.objectChanges.count
+    }
+    
+    
     private var context = ChangeContext<Element>()
     private var _sectionsCopy : OrderedSet<SectionInfo>?
-    public private(set) var emptySectionChanges : ResultsChangeSet?
+    
     
     func handleChangeNotification(_ notification: Notification) {
         
@@ -496,56 +529,31 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         let _previousSectionCount = _sectionsCopy?.count
         _sectionsCopy = nil
         
-        
-        
-//        var csrLog = "Performing Cross Section Reduction ------ "
-//        var indent = 0
-//        
-        func appendCSRLog(_ string: String) {
-            return;
-//            csrLog += "\n"
-//            for _ in 0..<indent {
-//                csrLog += "\t"
-//            }
-//            csrLog += string
-        }
+
         func reduceCrossSectional(_ object: Element, targetEdit tEdit: Edit<Element>? = nil) -> Bool {
             
             guard self.context.itemsWithSectionChange.remove(object) != nil else {
                 return false
             }
             
-//            indent += 1
-//            defer {
-//                indent -= 1
-//            }
-            
-//            appendCSRLog("Reducing cross section edit for \(object.idSuffix):")
-            
             guard let source = self.context.objectChanges.updated.index(of: object),
                 let targetIP = self.indexPath(of: object),
                 let targetSection = self._sectionInfo(at: targetIP) else {
-                    appendCSRLog("No source/target for cross")
                     return true
             }
             
             guard let proposedEdit = tEdit ?? processedSections[targetSection]?.edit(for: object) else {
-                appendCSRLog("Target: nil")
                 return true
             }
             
-            appendCSRLog("Target: \(targetIP) \(proposedEdit)")
-            
             let newEdit = Edit(.move(origin: source._item), value: object, index: targetIP._item)
             processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: targetIP._item)
-            appendCSRLog("Added move from \(source) to \(proposedEdit)")
             
             processedSections[targetSection]?.remove(edit: proposedEdit)
-            appendCSRLog("Removed proposed edit \(proposedEdit)")
             
             if targetIP._item != proposedEdit.index {
-                let old = processedSections[targetSection]?.edit(withSource: targetIP._item)
-                appendCSRLog("Old edit at move to position: \(old?.description ?? "nil")")
+                let _ = processedSections[targetSection]?.edit(withSource: targetIP._item)
+                // Nothing to do
             }
             else if case .substitution = proposedEdit.operation, let obj = self.context.objectChanges.object(for: targetIP) {
                 let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
@@ -560,18 +568,18 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         
         if hasEmptyPlaceholder, let old = _previousSectionCount {
             
-            if self.emptySectionChanges == nil {
-                self.emptySectionChanges = ResultsChangeSet()
+            if self.placeholderChanges == nil {
+                self.placeholderChanges = ResultsChangeSet()
             }
             if old == 0 && _sections.count != 0 {
-                self.emptySectionChanges?.addChange(forItemAt: IndexPath.zero, with: .delete)
+                self.placeholderChanges?.addChange(forItemAt: IndexPath.zero, with: .delete)
             }
             else if old != 0 && _sections.count == 0 {
-                self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
+                self.placeholderChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
             }
         }
         else {
-            self.emptySectionChanges = nil
+            self.placeholderChanges = nil
         }
         
         
@@ -616,12 +624,12 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             }
 
             delegate.controllerDidChangeContent(controller: self)
-            self.emptySectionChanges = nil
+            self.placeholderChanges = nil
         })
     }
     
     
-    func preprocess(notification: Notification) {
+    private func preprocess(notification: Notification) {
         
         var objects = ObjectChangeSet<IndexPath, Element>()
         
@@ -667,9 +675,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         
     }
     
-    
-    
-    func processDeleted() {
+    private func processDeleted() {
         
         for change in self.context.objectChanges.deleted {
             let object = change.value
@@ -685,9 +691,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         }
     }
     
-    func processInserted() {
-        
-        
+    private func processInserted() {
         
         for object in context.objectChanges.inserted {
             
@@ -728,7 +732,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     
     
     
-    func processUpdated() {
+    private func processUpdated() {
         
         for change in context.objectChanges.updated {
             

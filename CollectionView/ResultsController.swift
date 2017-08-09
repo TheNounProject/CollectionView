@@ -85,17 +85,11 @@ public protocol ResultsController {
     */
     func sectionName(forSectionAt indexPath :IndexPath) -> String
     
-    /**
-     Execute a fetch to populate the controller
-
-    */
+    
+    /// Execute a fetch to populate the controller
     func performFetch() throws
     
-    
-    /**
-     Clear all storage for the controller and stop all observing
-
-    */
+    /// Clear all storage for the controller and stop all observing
     func reset()
 }
 
@@ -112,9 +106,10 @@ public extension Array where Element:Any {
 }
 
 
-/**
- ResultsControllerError
-*/
+
+/// Errors thrown by results controllers - unimplimented
+///
+/// - unknown: 
 public enum ResultsControllerError: Error {
     case unknown
 }

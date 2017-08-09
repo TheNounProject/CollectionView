@@ -19,6 +19,8 @@ import Foundation
 */
 public protocol CollectionViewDelegateFlowLayout  {
     
+    // MARK: - Element Size
+    /*-------------------------------------------------------------------------------*/
     /**
      Asks the delegate for the layout style for the item at the specified index path
 
@@ -58,8 +60,14 @@ public protocol CollectionViewDelegateFlowLayout  {
      - Returns: The height to apply to the header view in the specified section
 
     */
+
     func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
                                         heightForFooterInSection section: Int) -> CGFloat
+    
+    
+    // MARK: - Insets & Transforms
+    /*-------------------------------------------------------------------------------*/
+    
     /**
      Asks the delegate for the insets for the content of the specified index path
 
@@ -124,11 +132,24 @@ extension CollectionViewDelegateFlowLayout {
 */
 open class CollectionViewFlowLayout : CollectionViewLayout {
     
-    /// The default spacing between items in the same row and between rows
+    // MARK: - Options
+    /*-------------------------------------------------------------------------------*/
+    
+    /// Spacing between flow elements
     public var interitemSpacing: CGFloat = 8
+    
+    
+    /// Vertical spacing between multiple span elements
     public var interpanSpacing : CGFloat?
+    
+    
+    /// Top spacing between the span elements that are preceded by flow elements
     public var spanGroupSpacingBefore : CGFloat?
+    
+    
+    /// Bottom spacing between span elements that are followed by flow elements
     public var spanGroupSpacingAfter : CGFloat?
+    
     
     public var defaultItemStyle = ItemStyle.flow(CGSize(width: 60, height: 60))
     public var defaultFooterHeight : CGFloat = 0
@@ -137,6 +158,23 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     public var defaultSectionInsets : EdgeInsets = NSEdgeInsetsZero
     
     
+    /// If supplementary views should be inset to section insets
+    public var insetSupplementaryViews = true
+    
+    
+    // MARK: - Layout Information
+    /*-------------------------------------------------------------------------------*/
+    
+    /// Only used during layout preparation to reference the width of the previously inserted row
+    private(set) public var widthOfLastRow : CGFloat?
+    
+    
+    
+    /// Row transforms can be applied to flow elements that fall within the same row
+    ///
+    /// - none: No transform
+    /// - center: Center the elements at their current size and spacing
+    /// - fill: Enlarge the elements to fill the row
     public enum RowTransform {
         case none
         case center
@@ -272,14 +310,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     
     private var sectionAttributes = [SectionAttributes]()
     
-    /**
-     Only used during layout preparation to reference the width of the previously inserted row
-    */
-    private(set) public var widthOfLastRow : CGFloat?
     
-    /// If supplementary views should be inset to section insets
-    public var insetSupplementaryViews = true
-    
+    // MARK: - Layout Overrides
+    /*-------------------------------------------------------------------------------*/
     
     private var _cvWidth : CGFloat = 0
     open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
@@ -632,19 +665,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 }
                 ip = prop
             }
-            
-            /*
-            if section == 0 && index == 0 {
-                return currentIndexPath
-            }
-            if index > 0 {
-                index = index - 1
-            } else {
-                section = section - 1
-                index = collectionView.numberOfItems(in: currentIndexPath._section - 1) - 1
-            }
-            return IndexPath.for(item:index, section: section)
-            */
+
             
         case .down:
             guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
@@ -679,19 +700,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 }
                 ip = prop
             }
-            
-            /*
-            if section == numberOfSections - 1 && index == numberOfItemsInSection - 1 {
-                return currentIndexPath
-            }
-            if index < numberOfItemsInSection - 1 {
-                index = index + 1
-            } else {
-                section = section + 1
-                index = 0
-            }
-            return IndexPath.for(item:index, section: section)
-            */
         }
     }
     

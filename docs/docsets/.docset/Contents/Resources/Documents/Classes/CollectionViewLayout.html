@@ -23,7 +23,7 @@
         <a class="header-link" href="../index.html">
            Docs
         </a>
-         (59% documented)
+         (67% documented)
       </p>
     
       <p class="header-col--secondary">
@@ -72,7 +72,13 @@
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:OC14CollectionView24CollectionViewFlowLayout12RowTransform">– RowTransform</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
@@ -93,7 +99,7 @@
                 <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C14CollectionView20FetchedSetController">FetchedSetController</a>
+                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
@@ -130,22 +136,13 @@
             <a class="nav-group-name-link" href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Sa">Array</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps10Collection">Collection</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Si">Int</a>
+                <a class="nav-group-task-link" href="../Extensions/NSNumber.html">NSNumber</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps8Sequence">Sequence</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:SS">String</a>
+                <a class="nav-group-task-link" href="../Extensions/NSView.html">NSView</a>
               </li>
             </ul>
           </li>
@@ -163,6 +160,9 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
@@ -387,7 +387,6 @@
                               <td>
                                 <div>
                                   <p>The new bounds of the collection view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -397,7 +396,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>If the layout should be invalidated</p>
-
                       </div>
                     </section>
                   </div>
@@ -416,8 +414,7 @@
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Tells the layout object to update the current layout.</p>
-
-<p><a href='#discussion' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='discussion'>Discussion</h2></p>
+<h2 id='discussion' class='heading'>Discussion</h2>
 
 <p>Layout updates occur the first time the collection view presents its content and whenever the layout is invalidated explicitly or implicitly because of a change to the view. During each layout update, the collection view calls this method first to give your layout object a chance to prepare for the upcoming layout operation.
 The default implementation of this method does nothing. Subclasses can override it and use it to set up data structures or perform any initial computations needed to perform the layout later.</p>
@@ -522,7 +519,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The rect in which to look for elements</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -546,8 +542,7 @@ The default implementation of this method does nothing. Subclasses can override 
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Returns the layout attributes for an item at the given index path</p>
-
-<p><a href='#important' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='important'>Important</h1></p>
+<h1 id='important' class='heading'>Important</h1>
 
 <p>This must be overridden by subclasses</p>
 
@@ -573,7 +568,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The index path of the item for which you want the attributes</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -597,8 +591,7 @@ The default implementation of this method does nothing. Subclasses can override 
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Returns the layout attributes for the supplementary view of the given kind and the given index path</p>
-
-<p><a href='#important' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='important'>Important</h1></p>
+<h1 id='important' class='heading'>Important</h1>
 
 <p>This must be override by a subclass</p>
 
@@ -624,7 +617,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The kind of the view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -637,7 +629,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The index path of the view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -695,7 +686,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The section to get the frame for</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -705,7 +695,6 @@ The default implementation of this method does nothing. Subclasses can override 
                       <div>
                         <h4>Return Value</h4>
                         <p>The rect containing all the views</p>
-
                       </div>
                     </section>
                   </div>
@@ -747,7 +736,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The section to get the content frame for</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -757,7 +745,6 @@ The default implementation of this method does nothing. Subclasses can override 
                       <div>
                         <h4>Return Value</h4>
                         <p>The rect containing all the items</p>
-
                       </div>
                     </section>
                   </div>
@@ -812,7 +799,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The item to scroll to</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -825,7 +811,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The position at which to scroll the item to</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -883,7 +868,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The direction in which to look for the next items (up, down, left, right)</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -896,7 +880,6 @@ The default implementation of this method does nothing. Subclasses can override 
                               <td>
                                 <div>
                                   <p>The current index path to seek from</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -914,8 +897,8 @@ The default implementation of this method does nothing. Subclasses can override 
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-02)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-08)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

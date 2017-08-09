@@ -11,10 +11,75 @@ import Foundation
 
 
 /**
- *  The delegate for CollectionViewLayout
+ *  The delegate for CollectionViewColumnLayout to dynamically customize the layout
  */
 @objc public protocol CollectionViewDelegateColumnLayout: CollectionViewDelegate {
     
+    
+    // MARK: - Spacing & Insets
+    /*-------------------------------------------------------------------------------*/
+    /**
+     Asks the delegate for the number fo columns in a section
+     
+     - Parameter collectionView: The collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
+     
+     - Returns: The desired number of columns in the section
+     
+     */
+    @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
+                                        numberOfColumnsInSection section: Int) -> Int
+    
+    
+    /**
+     Asks the delegate for insets to be applied to content of a given section
+     
+     - Parameter collectionView: The collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
+     
+     - Returns: <#EdgeInsets return description#>
+     
+     */
+    @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
+                                        insetForSectionAt section: NSInteger) -> EdgeInsets
+    
+    
+    // Between to items in the same column
+    
+    /**
+     Asks the delegate for the item spacing to be applied to items of the same column of a section
+     
+     - Parameter collectionView: The collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
+     
+     - Returns: <#CGFloat return description#>
+     
+     */
+    @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
+                                        interitemSpacingForSectionAt section: Int) -> CGFloat
+    
+    
+    /**
+     Asks the delegate for the column spacing to applied to items in a given section
+     
+     - Parameter collectionView: The collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
+     
+     - Returns: <#CGFloat return description#>
+     
+     */
+    @objc optional func collectionview(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
+                                       columnSpacingForSectionAt section: Int) -> CGFloat
+    
+
+    
+    
+    // MARK: - Item Size
+    /*-------------------------------------------------------------------------------*/
     /**
      The height for the item at the given indexPath (Priority 2)
      
@@ -39,26 +104,38 @@ import Foundation
     @objc optional func collectionView (_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
         aspectRatioForItemAt indexPath: IndexPath) -> CGSize
     
+    // MARK: - Header & Footer Size
+    /*-------------------------------------------------------------------------------*/
+    
+    /**
+     Asks the delegate for the height of the header in the given section
+
+     - Parameter collectionView: The collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
+     
+     - Returns: The desired header height or 0 for no header
+
+    */
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
         heightForHeaderInSection section: Int) -> CGFloat
     
+    
+    /**
+     Asks the delegate for the height of the footer in the given section
+     
+     - Parameter collectionView: The collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
+     
+     - Returns: The desired footer height or 0 for no footer
+
+    */
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
         heightForFooterInSection section: Int) -> CGFloat
     
-    @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        numberOfColumnsInSection section: Int) -> Int
-    
-    @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        insetForSectionAt section: NSInteger) -> EdgeInsets
-    
-    // Between to items in the same column
-    @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        interitemSpacingForSectionAt section: Int) -> CGFloat
-    
-    @objc optional func collectionview(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-        columnSpacingForSectionAt section: Int) -> CGFloat
-    
-}
+
+    }
 
 
 

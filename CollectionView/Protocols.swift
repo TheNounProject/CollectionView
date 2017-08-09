@@ -449,7 +449,7 @@ import Foundation
 public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
 
 /**
- The CollectionViewDragDelegate
+ The CollectionViewDragDelegate forwards system drag functions to the delegate in the context of a Collection View.
 
 */
 @objc public protocol CollectionViewDragDelegate : CollectionViewDelegate {

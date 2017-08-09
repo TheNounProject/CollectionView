@@ -137,6 +137,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     */
     open var backgroundColor: NSColor = NSColor.white {  didSet { overlay.backgroundColor = backgroundColor }}
     
+    
     private var overlay = BackgroundView(color: NSColor.white)
     
     /**

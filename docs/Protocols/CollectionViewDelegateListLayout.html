@@ -23,7 +23,7 @@
         <a class="header-link" href="../index.html">
            Docs
         </a>
-         (59% documented)
+         (67% documented)
       </p>
     
       <p class="header-col--secondary">
@@ -72,7 +72,13 @@
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:OC14CollectionView24CollectionViewFlowLayout12RowTransform">– RowTransform</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
@@ -93,7 +99,7 @@
                 <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C14CollectionView20FetchedSetController">FetchedSetController</a>
+                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
@@ -130,22 +136,13 @@
             <a class="nav-group-name-link" href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Sa">Array</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps10Collection">Collection</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Si">Int</a>
+                <a class="nav-group-task-link" href="../Extensions/NSNumber.html">NSNumber</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps8Sequence">Sequence</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:SS">String</a>
+                <a class="nav-group-task-link" href="../Extensions/NSView.html">NSView</a>
               </li>
             </ul>
           </li>
@@ -163,6 +160,9 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
@@ -230,6 +230,13 @@
         <section class="section">
           <div class="section-content">
             <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Element%20Size"></a>
+                <a name="//apple_ref/swift/Section/Element Size" class="dashAnchor"></a>
+                <a href="#/Element%20Size">
+                  <h3 class="section-name">Element Size</h3>
+                </a>
+              </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
@@ -244,7 +251,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate for the height of the item at index path</p>
 
                       </div>
                       <div class="declaration">
@@ -267,8 +274,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
-
+                                  <p>The asking collection view</p>
                                 </div>
                               </td>
                             </tr>
@@ -280,8 +286,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionViewLayout description#&gt;</p>
-
+                                  <p>The layout</p>
                                 </div>
                               </td>
                             </tr>
@@ -293,8 +298,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#indexPath description#&gt;</p>
-
+                                  <p>The index path for the item in question</p>
                                 </div>
                               </td>
                             </tr>
@@ -303,86 +307,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#CGFloat return description#&gt;</p>
-
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:FP14CollectionView32CollectionViewDelegateListLayout14collectionViewFTCS_14CollectionView6layoutCS_20CollectionViewLayout33interitemSpacingForItemsInSectionSi_V12CoreGraphics7CGFloat"></a>
-                    <a name="//apple_ref/swift/Method/collectionView(_:layout:interitemSpacingForItemsInSection:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP14CollectionView32CollectionViewDelegateListLayout14collectionViewFTCS_14CollectionView6layoutCS_20CollectionViewLayout33interitemSpacingForItemsInSectionSi_V12CoreGraphics7CGFloat">collectionView(_:layout:interitemSpacingForItemsInSection:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span><span class="n">layout</span> <span class="nv">collectionViewLayout</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a></span><span class="p">,</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>collectionView</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
-
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>collectionViewLayout</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>&lt;#collectionViewLayout description#&gt;</p>
-
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>section</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>&lt;#section description#&gt;</p>
-
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>&lt;#CGFloat return description#&gt;</p>
-
+                        <p>The height for the item</p>
                       </div>
                     </section>
                   </div>
@@ -400,7 +325,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate for the height of the header in a given section</p>
 
                       </div>
                       <div class="declaration">
@@ -423,8 +348,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
-
+                                  <p>The asking collection view</p>
                                 </div>
                               </td>
                             </tr>
@@ -436,8 +360,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionViewLayout description#&gt;</p>
-
+                                  <p>The layout</p>
                                 </div>
                               </td>
                             </tr>
@@ -449,8 +372,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#section description#&gt;</p>
-
+                                  <p>A section index</p>
                                 </div>
                               </td>
                             </tr>
@@ -459,8 +381,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#CGFloat return description#&gt;</p>
-
+                        <p>The desired height of section header or 0 for no header</p>
                       </div>
                     </section>
                   </div>
@@ -478,7 +399,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate for the height of the footer in a given section.</p>
 
                       </div>
                       <div class="declaration">
@@ -501,8 +422,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
-
+                                  <p>The asking collection view</p>
                                 </div>
                               </td>
                             </tr>
@@ -514,8 +434,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionViewLayout description#&gt;</p>
-
+                                  <p>The layout</p>
                                 </div>
                               </td>
                             </tr>
@@ -527,8 +446,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#section description#&gt;</p>
-
+                                  <p>The section of the footer in question</p>
                                 </div>
                               </td>
                             </tr>
@@ -537,8 +455,92 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#CGFloat return description#&gt;</p>
+                        <p>The desired height of the section footer or 0 for no footer</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Spacing%20&amp;%20Insets"></a>
+                <a name="//apple_ref/swift/Section/Spacing &amp; Insets" class="dashAnchor"></a>
+                <a href="#/Spacing%20&amp;%20Insets">
+                  <h3 class="section-name">Spacing &amp; Insets</h3>
+                </a>
+              </div>
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FP14CollectionView32CollectionViewDelegateListLayout14collectionViewFTCS_14CollectionView6layoutCS_20CollectionViewLayout33interitemSpacingForItemsInSectionSi_V12CoreGraphics7CGFloat"></a>
+                    <a name="//apple_ref/swift/Method/collectionView(_:layout:interitemSpacingForItemsInSection:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FP14CollectionView32CollectionViewDelegateListLayout14collectionViewFTCS_14CollectionView6layoutCS_20CollectionViewLayout33interitemSpacingForItemsInSectionSi_V12CoreGraphics7CGFloat">collectionView(_:layout:interitemSpacingForItemsInSection:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Asks the delegate for the spacing between items in a given section</p>
 
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span><span class="n">layout</span> <span class="nv">collectionViewLayout</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a></span><span class="p">,</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The asking collection view</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>collectionViewLayout</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The layout</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>section</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A section index</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>The desired item spacing to be applied between items in the given section</p>
                       </div>
                     </section>
                   </div>
@@ -556,7 +558,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>&lt;#Description#&gt;</p>
+                        <p>Asks the delegate for insets to use when laying out items in a given section</p>
 
                       </div>
                       <div class="declaration">
@@ -579,8 +581,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionView description#&gt;</p>
-
+                                  <p>The asking collection view</p>
                                 </div>
                               </td>
                             </tr>
@@ -592,8 +593,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#collectionViewLayout description#&gt;</p>
-
+                                  <p>The layout</p>
                                 </div>
                               </td>
                             </tr>
@@ -605,8 +605,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>&lt;#section description#&gt;</p>
-
+                                  <p>A section index</p>
                                 </div>
                               </td>
                             </tr>
@@ -615,8 +614,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>&lt;#EdgeInsets return description#&gt;</p>
-
+                        <p>The edge insets for the section</p>
                       </div>
                     </section>
                   </div>
@@ -629,8 +627,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-02)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-08)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

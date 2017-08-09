@@ -30,16 +30,32 @@ public protocol FetchedSetControllerDelegate : class {
 public class FetchedSetController : NSObject {
     
     typealias Element = NSManagedObject
-    private var _storage = Set<Element>()
     
     
-    public var numberOfObjects : Int { return _storage.count }
+    // MARK: - Initialization
+    /*-------------------------------------------------------------------------------*/
     
+    
+    /**
+     A convenience initializer that takes an entity name and creates a fetch request
+
+     - Parameter context: A managed object context to fetch from
+     - Parameter entityName: An entity name to fetch
+
+    */
     convenience public init(context: NSManagedObjectContext, entityName: String) {
         let req = NSFetchRequest<NSManagedObject>(entityName: entityName)
         self.init(context: context, request: req)
     }
     
+    
+    /**
+     Initialize a controller with a context and request
+
+     - Parameter context: A managed object context to fetch from
+     - Parameter request: A request for an entity
+
+    */
     public init(context: NSManagedObjectContext, request: NSFetchRequest<NSManagedObject>) {
         self.managedObjectContext = context
         self.fetchRequest = request
@@ -53,21 +69,9 @@ public class FetchedSetController : NSObject {
         }
     }
     
-    public private(set) var managedObjectContext : NSManagedObjectContext
-    public weak var delegate: FetchedSetControllerDelegate? {
-        didSet {
-            if (oldValue == nil) == (delegate == nil) { return }
-            if delegate == nil { unregister() }
-            else if _fetched { register() }
-        }
-    }
     
-    
-    // MARK: - Perform Fetch
-    /*-------------------------------------------------------------------------------*/
-    
-    public let fetchRequest : NSFetchRequest<NSManagedObject>
     private var _fetched: Bool = false
+    
     private func setNeedsFetch() {
         if _fetched {
             _fetched = false
@@ -76,31 +80,10 @@ public class FetchedSetController : NSObject {
     }
     
     
-    public func reset() {
-        self._storage.removeAll()
-        self.setNeedsFetch()
-    }
-    
-    
-    
-    public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
-        guard moc != self.managedObjectContext else { return }
-        self.setNeedsFetch()
-        self.managedObjectContext = moc
-        validateRequest()
-        try self.performFetch()
-    }
-    
-    
-    private func validateRequest() {
-        assert(fetchRequest.entityName != nil, "request is missing entity name")
-        let objectEntity = NSEntityDescription.entity(forEntityName: fetchRequest.entityName!, in: self.managedObjectContext)
-        assert(objectEntity != nil, "Unable to load entity description for object \(fetchRequest.entityName!)")
-        fetchRequest.entity = objectEntity
-    }
-    
-    
-    
+    /// Fetches the object and begins monitoring the context for changes
+    ///
+    /// - Returns: The initial contents of the controller
+    /// - Throws: A fetch error if one occurs
     @discardableResult public func performFetch() throws -> [NSManagedObject] {
         
         guard self.fetchRequest.entityName != nil else {
@@ -120,18 +103,82 @@ public class FetchedSetController : NSObject {
         return _objects
     }
     
+    /// Clears all data and stops monitoring for changes in the context.
+    public func reset() {
+        self._storage.removeAll()
+        self.setNeedsFetch()
+    }
+    
+    
+    private func validateRequest() {
+        assert(fetchRequest.entityName != nil, "request is missing entity name")
+        let objectEntity = NSEntityDescription.entity(forEntityName: fetchRequest.entityName!, in: self.managedObjectContext)
+        assert(objectEntity != nil, "Unable to load entity description for object \(fetchRequest.entityName!)")
+        fetchRequest.entity = objectEntity
+    }
+
+    
+    // MARK: - Configuration
+    /*-------------------------------------------------------------------------------*/
+    
+    /// The managed object context to fetch from
+    public private(set) var managedObjectContext : NSManagedObjectContext
+    
+    
+    /**
+     Update the context and perform a fetch
+
+     - Parameter moc: The new managed object context
+     
+     - Returns: A fetch error if one occurs
+    */
+    public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
+        guard moc != self.managedObjectContext else { return }
+        self.setNeedsFetch()
+        self.managedObjectContext = moc
+        validateRequest()
+        try self.performFetch()
+    }
+    
+    
+    /// A fetch request (including a predicate if needed) for the entity to fetch
+    public let fetchRequest : NSFetchRequest<NSManagedObject>
+    
+    
+    /// The delegate of the controller
+    public weak var delegate: FetchedSetControllerDelegate? {
+        didSet {
+            if (oldValue == nil) == (delegate == nil) { return }
+            if delegate == nil { unregister() }
+            else if _fetched { register() }
+        }
+    }
+    
+
+    // MARK: - Contents
+    /*-------------------------------------------------------------------------------*/
+    
+    private var _storage = Set<Element>()
+    
+    
+    /// The number of objects in the set
+    public var numberOfObjects : Int { return _storage.count }
+    
+    
     
     // MARK: - Notification Registration
     /*-------------------------------------------------------------------------------*/
-    func register() {
+    private func register() {
         ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
         NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)    }
     
-    func unregister() {
+    private func unregister() {
         ResultsControllerCDManager.shared.remove(context: self.managedObjectContext)
         NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
     }
     
+    
+    /// If change processing should occur within a perform or performAndWait block on the context
     public var wait: Bool = true
     
     func handleChangeNotification(_ notification: Notification) {
@@ -207,6 +254,15 @@ public class FetchedSetController : NSObject {
     
     // MARK: - Accessing Content
     /*-------------------------------------------------------------------------------*/
+    
+    /**
+     Check if the set contains a given element
+
+     - Parameter element: The element in query
+     
+     - Returns: True if the object exists in the set
+
+    */
     private func contains(_ element: Element) -> Bool {
         return self._storage.contains(element)
     }

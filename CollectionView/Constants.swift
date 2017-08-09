@@ -14,18 +14,23 @@ import Foundation
 */
 public typealias AnimationCompletion = (_ finished: Bool)->Void
 
-/**
- CollectionElementCategory
-*/
+
+/// CollectionElementCategory
+///
+/// - cell:
+/// - supplementaryView: 
 public enum CollectionElementCategory {
     case cell
     case supplementaryView
 }
 
-
-/**
- CollectionViewScrollPosition
-*/
+/// CollectionViewScrollPosition
+///
+/// - none:
+/// - nearest:
+/// - leading:
+/// - centered:
+/// - trailing:
 public enum CollectionViewScrollPosition {
     case none
     case nearest
@@ -34,12 +39,12 @@ public enum CollectionViewScrollPosition {
     case trailing
 }
 
-//enum CollectionViewSelectionMethod {
-//    case click
-//    case extending
-//    case multiple
-//}
 
+/// CollectionViewSelectionType
+///
+/// - single:
+/// - extending:
+/// - multiple:
 internal enum CollectionViewSelectionType {
     case single
     case extending
@@ -47,18 +52,24 @@ internal enum CollectionViewSelectionType {
 }
 
 
-/**
- CollectionViewScrollDirection
-*/
+
+/// CollectionViewScrollDirection
+///
+/// - vertical:
+/// - horizontal:
 public enum CollectionViewScrollDirection {
     case vertical
     case horizontal    
 }
 
 
-/**
- CollectionViewDirection
-*/
+
+/// CollectionViewDirection
+///
+/// - left:
+/// - right:
+/// - up:
+/// - down:
 public enum CollectionViewDirection {
     case left
     case right

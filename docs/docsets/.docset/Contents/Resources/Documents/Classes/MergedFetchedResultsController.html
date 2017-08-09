@@ -23,7 +23,7 @@
         <a class="header-link" href="../index.html">
            Docs
         </a>
-         (59% documented)
+         (67% documented)
       </p>
     
       <p class="header-col--secondary">
@@ -72,7 +72,13 @@
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:OC14CollectionView24CollectionViewFlowLayout12RowTransform">– RowTransform</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
@@ -93,7 +99,7 @@
                 <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C14CollectionView20FetchedSetController">FetchedSetController</a>
+                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
@@ -130,22 +136,13 @@
             <a class="nav-group-name-link" href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Sa">Array</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps10Collection">Collection</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Si">Int</a>
+                <a class="nav-group-task-link" href="../Extensions/NSNumber.html">NSNumber</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps8Sequence">Sequence</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:SS">String</a>
+                <a class="nav-group-task-link" href="../Extensions/NSView.html">NSView</a>
               </li>
             </ul>
           </li>
@@ -163,6 +160,9 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
@@ -233,19 +233,19 @@
           <div class="section-content">
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Results%20Controller%20Protocol"></a>
-                <a name="//apple_ref/swift/Section/Results Controller Protocol" class="dashAnchor"></a>
-                <a href="#/Results%20Controller%20Protocol">
-                  <h3 class="section-name">Results Controller Protocol</h3>
+                <a name="/Initialization"></a>
+                <a name="//apple_ref/swift/Section/Initialization" class="dashAnchor"></a>
+                <a href="#/Initialization">
+                  <h3 class="section-name">Initialization</h3>
                 </a>
               </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:vP14CollectionView17ResultsController10allObjectsGSaP__"></a>
-                    <a name="//apple_ref/swift/Property/allObjects" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vP14CollectionView17ResultsController10allObjectsGSaP__">allObjects</a>
+                    <a name="/s:FC14CollectionView30MergedFetchedResultsController12performFetchFzT_T_"></a>
+                    <a name="//apple_ref/swift/Method/performFetch()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView30MergedFetchedResultsController12performFetchFzT_T_">performFetch()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -253,13 +253,19 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Performs the provided fetch request to populate the controller. Calling again resets the controller.</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    If the fetch request is invalid or the fetch fails
+
+</div>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">allObjects</span><span class="p">:</span> <span class="p">[</span><span class="kt">Any</span><span class="p">]</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">performFetch</span><span class="p">()</span> <span class="k">throws</span></code></pre>
 
                         </div>
                       </div>
@@ -269,9 +275,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:vP14CollectionView17ResultsController8sectionsGSaPS_28ResultsControllerSectionInfo__"></a>
-                    <a name="//apple_ref/swift/Property/sections" class="dashAnchor"></a>
-                    <a class="token" href="#/s:vP14CollectionView17ResultsController8sectionsGSaPS_28ResultsControllerSectionInfo__">sections</a>
+                    <a name="/s:FC14CollectionView30MergedFetchedResultsController5resetFT_T_"></a>
+                    <a name="//apple_ref/swift/Method/reset()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView30MergedFetchedResultsController5resetFT_T_">reset()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -279,19 +285,31 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>Clears all data and stops monitoring for changes in the context.</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sections</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Protocols/ResultsControllerSectionInfo.html">ResultsControllerSectionInfo</a></span><span class="p">]</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">reset</span><span class="p">()</span></code></pre>
 
                         </div>
                       </div>
                     </section>
                   </div>
                 </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Configuration"></a>
+                <a name="//apple_ref/swift/Section/Configuration" class="dashAnchor"></a>
+                <a href="#/Configuration">
+                  <h3 class="section-name">Configuration</h3>
+                </a>
+              </div>
+              <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
@@ -318,6 +336,17 @@
                     </section>
                   </div>
                 </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Controller%20Contents"></a>
+                <a name="//apple_ref/swift/Section/Controller Contents" class="dashAnchor"></a>
+                <a href="#/Controller%20Contents">
+                  <h3 class="section-name">Controller Contents</h3>
+                </a>
+              </div>
+              <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
@@ -379,18 +408,12 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>The section for which to count the objects</p>
-
+                                  
                                 </div>
                               </td>
                             </tr>
                           </tbody>
                         </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>The number of objects</p>
-
                       </div>
                     </section>
                   </div>
@@ -418,10 +441,57 @@
 
                         </div>
                       </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>A string representing the name of the section</p>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vP14CollectionView17ResultsController10allObjectsGSaP__"></a>
+                    <a name="//apple_ref/swift/Property/allObjects" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vP14CollectionView17ResultsController10allObjectsGSaP__">allObjects</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">allObjects</span><span class="p">:</span> <span class="p">[</span><span class="kt">Any</span><span class="p">]</span></code></pre>
 
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vP14CollectionView17ResultsController8sectionsGSaPS_28ResultsControllerSectionInfo__"></a>
+                    <a name="//apple_ref/swift/Property/sections" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vP14CollectionView17ResultsController8sectionsGSaPS_28ResultsControllerSectionInfo__">sections</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sections</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Protocols/ResultsControllerSectionInfo.html">ResultsControllerSectionInfo</a></span><span class="p">]</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -430,10 +500,10 @@
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Public%20Item%20Accessors"></a>
-                <a name="//apple_ref/swift/Section/Public Item Accessors" class="dashAnchor"></a>
-                <a href="#/Public%20Item%20Accessors">
-                  <h3 class="section-name">Public Item Accessors</h3>
+                <a name="/Querying%20Sections%20&amp;%20Objects"></a>
+                <a name="//apple_ref/swift/Section/Querying Sections &amp; Objects" class="dashAnchor"></a>
+                <a href="#/Querying%20Sections%20&amp;%20Objects">
+                  <h3 class="section-name">Querying Sections &amp; Objects</h3>
                 </a>
               </div>
               <ul class="item-container">
@@ -472,18 +542,12 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>The section to retieve info for</p>
-
+                                  
                                 </div>
                               </td>
                             </tr>
                           </tbody>
                         </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>The section info</p>
-
                       </div>
                     </section>
                   </div>
@@ -523,18 +587,12 @@
                               </td>
                               <td>
                                 <div>
-                                  <p>The index path</p>
-
+                                  
                                 </div>
                               </td>
                             </tr>
                           </tbody>
                         </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>An object at the specfied index path</p>
-
                       </div>
                     </section>
                   </div>
@@ -543,19 +601,19 @@
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Perform%20Fetch"></a>
-                <a name="//apple_ref/swift/Section/Perform Fetch" class="dashAnchor"></a>
-                <a href="#/Perform%20Fetch">
-                  <h3 class="section-name">Perform Fetch</h3>
+                <a name="/Empty%20Sections"></a>
+                <a name="//apple_ref/swift/Section/Empty Sections" class="dashAnchor"></a>
+                <a href="#/Empty%20Sections">
+                  <h3 class="section-name">Empty Sections</h3>
                 </a>
               </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP14CollectionView17ResultsController5resetFT_T_"></a>
-                    <a name="//apple_ref/swift/Method/reset()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP14CollectionView17ResultsController5resetFT_T_">reset()</a>
+                    <a name="/s:vC14CollectionView30MergedFetchedResultsController19hasEmptyPlaceholderSb"></a>
+                    <a name="//apple_ref/swift/Property/hasEmptyPlaceholder" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView30MergedFetchedResultsController19hasEmptyPlaceholderSb">hasEmptyPlaceholder</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -563,13 +621,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>If true, changes reported to the delegate account for a placeholer cell that is not reported in the controllers data</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">reset</span><span class="p">()</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">hasEmptyPlaceholder</span> <span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span></code></pre>
 
                         </div>
                       </div>
@@ -579,9 +638,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP14CollectionView17ResultsController12performFetchFzT_T_"></a>
-                    <a name="//apple_ref/swift/Method/performFetch()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP14CollectionView17ResultsController12performFetchFzT_T_">performFetch()</a>
+                    <a name="/s:vC14CollectionView30MergedFetchedResultsController18placeholderChangesGSqVS_16ResultsChangeSet_"></a>
+                    <a name="//apple_ref/swift/Property/placeholderChanges" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView30MergedFetchedResultsController18placeholderChangesGSqVS_16ResultsChangeSet_">placeholderChanges</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -589,13 +648,79 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        
+                        <p>A special set of changes if hasEmptyPlaceholder is true that can be passed along to a Collection View</p>
+
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">performFetch</span><span class="p">()</span> <span class="k">throws</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">placeholderChanges</span> <span class="p">:</span> <span class="kt"><a href="../Structs/ResultsChangeSet.html">ResultsChangeSet</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Handling%20Changes"></a>
+                <a name="//apple_ref/swift/Section/Handling Changes" class="dashAnchor"></a>
+                <a href="#/Handling%20Changes">
+                  <h3 class="section-name">Handling Changes</h3>
+                </a>
+              </div>
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView30MergedFetchedResultsController18pendingChangeCountSi"></a>
+                    <a name="//apple_ref/swift/Property/pendingChangeCount" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView30MergedFetchedResultsController18pendingChangeCountSi">pendingChangeCount</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">pendingChangeCount</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView30MergedFetchedResultsController22pendingItemChangeCountSi"></a>
+                    <a name="//apple_ref/swift/Property/pendingItemChangeCount" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView30MergedFetchedResultsController22pendingItemChangeCountSi">pendingItemChangeCount</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Same as pendingChangeCount. Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">pendingItemChangeCount</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                         </div>
                       </div>
@@ -610,8 +735,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-02)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-08)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

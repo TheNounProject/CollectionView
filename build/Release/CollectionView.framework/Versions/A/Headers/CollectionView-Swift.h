@@ -1040,10 +1040,54 @@ SWIFT_CLASS("_TtC14CollectionView24CollectionViewController")
 
 
 
-/// The delegate for CollectionViewLayout
+/// The delegate for CollectionViewColumnLayout to dynamically customize the layout
 SWIFT_PROTOCOL("_TtP14CollectionView34CollectionViewDelegateColumnLayout_")
 @protocol CollectionViewDelegateColumnLayout <CollectionViewDelegate>
 @optional
+/// Asks the delegate for the number fo columns in a section
+/// \param collectionView The collection view
+///
+/// \param collectionViewLayout The layout
+///
+/// \param section A section index
+///
+///
+/// returns:
+/// The desired number of columns in the section
+- (NSInteger)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout numberOfColumnsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+/// Asks the delegate for insets to be applied to content of a given section
+/// \param collectionView The collection view
+///
+/// \param collectionViewLayout The layout
+///
+/// \param section A section index
+///
+///
+/// returns:
+/// <#EdgeInsets return description#>
+- (NSEdgeInsets)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAt:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+/// Asks the delegate for the item spacing to be applied to items of the same column of a section
+/// \param collectionView The collection view
+///
+/// \param collectionViewLayout The layout
+///
+/// \param section A section index
+///
+///
+/// returns:
+/// <#CGFloat return description#>
+- (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout interitemSpacingForSectionAt:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+/// Asks the delegate for the column spacing to applied to items in a given section
+/// \param collectionView The collection view
+///
+/// \param collectionViewLayout The layout
+///
+/// \param section A section index
+///
+///
+/// returns:
+/// <#CGFloat return description#>
+- (CGFloat)collectionview:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout columnSpacingForSectionAt:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// The height for the item at the given indexPath (Priority 2)
 /// \param collectionView The collection view the item is in
 ///
@@ -1066,18 +1110,45 @@ SWIFT_PROTOCOL("_TtP14CollectionView34CollectionViewDelegateColumnLayout_")
 /// returns:
 /// The aspect ration for the item
 - (CGSize)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout aspectRatioForItemAt:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+/// Asks the delegate for the height of the header in the given section
+/// \param collectionView The collection view
+///
+/// \param collectionViewLayout The layout
+///
+/// \param section A section index
+///
+///
+/// returns:
+/// The desired header height or 0 for no header
 - (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout heightForHeaderInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+/// Asks the delegate for the height of the footer in the given section
+/// \param collectionView The collection view
+///
+/// \param collectionViewLayout The layout
+///
+/// \param section A section index
+///
+///
+/// returns:
+/// The desired footer height or 0 for no footer
 - (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout heightForFooterInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-- (NSInteger)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout numberOfColumnsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-- (NSEdgeInsets)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAt:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-- (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout interitemSpacingForSectionAt:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-- (CGFloat)collectionview:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout columnSpacingForSectionAt:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 @end
 
 
+/// The delegate for CollectionViewHorizontalListLayout
 SWIFT_PROTOCOL("_TtP14CollectionView42CollectionViewDelegateHorizontalListLayout_")
 @protocol CollectionViewDelegateHorizontalListLayout <CollectionViewDelegate>
 @optional
+/// Asks the delegate for the width of the item at a given index path
+/// \param collectionView The collection view containing the item
+///
+/// \param collectionViewLayout The layout
+///
+/// \param indexPath The index path for the item
+///
+///
+/// returns:
+/// The desired width of the item at indexPath
 - (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout widthForItemAt:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
 @end
 
@@ -1086,60 +1157,60 @@ SWIFT_PROTOCOL("_TtP14CollectionView42CollectionViewDelegateHorizontalListLayout
 SWIFT_PROTOCOL("_TtP14CollectionView32CollectionViewDelegateListLayout_")
 @protocol CollectionViewDelegateListLayout <CollectionViewDelegate>
 @optional
-/// <#Description#>
-/// \param collectionView <#collectionView description#>
+/// Asks the delegate for the height of the item at index path
+/// \param collectionView The asking collection view
 ///
-/// \param collectionViewLayout <#collectionViewLayout description#>
+/// \param collectionViewLayout The layout
 ///
-/// \param indexPath <#indexPath description#>
+/// \param indexPath The index path for the item in question
 ///
 ///
 /// returns:
-/// <#CGFloat return description#>
+/// The height for the item
 - (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout heightForItemAt:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
-/// <#Description#>
-/// \param collectionView <#collectionView description#>
+/// Asks the delegate for the height of the header in a given section
+/// \param collectionView The asking collection view
 ///
-/// \param collectionViewLayout <#collectionViewLayout description#>
+/// \param collectionViewLayout The layout
 ///
-/// \param section <#section description#>
-///
-///
-/// returns:
-/// <#CGFloat return description#>
-- (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout interitemSpacingForItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-/// <#Description#>
-/// \param collectionView <#collectionView description#>
-///
-/// \param collectionViewLayout <#collectionViewLayout description#>
-///
-/// \param section <#section description#>
+/// \param section A section index
 ///
 ///
 /// returns:
-/// <#CGFloat return description#>
+/// The desired height of section header or 0 for no header
 - (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout heightForHeaderInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-/// <#Description#>
-/// \param collectionView <#collectionView description#>
+/// Asks the delegate for the height of the footer in a given section.
+/// \param collectionView The asking collection view
 ///
-/// \param collectionViewLayout <#collectionViewLayout description#>
+/// \param collectionViewLayout The layout
 ///
-/// \param section <#section description#>
+/// \param section The section of the footer in question
 ///
 ///
 /// returns:
-/// <#CGFloat return description#>
+/// The desired height of the section footer or 0 for no footer
 - (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout heightForFooterInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
-/// <#Description#>
-/// \param collectionView <#collectionView description#>
+/// Asks the delegate for the spacing between items in a given section
+/// \param collectionView The asking collection view
 ///
-/// \param collectionViewLayout <#collectionViewLayout description#>
+/// \param collectionViewLayout The layout
 ///
-/// \param section <#section description#>
+/// \param section A section index
 ///
 ///
 /// returns:
-/// <#EdgeInsets return description#>
+/// The desired item spacing to be applied between items in the given section
+- (CGFloat)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout interitemSpacingForItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
+/// Asks the delegate for insets to use when laying out items in a given section
+/// \param collectionView The asking collection view
+///
+/// \param collectionViewLayout The layout
+///
+/// \param section A section index
+///
+///
+/// returns:
+/// The edge insets for the section
 - (NSEdgeInsets)collectionView:(CollectionView * _Nonnull)collectionView layout:(CollectionViewLayout * _Nonnull)collectionViewLayout insetForSectionAt:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 @end
 
@@ -1153,7 +1224,7 @@ SWIFT_CLASS("_TtC14CollectionView26CollectionViewDocumentView")
 @end
 
 
-/// The CollectionViewDragDelegate
+/// The CollectionViewDragDelegate forwards system drag functions to the delegate in the context of a Collection View.
 SWIFT_PROTOCOL("_TtP14CollectionView26CollectionViewDragDelegate_")
 @protocol CollectionViewDragDelegate <CollectionViewDelegate>
 @optional
@@ -1250,7 +1321,7 @@ SWIFT_PROTOCOL("_TtP14CollectionView26CollectionViewDragDelegate_")
 /// A variation of UICollectionViewFlowLayout
 SWIFT_CLASS("_TtC14CollectionView24CollectionViewFlowLayout")
 @interface CollectionViewFlowLayout : CollectionViewLayout
-/// The default spacing between items in the same row and between rows
+/// Spacing between flow elements
 @property (nonatomic) CGFloat interitemSpacing;
 @property (nonatomic) CGFloat defaultFooterHeight;
 @property (nonatomic) CGFloat defaultHeaderHeight;
@@ -1267,6 +1338,7 @@ SWIFT_CLASS("_TtC14CollectionView24CollectionViewFlowLayout")
 @end
 
 
+/// A full height horizontal scrolling layout
 SWIFT_CLASS("_TtC14CollectionView34CollectionViewHorizontalListLayout")
 @interface CollectionViewHorizontalListLayout : CollectionViewLayout
 @property (nonatomic) NSEdgeInsets sectionInsets;
@@ -1399,14 +1471,42 @@ SWIFT_CLASS("_TtC14CollectionView27CollectionViewPreviewLayout")
 /// A results controller that does not concern itself with the order of objects, but only their membership to the supplied fetch request.
 SWIFT_CLASS("_TtC14CollectionView20FetchedSetController")
 @interface FetchedSetController : NSObject
-@property (nonatomic, readonly) NSInteger numberOfObjects;
+/// A convenience initializer that takes an entity name and creates a fetch request
+/// \param context A managed object context to fetch from
+///
+/// \param entityName An entity name to fetch
+///
 - (nonnull instancetype)initWithContext:(NSManagedObjectContext * _Nonnull)context entityName:(NSString * _Nonnull)entityName;
+/// Initialize a controller with a context and request
+/// \param context A managed object context to fetch from
+///
+/// \param request A request for an entity
+///
 - (nonnull instancetype)initWithContext:(NSManagedObjectContext * _Nonnull)context request:(NSFetchRequest<NSManagedObject *> * _Nonnull)request OBJC_DESIGNATED_INITIALIZER;
-@property (nonatomic, readonly, strong) NSManagedObjectContext * _Nonnull managedObjectContext;
-@property (nonatomic, readonly, strong) NSFetchRequest<NSManagedObject *> * _Nonnull fetchRequest;
-- (void)reset;
-- (BOOL)setManagedObjectContext:(NSManagedObjectContext * _Nonnull)moc error:(NSError * _Nullable * _Nullable)error;
+/// Fetches the object and begins monitoring the context for changes
+///
+/// throws:
+/// A fetch error if one occurs
+///
+/// returns:
+/// The initial contents of the controller
 - (NSArray<NSManagedObject *> * _Nullable)performFetchAndReturnError:(NSError * _Nullable * _Nullable)error;
+/// Clears all data and stops monitoring for changes in the context.
+- (void)reset;
+/// The managed object context to fetch from
+@property (nonatomic, readonly, strong) NSManagedObjectContext * _Nonnull managedObjectContext;
+/// Update the context and perform a fetch
+/// \param moc The new managed object context
+///
+///
+/// returns:
+/// A fetch error if one occurs
+- (BOOL)setManagedObjectContext:(NSManagedObjectContext * _Nonnull)moc error:(NSError * _Nullable * _Nullable)error;
+/// A fetch request (including a predicate if needed) for the entity to fetch
+@property (nonatomic, readonly, strong) NSFetchRequest<NSManagedObject *> * _Nonnull fetchRequest;
+/// The number of objects in the set
+@property (nonatomic, readonly) NSInteger numberOfObjects;
+/// If change processing should occur within a perform or performAndWait block on the context
 @property (nonatomic) BOOL wait;
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 @end

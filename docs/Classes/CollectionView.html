@@ -23,7 +23,7 @@
         <a class="header-link" href="../index.html">
            Docs
         </a>
-         (59% documented)
+         (67% documented)
       </p>
     
       <p class="header-col--secondary">
@@ -72,7 +72,13 @@
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:OC14CollectionView24CollectionViewFlowLayout12RowTransform">– RowTransform</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
@@ -93,7 +99,7 @@
                 <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C14CollectionView20FetchedSetController">FetchedSetController</a>
+                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
@@ -130,22 +136,13 @@
             <a class="nav-group-name-link" href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Sa">Array</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps10Collection">Collection</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Si">Int</a>
+                <a class="nav-group-task-link" href="../Extensions/NSNumber.html">NSNumber</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps8Sequence">Sequence</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:SS">String</a>
+                <a class="nav-group-task-link" href="../Extensions/NSView.html">NSView</a>
               </li>
             </ul>
           </li>
@@ -163,6 +160,9 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
@@ -375,7 +375,6 @@
                               <td>
                                 <div>
                                   <p>A CollectionViewCell subclass</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -388,7 +387,6 @@
                               <td>
                                 <div>
                                   <p>A reuse identifier to deque cells of this class</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -435,7 +433,6 @@
                               <td>
                                 <div>
                                   <p>The nib for the cell</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -448,7 +445,6 @@
                               <td>
                                 <div>
                                   <p>A reuse identifier to deque cells from this nib</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -495,7 +491,6 @@
                               <td>
                                 <div>
                                   <p>A CollectionReusableview subclass</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -508,7 +503,6 @@
                               <td>
                                 <div>
                                   <p>The kind of element the class represents</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -521,7 +515,6 @@
                               <td>
                                 <div>
                                   <p>A reuse identifier to deque views of this class</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -545,7 +538,6 @@
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Register a nib to be loaded as a supplementary view</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>The nib must contain a single view whose class is set to CollectionReusableview.</p>
@@ -574,7 +566,6 @@
                               <td>
                                 <div>
                                   <p>The nib for the view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -587,7 +578,6 @@
                               <td>
                                 <div>
                                   <p>The kind of element this nib represents</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -600,7 +590,6 @@
                               <td>
                                 <div>
                                   <p>A reuse identifier to deque views from this nib</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -660,7 +649,6 @@
                               <td>
                                 <div>
                                   <p>The reuse identifier</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -673,7 +661,6 @@
                               <td>
                                 <div>
                                   <p>The index path specifying the location of the supplementary view to load.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -683,7 +670,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>A valid CollectionReusableView</p>
-
                       </div>
                     </section>
                   </div>
@@ -725,7 +711,6 @@
                               <td>
                                 <div>
                                   <p>The kind of supplementary view to retrieve. This value is defined by the layout object. This parameter must not be nil.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -738,7 +723,6 @@
                               <td>
                                 <div>
                                   <p>The reuse identifier for the specified view.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -751,7 +735,6 @@
                               <td>
                                 <div>
                                   <p>The index path specifying the location of the cell to load</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -761,7 +744,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>A valid CollectionViewCell</p>
-
                       </div>
                     </section>
                   </div>
@@ -841,7 +823,6 @@
                               <td>
                                 <div>
                                   <p>The view to add</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -889,7 +870,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>The number of sections</p>
-
                       </div>
                     </section>
                   </div>
@@ -931,7 +911,6 @@
                               <td>
                                 <div>
                                   <p>The index of the section for which you want a count of the items.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -941,7 +920,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>The number of items in the specified section</p>
-
                       </div>
                     </section>
                   </div>
@@ -998,7 +976,6 @@
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>The layout used to organize the collected view’s items.</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     Assigning a new layout object to this property does <strong>NOT</strong> apply the layout to the collection view. Call <code><a href="../Classes/CollectionView.html#/s:FC14CollectionView14CollectionView10reloadDataFT_T_">reloadData()</a></code> or <code>reloadLayout(_:)</code> to do so.
@@ -1112,7 +1089,6 @@
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Force layout of all items, not just those in the visible content area</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     This is not recommended for large data sets. It can be useful for smaller collection views to better manage transitions/animations.
@@ -1168,7 +1144,6 @@
                               <td>
                                 <div>
                                   <p>The index path of the section for which you want the frame</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1192,15 +1167,13 @@
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Reload the data (section &amp; item counts) when the collectionView bounds change. Defaults to false.</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>This will only be applied if the layout is also invalidated via <code>shouldInvalidateLayout(forBoundsChange:)</code></p>
 
 </div>
-
-<p><li><p>Discussion:
-Set to <code>true</code> if the number of sections or items per section can change depending on the collection view&rsquo;s size For example if you want to limit the size of a section but maintain item size, you can calculate the number of items that will fit in the section based on the size of the collection view and return that value in collectionView(_:numberOfItemsIn:) from the collection views data source.</p></li></p>
+<li><p>Discussion:
+Set to <code>true</code> if the number of sections or items per section can change depending on the collection view&rsquo;s size For example if you want to limit the size of a section but maintain item size, you can calculate the number of items that will fit in the section based on the size of the collection view and return that value in collectionView(_:numberOfItemsIn:) from the collection views data source.</p></li>
 
 <p>+&mdash;&mdash;&mdash;-+      +&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;+
 |          |      |                 |
@@ -1264,7 +1237,6 @@ Set to <code>true</code> if the number of sections or items per section can chan
                               <td>
                                 <div>
                                   <p>If the layout should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1277,7 +1249,6 @@ Set to <code>true</code> if the number of sections or items per section can chan
                               <td>
                                 <div>
                                   <p>Where (if any) the scroll position should be pinned</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1366,28 +1337,25 @@ Set to <code>true</code> if the number of sections or items per section can chan
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Returns the peak valocity of a scroll during the last scrolling session</p>
-
-<p><a href='#example-usage' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='example-usage'>Example Usage</h2></p>
+<h2 id='example-usage' class='heading'>Example Usage</h2>
 
 <p>If your cells require complex loading that may slow scrolling performance, <code>peakScrollVelocity</code> can be used to determine if the cell content should be reduced or delayed until after the scrolling ends.</p>
 
-<p>For example in CollectionViewCell
-&ldquo;`
-override func viewDidDisplay() {
+<p>For example in CollectionViewCell</p>
+<pre class="highlight plaintext"><code>override func viewDidDisplay() {
    if self.collectionView?.isScrolling != true ||  (self.collectionView?.peakScrollVelocity.maxAbsVelocity ?? 0) &lt; 200 {
        // load complex content
    }
    else {
        // Wait until we are done scrolling
    }
-}</p>
+}
 
-<p>func loadContent() { Do complex loading }
-&rdquo;`</p>
+func loadContent() { Do complex loading }
+</code></pre>
 
-<p>Then, in your collection view&rsquo;s delegate
-<code>
-func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: Bool) {
+<p>Then, in your collection view&rsquo;s delegate</p>
+<pre class="highlight plaintext"><code>func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: Bool) {
    guard collectionView.peakScrollVelocity.maxAbsVelocity &gt; 200 else { return }
    for ip in collectionView.indexPathsForVisibleItems {
        if let c = collectionView.cellForItem(at:ip) as? MyCellClass {
@@ -1395,7 +1363,7 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
        }
    }
 }
-</code></p>
+</code></pre>
 
                       </div>
                       <div class="declaration">
@@ -1565,7 +1533,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>A closure in which to apply the desired changes</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1578,7 +1545,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>A closure to call when the animation finished</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1636,7 +1602,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The sections to insert</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1649,7 +1614,11 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the update should be animated</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    If called within performBatchUpdate(_:completion:) sections should be the final indexes after other updates are applied
 
+</div>
                                 </div>
                               </td>
                             </tr>
@@ -1696,7 +1665,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The sections to delete</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1709,7 +1677,11 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the update should be animated</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    If called within performBatchUpdate(_:completion:) sections should be the index prior to any other updates
 
+</div>
                                 </div>
                               </td>
                             </tr>
@@ -1733,15 +1705,13 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Move a section and its items</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>If called within performBatchUpdate(_:completion:): </p>
 
 </div>
-
-<p><li><p>Source should be the index prior to any other updates</p></li>
-<li><p>Destination should be the final index after all other updates</p></li></p>
+<li><p>Source should be the index prior to any other updates</p></li>
+<li><p>Destination should be the final index after all other updates</p></li>
 
                       </div>
                       <div class="declaration">
@@ -1765,7 +1735,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The source index of the section to move</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1778,7 +1747,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The destination index to move the section to</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1791,7 +1759,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the move should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1849,7 +1816,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index paths at which to insert items.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1862,7 +1828,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the insertion should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1909,7 +1874,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index paths for the items you want to delete</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1922,7 +1886,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the updates should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1971,7 +1934,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index paths for the items you want to reoad</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -1984,7 +1946,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the updates should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2031,7 +1992,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path for the item to move</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2044,7 +2004,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path to move the item to</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2057,7 +2016,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the update should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2333,7 +2291,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path of the item to highlight</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2346,7 +2303,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the change should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2447,7 +2403,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path of the item to check</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2457,7 +2412,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>True if the item at indexPath is selected</p>
-
                       </div>
                     </section>
                   </div>
@@ -2476,7 +2430,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Selects all items in the collection view</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>The delegate is not notified of any selections</p>
@@ -2505,7 +2458,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the selections should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2529,7 +2481,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Select the items at the given index paths</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>The delegate is not notified of the selections</p>
@@ -2558,7 +2509,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index paths of the items you want to select</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2571,7 +2521,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the selections should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2618,7 +2567,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The description of the indexPath to select, or nil to deselect all.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2631,7 +2579,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the selections be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2644,7 +2591,11 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The position to scroll the selected item to</p>
+<div class="aside aside-note">
+    <p class="aside-title">Note</p>
+    The delegate will not notified of the selection
 
+</div>
                                 </div>
                               </td>
                             </tr>
@@ -2679,7 +2630,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Deselect cells at given index paths</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>The delegate will not notified of the selections</p>
@@ -2708,7 +2658,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index paths to deselect</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2721,7 +2670,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the deselections should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2745,7 +2693,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Deselect all items in the collection view</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>The delegate will not notified of the selections</p>
@@ -2774,7 +2721,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the delselections should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2798,7 +2744,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Deselect the item at a given index path</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>The delegate will not notified of the selections</p>
@@ -2827,7 +2772,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path for the item to deselect</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2840,7 +2784,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the deselection should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2952,7 +2895,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path of an item in the collection view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -2962,7 +2904,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>True if the item is visible</p>
-
                       </div>
                     </section>
                   </div>
@@ -3004,7 +2945,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>An index path of an item in the collection view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3014,7 +2954,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The cell at the indexpath, or nil if it is not visible</p>
-
                       </div>
                     </section>
                   </div>
@@ -3056,7 +2995,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>A cell in the collection view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3066,7 +3004,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The index path of the cell, or nill if it is not visible in the collection view</p>
-
                       </div>
                     </section>
                   </div>
@@ -3108,7 +3045,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>A point within the collection views contentVisibleRect</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3118,7 +3054,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The index path of the item at point, if any</p>
-
                       </div>
                     </section>
                   </div>
@@ -3159,8 +3094,7 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               </td>
                               <td>
                                 <div>
-                                  <p>A point within the contentDocumentView’s frame</p>
-
+                                  <p>A point within the contentDocumentView&rsquo;s frame</p>
                                 </div>
                               </td>
                             </tr>
@@ -3173,7 +3107,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The distance around the point to check</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3183,7 +3116,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The index path for a matching item or nil if no items were found</p>
-
                       </div>
                     </section>
                   </div>
@@ -3224,8 +3156,7 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               </td>
                               <td>
                                 <div>
-                                  <p>A rect within the contentDocumentView’s frame</p>
-
+                                  <p>A rect within the contentDocumentView&rsquo;s frame</p>
                                 </div>
                               </td>
                             </tr>
@@ -3235,7 +3166,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The index path for the matching item or nil if no items were found</p>
-
                       </div>
                     </section>
                   </div>
@@ -3276,8 +3206,7 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               </td>
                               <td>
                                 <div>
-                                  <p>A rect within the contentDocumentView’s frame</p>
-
+                                  <p>A rect within the contentDocumentView&rsquo;s frame</p>
                                 </div>
                               </td>
                             </tr>
@@ -3287,7 +3216,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The index paths for all items in the rect. Will be empty if no items were found</p>
-
                       </div>
                     </section>
                   </div>
@@ -3340,7 +3268,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The point the section must contain</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3350,7 +3277,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The index path for the section contianing the point</p>
-
                       </div>
                     </section>
                   </div>
@@ -3419,7 +3345,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The supplementary view for which you want the index path</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3429,7 +3354,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The index path for the view</p>
-
                       </div>
                     </section>
                   </div>
@@ -3471,7 +3395,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The kind of the supplementary view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3484,7 +3407,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path of the supplementary view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3494,7 +3416,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The view of kind at the given index path</p>
-
                       </div>
                     </section>
                   </div>
@@ -3536,7 +3457,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The kind of the supplementary view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3549,7 +3469,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path of the supplementary view</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3559,7 +3478,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                       <div>
                         <h4>Return Value</h4>
                         <p>The view of kind at the given index path</p>
-
                       </div>
                     </section>
                   </div>
@@ -3612,7 +3530,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The index path of the item to scroll to</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3625,7 +3542,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The position to scroll the item to within the visible frame</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3638,7 +3554,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the scroll should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3651,7 +3566,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>A closure to call on completion of the scroll</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3698,7 +3612,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The rect within the contentDocumentView to scroll to</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3711,7 +3624,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The position to scroll the rect to</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3724,7 +3636,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>If the scroll should be animated</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3737,7 +3648,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>A closure to call on completion of the scroll</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3826,7 +3736,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>The change set to apply</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3839,7 +3748,6 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
                               <td>
                                 <div>
                                   <p>A close to call when the update finishes</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -3857,8 +3765,8 @@ func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: B
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-02)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-08)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

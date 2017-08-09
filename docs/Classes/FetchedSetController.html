@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>CollectionViewDelegateFlowLayout Protocol Reference</title>
+    <title>FetchedSetController Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset="utf-8">
@@ -14,9 +14,9 @@
   </head>
   <body>
 
-    <a name="//apple_ref/swift/Protocol/CollectionViewDelegateFlowLayout" class="dashAnchor"></a>
+    <a name="//apple_ref/swift/Class/FetchedSetController" class="dashAnchor"></a>
 
-    <a title="CollectionViewDelegateFlowLayout Protocol Reference"></a>
+    <a title="FetchedSetController Class Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -38,7 +38,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="../index.html"> Reference</a>
       <img class="carat" src="../img/carat.png" />
-      CollectionViewDelegateFlowLayout Protocol Reference
+      FetchedSetController Class Reference
     </p>
 
     <div class="content-wrapper">
@@ -215,14 +215,14 @@
 
         <section class="section">
           <div class="section-content">
-            <h1>CollectionViewDelegateFlowLayout</h1>
+            <h1>FetchedSetController</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewDelegateFlowLayout</span></code></pre>
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">FetchedSetController</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
 
                 </div>
               </div>
-            <p>CollectionViewDelegateFlowLayout</p>
+            <p>A results controller that does not concern itself with the order of objects, but only their membership to the supplied fetch request.</p>
 
           </div>
         </section>
@@ -231,41 +231,34 @@
           <div class="section-content">
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Element%20Size"></a>
-                <a name="//apple_ref/swift/Section/Element Size" class="dashAnchor"></a>
-                <a href="#/Element%20Size">
-                  <h3 class="section-name">Element Size</h3>
+                <a name="/Initialization"></a>
+                <a name="//apple_ref/swift/Section/Initialization" class="dashAnchor"></a>
+                <a href="#/Initialization">
+                  <h3 class="section-name">Initialization</h3>
                 </a>
               </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout14styleForItemAtV10Foundation9IndexPath_OS2_9ItemStyle"></a>
-                    <a name="//apple_ref/swift/Method/collectionView(_:flowLayout:styleForItemAt:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout14styleForItemAtV10Foundation9IndexPath_OS2_9ItemStyle">collectionView(_:flowLayout:styleForItemAt:)</a>
+                    <a name="/s:FC14CollectionView20FetchedSetControllercFT7contextCSo22NSManagedObjectContext10entityNameSS_S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(context:entityName:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView20FetchedSetControllercFT7contextCSo22NSManagedObjectContext10entityNameSS_S0_">init(context:entityName:)</a>
                     </code>
-                      <span class="declaration-note">
-                        Default implementation
-                      </span>
                   </div>
                   <div class="height-container">
                     <div class="pointer-container"></div>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Asks the delegate for the layout style for the item at the specified index path</p>
+                        <p>A convenience initializer that takes an entity name and creates a fetch request</p>
 
-                      </div>
-                      <h4>Default Implementation</h4>
-                      <div class="default_impl abstract">
-                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="nv">flowLayout</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a></span><span class="p">,</span> <span class="n">styleForItemAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a></span><span class="o">.</span><span class="kt">ItemStyle</span></code></pre>
+                          <pre class="highlight"><code><span class="n">convenience</span> <span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span><span class="p">,</span> <span class="nv">entityName</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -276,45 +269,29 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>collectionView</em>
+                                <em>context</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The collection view requesting the information</p>
+                                  <p>A managed object context to fetch from</p>
                                 </div>
                               </td>
                             </tr>
                             <tr>
                               <td>
                                 <code>
-                                <em>gridLayout</em>
+                                <em>entityName</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The layout</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>indexPath</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The index path of the item to style</p>
+                                  <p>An entity name to fetch</p>
                                 </div>
                               </td>
                             </tr>
                           </tbody>
                         </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>A style to apply to the item</p>
                       </div>
                     </section>
                   </div>
@@ -322,33 +299,24 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout24heightForHeaderInSectionSi_V12CoreGraphics7CGFloat"></a>
-                    <a name="//apple_ref/swift/Method/collectionView(_:flowLayout:heightForHeaderInSection:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout24heightForHeaderInSectionSi_V12CoreGraphics7CGFloat">collectionView(_:flowLayout:heightForHeaderInSection:)</a>
+                    <a name="/s:FC14CollectionView20FetchedSetControllercFT7contextCSo22NSManagedObjectContext7requestGCSo14NSFetchRequestCSo15NSManagedObject__S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(context:request:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView20FetchedSetControllercFT7contextCSo22NSManagedObjectContext7requestGCSo14NSFetchRequestCSo15NSManagedObject__S0_">init(context:request:)</a>
                     </code>
-                      <span class="declaration-note">
-                        Default implementation
-                      </span>
                   </div>
                   <div class="height-container">
                     <div class="pointer-container"></div>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Asks the delegate for the height of the header view in a specified section</p>
+                        <p>Initialize a controller with a context and request</p>
 
-<p>Return 0 for no header view</p>
-
-                      </div>
-                      <h4>Default Implementation</h4>
-                      <div class="default_impl abstract">
-                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">collectionView</span> <span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">flowLayout</span> <span class="nv">collectionViewLayout</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a></span><span class="p">,</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span><span class="p">,</span> <span class="nv">request</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">NSManagedObject</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -359,45 +327,29 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>collectionView</em>
+                                <em>context</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The collection view requesting the information</p>
+                                  <p>A managed object context to fetch from</p>
                                 </div>
                               </td>
                             </tr>
                             <tr>
                               <td>
                                 <code>
-                                <em>collectionViewLayout</em>
+                                <em>request</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The layout</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>section</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The section affected by this height</p>
+                                  <p>A request for an entity</p>
                                 </div>
                               </td>
                             </tr>
                           </tbody>
                         </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>The height to apply to the header view in the specified section</p>
                       </div>
                     </section>
                   </div>
@@ -405,82 +357,62 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout24heightForFooterInSectionSi_V12CoreGraphics7CGFloat"></a>
-                    <a name="//apple_ref/swift/Method/collectionView(_:flowLayout:heightForFooterInSection:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout24heightForFooterInSectionSi_V12CoreGraphics7CGFloat">collectionView(_:flowLayout:heightForFooterInSection:)</a>
+                    <a name="/s:FC14CollectionView20FetchedSetController12performFetchFzT_GSaCSo15NSManagedObject_"></a>
+                    <a name="//apple_ref/swift/Method/performFetch()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView20FetchedSetController12performFetchFzT_GSaCSo15NSManagedObject_">performFetch()</a>
                     </code>
-                      <span class="declaration-note">
-                        Default implementation
-                      </span>
                   </div>
                   <div class="height-container">
                     <div class="pointer-container"></div>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Asks the delegate for the height of the footer view in a specified section</p>
+                        <p>Fetches the object and begins monitoring the context for changes</p>
+<div class="aside aside-throws">
+    <p class="aside-title">Throws</p>
+    A fetch error if one occurs
 
-<p>Return 0 for no footer view</p>
+</div>
 
-                      </div>
-                      <h4>Default Implementation</h4>
-                      <div class="default_impl abstract">
-                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">collectionView</span> <span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">flowLayout</span> <span class="nv">collectionViewLayout</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a></span><span class="p">,</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">@discardableResult</span> <span class="kd">public</span> <span class="kd">func</span> <span class="nf">performFetch</span><span class="p">()</span> <span class="k">throws</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">NSManagedObject</span><span class="p">]</span></code></pre>
 
                         </div>
                       </div>
                       <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>collectionView</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The collection view requesting the information</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>collectionViewLayout</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The layout</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>section</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The section affected by this height</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
                         <h4>Return Value</h4>
-                        <p>The height to apply to the header view in the specified section</p>
+                        <p>The initial contents of the controller</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC14CollectionView20FetchedSetController5resetFT_T_"></a>
+                    <a name="//apple_ref/swift/Method/reset()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView20FetchedSetController5resetFT_T_">reset()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Clears all data and stops monitoring for changes in the context.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">reset</span><span class="p">()</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -489,90 +421,36 @@
             </div>
             <div class="task-group">
               <div class="task-name-container">
-                <a name="/Insets%20&amp;%20Transforms"></a>
-                <a name="//apple_ref/swift/Section/Insets &amp; Transforms" class="dashAnchor"></a>
-                <a href="#/Insets%20&amp;%20Transforms">
-                  <h3 class="section-name">Insets &amp; Transforms</h3>
+                <a name="/Configuration"></a>
+                <a name="//apple_ref/swift/Section/Configuration" class="dashAnchor"></a>
+                <a href="#/Configuration">
+                  <h3 class="section-name">Configuration</h3>
                 </a>
               </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout18insetsForSectionAtSi_VSC10EdgeInsets"></a>
-                    <a name="//apple_ref/swift/Method/collectionView(_:flowLayout:insetsForSectionAt:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout18insetsForSectionAtSi_VSC10EdgeInsets">collectionView(_:flowLayout:insetsForSectionAt:)</a>
+                    <a name="/s:vC14CollectionView20FetchedSetController20managedObjectContextCSo22NSManagedObjectContext"></a>
+                    <a name="//apple_ref/swift/Property/managedObjectContext" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView20FetchedSetController20managedObjectContextCSo22NSManagedObjectContext">managedObjectContext</a>
                     </code>
-                      <span class="declaration-note">
-                        Default implementation
-                      </span>
                   </div>
                   <div class="height-container">
                     <div class="pointer-container"></div>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Asks the delegate for the insets for the content of the specified index path</p>
+                        <p>The managed object context to fetch from</p>
 
-                      </div>
-                      <h4>Default Implementation</h4>
-                      <div class="default_impl abstract">
-                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">collectionView</span> <span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">flowLayout</span> <span class="nv">collectionViewLayout</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a></span><span class="p">,</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">private(set)</span> <span class="k">var</span> <span class="nv">managedObjectContext</span> <span class="p">:</span> <span class="kt">NSManagedObjectContext</span></code></pre>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>collectionView</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The collection view requesting the information</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>collectionViewLayout</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The layout</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>section</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>Thhe section that the return value will be applied to</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>Edge insets for the specified section</p>
                       </div>
                     </section>
                   </div>
@@ -580,31 +458,24 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout24rowTransformForSectionAtSi_OS2_12RowTransform"></a>
-                    <a name="//apple_ref/swift/Method/collectionView(_:flowLayout:rowTransformForSectionAt:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:FP14CollectionView32CollectionViewDelegateFlowLayout14collectionViewFTCS_14CollectionView10flowLayoutCS_24CollectionViewFlowLayout24rowTransformForSectionAtSi_OS2_12RowTransform">collectionView(_:flowLayout:rowTransformForSectionAt:)</a>
+                    <a name="/s:FC14CollectionView20FetchedSetController23setManagedObjectContextFzCSo22NSManagedObjectContextT_"></a>
+                    <a name="//apple_ref/swift/Method/setManagedObjectContext(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView20FetchedSetController23setManagedObjectContextFzCSo22NSManagedObjectContextT_">setManagedObjectContext(_:)</a>
                     </code>
-                      <span class="declaration-note">
-                        Default implementation
-                      </span>
                   </div>
                   <div class="height-container">
                     <div class="pointer-container"></div>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none</p>
+                        <p>Update the context and perform a fetch</p>
 
-                      </div>
-                      <h4>Default Implementation</h4>
-                      <div class="default_impl abstract">
-                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">func</span> <span class="nf">collectionView</span> <span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="n">flowLayout</span> <span class="nv">collectionViewLayout</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a></span><span class="p">,</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setManagedObjectContext</span><span class="p">(</span><span class="n">_</span> <span class="nv">moc</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span><span class="p">)</span> <span class="k">throws</span></code></pre>
 
                         </div>
                       </div>
@@ -615,36 +486,12 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>collectionView</em>
+                                <em>moc</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The collection requesting the information</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>collectionViewLayout</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The layout</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>section</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The section to transform</p>
+                                  <p>The new managed object context</p>
                                 </div>
                               </td>
                             </tr>
@@ -653,7 +500,137 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>The type of row transform to apply</p>
+                        <p>A fetch error if one occurs</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView20FetchedSetController12fetchRequestGCSo14NSFetchRequestCSo15NSManagedObject_"></a>
+                    <a name="//apple_ref/swift/Property/fetchRequest" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView20FetchedSetController12fetchRequestGCSo14NSFetchRequestCSo15NSManagedObject_">fetchRequest</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A fetch request (including a predicate if needed) for the entity to fetch</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">fetchRequest</span> <span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">NSManagedObject</span><span class="o">&gt;</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView20FetchedSetController8delegateXwGSqPS_28FetchedSetControllerDelegate__"></a>
+                    <a name="//apple_ref/swift/Property/delegate" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView20FetchedSetController8delegateXwGSqPS_28FetchedSetControllerDelegate__">delegate</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The delegate of the controller</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">delegate</span><span class="p">:</span> <span class="kt">FetchedSetControllerDelegate</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Contents"></a>
+                <a name="//apple_ref/swift/Section/Contents" class="dashAnchor"></a>
+                <a href="#/Contents">
+                  <h3 class="section-name">Contents</h3>
+                </a>
+              </div>
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView20FetchedSetController15numberOfObjectsSi"></a>
+                    <a name="//apple_ref/swift/Property/numberOfObjects" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView20FetchedSetController15numberOfObjectsSi">numberOfObjects</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The number of objects in the set</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">numberOfObjects</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Notification%20Registration"></a>
+                <a name="//apple_ref/swift/Section/Notification Registration" class="dashAnchor"></a>
+                <a href="#/Notification%20Registration">
+                  <h3 class="section-name">Notification Registration</h3>
+                </a>
+              </div>
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView20FetchedSetController4waitSb"></a>
+                    <a name="//apple_ref/swift/Property/wait" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView20FetchedSetController4waitSb">wait</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>If change processing should occur within a perform or performAndWait block on the context</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">wait</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>

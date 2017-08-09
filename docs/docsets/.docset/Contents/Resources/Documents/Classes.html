@@ -22,7 +22,7 @@
         <a class="header-link" href="index.html">
            Docs
         </a>
-         (59% documented)
+         (67% documented)
       </p>
     
       <p class="header-col--secondary">
@@ -71,7 +71,13 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout.html#/s:OC14CollectionView24CollectionViewFlowLayout12RowTransform">– RowTransform</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewLayout.html">CollectionViewLayout</a>
@@ -92,7 +98,7 @@
                 <a class="nav-group-task-link" href="Classes/FetchedResultsController.html">FetchedResultsController</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes.html#/s:C14CollectionView20FetchedSetController">FetchedSetController</a>
+                <a class="nav-group-task-link" href="Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
@@ -129,22 +135,13 @@
             <a class="nav-group-name-link" href="Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Extensions.html#/s:Sa">Array</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Extensions.html#/s:Ps10Collection">Collection</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Extensions/IndexPath.html">IndexPath</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Extensions.html#/s:Si">Int</a>
+                <a class="nav-group-task-link" href="Extensions/NSNumber.html">NSNumber</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Extensions.html#/s:Ps8Sequence">Sequence</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Extensions.html#/s:SS">String</a>
+                <a class="nav-group-task-link" href="Extensions/NSView.html">NSView</a>
               </li>
             </ul>
           </li>
@@ -162,6 +159,9 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
@@ -311,6 +311,7 @@
                       <div class="abstract">
                         <p>A results controller that does not concern itself with the order of objects, but only their membership to the supplied fetch request.</p>
 
+                        <a href="Classes/FetchedSetController.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -373,18 +374,15 @@
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>An easy to use CollectionViewController that transitions from a source collection view.</p>
-
-<p><a href='#presentation-amp-data' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='presentation-amp-data'>Presentation &amp; Data</h3></p>
+<h3 id='presentation-amp-data' class='heading'>Presentation &amp; Data</h3>
 
 <p>The controller is presented from a source collection view. The data source of the source collection view is used to load data for the preview collection view. The preview controller will act as a proxy between the preview collection view and your source colleciton views data source.</p>
-
 <div class="aside aside-important">
     <p class="aside-title">Important</p>
     The data source for the collection view you pass to present(in:) must conform to CollectionViewPreviewControllerDelegate
 
 </div>
-
-<p><a href='#transitions' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='transitions'>Transitions</h3></p>
+<h3 id='transitions' class='heading'>Transitions</h3>
 
 <p>The preview controller manages the transitions to and from the source and allows the preview cell to customize the transition.</p>
 
@@ -461,6 +459,38 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionViewCell</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionReusableView.html">CollectionReusableView</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:C14CollectionView34CollectionViewHorizontalListLayout"></a>
+                    <a name="//apple_ref/swift/Class/CollectionViewHorizontalListLayout" class="dashAnchor"></a>
+                    <a class="token" href="#/s:C14CollectionView34CollectionViewHorizontalListLayout">CollectionViewHorizontalListLayout</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A full height horizontal scrolling layout</p>
+
+                        <a href="Classes/CollectionViewHorizontalListLayout.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionViewHorizontalListLayout</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionViewLayout.html">CollectionViewLayout</a></span></code></pre>
 
                         </div>
                       </div>
@@ -733,8 +763,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-02)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-08)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

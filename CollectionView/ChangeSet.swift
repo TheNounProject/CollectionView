@@ -124,12 +124,6 @@ public struct ChangeSetOptions :OptionSet {
     public init(rawValue: Int) {
         self.rawValue = rawValue
     }
-    
-//    static let secondDay  = ChangeSetOptions(rawValue: 1 << 1)
-//    static let priority   = ChangeSetOptions(rawValue: 1 << 2)
-//    static let standard   = ChangeSetOptions(rawValue: 1 << 3)
-    
-    
 }
 
 public typealias HashedIndexedSet<T:Hashable> = IndexedSet<T,T>
@@ -178,8 +172,6 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
     public let destination: T
     
     private let _shared : Set<Element>
-    
-//    public let matrix : Matrix2D<[Edit<Element>]>
 
     public lazy var operationIndex : EditOperationIndex<Element> = {
         return EditOperationIndex<Element>(edits: self.edits)
@@ -581,14 +573,6 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
             return reducedEdits
         }
         */
-    }
-    
-    
-    public var matrixLog : String {
-        return "Change set no longer uses a matrix..."
-//        return matrix.dump({ (v) -> Any in
-//            return v.count
-//        })
     }
     
     

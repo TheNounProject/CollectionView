@@ -165,48 +165,20 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     
     fileprivate typealias SectionInfo = FetchedSectionInfo<Section, Element>
     
-    // MARK: - Results Controller Protocol
+    
+
+    // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
     
-    public var allObjects: [Any] { return Array(fetchedObjects) }
-    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
     
-    public var hasEmptyPlaceholder : Bool = false
-    
-    public let fetchRequest : NSFetchRequest<Element>
-    public var sortDescriptors: [NSSortDescriptor]? {
-        return fetchRequest.sortDescriptors
-    }
-    
-    private weak var _managedObjectContext: NSManagedObjectContext?
-    public var managedObjectContext: NSManagedObjectContext {
-        return self._managedObjectContext!
-    }
-    
-    public var sectionKeyPath: String?
+    /**
+     Controller initializer a given context and fetch request
 
-    
-    fileprivate var fetchedObjects = Set<Element>()
-    
-    fileprivate var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
-    
-    fileprivate var _fetchedObjects = [Element]()
-    private var _sections = OrderedSet<SectionInfo>()
-    
-    public weak var delegate: ResultsControllerDelegate? {
-        didSet {
-            if (oldValue == nil) == (delegate == nil) { return }
-            if delegate == nil { unregister() }
-            else if _fetched { register() }
-        }
-    }
-    
-    public typealias Sorter = (Element, Element) -> Bool
-    public var sort : Sorter?
-    public func sortBy(_ sorter: Sorter?) {
-        self.sort = sorter
-    }
-    
+     - Parameter context: A managed object context
+     - Parameter request: A fetch request with an entity name
+     - Parameter sectionKeyPath: An optional key path to use for section groupings
+
+    */
     public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionKeyPath: String? = nil) {
         
         assert(request.entityName != nil, "request is missing entity name")
@@ -230,181 +202,15 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         }
     }
     
-    public var numberOfSections : Int {
-        return _sections.count
-    }
-    
-    public func numberOfObjects(in section: Int) -> Int {
-        return self._sections[section].numberOfObjects
-    }
-    
-    public func sectionName(forSectionAt indexPath: IndexPath) -> String {
-        return _sectionInfo(at: indexPath)?._value?.displayDescription ?? ""
-    }
-    
-    
-    
-    // MARK: - Public Item Accessors
-    /*-------------------------------------------------------------------------------*/
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
-        return self._sectionInfo(at: sectionIndexPath)
-    }
-    
-    public func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
-        return self._object(forSectionAt: sectionIndexPath)
-    }
-    public func object(at indexPath: IndexPath) -> Any? {
-        return self._object(at: indexPath)
-    }
-    
-    
-    // MARK: - Getting IndexPaths
-    /*-------------------------------------------------------------------------------*/
-    
-    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
-        guard let info = sectionInfo as? SectionInfo else { return nil }
-        if let idx = _sections.index(of: info) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    public func indexPath(of object: Element) -> IndexPath? {
-        
-        if self.sectionKeyPath != nil {
-            guard let section = self._objectSectionMap[object],
-                let sIndex = self._sections.index(of: section),
-                let idx = section.index(of: object) else { return nil }
-            return IndexPath.for(item: idx, section: sIndex)
-        }
-        else if let idx = _sections.first?.index(of: object) {
-            return IndexPath.for(item: idx, section: 0)
-        }
-        return nil
-    }
-    public func indexPathOfSection(representing sectionValue: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(value: sectionValue)
-        if let idx =  _sections.index(of: _wrap) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    
-    // MARK: - Private Accessors
-    /*-------------------------------------------------------------------------------*/
-    private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
-        return self._sectionInfo(at: sectionIndexPath._section)
-    }
-    private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
-        guard sectionIndex < self.numberOfSections else { return nil }
-        return self._sections.object(at: sectionIndex)
-    }
-    
-    private func _sectionInfo(representing section: Section?) -> SectionInfo? {
-        guard let ip = self._indexPathOfSection(representing: section) else { return nil }
-        return self._sectionInfo(at: ip)
-    }
-    
-    public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
-        return self._sectionInfo(at: sectionIndexPath)?._value
-    }
-    
-    public func _object(at indexPath: IndexPath) -> Element? {
-        return self._sectionInfo(at: indexPath)?._storage.object(at: indexPath._item)
-    }
-    public func _indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(value: sectionObject)
-        if let idx = _sections.index(of: _wrap) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    
-    
-    
-    
-    // MARK: - Helpers
-    /*-------------------------------------------------------------------------------*/
-    private func contains(object: Element) -> Bool {
-        return _fetchedObjects.contains(object)
-    }
-    
-    
-    
-    
-    // MARK: - Logging
-    /*-------------------------------------------------------------------------------*/
-    private func printSectionOrderKeys() {
-//        var str = "Section Ordering Keys:\n"
-        
-//            s.forEachKey(describing: _sections, do: { (k, o) in
-//                str += "\(k): \(o._object?.value(forKey: k) ?? "-- Ungrouped")  "
-//            })
-//        print(str)
-    }
-    
-    private func logSections() {
-//        print("\(_sections.count) Sections")
-//        for (idx, res) in _sections.enumerated() {
-//            var str = "\(idx) - \(res.description(with: fetchRequest.sortDescriptors ?? []))"
-//            print(str)
-//        }
-    }
-    
-    
-    
-    // MARK: - Storage Manipulation
-    /*-------------------------------------------------------------------------------*/
-    
-    fileprivate func _insert(section: Section?) -> SectionInfo {
-        if let s = self._sectionInfo(representing: section) { return s }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
-        let s = SectionInfo(value: section, objects: [])
-        _sections.add(s)
-        return s
-    }
-    
-    private func _remove(_ section: Section?) {
-        guard let ip = self._indexPathOfSection(representing: section) else { return }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
-        _sections.remove(at: ip._section)
-    }
-    
-    func sortSections() {
-        self._sections.sort()
-    }
-    
-    
-    
-    
-    // MARK: - Notification Registration
-    /*-------------------------------------------------------------------------------*/
-    func register() {
-        guard let moc = self._managedObjectContext else { return }
-        ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: moc)    }
-    
-    func unregister() {
-        guard let moc = self._managedObjectContext else { return }
-        ResultsControllerCDManager.shared.remove(context: moc)
-        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: moc)
-    }
-    
-    
-    
-    // MARK: - Perform Fetch
-    /*-------------------------------------------------------------------------------*/
     
     private var _fetched: Bool = false
     
-    public var pendingChangeCount : Int {
-        return pendingItemChangeCount
-    }
-    public var pendingItemChangeCount : Int {
-        return context.objectChanges.count
-    }
+    
+    /**
+     Performs the provided fetch request to populate the controller. Calling again resets the controller.
+     
+     - Throws: If the fetch request is invalid or the fetch fails
+     */
     
     public func performFetch() throws {
         
@@ -449,6 +255,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     }
     
     
+    /// Clears all data and stops monitoring for changes in the context.
     public func reset() {
         self._fetched = false
         self.unregister()
@@ -464,12 +271,350 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
 
     
     
+    
+    // MARK: - Configuration
+    /*-------------------------------------------------------------------------------*/
+    
+    ///The fetch request for the controller
+    public let fetchRequest : NSFetchRequest<Element>
+    
+    /// A convenience getter for the sort descriptors from `fetchRequest`
+    public var sortDescriptors: [NSSortDescriptor]? {
+        return fetchRequest.sortDescriptors
+    }
+    
+    private weak var _managedObjectContext: NSManagedObjectContext?
+    
+    /// The managed object context to fetch from
+    public var managedObjectContext: NSManagedObjectContext {
+        return self._managedObjectContext!
+    }
+    
+    
+    public typealias Sorter = (Element, Element) -> Bool
+    
+    /**
+     A closuer for providing custom sorting
+     */
+    public var sort : Sorter?
+    
+    
+    
+    /**
+     A convenience function for setting the custom sorter
+     
+     - Parameter sorter: A closure to handle custom sorting or nil to remove the sorter
+     
+     */
+    public func sortBy(_ sorter: Sorter?) {
+        self.sort = sorter
+    }
+    
+    /// A key path of the elements to use for section groupings
+    public var sectionKeyPath: String?
+    
+    
+    /**
+     The delegate to report changes to
+     */
+    public weak var delegate: ResultsControllerDelegate? {
+        didSet {
+            if (oldValue == nil) == (delegate == nil) { return }
+            if delegate == nil { unregister() }
+            else if _fetched { register() }
+        }
+    }
+    
+    
+    
+    
+    
+    
+    // MARK: - Controller Contents
+    /*-------------------------------------------------------------------------------*/
+    
+    private var fetchedObjects = Set<Element>()
+    private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
+    private var _fetchedObjects = [Element]()
+    private var _sections = OrderedSet<SectionInfo>()
+    
+    
+    
+    
+    /// The number of sections in the controller
+    public var numberOfSections : Int {
+        return _sections.count
+    }
+    
+
+    
+    /**
+     The number of objects in a given section
+     
+     - Parameter section: A section index
+     - Returns: The number of objects in the given section
+
+    */
+    public func numberOfObjects(in section: Int) -> Int {
+        return self._sections[section].numberOfObjects
+    }
+    
+    
+    /**
+     A list of all objects in the controller
+     
+     For performance reasons it is preferred to use object(at:)
+     */
+    public var allObjects: [Any] { return Array(fetchedObjects) }
+    
+    
+    
+    /**
+     The list of sections in the controller
+     
+     For performance reasons accessing the controllers data should be done via the controller getters such as sectionInfo(forSectionAt:) or object(at:)
+     */
+    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
+    
+    
+    /**
+     The value of sectionKeyPath for the objects in a given section
+
+     - Parameter indexPath: The index path of the section
+     
+     - Returns: A string value (if any) for the given section
+     
+     If sectionKeyPath is set, each section is created to represent the value returned for that path by any of the objects contained within it. CustomDisplayStringConvertible is used to create a string from that value.
+     
+     If the objects have an attribute `category` of type int, and the sectionKeyPath is set to `category`, each category will represent the various Int values. Using CustomDisplayStringConvertible, that int will be returned as a string.
+     
+     For custom handling of this, use `object(forSectionAt:)`
+
+    */
+    public func sectionName(forSectionAt indexPath: IndexPath) -> String {
+        return _sectionInfo(at: indexPath)?._value?.displayDescription ?? ""
+    }
+    
+    
+    
+    // MARK: - Querying Sections & Objects
+    /*-------------------------------------------------------------------------------*/
+    
+    
+    /**
+     The info for a given section
+
+     - Parameter sectionIndexPath: An index path with the desired section
+     - Returns: The info for the given section (or nil if indexPath.section is out of range)
+
+    */
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
+        return self._sectionInfo(at: sectionIndexPath)
+    }
+    
+    
+    /**
+     The object represented by the given section (if sectionKeyPath is not nil)
+
+     - Parameter sectionIndexPath: An index path for the desired section
+     
+     - Returns: The value for `sectionKeyPath` of each object in the section (or nil)
+
+    */
+    public func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
+        return self._object(forSectionAt: sectionIndexPath)
+    }
+    
+    
+    /**
+     The object at a given index path
+
+     - Parameter indexPath: An index path
+     
+     - Returns: The object at the given indexPath (or nil if it is out of range)
+
+    */
+    public func object(at indexPath: IndexPath) -> Any? {
+        return self._object(at: indexPath)
+    }
+    
+    
+    // MARK: - Types Object Acccess
+    /*-------------------------------------------------------------------------------*/
+
+    public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
+        return self._sectionInfo(at: sectionIndexPath)?._value
+    }
+    
+    public func _object(at indexPath: IndexPath) -> Element? {
+        return self._sectionInfo(at: indexPath)?._storage.object(at: indexPath._item)
+    }
+    
+    public func _indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {
+        let _wrap = SectionInfo(value: sectionObject)
+        if let idx = _sections.index(of: _wrap) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
+    
+
+
+    
+    
+    
+    // MARK: - Getting IndexPaths
+    /*-------------------------------------------------------------------------------*/
+    
+    
+    /**
+     The index path of the section represented by section info
+     
+     - Parameter sectionInfo: Info for the section
+     
+     - Returns: The index path of the section matching the given info (or nil)
+     
+     */
+    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
+        guard let info = sectionInfo as? SectionInfo else { return nil }
+        if let idx = _sections.index(of: info) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
+    
+    
+    /**
+     The index path of a given object contained in the controller
+     
+     - Parameter object: An object contained in the controller
+     
+     - Returns: The index path for the given object
+     */
+    public func indexPath(of object: Element) -> IndexPath? {
+        
+        if self.sectionKeyPath != nil {
+            guard let section = self._objectSectionMap[object],
+                let sIndex = self._sections.index(of: section),
+                let idx = section.index(of: object) else { return nil }
+            return IndexPath.for(item: idx, section: sIndex)
+        }
+        else if let idx = _sections.first?.index(of: object) {
+            return IndexPath.for(item: idx, section: 0)
+        }
+        return nil
+    }
+    
+    
+    /**
+     The index path of the section that represents a value
+     
+     - Parameter sectionValue: The value that the desired section represents
+     
+     - Returns: The index path of the section (or nil)
+     
+     Section value refers the the value of `sectionKeyPath` for all objects in a section.
+     
+     */
+    public func indexPathOfSection(representing sectionValue: Section?) -> IndexPath? {
+        let _wrap = SectionInfo(value: sectionValue)
+        if let idx =  _sections.index(of: _wrap) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
+    
+    
+    
+    // MARK: - Private Helpers
+    /*-------------------------------------------------------------------------------*/
+    private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
+        return self._sectionInfo(at: sectionIndexPath._section)
+    }
+    
+    private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
+        guard sectionIndex < self.numberOfSections else { return nil }
+        return self._sections.object(at: sectionIndex)
+    }
+    
+    private func _sectionInfo(representing section: Section?) -> SectionInfo? {
+        guard let ip = self._indexPathOfSection(representing: section) else { return nil }
+        return self._sectionInfo(at: ip)
+    }
+    
+    private func contains(object: Element) -> Bool {
+        return _fetchedObjects.contains(object)
+    }
+    
+    
+    // MARK: - Storage Manipulation
+    /*-------------------------------------------------------------------------------*/
+    
+    private func _insert(section: Section?) -> SectionInfo {
+        if let s = self._sectionInfo(representing: section) { return s }
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        let s = SectionInfo(value: section, objects: [])
+        _sections.add(s)
+        return s
+    }
+    
+    private func _remove(_ section: Section?) {
+        guard let ip = self._indexPathOfSection(representing: section) else { return }
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        _sections.remove(at: ip._section)
+    }
+    
+    private func sortSections() {
+        self._sections.sort()
+    }
+    
+    
+    
+    
+    // MARK: - Notification Registration
+    /*-------------------------------------------------------------------------------*/
+    private func register() {
+        guard let moc = self._managedObjectContext else { return }
+        ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: moc)    }
+    
+    private func unregister() {
+        guard let moc = self._managedObjectContext else { return }
+        ResultsControllerCDManager.shared.remove(context: moc)
+        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: moc)
+    }
+   
+    
+    
     // MARK: - Handling Changes
     /*-------------------------------------------------------------------------------*/
     
+    /// Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)
+    public var pendingChangeCount : Int {
+        return pendingItemChangeCount
+    }
+    
+    /// Same as pendingChangeCount. Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)
+    public var pendingItemChangeCount : Int {
+        return context.objectChanges.count
+    }
+
+    
+    /// If true, changes reported to the delegate account for a placeholer cell that is not reported in the controllers data
+    public var hasEmptyPlaceholder : Bool = false
+    
+    /// A special set of changes if hasEmptyPlaceholder is true that can be passed along to a Collection View
+    public private(set) var placeholderChanges : ResultsChangeSet?
+    
+    
+    
+    
     private var context = ChangeContext<Element>()
     private var _sectionsCopy : OrderedSet<SectionInfo>?
-    public private(set) var emptySectionChanges : ResultsChangeSet?
+    
     
     func handleChangeNotification(_ notification: Notification) {
         
@@ -580,18 +725,18 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         
         if hasEmptyPlaceholder, let old = _previousSectionCount {
             
-            if self.emptySectionChanges == nil {
-                self.emptySectionChanges = ResultsChangeSet()
+            if self.placeholderChanges == nil {
+                self.placeholderChanges = ResultsChangeSet()
             }
             if old == 0 && _sections.count != 0 {
-                self.emptySectionChanges?.addChange(forItemAt: IndexPath.zero, with: .delete)
+                self.placeholderChanges?.addChange(forItemAt: IndexPath.zero, with: .delete)
             }
             else if old != 0 && _sections.count == 0 {
-                self.emptySectionChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
+                self.placeholderChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
             }
         }
         else {
-            self.emptySectionChanges = nil
+            self.placeholderChanges = nil
         }
         
         
@@ -637,7 +782,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             }
 
             delegate.controllerDidChangeContent(controller: self)
-            self.emptySectionChanges = nil
+            self.placeholderChanges = nil
             self._sectionsCopy = nil
         })
         

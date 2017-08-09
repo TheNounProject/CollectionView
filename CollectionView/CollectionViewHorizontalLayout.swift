@@ -9,12 +9,26 @@
 import Foundation
 
 
+
+/// The delegate for CollectionViewHorizontalListLayout
 @objc public protocol CollectionViewDelegateHorizontalListLayout: CollectionViewDelegate {
+    
+    /**
+    Asks the delegate for the width of the item at a given index path
+
+     - Parameter collectionView: The collection view containing the item
+     - Parameter collectionViewLayout: The layout
+     - Parameter indexPath: The index path for the item
+     
+     - Returns: The desired width of the item at indexPath
+
+    */
     @objc optional func collectionView (_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
         widthForItemAt indexPath: IndexPath) -> CGFloat
 }
 
 
+/// A full height horizontal scrolling layout 
 open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     
     override open var scrollDirection : CollectionViewScrollDirection {
@@ -135,11 +149,4 @@ open class HorizontalCollectionView : CollectionView {
         self.hasVerticalScroller = false
         self.hasHorizontalScroller = false
     }
-    
-//    override func scrollWheel(theEvent: NSEvent) {
-//        super.scrollWheel(theEvent)
-//        if (fabs(theEvent.deltaX) > fabs(theEvent.deltaY) || theEvent.deltaY == 0) == false {
-//            self.nextResponder?.scrollWheel(theEvent)
-//        }
-//    }
 }

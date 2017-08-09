@@ -23,7 +23,7 @@
         <a class="header-link" href="../index.html">
            Docs
         </a>
-         (59% documented)
+         (67% documented)
       </p>
     
       <p class="header-col--secondary">
@@ -72,7 +72,13 @@
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:OC14CollectionView24CollectionViewFlowLayout12RowTransform">– RowTransform</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
@@ -93,7 +99,7 @@
                 <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C14CollectionView20FetchedSetController">FetchedSetController</a>
+                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
@@ -130,22 +136,13 @@
             <a class="nav-group-name-link" href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Sa">Array</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps10Collection">Collection</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Si">Int</a>
+                <a class="nav-group-task-link" href="../Extensions/NSNumber.html">NSNumber</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps8Sequence">Sequence</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:SS">String</a>
+                <a class="nav-group-task-link" href="../Extensions/NSView.html">NSView</a>
               </li>
             </ul>
           </li>
@@ -163,6 +160,9 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
@@ -223,8 +223,7 @@
                 </div>
               </div>
             <p>The CollectionViewDataSource is responsible for providing the data and views required by a collection view</p>
-
-<p><a href='#overview' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='overview'>Overview</h1></p>
+<h1 id='overview' class='heading'>Overview</h1>
 
 <p>At a minimum, all data source objects must implement the numberOfSections(in:), collectionView(<em>:numberOfItemsInSection:) and collectionView(</em>:cellForItemAt:) methods. These methods are responsible for returning the number of items in the collection view along with the items themselves.</p>
 
@@ -279,7 +278,6 @@
                               <td>
                                 <div>
                                   <p>The collection view requesting this information.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -289,7 +287,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>The number of sections in collectionView.</p>
-
                       </div>
                     </section>
                   </div>
@@ -331,7 +328,6 @@
                               <td>
                                 <div>
                                   <p>The collection view requesting this information.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -344,7 +340,6 @@
                               <td>
                                 <div>
                                   <p>An index number identifying a section in collectionView. This index value is 0-based.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -354,7 +349,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>The number of items in the specified section</p>
-
                       </div>
                     </section>
                   </div>
@@ -384,8 +378,7 @@
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Asks your data source object for the cell that corresponds to the specified item in the collection view.</p>
-
-<p><a href='#discussion' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='discussion'>Discussion</h1></p>
+<h1 id='discussion' class='heading'>Discussion</h1>
 
 <p>Your implementation of this method is responsible for creating, configuring, and returning the appropriate cell for the given item. You do this by calling the dequeueReusableCell(withReuseIdentifier:for:) method of the collection view and passing the reuse identifier that corresponds to the cell type you want. That method always returns a valid cell object. Upon receiving the cell, you should set any properties that correspond to the data of the corresponding item, perform any additional needed configuration, and return the cell.
 You do not need to set the location of the cell inside the collection view’s bounds. The collection view sets the location of each cell automatically using the layout attributes provided by its layout object.</p>
@@ -412,7 +405,6 @@ You do not need to set the location of the cell inside the collection view’s b
                               <td>
                                 <div>
                                   <p>The collection view requesting this information.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -425,7 +417,6 @@ You do not need to set the location of the cell inside the collection view’s b
                               <td>
                                 <div>
                                   <p>The index path that specifies the location of the item.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -435,7 +426,6 @@ You do not need to set the location of the cell inside the collection view’s b
                       <div>
                         <h4>Return Value</h4>
                         <p>A configured cell object. You must not return nil from this method.</p>
-
                       </div>
                     </section>
                   </div>
@@ -454,8 +444,7 @@ You do not need to set the location of the cell inside the collection view’s b
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Asks your data source object to provide a supplementary view to display in the collection view.</p>
-
-<p><a href='#discussion' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='discussion'>Discussion</h1></p>
+<h1 id='discussion' class='heading'>Discussion</h1>
 
 <p>Your implementation of this method is responsible for creating, configuring, and returning the appropriate supplementary view that is being requested. You do this by calling the dequeueReusableSupplementaryView(ofKind:withReuseIdentifier:for:) method of the collection view and passing the information that corresponds to the view you want. That method always returns a valid view object. Upon receiving the view, you should set any properties that correspond to the data you want to display, perform any additional needed configuration, and return the view.
 You do not need to set the location of the supplementary view inside the collection view’s bounds. The collection view sets the location of each view using the layout attributes provided by its layout object.</p>
@@ -482,7 +471,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The collection view requesting this information.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -495,7 +483,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The kind of supplementary view to provide. The value of this string is defined by the layout object that supports the supplementary view.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -508,7 +495,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The index path that specifies the location of the new supplementary view.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -518,7 +504,6 @@ You do not need to set the location of the supplementary view inside the collect
                       <div>
                         <h4>Return Value</h4>
                         <p>A configured supplementary view object. You must not return nil from this method.</p>
-
                       </div>
                     </section>
                   </div>
@@ -571,7 +556,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The collection view requesting this information.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -584,7 +568,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The index path of the item to represent with the pasteboard writer</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -594,7 +577,6 @@ You do not need to set the location of the supplementary view inside the collect
                       <div>
                         <h4>Return Value</h4>
                         <p>An object adoption NSPasteboardWriting to represent the item, or nil</p>
-
                       </div>
                     </section>
                   </div>
@@ -613,7 +595,6 @@ You do not need to set the location of the supplementary view inside the collect
                       <div class="pointer"></div>
                       <div class="abstract">
                         <p>Asks the data source for the drag contents for the item at the specified index path</p>
-
 <div class="aside aside-note">
     <p class="aside-title">Note</p>
     <p>If nil is returned, a snapshot of the cell will be used. To disable dragging for an item return false for shouldStartDragging or remove the index path during validation</p>
@@ -642,7 +623,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The collection view requesting this information.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -655,7 +635,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The index path of the item to represent</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -665,7 +644,6 @@ You do not need to set the location of the supplementary view inside the collect
                       <div>
                         <h4>Return Value</h4>
                         <p>An NSImage to display when dragging the item</p>
-
                       </div>
                     </section>
                   </div>
@@ -707,7 +685,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The collection view requesting this information.</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -720,7 +697,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The index path of the item being dragged</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -733,7 +709,6 @@ You do not need to set the location of the supplementary view inside the collect
                               <td>
                                 <div>
                                   <p>The current rect of the item</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -751,8 +726,8 @@ You do not need to set the location of the supplementary view inside the collect
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-02)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-08)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

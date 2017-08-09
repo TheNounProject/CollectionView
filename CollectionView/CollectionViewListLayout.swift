@@ -15,66 +15,73 @@ import Foundation
 */
 @objc public protocol CollectionViewDelegateListLayout: CollectionViewDelegate {
     
+    // MARK: - Element Size
+    /*-------------------------------------------------------------------------------*/
     /**
-     <#Description#>
+     Asks the delegate for the height of the item at index path
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter collectionViewLayout: <#collectionViewLayout description#>
-     - Parameter indexPath: <#indexPath description#>
+     - Parameter collectionView: The asking collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter indexPath: The index path for the item in question
      
-     - Returns: <#CGFloat return description#>
+     - Returns: The height for the item
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
                                   heightForItemAt indexPath: IndexPath) -> CGFloat
     
+    
     /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter collectionViewLayout: <#collectionViewLayout description#>
-     - Parameter section: <#section description#>
+     Asks the delegate for the height of the header in a given section
      
-     - Returns: <#CGFloat return description#>
+     - Parameter collectionView: The asking collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
+     
+     - Returns: The desired height of section header or 0 for no header
+     
+     */
+    @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
+                                       heightForHeaderInSection section: Int) -> CGFloat
+    
+    /**
+     Asks the delegate for the height of the footer in a given section.
+     
+     - Parameter collectionView: The asking collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: The section of the footer in question
+     
+     - Returns: The desired height of the section footer or 0 for no footer
+     
+     */
+    @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
+                                       heightForFooterInSection section: Int) -> CGFloat
+    
+    // MARK: - Spacing & Insets
+    /*-------------------------------------------------------------------------------*/
+    
+    /**
+     Asks the delegate for the spacing between items in a given section
+
+     - Parameter collectionView: The asking collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
+     
+     - Returns: The desired item spacing to be applied between items in the given section
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
                                  interitemSpacingForItemsInSection section: Int) -> CGFloat
+
     
     /**
-     <#Description#>
+     Asks the delegate for insets to use when laying out items in a given section
 
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter collectionViewLayout: <#collectionViewLayout description#>
-     - Parameter section: <#section description#>
+     - Parameter collectionView: The asking collection view
+     - Parameter collectionViewLayout: The layout
+     - Parameter section: A section index
      
-     - Returns: <#CGFloat return description#>
-
-    */
-    @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-                                  heightForHeaderInSection section: Int) -> CGFloat
-    
-    /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter collectionViewLayout: <#collectionViewLayout description#>
-     - Parameter section: <#section description#>
-     
-     - Returns: <#CGFloat return description#>
-
-    */
-    @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-                                  heightForFooterInSection section: Int) -> CGFloat
-    
-    /**
-     <#Description#>
-
-     - Parameter collectionView: <#collectionView description#>
-     - Parameter collectionViewLayout: <#collectionViewLayout description#>
-     - Parameter section: <#section description#>
-     
-     - Returns: <#EdgeInsets return description#>
+     - Returns: The edge insets for the section
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
@@ -112,21 +119,21 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     private weak var delegate : CollectionViewDelegateListLayout? { get{ return self.collectionView!.delegate as? CollectionViewDelegateListLayout }}
     
     
-    fileprivate var sectionIndexPaths : [[IndexPath]] = []
-    fileprivate var sectionItemAttributes : [[CollectionViewLayoutAttributes]] = []
+    private var sectionIndexPaths : [[IndexPath]] = []
+    private var sectionItemAttributes : [[CollectionViewLayoutAttributes]] = []
     
-    fileprivate var itemAttributes : [IndexPath:CollectionViewLayoutAttributes] = [:]
-    fileprivate var headersAttributes : [Int:CollectionViewLayoutAttributes] = [:]
-    fileprivate var footersAttributes : [Int:CollectionViewLayoutAttributes] = [:]
+    private var itemAttributes : [IndexPath:CollectionViewLayoutAttributes] = [:]
+    private var headersAttributes : [Int:CollectionViewLayoutAttributes] = [:]
+    private var footersAttributes : [Int:CollectionViewLayoutAttributes] = [:]
     
-    fileprivate var sectionFrames : [CGRect] = []
-    fileprivate var sectionContentFrames : [CGRect] = []
+    private var sectionFrames : [CGRect] = []
+    private var sectionContentFrames : [CGRect] = []
     
     override public init() {
         super.init()
     }
     
-    fileprivate var _cvWidth : CGFloat = 0
+    private var _cvWidth : CGFloat = 0
     override open func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
         defer { self._cvWidth = newBounds.size.width }
         return _cvWidth != newBounds.size.width

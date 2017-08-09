@@ -23,7 +23,7 @@
         <a class="header-link" href="../index.html">
            Docs
         </a>
-         (59% documented)
+         (67% documented)
       </p>
     
       <p class="header-col--secondary">
@@ -72,7 +72,13 @@
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:OC14CollectionView24CollectionViewFlowLayout12RowTransform">– RowTransform</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
@@ -93,7 +99,7 @@
                 <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes.html#/s:C14CollectionView20FetchedSetController">FetchedSetController</a>
+                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
@@ -130,22 +136,13 @@
             <a class="nav-group-name-link" href="../Extensions.html">Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Sa">Array</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps10Collection">Collection</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Si">Int</a>
+                <a class="nav-group-task-link" href="../Extensions/NSNumber.html">NSNumber</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:Ps8Sequence">Sequence</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions.html#/s:SS">String</a>
+                <a class="nav-group-task-link" href="../Extensions/NSView.html">NSView</a>
               </li>
             </ul>
           </li>
@@ -163,6 +160,9 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
@@ -230,6 +230,13 @@
         <section class="section">
           <div class="section-content">
             <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Element%20Size"></a>
+                <a name="//apple_ref/swift/Section/Element Size" class="dashAnchor"></a>
+                <a href="#/Element%20Size">
+                  <h3 class="section-name">Element Size</h3>
+                </a>
+              </div>
               <ul class="item-container">
                 <li class="item">
                   <div>
@@ -252,8 +259,7 @@
                       </div>
                       <h4>Default Implementation</h4>
                       <div class="default_impl abstract">
-                        <p>Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none</p>
-
+                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -276,7 +282,6 @@
                               <td>
                                 <div>
                                   <p>The collection view requesting the information</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -289,7 +294,6 @@
                               <td>
                                 <div>
                                   <p>The layout</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -302,7 +306,6 @@
                               <td>
                                 <div>
                                   <p>The index path of the item to style</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -312,7 +315,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>A style to apply to the item</p>
-
                       </div>
                     </section>
                   </div>
@@ -340,8 +342,7 @@
                       </div>
                       <h4>Default Implementation</h4>
                       <div class="default_impl abstract">
-                        <p>Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none</p>
-
+                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -364,7 +365,6 @@
                               <td>
                                 <div>
                                   <p>The collection view requesting the information</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -377,7 +377,6 @@
                               <td>
                                 <div>
                                   <p>The layout</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -390,7 +389,6 @@
                               <td>
                                 <div>
                                   <p>The section affected by this height</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -400,7 +398,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>The height to apply to the header view in the specified section</p>
-
                       </div>
                     </section>
                   </div>
@@ -428,8 +425,7 @@
                       </div>
                       <h4>Default Implementation</h4>
                       <div class="default_impl abstract">
-                        <p>Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none</p>
-
+                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -452,7 +448,6 @@
                               <td>
                                 <div>
                                   <p>The collection view requesting the information</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -465,7 +460,6 @@
                               <td>
                                 <div>
                                   <p>The layout</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -478,7 +472,6 @@
                               <td>
                                 <div>
                                   <p>The section affected by this height</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -488,11 +481,21 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>The height to apply to the header view in the specified section</p>
-
                       </div>
                     </section>
                   </div>
                 </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Insets%20&amp;%20Transforms"></a>
+                <a name="//apple_ref/swift/Section/Insets &amp; Transforms" class="dashAnchor"></a>
+                <a href="#/Insets%20&amp;%20Transforms">
+                  <h3 class="section-name">Insets &amp; Transforms</h3>
+                </a>
+              </div>
+              <ul class="item-container">
                 <li class="item">
                   <div>
                     <code>
@@ -514,8 +517,7 @@
                       </div>
                       <h4>Default Implementation</h4>
                       <div class="default_impl abstract">
-                        <p>Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none</p>
-
+                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -538,7 +540,6 @@
                               <td>
                                 <div>
                                   <p>The collection view requesting the information</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -551,7 +552,6 @@
                               <td>
                                 <div>
                                   <p>The layout</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -564,7 +564,6 @@
                               <td>
                                 <div>
                                   <p>Thhe section that the return value will be applied to</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -574,7 +573,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>Edge insets for the specified section</p>
-
                       </div>
                     </section>
                   </div>
@@ -600,8 +598,7 @@
                       </div>
                       <h4>Default Implementation</h4>
                       <div class="default_impl abstract">
-                        <p>Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none</p>
-
+                        
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
@@ -624,7 +621,6 @@
                               <td>
                                 <div>
                                   <p>The collection requesting the information</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -637,7 +633,6 @@
                               <td>
                                 <div>
                                   <p>The layout</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -650,7 +645,6 @@
                               <td>
                                 <div>
                                   <p>The section to transform</p>
-
                                 </div>
                               </td>
                             </tr>
@@ -660,7 +654,6 @@
                       <div>
                         <h4>Return Value</h4>
                         <p>The type of row transform to apply</p>
-
                       </div>
                     </section>
                   </div>
@@ -673,8 +666,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-02)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.7.4</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes</a>. All rights reserved. (Last updated: 2017-08-08)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

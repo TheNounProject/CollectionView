@@ -1,4 +1,4 @@
-# CollectionView
+![CollectionView](./img/header.png "Collection View")
 
 An easy to use, highly customizable replacement for NSCollectionView.
 

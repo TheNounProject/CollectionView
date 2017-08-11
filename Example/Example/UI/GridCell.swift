@@ -9,7 +9,7 @@
 import Foundation
 import CollectionView
 
-class GridCell : PreviewCell {
+class GridCell : CollectionViewPreviewCell {
     
     
     

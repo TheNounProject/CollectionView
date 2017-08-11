@@ -559,8 +559,8 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath) {
         
         
-        
     }
+    
     
     
     var _rightClicked : IndexPath?

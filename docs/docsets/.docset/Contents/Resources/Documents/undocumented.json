@@ -548,56 +548,56 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewColumnLayout.swift",
-      "line": 136,
+      "line": 146,
       "symbol": "CollectionViewLayoutElementKind.SectionHeader",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewColumnLayout.swift",
-      "line": 137,
+      "line": 147,
       "symbol": "CollectionViewLayoutElementKind.SectionFooter",
       "symbol_kind": "source.lang.swift.decl.var.static",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewColumnLayout.swift",
-      "line": 155,
+      "line": 165,
       "symbol": "CollectionViewColumnLayout.ItemRenderDirection.shortestFirst",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewColumnLayout.swift",
-      "line": 156,
+      "line": 166,
       "symbol": "CollectionViewColumnLayout.ItemRenderDirection.leftToRight",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewColumnLayout.swift",
-      "line": 157,
+      "line": 167,
       "symbol": "CollectionViewColumnLayout.ItemRenderDirection.rightToLeft",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewColumnLayout.swift",
-      "line": 190,
+      "line": 200,
       "symbol": "CollectionViewColumnLayout.numberOfColumnsInSection(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewColumnLayout.swift",
-      "line": 227,
+      "line": 237,
       "symbol": "CollectionViewColumnLayout.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewColumnLayout.swift",
-      "line": 521,
+      "line": 531,
       "symbol": "CollectionViewColumnLayout.indexPathsForItems(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -632,70 +632,63 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 129,
-      "symbol": "CollectionViewFlowLayout.interpanSpacing",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 130,
-      "symbol": "CollectionViewFlowLayout.spanGroupSpacingBefore",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 131,
-      "symbol": "CollectionViewFlowLayout.spanGroupSpacingAfter",
-      "symbol_kind": "source.lang.swift.decl.var.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 133,
+      "line": 154,
       "symbol": "CollectionViewFlowLayout.defaultItemStyle",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 134,
+      "line": 155,
       "symbol": "CollectionViewFlowLayout.defaultFooterHeight",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 135,
+      "line": 156,
       "symbol": "CollectionViewFlowLayout.defaultHeaderHeight",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 136,
+      "line": 157,
       "symbol": "CollectionViewFlowLayout.defaultRowTransform",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 137,
+      "line": 158,
       "symbol": "CollectionViewFlowLayout.defaultSectionInsets",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 140,
-      "symbol": "CollectionViewFlowLayout.RowTransform",
-      "symbol_kind": "source.lang.swift.decl.enum",
+      "line": 179,
+      "symbol": "CollectionViewFlowLayout.RowTransform.none",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
-      "line": 516,
+      "line": 180,
+      "symbol": "CollectionViewFlowLayout.RowTransform.center",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
+      "line": 181,
+      "symbol": "CollectionViewFlowLayout.RowTransform.fill",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewFlowLayout.swift",
+      "line": 549,
       "symbol": "CollectionViewFlowLayout.indexPathsForItems(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -751,14 +744,14 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewListLayout.swift",
-      "line": 125,
+      "line": 132,
       "symbol": "CollectionViewListLayout.init()",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CollectionViewListLayout.swift",
-      "line": 262,
+      "line": 269,
       "symbol": "CollectionViewListLayout.indexPathsForItems(in:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"

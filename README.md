@@ -9,25 +9,28 @@ Prior to macOS 10.11, NSCollectionView had little in common with it's younger co
 
 ## How
 
-Add a NSScrollView to your view or view controller and set the class to CollectionView using the identity inspector.
+### Docs
+Learn about all the classes of CollectionView in the [documentation](https://thenounproject.github.io/CollectionView/)
 
-If you aren't using IB/Storyboards, just initialize a CollectionView() and add it to your view
 
 ### Adding to your project
 CollectionView isn't currently provided through any package managers. 
 
 Clone or donwload the repo and add it to your project by dragging the CollectionView xCode project to your project.
 
-### Docs
-Learn about all the classes of CollectionView in the [documentation](https://thenounproject.github.io/CollectionView/)
 
-### Preparing the CV
-In your view/controller class:
 
+### Create a CollectionView
+
+![CollectionView](./img/demo_setup.gif "Collection View")
+
+* Add a NSScrollView to your interface, set the class and make an outlet
 * Create a collection view layout and apply it to the collection view.
 * Register reusable views
 * Set the data source and delegate
 * Implement the required data source functions
+
+Which looks like:
 
 ```
 class MyController : NSViewController, CollectionViewDataSource, CollectionViewDelegate {
@@ -41,27 +44,16 @@ class MyController : NSViewController, CollectionViewDataSource, CollectionViewD
 		collectionView.dataSource = self
 	   	collectionView.delegate = self
 	   	
-	   	// For nibs
-	   	let nib = NSNib(nibNamed: "GridCell", bundle: nil)!
-	   	collectionView.register(nib: nib, forCellWithReuseIdentifier: "GridCell")
+	   	// Using a nib
+	   	let nib = NSNib(nibNamed: "UserCell", bundle: nil)!
+	   	collectionView.register(nib: nib, forCellWithReuseIdentifier: "UserCell")
 	   	
-	   	//OR If the cell is programatic
-	   	collectionView.register(class: GridCell.self, forCellWithReuseIdentifier: "GridCell")
+	   	//OR
+	   	collectionView.register(class: UserCell.self, forCellWithReuseIdentifier: "UserCell")
 	   	
 	   	collectionView.reloadDate()
 	}
 }
-```
-
-
-### Implementing the Data Source
-
-The collection view is provided data from its data source. Only a few functions are required to get started. 
-
-See the [data sourcce documentation](https://thenounproject.github.io/CollectionView/Protocols/CollectionViewDataSource.html) for more 
-
-```
-Somewhere in MyController ... 
 
 func numberOfSections(in collectionView: CollectionView) -> Int {
     return 5
@@ -73,11 +65,10 @@ func collectionView(_ collectionView: CollectionView, numberOfItemsInSection sec
 
 func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
 
-	let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GridCell", for: indexPath) as! GridCell
+	let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UserCell", for: indexPath) as! UserCell
 	... setup the cell as needed
 	return cell
-}
-    
+}   
 
 ```
 

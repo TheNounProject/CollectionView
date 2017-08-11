@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>CollectionViewPreviewController Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset="utf-8">
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+
+    <a name="//apple_ref/swift/Class/CollectionViewPreviewController" class="dashAnchor"></a>
+
+    <a title="CollectionViewPreviewController Class Reference"></a>
+
+    <header class="header">
+      <p class="header-col header-col--primary">
+        <a class="header-link" href="../index.html">
+          CollectionView Docs
+        </a>
+        
+      </p>
+    
+      <p class="header-col--secondary">
+        <form role="search" action="../search.json">
+          <input type="text" placeholder="Search documentation" data-typeahead>
+        </form>
+      </p>
+    
+        <p class="header-col header-col--secondary">
+          <a class="header-link" href="https://github.com/TheNounProject/CollectionView">
+            <img class="header-icon" src="../img/gh.png"/>
+            View on GitHub
+          </a>
+        </p>
+    
+    </header>
+
+    <p class="breadcrumbs">
+      <a class="breadcrumb" href="../index.html">CollectionView Reference</a>
+      <img class="carat" src="../img/carat.png" />
+      CollectionViewPreviewController Class Reference
+    </p>
+
+    <div class="content-wrapper">
+      <nav class="navigation">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionReusableView.html">CollectionReusableView</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionView.html">CollectionView</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionView.html#/s:OC14CollectionView14CollectionView13SelectionMode">– SelectionMode</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewCell.html">CollectionViewCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewColumnLayout.html#/s:OC14CollectionView26CollectionViewColumnLayout19ItemRenderDirection">– ItemRenderDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewController.html">CollectionViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:OC14CollectionView24CollectionViewFlowLayout12RowTransform">– RowTransform</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewPreviewCell.html">CollectionViewPreviewCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/CollectionViewPreviewController.html">CollectionViewPreviewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/RelationalResultsController.html">RelationalResultsController</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums.html#/s:O14CollectionView25CollectionElementCategory">CollectionElementCategory</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums.html#/s:O14CollectionView23CollectionViewDirection">CollectionViewDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums.html#/s:O14CollectionView29CollectionViewScrollDirection">CollectionViewScrollDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums.html#/s:O14CollectionView28CollectionViewScrollPosition">CollectionViewScrollPosition</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums.html#/s:O14CollectionView27ResultsControllerChangeType">ResultsControllerChangeType</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Enums.html#/s:O14CollectionView22ResultsControllerError">ResultsControllerError</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Extensions/NSNumber.html">NSNumber</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Extensions/NSView.html">NSView</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewPreviewControllerDelegate.html">CollectionViewPreviewControllerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols.html#/s:P14CollectionView30CustomDisplayStringConvertible">CustomDisplayStringConvertible</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/ResultsController.html">ResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Protocols/ResultsControllerSectionInfo.html">ResultsControllerSectionInfo</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Structs.html">Structs</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Structs.html#/s:V14CollectionView31CollectionViewLayoutElementKind">CollectionViewLayoutElementKind</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Structs/ResultsChangeSet.html">ResultsChangeSet</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="../Typealiases.html">Typealiases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Typealiases.html#/s:14CollectionView19AnimationCompletion">AnimationCompletion</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+
+        <section class="section">
+          <div class="section-content">
+            <h1>CollectionViewPreviewController</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionViewPreviewController</span> <span class="p">:</span> <span class="kt"><a href="../Classes/CollectionViewController.html">CollectionViewController</a></span><span class="p">,</span> <span class="kt">CollectionViewDelegatePreviewLayout</span></code></pre>
+
+                </div>
+              </div>
+            <p>An easy to use CollectionViewController that transitions from a source collection view.</p>
+<h3 id='presentation-amp-data' class='heading'>Presentation &amp; Data</h3>
+
+<p>The controller is presented from a source collection view. The data source of the source collection view is used to load data for the preview collection view. The preview controller will act as a proxy between the preview collection view and your source colleciton views data source.</p>
+<div class="aside aside-important">
+    <p class="aside-title">Important</p>
+    The data source for the collection view you pass to present(in:) must conform to CollectionViewPreviewControllerDelegate
+
+</div>
+<h3 id='transitions' class='heading'>Transitions</h3>
+
+<p>The preview controller manages the transitions to and from the source and allows the preview cell to customize the transition.</p>
+
+<p>Although the The preview controller will accept any cell class, supporting transitions requires a small amount of additional setup.</p>
+
+<p>The simplest way to support transitions is to create your subclass from CollectionViewPreviewCell. CollectionViewPreviewCell will animate the frame of the cell from the source and back.</p>
+
+<p>For custom transitions, if you subclass CollectionViewPreviewCell you can simply override the the transition methods, otherwise conform your CollectionViewCell subclass and implement the methods yourself. See CollectionViewPreviewTransitionCell for more about how to implement custom transitions</p>
+
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-content">
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Delegate"></a>
+                <a name="//apple_ref/swift/Section/Delegate" class="dashAnchor"></a>
+                <a href="#/Delegate">
+                  <h3 class="section-name">Delegate</h3>
+                </a>
+              </div>
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView31CollectionViewPreviewController8delegateXwGSqPS_39CollectionViewPreviewControllerDelegate__"></a>
+                    <a name="//apple_ref/swift/Property/delegate" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView31CollectionViewPreviewController8delegateXwGSqPS_39CollectionViewPreviewControllerDelegate__">delegate</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A delegate to provide data</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">delegate</span> <span class="p">:</span> <span class="kt"><a href="../Protocols/CollectionViewPreviewControllerDelegate.html">CollectionViewPreviewControllerDelegate</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Styling"></a>
+                <a name="//apple_ref/swift/Section/Styling" class="dashAnchor"></a>
+                <a href="#/Styling">
+                  <h3 class="section-name">Styling</h3>
+                </a>
+              </div>
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView31CollectionViewPreviewController15backgroundColorCSo7NSColor"></a>
+                    <a name="//apple_ref/swift/Property/backgroundColor" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView31CollectionViewPreviewController15backgroundColorCSo7NSColor">backgroundColor</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The background color of the view when the items are displayed</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">var</span> <span class="nv">backgroundColor</span><span class="p">:</span> <span class="kt">NSColor</span> <span class="o">=</span> <span class="kt">NSColor</span><span class="o">.</span><span class="n">white</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC14CollectionView31CollectionViewPreviewController11viewDidLoadFT_T_"></a>
+                    <a name="//apple_ref/swift/Method/viewDidLoad()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView31CollectionViewPreviewController11viewDidLoadFT_T_">viewDidLoad()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>CollectionViewDelegatePreviewLayout</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Source%20&amp;%20Data"></a>
+                <a name="//apple_ref/swift/Section/Source &amp; Data" class="dashAnchor"></a>
+                <a href="#/Source%20&amp;%20Data">
+                  <h3 class="section-name">Source &amp; Data</h3>
+                </a>
+              </div>
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView31CollectionViewPreviewController20sourceCollectionViewGSqCS_14CollectionView_"></a>
+                    <a name="//apple_ref/swift/Property/sourceCollectionView" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView31CollectionViewPreviewController20sourceCollectionViewGSqCS_14CollectionView_">sourceCollectionView</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The  collection view the receiver was presented from</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">private(set)</span> <span class="kd">public</span> <span class="k">var</span> <span class="nv">sourceCollectionView</span> <span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView31CollectionViewPreviewController15sourceIndexPathGSqV10Foundation9IndexPath_"></a>
+                    <a name="//apple_ref/swift/Property/sourceIndexPath" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView31CollectionViewPreviewController15sourceIndexPathGSqV10Foundation9IndexPath_">sourceIndexPath</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The index path the receiver was presented from</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">private(set)</span> <span class="kd">public</span> <span class="k">var</span> <span class="nv">sourceIndexPath</span> <span class="p">:</span> <span class="kt">IndexPath</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView31CollectionViewPreviewController16currentIndexPathGSqV10Foundation9IndexPath_"></a>
+                    <a name="//apple_ref/swift/Property/currentIndexPath" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView31CollectionViewPreviewController16currentIndexPathGSqV10Foundation9IndexPath_">currentIndexPath</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The index path for the currently displayed item</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">currentIndexPath</span> <span class="p">:</span> <span class="kt">IndexPath</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Transitions"></a>
+                <a name="//apple_ref/swift/Section/Transitions" class="dashAnchor"></a>
+                <a href="#/Transitions">
+                  <h3 class="section-name">Transitions</h3>
+                </a>
+              </div>
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC14CollectionView31CollectionViewPreviewController18transitionDurationSd"></a>
+                    <a name="//apple_ref/swift/Property/transitionDuration" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC14CollectionView31CollectionViewPreviewController18transitionDurationSd">transitionDuration</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The duration of present/dismiss transitions</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="k">var</span> <span class="nv">transitionDuration</span> <span class="p">:</span> <span class="kt">TimeInterval</span> <span class="o">=</span> <span class="mf">0.25</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC14CollectionView31CollectionViewPreviewController7presentFT2inCSo16NSViewController6sourceCS_14CollectionView9indexPathV10Foundation9IndexPath10completionGSqFSbT___T_"></a>
+                    <a name="//apple_ref/swift/Method/present(in:source:indexPath:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView31CollectionViewPreviewController7presentFT2inCSo16NSViewController6sourceCS_14CollectionView9indexPathV10Foundation9IndexPath10completionGSqFSbT___T_">present(in:source:indexPath:completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Present the preview controller, transitioning from an item at indexPath in the source collectionView</p>
+
+<p><strong>Data Source</strong></p>
+
+<p>The DataSource of the preview collection view will the same as the provided source collection view.</p>
+
+<p><strong>Excluding items from preview</strong></p>
+
+<p>Because the preview collection view must share a data source with it&rsquo;s source, it can be useful to keep some items displayed in the source from being previewed. See <code>collectionViewPreviewController(_:canPreviewItemAt:)</code> in CollectionViewPreviewControllerDelegate</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">present</span><span class="p">(</span><span class="k">in</span> <span class="nv">controller</span><span class="p">:</span> <span class="kt">NSViewController</span><span class="p">,</span> <span class="n">source</span> <span class="nv">sourceCollectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">,</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:14CollectionView19AnimationCompletion">AnimationCompletion</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>controller</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The ViewController to present in</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>sourceCollectionView</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A collectionView to transition from</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>indexPath</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The index path of the item to transition with</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A block to call when the transition is complete</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC14CollectionView31CollectionViewPreviewController7dismissFT8animatedSb10completionGSqFSbT___T_"></a>
+                    <a name="//apple_ref/swift/Method/dismiss(animated:completion:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC14CollectionView31CollectionViewPreviewController7dismissFT8animatedSb10completionGSqFSbT___T_">dismiss(animated:completion:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Dismiss the preview controller, transitioning the current item back to its source</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">dismiss</span><span class="p">(</span><span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kt"><a href="../Typealiases.html#/s:14CollectionView19AnimationCompletion">AnimationCompletion</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>animated</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>If the dismiss should be animated</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completion</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A block to call when the tranision is complete</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      </article>
+    </div>
+    <section class="footer">
+      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Wes Byrne</a>. All rights reserved. (Last updated: 2017-08-11)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.8.3</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+    </section>
+  </body>
+</div>
+</html>

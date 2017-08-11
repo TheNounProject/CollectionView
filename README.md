@@ -120,6 +120,9 @@ An example project is included in the repo and CollectionView is also used to po
 ## Contributing
 No process yet for contributing but feel free to start a conversation in issues or reach out on twitter
 
+### To do
+* Write tests (especially for results controllers and cell manupulation)
+
 ## Licence
 This project is released under the [MIT license](https://github.com/TheNounProject/CollectionView/blob/master/LICENSE).
 

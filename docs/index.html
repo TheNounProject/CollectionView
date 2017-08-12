@@ -221,35 +221,34 @@
         <section class="section">
           <div class="section-content">
             
-            <h1 id='collectionview' class='heading'>CollectionView</h1>
+            <p><img src="./img/header.png" alt="CollectionView" title="Collection View"></p>
 
 <p>An easy to use, highly customizable replacement for NSCollectionView.</p>
 <h2 id='why' class='heading'>Why</h2>
 
 <p>Prior to macOS 10.11, NSCollectionView had little in common with it&rsquo;s younger cousin on iOS (UICollectionView). Since then it has recieved some improvements but with no support on 10.10, we needed another solution.</p>
 <h2 id='how' class='heading'>How</h2>
+<h3 id='docs' class='heading'>Docs</h3>
 
-<p>Add a NSScrollView to your view or view controller and set the class to CollectionView using the identity inspector.</p>
-
-<p>If you aren&rsquo;t using IB/Storyboards, just initialize a CollectionView() and add it to your view</p>
+<p>Learn about all the classes of CollectionView in the <a href="https://thenounproject.github.io/CollectionView/">documentation</a></p>
 <h3 id='adding-to-your-project' class='heading'>Adding to your project</h3>
 
 <p>CollectionView isn&rsquo;t currently provided through any package managers. </p>
 
 <p>Clone or donwload the repo and add it to your project by dragging the CollectionView xCode project to your project.</p>
-<h3 id='docs' class='heading'>Docs</h3>
+<h3 id='create-a-collectionview' class='heading'>Create a CollectionView</h3>
 
-<p>Learn about all the classes of CollectionView in the <a href="https://thenounproject.github.io/CollectionView/">documentation</a></p>
-<h3 id='preparing-the-cv' class='heading'>Preparing the CV</h3>
-
-<p>In your view/controller class:</p>
+<p><img src="./img/demo_setup.gif" alt="CollectionView" title="Collection View"></p>
 
 <ul>
+<li>Add a NSScrollView to your interface, set the class and make an outlet</li>
 <li>Create a collection view layout and apply it to the collection view.</li>
 <li>Register reusable views</li>
 <li>Set the data source and delegate</li>
 <li>Implement the required data source functions</li>
 </ul>
+
+<p>Which looks like:</p>
 <pre class="highlight plaintext"><code>class MyController : NSViewController, CollectionViewDataSource, CollectionViewDelegate {
 
     func viewDidLoad() {
@@ -261,23 +260,16 @@
         collectionView.dataSource = self
         collectionView.delegate = self
 
-        // For nibs
-        let nib = NSNib(nibNamed: "GridCell", bundle: nil)!
-        collectionView.register(nib: nib, forCellWithReuseIdentifier: "GridCell")
+        // Using a nib
+        let nib = NSNib(nibNamed: "UserCell", bundle: nil)!
+        collectionView.register(nib: nib, forCellWithReuseIdentifier: "UserCell")
 
-        //OR If the cell is programatic
-        collectionView.register(class: GridCell.self, forCellWithReuseIdentifier: "GridCell")
+        //OR
+        collectionView.register(class: UserCell.self, forCellWithReuseIdentifier: "UserCell")
 
         collectionView.reloadDate()
     }
 }
-</code></pre>
-<h3 id='implementing-the-data-source' class='heading'>Implementing the Data Source</h3>
-
-<p>The collection view is provided data from its data source. Only a few functions are required to get started. </p>
-
-<p>See the <a href="https://thenounproject.github.io/CollectionView/Protocols/CollectionViewDataSource.html">data sourcce documentation</a> for more </p>
-<pre class="highlight plaintext"><code>Somewhere in MyController ... 
 
 func numberOfSections(in collectionView: CollectionView) -&gt; Int {
     return 5
@@ -289,11 +281,10 @@ func collectionView(_ collectionView: CollectionView, numberOfItemsInSection sec
 
 func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -&gt; CollectionViewCell {
 
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GridCell", for: indexPath) as! GridCell
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UserCell", for: indexPath) as! UserCell
     ... setup the cell as needed
     return cell
-}
-
+}   
 
 </code></pre>
 <h3 id='implementing-the-delegate' class='heading'>Implementing the Delegate</h3>

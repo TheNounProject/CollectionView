@@ -28,6 +28,7 @@ open class ScrollView : NSScrollView {
         let docView = self.documentView
         let clipView = ClipView(frame: self.contentView.frame)
         clipView.drawsBackground = self.drawsBackground
+        clipView.backgroundColor = self.backgroundColor
         self.contentView = clipView
         self.documentView = docView
     }

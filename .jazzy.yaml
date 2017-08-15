@@ -3,7 +3,7 @@ skip_undocumented: true
 clean : true
 theme : fullwidth
 min_acl : public
-author : Wes Byrne
+author : Noun Project
 readme : ./README.md
 github_url : https://github.com/TheNounProject/CollectionView
 hide_documentation_coverage : true

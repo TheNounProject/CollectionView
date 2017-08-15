@@ -1,4 +1,4 @@
-![CollectionView](./img/header.png "Collection View")
+![CollectionView](https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/header.png "Collection View")
 
 An easy to use, highly customizable replacement for NSCollectionView.
 
@@ -22,7 +22,7 @@ Clone or donwload the repo and add it to your project by dragging the Collection
 
 ### Create a CollectionView
 
-![CollectionView](./img/demo_setup.gif "Collection View")
+![CollectionView](https://github.com/TheNounProject/CollectionView/raw/master/img/demo_setup.gif "Collection View")
 
 * Add a NSScrollView to your interface, set the class and make an outlet
 * Create a collection view layout and apply it to the collection view.

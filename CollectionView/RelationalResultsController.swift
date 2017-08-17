@@ -163,7 +163,33 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
 
 
 /**
- A ResultsController that manages item and section CoreData objects independently.
+ 
+ Extending on FetchedResultsController and it's section grouping, this controller allows for sections to be created from a parent ententy.- 
+ 
+ In a FetchedResultsController (and NSFetchedResultsController) you would use sectionKeyPath to achieve the following:
+ 
+ "Things"
+    { sectionKeyPath : "Things" }
+    { sectionKeyPath : "Things" }
+ 
+ "Not Things"
+    { sectionKeyPath : "Not Things" }
+    { sectionKeyPath : "Not Things" }
+ 
+ While this is great, it does not work well for the common Parent-Child data model. In a Department - Employee model for example we woul want:
+ 
+ Sales
+    Jim
+    Samantha
+ 
+ Managment
+    Sarah
+    Howard
+ 
+ Delivery
+    <No employees>
+ 
+ In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController the sections a derived from the available properties in the fetched objects. Here though you can opt to fetch both the sections and object independently (see fetchSections`).
 */
 public class RelationalResultsController<Section: NSManagedObject, Element: NSManagedObject> : NSObject, ResultsController {
     

@@ -158,7 +158,7 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
 
 
 /**
- An item based results controller
+ This basic ResultsController fetches, manages, and updates the results of an NSFetchedRequest from a managed object context.
 */
 public class FetchedResultsController<Section: SectionRepresentable, Element: NSManagedObject> : NSObject, ResultsController {
     

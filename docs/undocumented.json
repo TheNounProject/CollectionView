@@ -1227,49 +1227,49 @@
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 206,
+      "line": 211,
       "symbol": "RelationalResultsController.init(context:request:sectionRequest:sectionKeyPath:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 444,
+      "line": 449,
       "symbol": "RelationalResultsController._object(at:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 463,
+      "line": 468,
       "symbol": "RelationalResultsController.object(forSectionAt:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 467,
+      "line": 472,
       "symbol": "RelationalResultsController._object(forSectionAt:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 474,
+      "line": 479,
       "symbol": "RelationalResultsController.indexPath(of:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 482,
+      "line": 487,
       "symbol": "RelationalResultsController.indexPath(of:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/RelationalResultsController.swift",
-      "line": 489,
+      "line": 494,
       "symbol": "RelationalResultsController.indexPathOfSection(representing:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"

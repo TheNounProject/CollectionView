@@ -231,29 +231,30 @@
             <p>Extending on FetchedResultsController and it&rsquo;s section grouping, this controller allows for sections to be created from a parent ententy.- </p>
 
 <p>In a FetchedResultsController (and NSFetchedResultsController) you would use sectionKeyPath to achieve the following:</p>
+<pre class="highlight plaintext"><code>Things
+   { sectionKeyPath : "Things" }
+   { sectionKeyPath : "Things" }
 
-<p><q>Things</q>
-   { sectionKeyPath : <q>Things</q> }
-   { sectionKeyPath : <q>Things</q> }</p>
-
-<p><q>Not Things</q>
-   { sectionKeyPath : <q>Not Things</q> }
-   { sectionKeyPath : <q>Not Things</q> }</p>
+Not Things
+   { sectionKeyPath : "Not Things" }
+   { sectionKeyPath : "Not Things" }
+</code></pre>
 
 <p>While this is great, it does not work well for the common Parent-Child data model. In a Department - Employee model for example we woul want:</p>
+<pre class="highlight plaintext"><code>Sales {}
+   Jim {}
+   Samantha {}
 
-<p>Sales
-   Jim
-   Samantha</p>
+Managment {}
+   Sarah {}
+   Howard {}
 
-<p>Managment
-   Sarah
-   Howard</p>
 
-<p>Delivery
-   <No employees></p>
+Delivery {}
+   &lt;No employees&gt;
+</code></pre>
 
-<p>In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController the sections a derived from the available properties in the fetched objects. Here though you can opt to fetch both the sections and object independently (see fetchSections`).</p>
+<p>In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController the sections a derived from the available properties in the fetched objects. Here though you can opt to fetch both the sections and object independently (see <code>fetchSections</code>).</p>
 
           </div>
         </section>

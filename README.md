@@ -109,7 +109,7 @@ An example project is included in the repo and CollectionView is also used to po
 * [Noun Project for macOS](https://thenounproject.com/for-mac/)
 
 ## Contributing
-No specific process in place yet for contributing but feel free to start a conversation in issues or reach out on [@NounProjectDev](https://twitter.com/NounProjectDev)
+No specific process in place yet for contributing but feel free to start a conversation in issues or reach out on twitter [@NounProjectDev](https://twitter.com/NounProjectDev)
 
 ### To do
 * Write tests (especially for results controllers and cell manupulation)

@@ -151,7 +151,7 @@ open class ClipView : NSClipView {
             
             super.scroll(to: newOrigin)
             // Can't remember why this is here, it may be to cleanup if needed
-            if !manualScroll {
+            if self._displayLink != nil && !manualScroll {
                 self.endScrolling()
             }
         }

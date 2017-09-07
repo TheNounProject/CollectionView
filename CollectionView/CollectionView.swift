@@ -41,7 +41,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     /// The object that acts as the delegate to the collection view
-    public weak var delegate : CollectionViewDelegate?
+    @objc public weak var delegate : CollectionViewDelegate?
     
     /// The object that provides data for the collection view
     public weak var dataSource : CollectionViewDataSource?
@@ -84,9 +84,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.hasVerticalScroller = true
         self.scrollsDynamically = true
         
-        NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.didScroll(_:)), name: NSNotification.Name.NSScrollViewDidLiveScroll, object: self)
-        NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.willBeginScroll(_:)), name: NSNotification.Name.NSScrollViewWillStartLiveScroll, object: self)
-        NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.didEndScroll(_:)), name: NSNotification.Name.NSScrollViewDidEndLiveScroll, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.didScroll(_:)), name: NSScrollView.didLiveScrollNotification, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.willBeginScroll(_:)), name: NSScrollView.willStartLiveScrollNotification, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(CollectionView.didEndScroll(_:)), name: NSScrollView.didEndLiveScrollNotification, object: self)
 
         self.addSubview(_floatingSupplementaryView, positioned: .above, relativeTo: self.clipView!)
         self._floatingSupplementaryView.wantsLayer = true
@@ -114,7 +114,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
     }
 
-    open override var scrollerStyle: NSScrollerStyle {
+    open override var scrollerStyle: NSScroller.Style {
         didSet {
 //            log.debug("Scroller Style changed")
             self.reloadLayout(false)
@@ -211,9 +211,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
     internal var _registeredSupplementaryViewKinds = Set<String>()
     private func _firstObjectOfClass(_ aClass: AnyClass, inNib: NSNib) -> NSView? {
         var foundObject: AnyObject? = nil
-        var topLevelObjects = NSArray()
-        if inNib.instantiate(withOwner: self, topLevelObjects: &topLevelObjects) {
-            for obj in topLevelObjects {
+        var topLevelObjects : NSArray?
+        
+        if inNib.instantiate(withOwner: self, topLevelObjects: &topLevelObjects), let objects = topLevelObjects {
+            for obj in objects {
                 if let o = obj as? NSView, o.isKind(of: aClass) {
                     foundObject = o
                     break
@@ -727,7 +728,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // MARK: - Scroll Handling
     /*-------------------------------------------------------------------------------*/
-    override open class func isCompatibleWithResponsiveScrolling() -> Bool { return true }
+    override open class var isCompatibleWithResponsiveScrolling: Bool { return true }
     
     public var isScrollEnabled : Bool {
         set { self.clipView?.scrollEnabled = newValue }
@@ -786,7 +787,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public private(set) var peakScrollVelocity = CGPoint.zero
     
     
-    final func didScroll(_ notification: Notification) {
+    @objc final func didScroll(_ notification: Notification) {
         let rect = _preperationRect
         self.contentDocumentView.prepareRect(rect)
         
@@ -802,7 +803,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.delegate?.collectionViewDidScroll?(self)
     }
     
-    final func willBeginScroll(_ notification: Notification) {
+    @objc final func willBeginScroll(_ notification: Notification) {
         self.isScrolling = true
         self.delegate?.collectionViewWillBeginScrolling?(self)
         self._previousOffset = self.contentVisibleRect.origin
@@ -810,14 +811,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.scrollVelocity = CGPoint.zero
     }
     
-    final func didEndScroll(_ notification: Notification) {
+    @objc final func didEndScroll(_ notification: Notification) {
         self.isScrolling = false
         
         self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
         self.scrollVelocity = CGPoint.zero
         self.peakScrollVelocity = CGPoint.zero
         
-        if trackSectionHover && NSApp.isActive, let point = self.window?.convertFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSize.zero)).origin {
+        if trackSectionHover && NSApp.isActive, let point = self.window?.convertFromScreen(NSRect(origin: NSEvent.mouseLocation, size: CGSize.zero)).origin {
             let loc = self.contentDocumentView.convert(point, from: nil)
             self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSection(at: loc))
         }
@@ -1530,7 +1531,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self.removeTrackingArea(ta)
         }
         if trackSectionHover {
-            _trackingArea = NSTrackingArea(rect: self.bounds, options: [NSTrackingAreaOptions.activeInActiveApp, NSTrackingAreaOptions.mouseEnteredAndExited, NSTrackingAreaOptions.mouseMoved], owner: self, userInfo: nil)
+            _trackingArea = NSTrackingArea(rect: self.bounds, options: [NSTrackingArea.Options.activeInActiveApp, NSTrackingArea.Options.mouseEnteredAndExited, NSTrackingArea.Options.mouseMoved], owner: self, userInfo: nil)
             self.addTrackingArea(_trackingArea!)
         }
     }
@@ -1621,7 +1622,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._deselectAllItems(true, notify: true)
         }
         
-        if theEvent.modifierFlags.contains(NSEventModifierFlags.control) {
+        if theEvent.modifierFlags.contains(NSEvent.ModifierFlags.control) {
             self.rightMouseDown(with: theEvent)
             return
         }
@@ -1635,10 +1636,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         guard ip == mouseDownIP else { return }
         
-        if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.shift) {
+        if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEvent.ModifierFlags.shift) {
             self._selectItem(at: ip, atScrollPosition: .nearest, animated: true, selectionType: .extending)
         }
-        else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEventModifierFlags.command) {
+        else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEvent.ModifierFlags.command) {
             if self._selectedIndexPaths.contains(ip) {
                 if self._selectedIndexPaths.count == 1 { return }
                 self._deselectItem(at: ip, animated: true, notifyDelegate: true)
@@ -1701,7 +1702,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             else {
                 lastEventTime = nil
             }
-            let extend = selectionMode == .multi || theEvent.modifierFlags.contains(NSEventModifierFlags.shift)
+            let extend = selectionMode == .multi || theEvent.modifierFlags.contains(NSEvent.ModifierFlags.shift)
             if theEvent.keyCode == 123 { self.moveSelectionLeft(extend) }
             else if theEvent.keyCode == 124 { self.moveSelectionRight(extend) }
             else if theEvent.keyCode == 125 { self.moveSelectionDown(extend) }
@@ -2562,7 +2563,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                             
 //                            image = NSImage(data: cell.dataWithPDF(inside: cell.bounds))
                         }
-                        let comp = NSDraggingImageComponent(key: NSDraggingImageComponentIconKey)
+                        let comp = NSDraggingImageComponent(key: NSDraggingItem.ImageComponentKey.icon)
                         comp.contents = image
                         comp.frame = CGRect(origin: CGPoint.zero, size: frame.size)
                         return [comp]
@@ -2623,7 +2624,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         invalidateAutoscroll()
         self.interactionDelegate?.collectionView?(self, dragExited: sender)
     }
-    open override func draggingEnded(_ sender: NSDraggingInfo?) {
+    open override func draggingEnded(_ sender: NSDraggingInfo) {
         self.interactionDelegate?.collectionView?(self, dragEnded: sender)
     }
     open override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
@@ -2651,7 +2652,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         autoscrollTimer = nil
     }
     
-    func autoscrollTimer(_ sender: Timer) {
+    @objc func autoscrollTimer(_ sender: Timer) {
         if let p = (sender.userInfo as? [String:Any])?["point"] as? CGPoint {
             autoScroll(to: p)
         }

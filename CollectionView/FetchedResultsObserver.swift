@@ -25,7 +25,7 @@ fileprivate struct RefKeyTable<Key:Hashable & AnyObject, Value:Any> : Sequence, 
         }
         
         var hashValue: Int {
-            return keyHash ?? nilKeyHash
+            return keyHash
         }
         static func ==(lhs: KeyRef, rhs: KeyRef) -> Bool {
             return lhs.key == rhs.key

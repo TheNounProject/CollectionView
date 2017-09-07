@@ -495,7 +495,7 @@ final public class CollectionViewDocumentView : NSView {
             completion?(!animated)
         }
     }
-    func enableAnimations() {
+    @objc func enableAnimations() {
         animating = false
         disableAnimationTimer?.invalidate()
         disableAnimationTimer = nil

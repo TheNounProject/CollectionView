@@ -181,7 +181,7 @@ public class FetchedSetController : NSObject {
     /// If change processing should occur within a perform or performAndWait block on the context
     public var wait: Bool = true
     
-    func handleChangeNotification(_ notification: Notification) {
+    @objc func handleChangeNotification(_ notification: Notification) {
         guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
             return
         }

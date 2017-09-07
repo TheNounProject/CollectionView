@@ -649,7 +649,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     
-    func handleChangeNotification(_ notification: Notification) {
+    @objc func handleChangeNotification(_ notification: Notification) {
         
         guard let moc = self._managedObjectContext, let delegate = self.delegate, self._fetched else {
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")

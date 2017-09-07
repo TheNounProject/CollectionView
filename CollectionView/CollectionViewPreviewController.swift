@@ -70,7 +70,7 @@ class BackgroundView : NSView {
         if !self.isHidden, let c = backgroundColor {
             NSGraphicsContext.saveGraphicsState()
             c.set()
-            NSRectFill(dirtyRect)
+            dirtyRect.fill()
             NSGraphicsContext.restoreGraphicsState()
         }
     }
@@ -122,7 +122,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     }
     
     public init() {
-        super.init(nibName: nil, bundle: nil)!
+        super.init(nibName: nil, bundle: nil)
     }
     
     required public init?(coder: NSCoder) {

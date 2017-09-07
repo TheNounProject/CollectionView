@@ -76,8 +76,8 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
         switch self.operation {
         case let .move(origin):
             return "Edit: Move \(origin) to \(self.index)"
-        case let .substitution(target):
-            return "Edit: Replace item at \(self.index) - Target: \(target)"
+        case .substitution:
+            return "Edit: Replace item at \(self.index)"
         case .insertion:
             return "Edit: Insert at \(self.index)"
         case .deletion:
@@ -702,7 +702,7 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
      - parameter edits: An array of `Edit` elements to be reduced.
      - returns: An array of `Edit` elements.
      */
-    private static func reducedEdits<T: Equatable>(_ edits: [Edit<T>]) -> [Edit<T>] {
+    private static func reducedEdits<T>(_ edits: [Edit<T>]) -> [Edit<T>] {
         return edits.reduce([Edit<T>]()) { (edits, edit) in
             var reducedEdits = edits
             if let (move, index) = move(from: edit, in: reducedEdits), case let .move(origin) = move.operation {
@@ -735,7 +735,7 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
  
  - returns: An optional tuple consisting of the `.move` `Edit` that corresponds to the given deletion or insertion and an opposite match in `edits`, and the index of the match – if one was found.
  */
-private func move<T: Equatable>(from deletionOrInsertion: Edit<T>, `in` edits: [Edit<T>]) -> (move: Edit<T>, index: Int)? {
+private func move<T>(from deletionOrInsertion: Edit<T>, `in` edits: [Edit<T>]) -> (move: Edit<T>, index: Int)? {
     
     switch deletionOrInsertion.operation {
         

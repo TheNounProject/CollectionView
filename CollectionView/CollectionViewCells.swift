@@ -20,12 +20,12 @@ open class CollectionReusableView : NSView {
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         self.wantsLayer = true
-        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.onSetNeedsDisplay
+        self.layerContentsRedrawPolicy = NSView.LayerContentsRedrawPolicy.onSetNeedsDisplay
     }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.wantsLayer = true
-        self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawPolicy.onSetNeedsDisplay
+        self.layerContentsRedrawPolicy = NSView.LayerContentsRedrawPolicy.onSetNeedsDisplay
     }
     
     
@@ -114,7 +114,7 @@ open class CollectionReusableView : NSView {
         if let c = self.backgroundColor {
             NSGraphicsContext.saveGraphicsState()
             c.setFill()
-            NSRectFill(dirtyRect)
+            dirtyRect.fill()
             NSGraphicsContext.restoreGraphicsState()
         }
         super.draw(dirtyRect)
@@ -126,14 +126,14 @@ open class CollectionReusableView : NSView {
     /*-------------------------------------------------------------------------------*/
     
     fileprivate var wantsTracking = false
-    open var trackingOptions = [NSTrackingAreaOptions.mouseEnteredAndExited, NSTrackingAreaOptions.activeInKeyWindow, .inVisibleRect, .enabledDuringMouseDrag]
+    open var trackingOptions = [NSTrackingArea.Options.mouseEnteredAndExited, NSTrackingArea.Options.activeInKeyWindow, NSTrackingArea.Options.inVisibleRect, NSTrackingArea.Options.enabledDuringMouseDrag]
     var _trackingArea : NSTrackingArea?
     open var trackMouseMoved : Bool = false {
         didSet {
             if trackMouseMoved == oldValue { return }
-            let idx = trackingOptions.index(of: .mouseMoved)
+            let idx = trackingOptions.index(of: NSTrackingArea.Options.mouseMoved)
             if trackMouseMoved && idx == nil {
-                trackingOptions.append(.mouseMoved)
+                trackingOptions.append(NSTrackingArea.Options.mouseMoved)
             }
             else if !trackMouseMoved, let i = idx {
                 trackingOptions.remove(at: i)
@@ -159,7 +159,7 @@ open class CollectionReusableView : NSView {
         super.updateTrackingAreas()
         if let ta = self._trackingArea { self.removeTrackingArea(ta) }
         if self.wantsTracking == false { return }
-        _trackingArea = NSTrackingArea(rect: self.bounds, options: NSTrackingAreaOptions(trackingOptions), owner: self, userInfo: nil)
+        _trackingArea = NSTrackingArea(rect: self.bounds, options: NSTrackingArea.Options(trackingOptions), owner: self, userInfo: nil)
         self.addTrackingArea(_trackingArea!)
     }
     
@@ -233,13 +233,13 @@ open class CollectionViewCell : CollectionReusableView {
         
         // Validate self and the event
         guard let cv = self.collectionView, let ip = self.attributes?.indexPath else { return }
-        guard theEvent.type == NSEventType.mouseEntered && (theEvent.trackingArea?.owner as? CollectionViewCell) == self else { return }
+        guard theEvent.type == NSEvent.EventType.mouseEntered && (theEvent.trackingArea?.owner as? CollectionViewCell) == self else { return }
         
         // Make sure the event is inside self
         
         guard self.highlighted == false else { return }
         guard let window = self.window else { return }
-        let mLoc = window.convertFromScreen(NSRect(origin: NSEvent.mouseLocation(), size: CGSize.zero)).origin
+        let mLoc = window.convertFromScreen(NSRect(origin: NSEvent.mouseLocation, size: CGSize.zero)).origin
         if !self.bounds.contains(self.convert(mLoc, from: nil)) { return }
         
         // Ignore the event if an interaction enabled view is over this cell
@@ -254,7 +254,7 @@ open class CollectionViewCell : CollectionReusableView {
     override open func mouseExited(with theEvent: NSEvent) {
         super.mouseExited(with: theEvent)
         guard self.highlighted == true else { return }
-        guard theEvent.type == NSEventType.mouseExited && (theEvent.trackingArea?.owner as? CollectionViewCell) == self else { return }
+        guard theEvent.type == NSEvent.EventType.mouseExited && (theEvent.trackingArea?.owner as? CollectionViewCell) == self else { return }
         self.setHighlighted(false, animated: true)
     }
     

@@ -67,7 +67,7 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
      - Parameter insets: The insets to apply to the collection view
      
      */
-    open func adjustContentInsets(_ insets: EdgeInsets) {
+    open func adjustContentInsets(_ insets: NSEdgeInsets) {
         
         self.adjustConstraint(.top, value: insets.top)
         self.adjustConstraint(.left, value: insets.left)
@@ -84,7 +84,7 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
      - Parameter value: The constant to apply to the constraint
      
      */
-    open func adjustConstraint(_ attribute: NSLayoutAttribute, value: CGFloat?) {
+    open func adjustConstraint(_ attribute: NSLayoutConstraint.Attribute, value: CGFloat?) {
         for constraint in self.view.constraints {
             if (constraint.secondAttribute == attribute && (constraint.secondItem as? CollectionView) == collectionView)
                 || (constraint.firstAttribute == attribute && (constraint.firstItem as? CollectionView) == collectionView) {

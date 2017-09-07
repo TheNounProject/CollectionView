@@ -65,11 +65,11 @@ open class ClipView : NSClipView {
     
     override open func viewWillMove(toWindow newWindow: NSWindow?) {
         if (self.window != nil) {
-            NotificationCenter.default.removeObserver(self, name: NSNotification.Name.NSWindowDidChangeScreen, object: self.window)
+            NotificationCenter.default.removeObserver(self, name: NSWindow.didChangeScreenNotification, object: self.window)
         }
         super.viewWillMove(toWindow: newWindow)
         if (newWindow != nil) {
-            NotificationCenter.default.addObserver(self, selector: #selector(ClipView.updateCVDisplay(_:)), name: NSNotification.Name.NSWindowDidChangeScreen, object: newWindow)
+            NotificationCenter.default.addObserver(self, selector: #selector(ClipView.updateCVDisplay(_:)), name: NSWindow.didChangeScreenNotification, object: newWindow)
         }
     }
     
@@ -92,13 +92,13 @@ open class ClipView : NSClipView {
     
 
     
-    func updateCVDisplay(_ note: Notification) {
+    @objc func updateCVDisplay(_ note: Notification) {
         
         guard self._displayLink != nil else { return }
         
         if let screen = self.window?.screen {
             let screenDictionary = screen.deviceDescription
-            let screenID = screenDictionary["NSScreenNumber"] as! NSNumber
+            let screenID = screenDictionary[NSDeviceDescriptionKey("NSScreenNumber")] as! NSNumber
             let displayID = screenID.uint32Value
             CVDisplayLinkSetCurrentCGDisplay(displayLink, displayID)
         }
@@ -189,7 +189,7 @@ open class ClipView : NSClipView {
 //            }
             // Make this call so that we can force an update of the scroller positions.
             self.scrollView?.reflectScrolledClipView(self)
-            NotificationCenter.default.post(name: Notification.Name.NSScrollViewDidLiveScroll, object: self.scrollView)
+            NotificationCenter.default.post(name: NSScrollView.didLiveScrollNotification, object: self.scrollView)
         }
         
           //.postNotificationName(NSScrollViewDidLiveScrollNotification, object: self, userInfo: nil)

@@ -103,7 +103,7 @@ struct ItemChangeSet {
         case .delete:
 //            print("Delete item at \(source!)")
             deleted.insert(source!)
-        case .update(_):
+        case .update:
 //            print("Update item at \(source!)")
             updated.insert(source!)
         case let .move(newIndexPath):

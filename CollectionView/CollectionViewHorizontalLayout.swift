@@ -39,7 +39,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         return self.collectionView?.delegate as? CollectionViewDelegateHorizontalListLayout
     }
     
-    open var sectionInsets = EdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+    open var sectionInsets = NSEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     open var itemWidth: CGFloat = 100
     open var itemSpacing: CGFloat = 8
     

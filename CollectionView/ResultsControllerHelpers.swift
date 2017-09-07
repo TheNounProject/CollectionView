@@ -16,7 +16,7 @@ extension NSManagedObject {
         if self.objectID.isTemporaryID {
             let from = -3
             let idx = str.index(str.endIndex, offsetBy: from)
-            return str.substring(from: idx)
+            return String(str[idx...]) // .substring(from: idx)
         }
         return self.objectID.uriRepresentation().lastPathComponent
     }

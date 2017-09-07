@@ -43,7 +43,7 @@ import Foundation
      
      */
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-                                        insetForSectionAt section: NSInteger) -> EdgeInsets
+                                        insetForSectionAt section: NSInteger) -> NSEdgeInsets
     
     
     // Between to items in the same column
@@ -191,7 +191,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     open var insetSupplementaryViews : Bool = false { didSet{ invalidate() }}
 
     /// Default insets for all sections
-    open var sectionInset : EdgeInsets = EdgeInsets(top: 8, left: 8, bottom: 8, right: 8) { didSet{ invalidate() }}
+    open var sectionInset : NSEdgeInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8) { didSet{ invalidate() }}
     
     // MARK: - Render Options
     /// A hint as to how to render items when deciding which column to place them in
@@ -241,7 +241,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     
     func itemWidthInSectionAtIndex (_ section : NSInteger) -> CGFloat {
         let colCount = self.delegate?.collectionView?(self.collectionView!, layout: self, numberOfColumnsInSection: section) ?? self.columnCount
-        var insets : EdgeInsets
+        var insets : NSEdgeInsets
         if let sectionInsets = self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAt: section){
             insets = sectionInsets
         }else{
@@ -284,7 +284,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
             */
 //            let colCount = self.columnsInSection(section)
-            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(_collectionView, layout: self, insetForSectionAt: section) ?? self.sectionInset
+            let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(_collectionView, layout: self, insetForSectionAt: section) ?? self.sectionInset
             let itemSpacing : CGFloat = self.delegate?.collectionView?(_collectionView, layout: self, interitemSpacingForSectionAt: section) ?? self.interitemSpacing
             let colSpacing = self.delegate?.collectionview?(_collectionView, layout: self, columnSpacingForSectionAt: section) ?? self.columnSpacing
             

@@ -85,7 +85,7 @@ import Foundation
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
-                                  insetForSectionAt section: Int) -> EdgeInsets
+                                  insetForSectionAt section: Int) -> NSEdgeInsets
 
     
 }
@@ -112,7 +112,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     public final var insetSupplementaryViews : Bool = false { didSet{ invalidate() }}
     
     /// Default insets for all sections
-    public final var sectionInsets : EdgeInsets = NSEdgeInsetsZero { didSet{ invalidate() }}
+    public final var sectionInsets : NSEdgeInsets = NSEdgeInsetsZero { didSet{ invalidate() }}
     
     fileprivate var numSections : Int { get { return self.collectionView?.numberOfSections ?? 0 }}
     
@@ -163,7 +163,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
              * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
              */
             
-            let sectionInsets :  EdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAt: section) ?? self.sectionInsets
+            let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAt: section) ?? self.sectionInsets
             let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
             
             let itemWidth = self.collectionView!.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right

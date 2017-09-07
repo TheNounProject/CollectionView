@@ -79,7 +79,7 @@ public protocol CollectionViewDelegateFlowLayout  {
 
     */
     func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
-                         insetsForSectionAt section: Int) -> EdgeInsets
+                         insetsForSectionAt section: Int) -> NSEdgeInsets
     
     
     
@@ -114,7 +114,7 @@ extension CollectionViewDelegateFlowLayout {
     }
     
     public func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
-                         insetsForSectionAt section: Int) -> EdgeInsets {
+                         insetsForSectionAt section: Int) -> NSEdgeInsets {
         return collectionViewLayout.defaultSectionInsets
     }
     
@@ -155,7 +155,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     public var defaultFooterHeight : CGFloat = 0
     public var defaultHeaderHeight : CGFloat = 0
     public var defaultRowTransform : RowTransform = .none
-    public var defaultSectionInsets : EdgeInsets = NSEdgeInsetsZero
+    public var defaultSectionInsets : NSEdgeInsets = NSEdgeInsetsZero
     
     
     /// If supplementary views should be inset to section insets
@@ -285,7 +285,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     private struct SectionAttributes  : CustomStringConvertible {
         var frame = CGRect.zero
         
-        let insets : EdgeInsets
+        let insets : NSEdgeInsets
         let transform : RowTransform
         
         var contentFrame = CGRect.zero
@@ -298,7 +298,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             return "Section Attributes : \(frame)  content: \(contentFrame)  Rows: \(rows.count)  Items: \(items.count)"
         }
         
-        init(insets: EdgeInsets, transform: RowTransform) {
+        init(insets: NSEdgeInsets, transform: RowTransform) {
             self.insets = insets
             self.transform = transform
         }

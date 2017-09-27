@@ -151,9 +151,9 @@ open class ClipView : NSClipView {
             
             super.scroll(to: newOrigin)
             // Can't remember why this is here, it may be to cleanup if needed
-            if self._displayLink != nil && !manualScroll {
-                self.endScrolling()
-            }
+//            if self._displayLink != nil && !manualScroll {
+//                self.endScrolling()
+//            }
         }
     }
     
@@ -162,12 +162,23 @@ open class ClipView : NSClipView {
     }
     
     func updateOrigin() {
-        if self.window == nil {
+        
+        var o = CGPoint.zero
+        var integral = false
+        var cancel = false
+        DispatchQueue.main.sync {
+            if self.window == nil {
+                cancel = true
+            }
+            o = self.bounds.origin;
+            integral = self.window?.backingScaleFactor == 1
+        }
+        
+        if cancel {
             self.endScrolling()
             return
         }
         
-        var o = self.bounds.origin;
         let lastOrigin = o;
         let deceleration = self.decelerationRate;
         
@@ -175,7 +186,7 @@ open class ClipView : NSClipView {
         o.x = o.x * deceleration + self.destinationOrigin.x * (1 - self.decelerationRate);
         o.y = o.y * deceleration + self.destinationOrigin.y * (1 - self.decelerationRate);
         
-        if self.window?.backingScaleFactor == 1 {
+        if integral {
             o = o.integral
         }
         
@@ -184,9 +195,6 @@ open class ClipView : NSClipView {
         DispatchQueue.main.async { 
             super.scroll(to: o)
             
-//            if let cv = self.scrollView as? CollectionView {
-//                cv.delegate?.collectionViewDidScroll?(cv)
-//            }
             // Make this call so that we can force an update of the scroller positions.
             self.scrollView?.reflectScrolledClipView(self)
             NotificationCenter.default.post(name: NSScrollView.didLiveScrollNotification, object: self.scrollView)
@@ -210,14 +218,18 @@ open class ClipView : NSClipView {
     
     func beginScrolling() {
         if CVDisplayLinkIsRunning(self.displayLink) { return }
-        (self.scrollView as? CollectionView)?.isScrolling = true
+        DispatchQueue.main.async {
+            (self.scrollView as? CollectionView)?.isScrolling = true
+        }
         CVDisplayLinkStart(self.displayLink)
     }
     
     func endScrolling() {
         manualScroll = false
         if !CVDisplayLinkIsRunning(self.displayLink) { return }
-        (self.scrollView as? CollectionView)?.isScrolling = false
+        DispatchQueue.main.async {
+            (self.scrollView as? CollectionView)?.isScrolling = false
+        }
         CVDisplayLinkStop(self.displayLink)
     }
     

@@ -331,9 +331,13 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         
         var top : CGFloat = 0
         
+        let contentInsets = cv.contentInsets
+        
         for sec in 0..<numSections {
            
-            let insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
+            var insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
+            insets.left += contentInsets.left
+            insets.right += contentInsets.right
             let transform = self.delegate?.collectionView(cv, flowLayout: self, rowTransformForSectionAt: sec) ?? self.defaultRowTransform
             
             var sectionAttrs = SectionAttributes(insets: insets, transform: transform)
@@ -344,13 +348,13 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             
             let contentWidth = cv.contentVisibleRect.size.width - insets.left - insets.right
             
-            
             let heightHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? self.defaultHeaderHeight
             if heightHeader > 0 {
                 let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, with: IndexPath.for(section: sec))
+                
                 attrs.frame = insetSupplementaryViews
                     ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: 0, y: top, width: cv.frame.size.width, height: heightHeader)
+                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - contentInsets.left - contentInsets.right, height: heightHeader)
                 sectionAttrs.header = attrs
                 sectionAttrs.frame = attrs.frame
                 top = attrs.frame.maxY
@@ -465,8 +469,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             if footerHeader > 0 {
                 let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(section: sec))
                 attrs.frame = insetSupplementaryViews
-                    ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: 0, y: top, width: cv.contentVisibleRect.size.width, height: heightHeader)
+                    ? CGRect(x: insets.left + contentInsets.left, y: top, width: contentWidth, height: heightHeader)
+                    : CGRect(x: contentInsets.left, y: top, width: cv.contentVisibleRect.size.width - contentInsets.left - contentInsets.right, height: heightHeader)
                 sectionAttrs.footer = attrs
                 sectionAttrs.frame = sectionAttrs.frame.union(attrs.frame)
                 top = attrs.frame.maxY

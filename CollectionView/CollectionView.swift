@@ -58,9 +58,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         return self.documentView as! CollectionViewDocumentView
     }
     
-    
-    
-    
     // MARK: - Intialization
     /*-------------------------------------------------------------------------------*/
     

@@ -90,7 +90,10 @@ open class ClipView : NSClipView {
     }
     
     
-
+    open override func mouseDown(with event: NSEvent) {
+        self.cancelScrollAnimation()
+        super.mouseDown(with: event)
+    }
     
     @objc func updateCVDisplay(_ note: Notification) {
         
@@ -150,6 +153,7 @@ open class ClipView : NSClipView {
             // super's implementation handle a normal scroll.
             
             super.scroll(to: newOrigin)
+            self.cancelScrollAnimation()
             // Can't remember why this is here, it may be to cleanup if needed
 //            if self._displayLink != nil && !manualScroll {
 //                self.endScrolling()

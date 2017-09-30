@@ -75,7 +75,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         collectionViewLayout.collectionView = self
         self.wantsLayer = true
-        let dView = CollectionViewDocumentView()
+        let dView = CollectionViewDocumentView(frame: self.bounds)
         dView.wantsLayer = true
         self.documentView = dView
         self.hasVerticalScroller = true

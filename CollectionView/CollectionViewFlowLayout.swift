@@ -156,6 +156,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     public var defaultHeaderHeight : CGFloat = 0
     public var defaultRowTransform : RowTransform = .none
     public var defaultSectionInsets : NSEdgeInsets = NSEdgeInsetsZero
+    public var defaultContentInsets : NSEdgeInsets = NSEdgeInsetsZero
     
     
     /// If supplementary views should be inset to section insets
@@ -329,7 +330,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         let numSections = cv.numberOfSections
         guard numSections > 0 else { return }
         
-        var top : CGFloat = 0
+        var top : CGFloat = defaultContentInsets.top
         
         let contentInsets = cv.contentInsets
         

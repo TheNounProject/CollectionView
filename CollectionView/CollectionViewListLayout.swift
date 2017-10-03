@@ -153,7 +153,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         let numberOfSections = self.numSections
         if numberOfSections == 0 { return }
         
-        var top : CGFloat = 0.0
+        var top : CGFloat = self.collectionView?.leadingView?.bounds.size.height ?? 0
         
         self.sectionItemAttributes = Array(repeating: [], count: numberOfSections)
         

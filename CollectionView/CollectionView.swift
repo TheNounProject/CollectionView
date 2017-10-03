@@ -126,6 +126,28 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     
+    public var leadingView : NSView? {
+        didSet {
+            if oldValue == leadingView { return }
+            oldValue?.removeFromSuperview()
+            if let v = leadingView {
+                self.contentDocumentView.addSubview(v)
+                
+                self.contentDocumentView.addConstraints([
+                    NSLayoutConstraint(item: self.contentDocumentView, attribute: .left, relatedBy: .equal, toItem: v, attribute: .left, multiplier: 1, constant: 0),
+                    NSLayoutConstraint(item: self.contentDocumentView, attribute: .top, relatedBy: .equal, toItem: v, attribute: .top, multiplier: 1, constant: 0),
+                    NSLayoutConstraint(item: self.contentDocumentView, attribute: .right, relatedBy: .equal, toItem: v, attribute: .right, multiplier: 1, constant: 0)
+                    ])
+                v.translatesAutoresizingMaskIntoConstraints = false
+//                v.autoresizingMask.insert(.maxYMargin)
+//                v.autoresizingMask.insert(.height)
+                v.setContentHuggingPriority(NSLayoutConstraint.Priority(rawValue: 1000), for: .vertical)
+                v.autoresizingMask.insert(.width)
+//                v.autoresizingMask.insert(.height)
+            }
+        }
+    }
+    
     // MARK: - Registering reusable cells
     /*-------------------------------------------------------------------------------*/
     
@@ -557,6 +579,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
             _floatingSupplementaryView.frame = self.bounds
 //         }
         
+        if let v = self.leadingView {
+            v.frame.size.width = self.bounds.size.width
+            v.frame.origin.x = 0
+        }
+        
         super.layout()
         
         if self.collectionViewLayout.shouldInvalidateLayout(forBoundsChange: self.contentVisibleRect) {
@@ -611,6 +638,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
     
+        if let v = self.leadingView {
+            v.frame = CGRect(x: 0, y: 0, width: self.bounds.size.width, height: v.bounds.size.height)
+        }
         
         if needsRecalculation {
             doLayoutPrep()
@@ -2358,8 +2388,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     
     public func scrollToTop(animated: Bool = false, completion: AnimationCompletion? = nil) {
-        guard self.numberOfSections > 0 && self.numberOfItems(in: 0) > 0 else { return }
-        self.scrollItem(at: IndexPath.zero, to: .leading, animated: animated, completion: completion)
+        self.scrollRect(CGRect.zero, to: .leading, animated: animated, completion: completion)
+//        guard self.numberOfSections > 0 && self.numberOfItems(in: 0) > 0 else { return }
+//        self.scrollItem(at: IndexPath.zero, to: .leading, animated: animated, completion: completion)
     }
     
     /**
@@ -2412,10 +2443,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private func _scrollRect(_ aRect: CGRect, to scrollPosition: CollectionViewScrollPosition, animated: Bool, prepare: Bool, completion: AnimationCompletion?) {
         var rect = aRect.intersection(self.contentDocumentView.frame)
         
-        if rect.isEmpty {
-            completion?(false)
-            return
-        }
+//        if rect.isEmpty {
+//            completion?(false)
+//            return
+//        }
         
         let scrollDirection = collectionViewLayout.scrollDirection
         

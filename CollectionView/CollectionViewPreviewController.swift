@@ -41,6 +41,14 @@ public protocol CollectionViewPreviewControllerDelegate: class {
     */
     func collectionViewPreviewController(_ controller: CollectionViewPreviewController, canPreviewItemAt indexPath: IndexPath) -> Bool
     
+    
+    /**
+     <#Description#>
+
+     - Parameter controller: <#controller description#>
+
+    */
+    func collectionViewPreviewControllerWillDismiss(_ controller: CollectionViewPreviewController)
 }
 
 class BackgroundView : NSView {
@@ -234,10 +242,11 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         controller.view.addSubview(self.view)
         self.view.addConstraintsToMatchParent()
         
+        self.collectionView.reloadData()
+        
          self.collectionView.frame = self.view.bounds
          self.collectionView.layoutSubtreeIfNeeded()
         
-        self.collectionView.reloadData()
         self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centered)
         
         
@@ -278,7 +287,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
 
     */
     open func dismiss(animated: Bool, completion: AnimationCompletion? = nil)  {
-        
+        self.delegate?.collectionViewPreviewControllerWillDismiss(self)
         guard let sourceCV = self.sourceCollectionView,
             let ip = self.collectionView.indexPathsForSelectedItems.first ?? self.collectionView.indexPathForFirstVisibleItem else {
             self.view.removeFromSuperview()

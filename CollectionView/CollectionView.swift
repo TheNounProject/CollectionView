@@ -554,20 +554,30 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     
     private var _lastViewSize: CGSize = CGSize.zero
-    private func setContentViewSize() {
+    private func setContentViewSize(_ animated: Bool = false) {
         var newSize = self.collectionViewLayout.collectionViewContentSize
         var contain = self.frame.size
         contain.width -= (contentInsets.left + contentInsets.right)
         contain.height -= (contentInsets.top + contentInsets.bottom)
         _lastViewSize = newSize
         
+        // Don't let the content size be less than the cv
         if newSize.width < contain.width  {
             newSize.width = contain.width
         }
         if newSize.height < contain.height {
             newSize.height = contain.height
         }
-        contentDocumentView.frame.size = newSize
+        if animated {
+            NSAnimationContext.runAnimationGroup({ (ctx) in
+                ctx.duration = self.animationDuration
+                contentDocumentView.animator().frame.size = newSize
+            }, completionHandler: nil)
+        }
+        else {
+            contentDocumentView.frame.size = newSize
+        }
+        
     }
     
     open override func layout() {
@@ -633,14 +643,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._topIP = self.indexPathForFirstVisibleItem
         }
         self.delegate?.collectionViewWillReloadLayout?(self)
+        self.leadingView?.layoutSubtreeIfNeeded()
         self.collectionViewLayout.prepare()
     }
     
-    private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
-    
+    private func layoutLeadingViews() {
         if let v = self.leadingView {
-            v.frame = CGRect(x: 0, y: 0, width: self.bounds.size.width, height: v.bounds.size.height)
+            v.frame.origin.x = self.contentInsets.left
+            v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
         }
+    }
+    
+    private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
+        self.layoutLeadingViews()
         
         if needsRecalculation {
             doLayoutPrep()
@@ -650,7 +665,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         // If the size changed we need to do some extra prep
         let sizeChanged = newContentSize != _lastViewSize
         
-        setContentViewSize()
+        setContentViewSize(animated)
         
         struct ViewSpec {
             let view: CollectionReusableView
@@ -743,7 +758,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private var _resizeStartBounds : CGRect = CGRect.zero
     open override func viewWillStartLiveResize() {
         _resizeStartBounds = self.contentVisibleRect
-        _topIP = indexPathForFirstVisibleItem
+        let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
+        if contentVisibleRect.origin.y > ignore {
+            _topIP = indexPathForFirstVisibleItem
+        }
     }
     
     open override func viewDidEndLiveResize() {
@@ -1645,6 +1663,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         guard self.acceptClickEvent(theEvent).accept == true else { return }
         
+        // If we mouse down and move somewhere, ignore
+        if mouseDownIP != indexPath { return }
+        
         if mouseDownIP == nil && allowsEmptySelection {
             self._deselectAllItems(true, notify: true)
         }
@@ -1680,7 +1701,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         else if self.selectionMode == .multi {
             if self.itemAtIndexPathIsSelected(ip) {
-            self._deselectItem(at: ip, animated: true, notifyDelegate: true)
+                self._deselectItem(at: ip, animated: true, notifyDelegate: true)
             }
             else {
                 self._selectItem(at: ip, animated: true, scrollPosition: .none, with: theEvent, clear: false, notifyDelegate: true)

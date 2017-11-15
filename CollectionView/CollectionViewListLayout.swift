@@ -157,34 +157,42 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         
         self.sectionItemAttributes = Array(repeating: [], count: numberOfSections)
         
+        guard let cv = self.collectionView else { return }
+        let contentInsets = cv.contentInsets
+        
         for section in 0..<numberOfSections {
             
             /*
              * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
              */
             
-            let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetForSectionAt: section) ?? self.sectionInsets
-            let rowSpacing : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
             
-            let itemWidth = self.collectionView!.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right
-            var sectionFrame: CGRect = CGRect(x: sectionInsets.left, y: top, width: itemWidth, height: 0)
+            var insets :  NSEdgeInsets =  self.delegate?.collectionView?(cv, layout: self, insetForSectionAt: section) ?? self.sectionInsets
             
+//            insets.left += contentInsets.left
+//            insets.right += contentInsets.right
+            
+            let rowSpacing : CGFloat = self.delegate?.collectionView?(cv, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
+            
+            let contentWidth = cv.bounds.size.width - (contentInsets.left + contentInsets.right)
+            let itemWidth = cv.bounds.size.width - (insets.left + insets.right)
+            var sectionFrame: CGRect = CGRect(x: contentInsets.left, y: top, width: contentWidth, height: 0)
             
             /*
              * 2. Section header
              */
-            let heightHeader : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForHeaderInSection: section) ?? self.headerHeight
+            let heightHeader : CGFloat = self.delegate?.collectionView?(cv, layout: self, heightForHeaderInSection: section) ?? self.headerHeight
             if heightHeader > 0 {
                 let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, with: IndexPath.for(item: 0, section: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                    CGRect(x: sectionInsets.left, y: top, width: self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, height: heightHeader)
-                    : CGRect(x: 0, y: top, width: self.collectionView!.bounds.size.width, height: heightHeader)
+                    CGRect(x: insets.left, y: top, width: itemWidth, height: heightHeader)
+                    : CGRect(x: 0, y: top, width: contentWidth, height: heightHeader)
                 self.headersAttributes[section] = attributes
                 top = attributes.frame.maxY
             }
             
-            top += sectionInsets.top
+            top += insets.top
             
             
             
@@ -192,7 +200,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
              * 3. Section items
              */
             
-            var contentRect: CGRect = CGRect(x: sectionInsets.left, y: top, width: itemWidth, height: 0)
+            var contentRect: CGRect = CGRect(x: insets.left, y: top, width: itemWidth, height: 0)
             let itemCount = self.collectionView!.numberOfItems(in: section)
             
             // Add the ip and attr arrays for the section, they are filled in below
@@ -211,7 +219,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
                     allIndexPaths.add(ip)
                     
                     let attrs = CollectionViewLayoutAttributes(forCellWith: ip)
-                    let rowHeight : CGFloat = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemAt: ip) ?? self.itemHeight
+                    let rowHeight : CGFloat = self.delegate?.collectionView?(cv, layout: self, heightForItemAt: ip) ?? self.itemHeight
                     attrs.frame = NSRect(x: xPos, y: yPos, width: itemWidth, height: rowHeight)
                     newTop = yPos + rowHeight
                     yPos = newTop + rowSpacing
@@ -224,20 +232,19 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
             }
             contentRect.size.height = top - contentRect.origin.y
             
-            let footerHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForFooterInSection: section) ?? self.footerHeight
+            let footerHeight = self.delegate?.collectionView?(cv, layout: self, heightForFooterInSection: section) ?? self.footerHeight
             if footerHeight > 0 {
                 let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(item:0, section: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                    CGRect(x: sectionInsets.left, y: top, width: self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right, height: footerHeight)
-                    : CGRect(x: 0, y: top, width: self.collectionView!.bounds.size.width, height: footerHeight)
+                    CGRect(x: insets.left, y: top, width: itemWidth, height: footerHeight)
+                    : CGRect(x: 0, y: top, width: contentWidth, height: footerHeight)
                 self.footersAttributes[section] = attributes
                 top = attributes.frame.maxY
             }
-            top += sectionInsets.bottom
-            
+            top += insets.bottom
+
             sectionFrame.size.height = top - sectionFrame.origin.y
-            
             
             sectionFrames.append(sectionFrame)
             sectionContentFrames.append(contentRect)
@@ -250,7 +257,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         if numberOfSections == 0 { return CGSize.zero }
         
         var size = CGSize()
-        size.width = cv.contentVisibleRect.size.width
+        size.width = cv.bounds.size.width - (cv.contentInsets.left + cv.contentInsets.right)
         size.height = cv.bounds.height
         if let f = self.sectionFrames.last {
             size.height = f.maxY

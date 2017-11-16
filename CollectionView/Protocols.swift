@@ -319,9 +319,6 @@ import Foundation
     @available(*, unavailable, message: "Trackpad pressure is not yet implemented")
     @objc optional func collectionView(_ collectionView: CollectionView, didChangePressure pressure: CGFloat, forItemAt indexPath: IndexPath)
     
-    // MARK: - Special Clicks
-    /*-------------------------------------------------------------------------------*/
-    
     
     /**
      Notifies the delegate that an item was double clicked

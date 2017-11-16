@@ -595,6 +595,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         if numberOfSections == 0 { return CGSize.zero }
         
         var contentSize = cv.contentVisibleRect.size as CGSize
+        contentSize.width = contentSize.width - (cv.contentInsets.left + cv.contentInsets.right)
         let height = self.sectionAttributes.last?.frame.maxY ?? 0
         if height == 0 { return CGSize.zero }
         contentSize.height = height
@@ -638,6 +639,11 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         
         var startingIP = currentIndexPath
         
+        func shouldSelectItem(at indexPath: IndexPath) -> IndexPath? {
+            let set = Set([indexPath])
+            let valid = self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemsAt: set) ?? set
+            return valid.first
+        }
         
         switch direction {
         case .up:
@@ -658,7 +664,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 prev = row
             }
             guard let ip = proposed else { return nil }
-            if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: ip, with: NSApp.currentEvent) != false { return proposed }
+            if let p = shouldSelectItem(at: ip) {
+                return p
+            }
             startingIP = ip
             fallthrough
             
@@ -666,8 +674,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             var ip = startingIP
             while true {
                 guard let prop = self.allIndexPaths.object(before: ip) else { return nil }
-                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
-                    return prop
+                if let p = shouldSelectItem(at: prop) {
+                    return p
                 }
                 ip = prop
             }
@@ -691,7 +699,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 prev = row
             }
             guard let ip = proposed else { return nil }
-            if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: ip, with: NSApp.currentEvent) != false { return proposed }
+            if let p = shouldSelectItem(at: ip) {
+                return p
+            }
             startingIP = ip
             fallthrough
             
@@ -701,8 +711,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             var ip = startingIP
             while true {
                 guard let prop = self.allIndexPaths.object(after: ip) else { return nil }
-                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
-                    return prop
+                if let p = shouldSelectItem(at: prop) {
+                    return p
                 }
                 ip = prop
             }

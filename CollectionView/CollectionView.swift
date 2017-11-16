@@ -554,20 +554,30 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     
     private var _lastViewSize: CGSize = CGSize.zero
-    private func setContentViewSize() {
+    private func setContentViewSize(_ animated: Bool = false) {
         var newSize = self.collectionViewLayout.collectionViewContentSize
         var contain = self.frame.size
         contain.width -= (contentInsets.left + contentInsets.right)
         contain.height -= (contentInsets.top + contentInsets.bottom)
         _lastViewSize = newSize
         
+        // Don't let the content size be less than the cv
         if newSize.width < contain.width  {
             newSize.width = contain.width
         }
         if newSize.height < contain.height {
             newSize.height = contain.height
         }
-        contentDocumentView.frame.size = newSize
+        if animated {
+            NSAnimationContext.runAnimationGroup({ (ctx) in
+                ctx.duration = self.animationDuration
+                contentDocumentView.animator().frame.size = newSize
+            }, completionHandler: nil)
+        }
+        else {
+            contentDocumentView.frame.size = newSize
+        }
+        
     }
     
     open override func layout() {
@@ -633,14 +643,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self._topIP = self.indexPathForFirstVisibleItem
         }
         self.delegate?.collectionViewWillReloadLayout?(self)
+        self.leadingView?.layoutSubtreeIfNeeded()
         self.collectionViewLayout.prepare()
     }
     
-    private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
-    
+    private func layoutLeadingViews() {
         if let v = self.leadingView {
-            v.frame = CGRect(x: 0, y: 0, width: self.bounds.size.width, height: v.bounds.size.height)
+            v.frame.origin.x = self.contentInsets.left
+            v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
         }
+    }
+    
+    private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
+        self.layoutLeadingViews()
         
         if needsRecalculation {
             doLayoutPrep()
@@ -650,7 +665,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         // If the size changed we need to do some extra prep
         let sizeChanged = newContentSize != _lastViewSize
         
-        setContentViewSize()
+        setContentViewSize(animated)
         
         struct ViewSpec {
             let view: CollectionReusableView
@@ -743,7 +758,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private var _resizeStartBounds : CGRect = CGRect.zero
     open override func viewWillStartLiveResize() {
         _resizeStartBounds = self.contentVisibleRect
-        _topIP = indexPathForFirstVisibleItem
+        let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
+        if contentVisibleRect.origin.y > ignore {
+            _topIP = indexPathForFirstVisibleItem
+        }
     }
     
     open override func viewDidEndLiveResize() {
@@ -1260,7 +1278,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
 //            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
             
             self.itemShifts.removeAll()
-            self._firstSelection = nil
+            self._extendingStart = nil
             
             self._updateContext.reset()
             self._finalizedCellMap.removeAll()
@@ -1619,7 +1637,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         self.window?.makeFirstResponder(self)
-        //        self.nextResponder?.mouseDown(theEvent)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
         mouseDownLocation = theEvent.locationInWindow
         let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
@@ -1645,50 +1662,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         guard self.acceptClickEvent(theEvent).accept == true else { return }
         
-        if mouseDownIP == nil && allowsEmptySelection {
-            self._deselectAllItems(true, notify: true)
-        }
+        // If we mouse down and move somewhere, ignore
+        guard mouseDownIP == indexPath else { return }
         
         if theEvent.modifierFlags.contains(NSEvent.ModifierFlags.control) {
             self.rightMouseDown(with: theEvent)
             return
         }
         
-        guard let ip = indexPath else {
-            if theEvent.clickCount == 2 {
-                self.delegate?.collectionView?(self, didDoubleClickItemAt: nil, with: theEvent)
-            }
-            return
-        }
-        
-        guard ip == mouseDownIP else { return }
-        
-        if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEvent.ModifierFlags.shift) {
-            self._selectItem(at: ip, atScrollPosition: .nearest, animated: true, selectionType: .extending)
-        }
-        else if allowsMultipleSelection && theEvent.modifierFlags.contains(NSEvent.ModifierFlags.command) {
-            if self._selectedIndexPaths.contains(ip) {
-                if self._selectedIndexPaths.count == 1 { return }
-                self._deselectItem(at: ip, animated: true, notifyDelegate: true)
-            }
-            else {
-                self._selectItem(at: ip, animated: true, with: theEvent, notifyDelegate: true)
-            }
-        }
-        else if theEvent.clickCount == 2 {
-            self.delegate?.collectionView?(self, didDoubleClickItemAt: ip, with: theEvent)
-        }
-        else if self.selectionMode == .multi {
-            if self.itemAtIndexPathIsSelected(ip) {
-            self._deselectItem(at: ip, animated: true, notifyDelegate: true)
-            }
-            else {
-                self._selectItem(at: ip, animated: true, scrollPosition: .none, with: theEvent, clear: false, notifyDelegate: true)
-            }
-        }
-        else {
-            self._selectItem(at: ip, animated: true, scrollPosition: .none, with: theEvent, clear: true)
-        }
+        self._performSelection(at: indexPath, for: theEvent)
     }
     
     open override func rightMouseDown(with theEvent: NSEvent) {
@@ -1703,14 +1685,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         self.delegate?.collectionView?(self, didRightClickItemAt: ip, with: theEvent)
     }
-    
-    final func moveSelectionInDirection(_ direction: CollectionViewDirection, extendSelection: Bool) {
-        guard let indexPath = (extendSelection ? _lastSelection : _firstSelection) ?? self._selectedIndexPaths.first else { return }
-        if let moveTo = self.collectionViewLayout.indexPathForNextItem(moving: direction, from: indexPath) {
-            if let move = self.delegate?.collectionView?(self, shouldSelectItemAt: moveTo, with: NSApp.currentEvent) , move != true { return }
-            self._selectItem(at: moveTo, atScrollPosition: .nearest, animated: true, selectionType: extendSelection ? .extending : .single)
-        }
-    }
+
     
     public var keySelectInterval: TimeInterval = 0.08
     private var lastEventTime : TimeInterval?
@@ -1729,7 +1704,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             else {
                 lastEventTime = nil
             }
-            let extend = selectionMode == .multi || theEvent.modifierFlags.contains(NSEvent.ModifierFlags.shift)
+            let extend = selectionMode == .toggle || theEvent.modifierFlags.contains(NSEvent.ModifierFlags.shift)
             if theEvent.keyCode == 123 { self.moveSelectionLeft(extend) }
             else if theEvent.keyCode == 124 { self.moveSelectionRight(extend) }
             else if theEvent.keyCode == 125 { self.moveSelectionDown(extend) }
@@ -1758,6 +1733,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.moveSelectionInDirection(.down, extendSelection: extendSelection)
     }
     
+    final func moveSelectionInDirection(_ direction: CollectionViewDirection, extendSelection: Bool) {
+        guard let indexPath = (extendSelection ? _extendingEnd : _extendingStart) ?? self._selectedIndexPaths.first else { return }
+        
+        if let moveTo = self.collectionViewLayout.indexPathForNextItem(moving: direction, from: indexPath) {
+            self._moveSelection(to: moveTo, extend: extendSelection, scrollPosition: .nearest, animated: true)
+        }
+    }
     
     
     
@@ -1771,24 +1753,26 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public var allowsSelection: Bool = true
     
     
-    /// Determin how item selections are managed
+    /// Determine how item selections are managed
     ///
     /// - normal: Clicking an item selects the item and deselects others (given no modifier keys are used)
     /// - multi: Clicking an item will add it to the selection, clicking again will deselect it
     public enum SelectionMode {
         case `default`
-        case multi
+        case toggle
     }
     
     /// Determines what happens when an item is clicked
     public var selectionMode: SelectionMode = .default
     
-    /// allows the selection of multiple items via modifier keys (command & shift) (default true)
+    /// Allows the selection of multiple items via modifier keys (command & shift) (default true)
     public var allowsMultipleSelection: Bool = true
     
     /// If true, clicking empty space will deselect all items (default true)
     public var allowsEmptySelection: Bool = true
     
+    /// If true, clicking empty space will deselect all items (default true)
+    public var notifyDelegate: Bool = false
     
     
     
@@ -1798,8 +1782,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
   
     // Select
-    private var _firstSelection : IndexPath?
-    private var _lastSelection : IndexPath?
     private var _selectedIndexPaths = Set<IndexPath>()
     
 
@@ -1864,18 +1846,36 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     
+    // MARK: - Selecting Items
+    /*-------------------------------------------------------------------------------*/
+    
+    
     /**
      Selects all items in the collection view
 
      - Parameter animated: If the selections should be animated
      
-     - Note: The delegate is not notified of any selections
+     - Note: The delegate will not be notified of the changes
 
     */
     public func selectAllItems(_ animated: Bool = true) {
-        self.selectItems(at: self.contentDocumentView.preparedCellIndex.indexes, animated: animated)
+        self.selectItems(at: self.allIndexPaths, animated: animated)
     }
 
+    
+    
+    /**
+     Select an item at a given index path
+     
+     - Parameter indexPath: The indexPath to select
+     - Parameter animated: If the selections should be animated
+     - Parameter scrollPosition: The position to scroll the selected item to
+     
+     - Note: The delegate will not be notified of the changes
+     */
+    public func selectItem(at indexPath: IndexPath, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) {
+        self.selectItems(at: Set([indexPath]), animated: animated, scrollPosition: scrollPosition)
+    }
     
     /**
      Select the items at the given index paths
@@ -1883,130 +1883,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
      - Parameter indexPaths: The index paths of the items you want to select
      - Parameter animated: If the selections should be animated
      
-     - Note: The delegate is not notified of the selections
+     - Note: The delegate will not be notified of the changes
 
     */
-    public func selectItems(at indexPaths: [IndexPath], animated: Bool) {
-        for ip in indexPaths { self._selectItem(at: ip, animated: animated, scrollPosition: .none, with: nil, notifyDelegate: false) }
+    public func selectItems<C:Collection>(at indexPaths: C, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) where C.Element == IndexPath {
+        self.selectItems(at: Set(indexPaths), animated: animated)
+    }
+    public func selectItems(at indexPaths: Set<IndexPath>, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) {
+        self._performProgramaticSelection(for: indexPaths, animated: animated, scrollPosition: scrollPosition)
     }
     
-	/**
-	Select items
-
-	- Parameter indexPath: The description of the indexPath to select, or nil to deselect all.
-	- Parameter animated: If the selections be animated
-	- Parameter scrollPosition: The position to scroll the selected item to
-     
-     - Note: The delegate will not notified of the selection
-
-	*/
-    public func selectItem(at indexPath: IndexPath?, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) {
-        self._selectItem(at: indexPath, animated: animated, scrollPosition: scrollPosition, with: nil, notifyDelegate: false)
-    }
+	
     
-    private func _selectItem(at indexPath: IndexPath?, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none, with event: NSEvent?, clear: Bool = false, notifyDelegate: Bool = true) {
-        guard let indexPath = indexPath else {
-            self.deselectAllItems(animated)
-            return
-        }
-        
-        if indexPath._section >= self.numberOfSections || indexPath._item >= self.numberOfItems(in: indexPath._section) { return }
-        
-        if !self.allowsSelection { return }
-        if let shouldSelect = self.delegate?.collectionView?(self, shouldSelectItemAt: indexPath, with: event) , !shouldSelect { return }
-        
-        if clear {
-            self.deselectAllItems()
-        }
-        
-        if self.selectionMode != .multi && self.allowsMultipleSelection == false {
-            self._selectedIndexPaths.remove(indexPath)
-            self.deselectAllItems()
-        }
-        
-        self.cellForItem(at: indexPath)?.setSelected(true, animated: animated)
-        self._selectedIndexPaths.insert(indexPath)
-        if (selectionMode == .multi && event != nil) || self._selectedIndexPaths.count == 1 {
-            self._firstSelection = indexPath
-        }
-        self._lastSelection = indexPath
-        if notifyDelegate {
-            self.delegate?.collectionView?(self, didSelectItemAt: indexPath)
-        }
-        
-        if scrollPosition != .none {
-            self.scrollItem(at: indexPath, to: scrollPosition, animated: animated, completion: nil)
-        }
-    }
-    
-    
-    
-    // MARK: Multi Select
-    /*-------------------------------------------------------------------------------*/
-    private func _selectItem(at indexPath: IndexPath,
-                                      atScrollPosition: CollectionViewScrollPosition,
-                                      animated: Bool,
-                                      selectionType: CollectionViewSelectionType) {
-        
-        var indexesToSelect = Set<IndexPath>()
-        
-        if selectionType == .single || !self.allowsMultipleSelection {
-            indexesToSelect.insert(indexPath)
-        }
-        else if selectionType == .multiple {
-            indexesToSelect.formUnion(self._selectedIndexPaths)
-            if indexesToSelect.contains(indexPath) {
-                indexesToSelect.remove(indexPath)
-            }
-            else {
-                indexesToSelect.insert(indexPath)
-            }
-        }
-        else {
-            let firstIndex = self._firstSelection
-            if let index = firstIndex {
-                let order = (index as NSIndexPath).compare(indexPath)
-                var nextIndex : IndexPath? = firstIndex
-                
-                while let idx = nextIndex, idx != indexPath {
-                    indexesToSelect.insert(idx)
-                    if order == ComparisonResult.orderedAscending {
-                        nextIndex = self.indexPathForSelectableItem(after: idx)
-                    }
-                    else if order == .orderedDescending {
-                        nextIndex = self.indexPathForSelectableItem(before: idx)
-                    }
-                }
-            }
-//            else {
-//                indexesToSelect.insert(IndexPath.zero)
-//            }
-            indexesToSelect.insert(indexPath)
-        }
-        
-        
-        if selectionMode != .multi {
-            var deselectIndexes = self._selectedIndexPaths
-            _ = deselectIndexes.remove(indexesToSelect)
-            self.deselectItems(at: Array(deselectIndexes), animated: true)
-        }
-        
-        let finalSelect = indexesToSelect.remove(indexPath)
-        for ip in indexesToSelect {
-            self._selectItem(at: ip, animated: true, scrollPosition: .none, with: nil, notifyDelegate: false)
-        }
-        
-        self.scrollItem(at: indexPath, to: atScrollPosition, animated: animated, completion: nil)
-        if let ip = finalSelect {
-            self._selectItem(at: ip, animated: true, scrollPosition: .none, with: nil, notifyDelegate: true)
-        }
-        
-        self._lastSelection = indexPath
-    }
-    
-    
-    // MARK: - Deselect
-    /*-------------------------------------------------------------------------------*/
     
     /**
      Deselect cells at given index paths
@@ -2014,62 +1902,201 @@ open class CollectionView : ScrollView, NSDraggingSource {
      - Parameter indexPaths: The index paths to deselect
      - Parameter animated: If the deselections should be animated
      
-     - Note: The delegate will not notified of the selections
+     - Note: The delegate will not be notified of the changes
      
      */
-    public func deselectItems(at indexPaths: [IndexPath], animated: Bool) {
-        for ip in indexPaths { self._deselectItem(at: ip, animated: animated, notifyDelegate: false) }
+    public func deselectItems<C:Collection>(at indexPaths: C, animated: Bool) where C.Element == IndexPath {
+        self.deselectItems(at: Set(indexPaths), animated: animated)
+    }
+    public func deselectItems(at indexPaths: Set<IndexPath>, animated: Bool) {
+        self._deselectItems(at: indexPaths, animated: animated, notify: notifyDelegate)
     }
     
     
     /**
      Deselect all items in the collection view
-
+     
      - Parameter animated: If the delselections should be animated
      
-     - Note: The delegate will not notified of the selections
-
-    */
+     - Note: The delegate will not be notified of the changes
+     
+     */
     public func deselectAllItems(_ animated: Bool = false) {
-        self._deselectAllItems(animated, notify: false)
+        self._deselectAllItems(animated, notify: notifyDelegate)
     }
     
     
     /**
      Deselect the item at a given index path
-
+     
      - Parameter indexPath: The index path for the item to deselect
      - Parameter animated: If the deselection should be animated
      
-     - Note: The delegate will not notified of the selections
-
-    */
+     - Note: The delegate will not be notified of the changes
+     
+     */
     public func deselectItem(at indexPath: IndexPath, animated: Bool) {
-        self._deselectItem(at: indexPath, animated: animated, notifyDelegate: false)
+        self._deselectItem(at: indexPath, animated: animated, notify: false)
+    }
+    
+    
+    private func _performProgramaticSelection(for indexPaths: Set<IndexPath>, animated: Bool, scrollPosition: CollectionViewScrollPosition) {
+        let de = self._selectedIndexPaths.filter({ (ip) -> Bool in
+            return !indexPaths.contains(ip)
+        })
+        self._deselectItems(at: de, animated: animated, notify: notifyDelegate)
+        self._selectItems(at: indexPaths, animated: animated, scrollPosition: scrollPosition, notify: notifyDelegate)
+    }
+    
+    
+    
+    // MARK: - Internal Selection Handling
+    /*-------------------------------------------------------------------------------*/
+    
+    private func _selectItems(at indexPaths : Set<IndexPath>, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none, notify: Bool) {
+        let valid = indexPaths.subtracting(self._selectedIndexPaths)
+        guard valid.count > 0 else { return }
+        let approved = notify
+            ? (self.delegate?.collectionView?(self, shouldDeselectItemsAt: valid) ?? valid)
+            : valid
+        guard approved.count > 0 else { return }
+        self._selectedIndexPaths.formUnion(approved)
+        if scrollPosition != .none, let ip = approved.first {
+            self.scrollItem(at: ip, to: scrollPosition, animated: animated, completion: nil)
+        }
+        for ip in approved {
+            contentDocumentView.preparedCellIndex[ip]?.setSelected(true, animated: animated)
+        }
+        
+        if notify {
+            self.delegate?.collectionView?(self, didSelectItemsAt: approved)
+        }
     }
     
     private func _deselectAllItems(_ animated: Bool, notify: Bool) {
-        let anIP = self._selectedIndexPaths.first
-        self._lastSelection = nil
-        self._firstSelection = nil
-        
-        let ips = self._selectedIndexPaths.intersection(Set(self.indexPathsForVisibleItems))
-        
-        for ip in ips { self._deselectItem(at: ip, animated: animated, notifyDelegate: false) }
-        self._selectedIndexPaths.removeAll()
-        if notify, let ip = anIP {
-            self.delegate?.collectionView?(self, didDeselectItemAt: ip)
+        self._extendingStart = nil
+        self._deselectItems(at: self._selectedIndexPaths, animated: animated, notify: notify)
+    }
+    private func _deselectItem(at indexPath: IndexPath, animated: Bool, notify : Bool) {
+        self._deselectItems(at: Set([indexPath]), animated: animated, notify: notify)
+    }
+    private func _deselectItems(at indexPaths: Set<IndexPath>, animated: Bool, notify: Bool) {
+        let valid = indexPaths.intersection(self._selectedIndexPaths)
+        guard valid.count > 0 else { return }
+        let approved = notify
+            ? (self.delegate?.collectionView?(self, shouldDeselectItemsAt: valid) ?? valid)
+            : valid
+        guard approved.count > 0 else { return }
+        self._selectedIndexPaths.subtract(approved)
+        for ip in approved {
+            contentDocumentView.preparedCellIndex[ip]?.setSelected(false, animated: animated)
+        }
+        if notify {
+            self.delegate?.collectionView?(self, didDeselectItemsAt: approved)
         }
     }
     
-    private func _deselectItem(at indexPath: IndexPath, animated: Bool, notifyDelegate : Bool = true) {
-        if let deselect = self.delegate?.collectionView?(self, shouldDeselectItemAt: indexPath) , !deselect { return }
-        contentDocumentView.preparedCellIndex[indexPath]?.setSelected(false, animated: true)
-        self._selectedIndexPaths.remove(indexPath)
-        if notifyDelegate {
-            self.delegate?.collectionView?(self, didDeselectItemAt: indexPath)
+    
+    // MARK: Special Selections
+    /*-------------------------------------------------------------------------------*/
+    
+    private func _performSelection(at indexPath: IndexPath?, for clickEvent: NSEvent) {
+        
+        guard let ip = indexPath else {
+            if allowsEmptySelection {
+                self._deselectAllItems(true, notify: true)
+            }
+            if clickEvent.clickCount == 2 {
+                self.delegate?.collectionView?(self, didDoubleClickItemAt: nil, with: clickEvent)
+            }
+            // Test
+            return
+        }
+        
+        // Shift - extend the selection
+        if allowsMultipleSelection && clickEvent.modifierFlags.contains(NSEvent.ModifierFlags.shift) {
+            self._moveSelection(to: ip, extend: true, scrollPosition: .nearest, animated: true)
+        }
+            
+            // Toggle Mode (option) - toggle the item at indexPath
+        else if self.selectionMode == .toggle || (allowsMultipleSelection && clickEvent.modifierFlags.contains(NSEvent.ModifierFlags.command)) {
+            if self.itemAtIndexPathIsSelected(ip) {
+                self._deselectItem(at: ip, animated: true, notify: true)
+            }
+            else {
+                self._selectItems(at: Set([ip]), animated: true, notify: true)
+                self._extendingStart = ip
+            }
+        }
+            
+            // Double click
+        else if clickEvent.clickCount == 2 {
+            self.delegate?.collectionView?(self, didDoubleClickItemAt: ip, with: clickEvent)
+        }
+            
+            // Standard selection
+        else {
+            
+            var de = self._selectedIndexPaths
+            de.remove(ip)
+            self._deselectItems(at: de, animated: true, notify: true)
+            
+            self._extendingStart = ip
+            self._selectItems(at: Set([ip]), animated: true, notify: true)
         }
     }
+    
+    
+    private var _extendingStart : IndexPath? {
+        didSet { self._extendingEnd = nil }
+    }
+    private var _extendingEnd : IndexPath?
+    
+    private func _moveSelection(to indexPath: IndexPath, extend: Bool, scrollPosition: CollectionViewScrollPosition, animated: Bool) {
+        
+        var indexesToSelect = Set<IndexPath>()
+        
+        indexesToSelect.insert(indexPath)
+        if extend  && self.allowsMultipleSelection {
+            
+            if let start = self._extendingStart {
+                if let end = _extendingEnd {
+                    if indexPath.isBetween(start, end: end) {
+                        var de = self.indexPathsBetween(end, end: indexPath)
+                        de.remove(indexPath)
+                        self._deselectItems(at: de, animated: true, notify: true)
+                        self._extendingEnd = indexPath
+                        return
+                    }
+                    if (start < end) == (indexPath > end) {
+                        indexesToSelect.formUnion(self.indexPathsBetween(end, end: indexPath))
+                        self._extendingEnd = indexPath
+                    }
+                    else {
+                        var des = self.indexPathsBetween(start, end: end)
+                        des.remove(start)
+                        self._deselectItems(at: des, animated: true, notify: true)
+                        indexesToSelect.formUnion(self.indexPathsBetween(start, end: indexPath))
+                        self._extendingEnd = indexPath
+                    }
+                }
+                else {
+                    indexesToSelect.formUnion(self.indexPathsBetween(start, end: indexPath))
+                    self._extendingEnd = indexPath
+                }
+            }
+            else {
+                self._extendingStart = indexPath
+            }
+        }
+        else {
+            self._deselectItems(at: self._selectedIndexPaths.removing([indexPath]), animated: true, notify: true)
+        }
+        
+        self._selectItems(at: indexesToSelect, animated: true, notify: true)
+        self.scrollItem(at: indexPath, to: scrollPosition, animated: animated, completion: nil)
+    }
+   
     
     
     
@@ -2103,6 +2130,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return IndexPath.for(item: indexPath._item + 1, section: indexPath._section)
         }
         return nil;
+    }
+    
+    func indexPathsBetween(_ start: IndexPath, end: IndexPath) -> Set<IndexPath> {
+        var res = Set<IndexPath>()
+        let _start = min(start, end)
+        let _end = max(start, end)
+        
+        var next : IndexPath? =  _start
+        while let ip = next, ip <= _end {
+            res.insert(ip)
+            next = self.indexPathForSelectableItem(after: ip)
+        }
+        return res
     }
     
     

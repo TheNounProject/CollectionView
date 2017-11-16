@@ -167,7 +167,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
              */
             
             
-            var insets :  NSEdgeInsets =  self.delegate?.collectionView?(cv, layout: self, insetForSectionAt: section) ?? self.sectionInsets
+            let insets :  NSEdgeInsets =  self.delegate?.collectionView?(cv, layout: self, insetForSectionAt: section) ?? self.sectionInsets
             
 //            insets.left += contentInsets.left
 //            insets.right += contentInsets.right
@@ -364,20 +364,25 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
         return frame
     }
     
-    
-    
+
     
     public override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
         guard let collectionView = self.collectionView else { fatalError() }
         guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }
+        
+        func shouldSelectItem(at indexPath: IndexPath) -> IndexPath? {
+            let set = Set([indexPath])
+            let valid = self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemsAt: set) ?? set
+            return valid.first
+        }
         
         switch direction {
         case .up, .left:
             var ip = currentIndexPath
             while true {
                 guard let prop = self.allIndexPaths.object(before: ip) else { return nil }
-                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
-                    return prop
+                if let p = shouldSelectItem(at: prop) {
+                    return p
                 }
                 ip = prop
             }
@@ -405,8 +410,8 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
             var ip = currentIndexPath
             while true {
                 guard let prop = self.allIndexPaths.object(after: ip) else { return nil }
-                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
-                    return prop
+                if let p = shouldSelectItem(at: prop) {
+                    return p
                 }
                 ip = prop
             }

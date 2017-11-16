@@ -122,6 +122,14 @@ public extension IndexPath {
     func adjustingSection(by: Int) -> IndexPath {
         return IndexPath.for(item: self._item, section: section + by)
     }
+    
+    func isBetween(_ start: IndexPath, end:IndexPath) -> Bool {
+        if self == start { return true }
+        if self == end { return true }
+        let _start = Swift.min(start, end)
+        let _end = Swift.max(start, end)
+        return (_start..<_end).contains(self)
+    }
 }
 
 

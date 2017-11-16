@@ -229,7 +229,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
             ?? controller as? CollectionViewPreviewControllerDelegate
         
         guard self.delegate != nil else {
-            log.error("Serious Error: controller or sourceCollectionView's delegate must adopt to CollectionViewPreviewController. Missing delegate when presenting")
+            log.error("Serious Error: controller or sourceCollectionView's delegate must conform to CollectionViewPreviewController. Missing delegate when presenting")
             return
         }
         
@@ -288,6 +288,8 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     */
     open func dismiss(animated: Bool, completion: AnimationCompletion? = nil)  {
         self.delegate?.collectionViewPreviewControllerWillDismiss(self)
+        print(self.collectionView.indexPathsForSelectedItems)
+        print(self.sourceCollectionView!.indexPathsForSelectedItems)
         guard let sourceCV = self.sourceCollectionView,
             let ip = self.collectionView.indexPathsForSelectedItems.first ?? self.collectionView.indexPathForFirstVisibleItem else {
             self.view.removeFromSuperview()
@@ -337,7 +339,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     
     open override func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
         let cell = self.delegate?.collectionViewPreviewController(self, cellForItemAt: indexPath)
-        precondition(cell != nil, "PreviewCollectionViewController was unable to load a cell for item at \(indexPath)")
+        precondition(cell != nil, "CollectionViewPreviewController was unable to load a cell for item at \(indexPath)")
         return cell!
     }
 }

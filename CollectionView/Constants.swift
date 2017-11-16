@@ -48,7 +48,7 @@ public enum CollectionViewScrollPosition {
 internal enum CollectionViewSelectionType {
     case single
     case extending
-    case multiple
+    case toggle
 }
 
 

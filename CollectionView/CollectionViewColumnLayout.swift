@@ -276,7 +276,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         }
         let numberOfSections = _collectionView.numberOfSections
         
-        var top : CGFloat = 0.0
+        var top : CGFloat = self.collectionView?.leadingView?.bounds.size.height ?? 0
         for section in 0..<numberOfSections {
             let colCount = self.columnsInSection(section)
             
@@ -437,11 +437,11 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                 
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
-                if indexPath._section == 0 && contentOffset.y < -cv.contentInsets.top {
-                    currentAttrs.frame.origin.y = 0
-                    currentAttrs.floating = false
-                }
-                else {
+//                if indexPath._section == 0 && contentOffset.y < -cv.contentInsets.top {
+//                    currentAttrs.frame.origin.y = 0
+//                    currentAttrs.floating = false
+//                }
+//                else {
                     var nextHeaderOrigin = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude)
                     if let nextHeader = self.headersAttributes[indexPath._section + 1] {
                         nextHeaderOrigin = nextHeader.frame.origin
@@ -449,7 +449,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                     let topInset = cv.contentInsets.top 
                     currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
                     currentAttrs.floating = indexPath._section == 0 || currentAttrs.frame.origin.y > frame.origin.y
-                }
+//                }
                 attrs = currentAttrs
             }
             return attrs

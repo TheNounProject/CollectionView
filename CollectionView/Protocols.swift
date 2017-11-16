@@ -97,8 +97,8 @@ import Foundation
      - Parameter collectionView: The collection view requesting this information.
      - Parameter indexPath: The index path of the item to represent with the pasteboard writer
      
-     - Returns: An object adoption NSPasteboardWriting to represent the item, or nil
-
+     - Returns: The pasteboard writer object to use for managing the item data. Return nil to prevent the collection view from dragging the item.
+     
     */
     @objc optional func collectionView(_ collectionView: CollectionView, pasteboardWriterForItemAt indexPath: IndexPath) -> NSPasteboardWriting?
     
@@ -116,7 +116,7 @@ import Foundation
     @objc optional func collectionView(_ collectionView: CollectionView, dragContentsForItemAt indexPath: IndexPath) -> NSImage?
     
     /**
-     Tells the data source the current rect of the item being dragging, allowing for adjustment.
+     Asks the data source to validate the drag rect for an item to be dragged, allowing for adjustment.
 
      - Parameter collectionView: The collection view requesting this information.
      - Parameter indexPath: The index path of the item being dragged
@@ -131,39 +131,29 @@ import Foundation
 /**
  The CollectionViewDelegate protocol defines methods that allow you to manage the status, selection, highlighting, and scrolling of items in a collection view and to perform actions on those items. The methods of this protocol are all optional.
 */
+
 @objc public protocol CollectionViewDelegate {
     
     
     // MARK: - Reloading Data
     /*-------------------------------------------------------------------------------*/
     
-    
     /**
-     Tells the delegate that the collection view will reload it's data
-
-     - Parameter collectionView: The collection view that will reload
-
-    */
-//    @objc optional func collectionViewWillReloadData(_ collectionView: CollectionView)
-    
-    
-    /**
-     Tells the delegate that the collection view will reload it's layout
+     Notifies the delegate that the collection view will reload it's layout
      
      It can be assumed that the data has been reloaded
 
-     - Parameter collectionView: The collection view that was reloaded
-
+     - Parameter collectionView: The collection view is reloading it's layout
+     
+     - Note: Calculating layout properties that can be cached can be done here and later returned in associated the layout delegate methods.
     */
-//    @objc optional func collectionViewDidReloadData(_ collectionView: CollectionView)
-    
     @objc optional func collectionViewWillReloadLayout(_ collectionView: CollectionView)
     
     
 	/**
-	Tells the delegate that the collection view finished reloading it's layout
+	Notifies the delegate that the collection view finished reloading it's layout
      
-     It can be assumed that the data has been reloaded
+     It can be assumed that the data has been reloaded and  is up to date
 
 	- Parameter collectionView: The collection view
 
@@ -175,7 +165,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that the collection view became or resigned first responder
+     Notifies the delegate that the collection view has changed status as first responder
 
      - Parameter collectionView: The collection view changing status
      - Parameter firstResponder: True if the collection view is first responder
@@ -188,7 +178,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that the mouse moved into a section
+      Notifies the delegate that the mouse has moved into the frame of a section.
 
      - Parameter collectionView: The collection view notifying you of the event
      - Parameter indexPath: the index path of the section
@@ -199,7 +189,7 @@ import Foundation
     @objc optional func collectionView(_ collectionView: CollectionView, mouseMovedToSection indexPath: IndexPath?)
     
     /**
-     Tells the delegate that the mouse was clicked down in the specified index path
+     Notifies the delegate that the mouse was clicked down in the specified index path
 
      - Parameter collectionView: The collection view recieving the click
      - Parameter indexPath: The index path of the item at the click location, or nil
@@ -210,7 +200,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that the mouse was released in the specified index path
+     Notifies the delegate that the mouse was released in the specified index path
 
      - Parameter collectionView: The collection view receiving the click
      - Parameter indexPath: The index path of the item at the click location, or nil
@@ -243,47 +233,80 @@ import Foundation
     // MARK: - Selections
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     Asks the delegate if the item at a given index path should be selected
-     
-     - Parameter collectionView: The asking collection view
-     - Parameter indexPath: The index path of the item potentially being selected
-     - Parameter event: The event that cause the selection
-     
-     - Returns: True if the item should be selected
-
-    */
-    @objc optional func collectionView(_ collectionView: CollectionView, shouldSelectItemAt indexPath: IndexPath, with event: NSEvent?) -> Bool
     
-    /**
-     Tells the delegate that an item has been selected
-     
-     - Parameter collectionView: The reporting collection view
-     - Parameter indexPath: The index path of the item that was selected
-     
-    */
-    @objc optional func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath)
     
-    /**
-     Asks the delegate if the item at a given index path should be deselected
-
-     - Parameter collectionView: The asking collection view
-     - Parameter indexPath: The index path of the item
-     
-     - Returns: True if the item should be deselected
-
-    */
+    // Single index path selection delegate methods are deprecated. Please use Set<IndexPath> versions.
+    @available(*, deprecated,  message: "Please use collectionView(_:, shouldDeselectItemsAt:)")
     @objc optional func collectionView(_ collectionView: CollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool
     
-    /**
-     Tells the delegate that an item was deselected
-
-     - Parameter collectionView: The reporting collection view
-     - Parameter indexPath: The index path of the item that was deselected
-
-    */
+    @available(*, deprecated,  message: "Please use collectionView(_:, didDeselectItemsAt:)")
     @objc optional func collectionView(_ collectionView: CollectionView, didDeselectItemAt indexPath: IndexPath)
     
+    @available(*, deprecated,  message: "Please use collectionView(_:, shouldSelectItemsAt:)")
+    @objc optional func collectionView(_ collectionView: CollectionView, shouldSelectItemAt indexPath: IndexPath, with event: NSEvent?) -> Bool
+    
+    @available(*, deprecated,  message: "Please use collectionView(_:, didSelectItemsAt:)")
+    @objc optional func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath)
+    
+    
+    
+    
+    /**
+     Asks the delegate to approve the pending selection of items.
+     
+     - Parameter collectionView: The collection view making the request.
+     - Parameter indexPath: The set of NSIndexPath objects corresponding to the items selected by the user.
+     - Parameter event: The event that cause the selection
+     
+     - Returns: The set of NSIndexPath objects corresponding to the items that you want to be selected. If you do not want any items selected, return an empty set.
+     
+     Use this method to approve or modify the items that the user tries to select. During interactive selection, the collection view calls this method whenever the user selects new items. Your implementation of the method can return the proposed set of index paths as-is or modify the set before returning it. You might modify the set to disallow the selection of specific items or specific combinations of items.
+     
+     If you do not implement this method, the collection view selects the items specified by the indexPaths parameter.
+     
+     */
+    @objc optional func collectionView(_ collectionView: CollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath>
+    
+    /**
+     Notifies the delegate object that one or more items were selected.
+     
+     - Parameter collectionView: The collection view notifying you of the selection change.
+     - Parameter indexPath: The set of NSIndexPath objects corresponding to the items that are now selected.
+     
+     After the user successfully selects one or more items, the collection view calls this method to let you know that the selection has been made. Use this method to respond to the selection change and to make any necessary adjustments to your content or the collection view.
+     
+     - Note: The provided index paths do not inlcude index paths selected prior to this event.
+     */
+    
+    @objc optional func collectionView(_ collectionView: CollectionView, didSelectItemsAt indexPaths: Set<IndexPath>)
+    
+    
+    /**
+     Asks the delegate object to approve the pending deselection of items.
+     
+     - Parameter collectionView: The collection view making the request.
+     - Parameter indexPath: The set of NSIndexPath objects corresponding to the items deselected by the user.
+     
+     - Returns: The set of NSIndexPath objects corresponding to the items that you want to be selected. If you do not want any items selected return an empty set.
+     
+     Use this method to approve or modify the items that the user tries to deselect. During interactive selection, the collection view calls this method whenever the user deselects items. Your implementation of the method can return the proposed set of index paths as-is or modify the set before returning it. You might modify the set to disallow the deselection of specific items.
+     
+     */
+    @objc optional func collectionView(_ collectionView: CollectionView, shouldDeselectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath>
+    
+    /**
+     Notifies the delegate object that one or more items were deselected.
+     
+     - Parameter collectionView: The collection view notifying you of the selection change.
+     - Parameter indexPath: The set of NSIndexPath objects corresponding to the items that were deselected.
+     
+     After the user successfully deselects one or more items, the collection view calls this method to let you know that the items are no longer selected. Use this method to respond to the selection change and to make any necessary adjustments to your content or the collection view.
+     */
+    @objc optional func collectionView(_ collectionView: CollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>)
+    
+    
+
+
     
     /**
      Not implemented
@@ -293,14 +316,12 @@ import Foundation
      - Parameter indexPath: <#indexPath description#>
 
     */
+    @available(*, unavailable, message: "Trackpad pressure is not yet implemented")
     @objc optional func collectionView(_ collectionView: CollectionView, didChangePressure pressure: CGFloat, forItemAt indexPath: IndexPath)
-    
-    // MARK: - Special Clicks
-    /*-------------------------------------------------------------------------------*/
     
     
     /**
-     Tells the delegate that an item was double clicked
+     Notifies the delegate that an item was double clicked
      
      - Parameter collectionView: The collection view containing the clicked item
      - Parameter indexPath: The index path of the clicked item
@@ -310,7 +331,7 @@ import Foundation
     @objc optional func collectionView(_ collectionView: CollectionView, didDoubleClickItemAt indexPath: IndexPath?, with event: NSEvent)
     
     /**
-     Tells the delegate that an item was right clicked
+     Notifies the delegate that an item was right clicked
 
      - Parameter collectionView: The collection view containing the clicked item
      - Parameter indexPath: The index path of the clicked item
@@ -327,7 +348,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that a supplementary view will bw displayed
+     Notifies the delegate that a supplementary view will bw displayed
      
      - Parameter collectionView: The collection view containing the supplementary view
      - Parameter elementKind: The element kind of the view
@@ -338,7 +359,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that a cell was removed from view
+     Notifies the delegate that a cell was removed from view
 
      - Parameter collectionView: The collection view containing the cell
      - Parameter cell: The cell that was removed
@@ -349,7 +370,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that a supplementary view was removed from view
+     Notifies the delegate that a supplementary view was removed from view
 
      - Parameter collectionView: The collection view containing the supplementary view
      - Parameter view: The view that was removed
@@ -381,7 +402,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that the collection view did begin resizing
+     Notifies the delegate that the collection view did begin resizing
 
      - Parameter collectionView: The collection view
 
@@ -404,7 +425,7 @@ import Foundation
     @objc optional func collectionView(_ collectionView: CollectionView, shouldScrollToItemAt indexPath: IndexPath) -> Bool
     
     /**
-     Tells the delgate that the collection view did complete a scrolling action
+     Notifies the delegate that the collection view did complete a scrolling action
 
      - Parameter collectionView: The collection view that performed a scrolling animation
      - Parameter indexPath: The index path that was scrolled to
@@ -414,7 +435,7 @@ import Foundation
 
     
     /**
-     Tells the delegate that the collection view was scrolled
+     Notifies the delegate that the collection view was scrolled
 
      - Parameter collectionView: The collection view that was scrolled
      
@@ -425,7 +446,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that the collection view will begin scrolling
+     Notifies the delegate that the collection view will begin scrolling
      
      - Parameter collectionView: The collection view that will begin scrolling
 
@@ -434,7 +455,7 @@ import Foundation
     
     
     /**
-     Tells the delegate that the collection view did end scrolling
+     Notifies the delegate that the collection view did end scrolling
      
      - Parameter collectionView: The collection view that was scrolled
      - Parameter animated: True if the scroll was animated (false for user driven scrolling)
@@ -484,7 +505,7 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
     @objc optional func collectionView(_ collectionView: CollectionView, validateIndexPathsForDrag indexPaths: [IndexPath]) -> [IndexPath]
     
     /**
-     Tells the delegate that a dragging session will begin
+     Notifies the delegate that a dragging session will begin
 
      - Parameter collectionView: The collection view
      - Parameter session: The dragging session
@@ -496,7 +517,7 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
     @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, willBeginAt point: NSPoint)
     
     /**
-     Tells the delegate that a dragging session ended
+     Notifies the delegate that a dragging session ended
 
      - Parameter collectionView: The collection view
      - Parameter session: The drag session
@@ -507,7 +528,7 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
     @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, didEndAt screenPoint: NSPoint, with operation: NSDragOperation, draggedIndexPaths: [IndexPath])
     
     /**
-     Tells the delegate that a dragging session moved
+     Notifies the delegate that a dragging session moved
 
      - Parameter collectionView: The collection view
      - Parameter session: The drag session
@@ -540,7 +561,7 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
     */
     @objc optional func collectionView(_ collectionView: CollectionView, dragUpdated dragInfo: NSDraggingInfo) -> NSDragOperation
     /**
-     Tells the delegate that a drag exited the collection view as a dragging destination
+     Notifies the delegate that a drag exited the collection view as a dragging destination
 
      - Parameter collectionView: The collection view
      - Parameter dragInfo: The drag info
@@ -549,7 +570,7 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
     @objc optional func collectionView(_ collectionView: CollectionView, dragExited dragInfo: NSDraggingInfo?)
     
     /**
-     Tells the delegate that a drag ended in the collection view as a dragging destination
+     Notifies the delegate that a drag ended in the collection view as a dragging destination
 
      - Parameter collectionView: The collection view
      - Parameter dragInfo: The drag info

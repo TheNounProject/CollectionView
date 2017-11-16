@@ -329,11 +329,15 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         let numSections = cv.numberOfSections
         guard numSections > 0 else { return }
         
-        var top : CGFloat = 0
+        var top : CGFloat = self.collectionView?.leadingView?.bounds.size.height ?? 0
+        
+        let contentInsets = cv.contentInsets
         
         for sec in 0..<numSections {
            
-            let insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
+            var insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
+            insets.left += contentInsets.left
+            insets.right += contentInsets.right
             let transform = self.delegate?.collectionView(cv, flowLayout: self, rowTransformForSectionAt: sec) ?? self.defaultRowTransform
             
             var sectionAttrs = SectionAttributes(insets: insets, transform: transform)
@@ -344,13 +348,13 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             
             let contentWidth = cv.contentVisibleRect.size.width - insets.left - insets.right
             
-            
             let heightHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? self.defaultHeaderHeight
             if heightHeader > 0 {
                 let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, with: IndexPath.for(section: sec))
+                
                 attrs.frame = insetSupplementaryViews
                     ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: 0, y: top, width: cv.frame.size.width, height: heightHeader)
+                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - contentInsets.left - contentInsets.right, height: heightHeader)
                 sectionAttrs.header = attrs
                 sectionAttrs.frame = attrs.frame
                 top = attrs.frame.maxY
@@ -465,8 +469,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             if footerHeader > 0 {
                 let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(section: sec))
                 attrs.frame = insetSupplementaryViews
-                    ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: 0, y: top, width: cv.contentVisibleRect.size.width, height: heightHeader)
+                    ? CGRect(x: insets.left + contentInsets.left, y: top, width: contentWidth, height: heightHeader)
+                    : CGRect(x: contentInsets.left, y: top, width: cv.contentVisibleRect.size.width - contentInsets.left - contentInsets.right, height: heightHeader)
                 sectionAttrs.footer = attrs
                 sectionAttrs.frame = sectionAttrs.frame.union(attrs.frame)
                 top = attrs.frame.maxY
@@ -515,8 +519,10 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
-                if indexPath._section == 0 && contentOffset.y < -cv.contentInsets.top {
-                    currentAttrs.frame.origin.y = 0
+                
+                let lead = cv.leadingView?.bounds.size.height ?? 0
+                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
+                    currentAttrs.frame.origin.y = lead
                     currentAttrs.floating = false
                 }
                 else {
@@ -589,6 +595,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         if numberOfSections == 0 { return CGSize.zero }
         
         var contentSize = cv.contentVisibleRect.size as CGSize
+        contentSize.width = contentSize.width - (cv.contentInsets.left + cv.contentInsets.right)
         let height = self.sectionAttributes.last?.frame.maxY ?? 0
         if height == 0 { return CGSize.zero }
         contentSize.height = height
@@ -632,6 +639,11 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         
         var startingIP = currentIndexPath
         
+        func shouldSelectItem(at indexPath: IndexPath) -> IndexPath? {
+            let set = Set([indexPath])
+            let valid = self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemsAt: set) ?? set
+            return valid.first
+        }
         
         switch direction {
         case .up:
@@ -652,7 +664,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 prev = row
             }
             guard let ip = proposed else { return nil }
-            if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: ip, with: NSApp.currentEvent) != false { return proposed }
+            if let p = shouldSelectItem(at: ip) {
+                return p
+            }
             startingIP = ip
             fallthrough
             
@@ -660,8 +674,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             var ip = startingIP
             while true {
                 guard let prop = self.allIndexPaths.object(before: ip) else { return nil }
-                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
-                    return prop
+                if let p = shouldSelectItem(at: prop) {
+                    return p
                 }
                 ip = prop
             }
@@ -685,7 +699,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 prev = row
             }
             guard let ip = proposed else { return nil }
-            if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: ip, with: NSApp.currentEvent) != false { return proposed }
+            if let p = shouldSelectItem(at: ip) {
+                return p
+            }
             startingIP = ip
             fallthrough
             
@@ -695,8 +711,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             var ip = startingIP
             while true {
                 guard let prop = self.allIndexPaths.object(after: ip) else { return nil }
-                if self.collectionView?.delegate?.collectionView?(collectionView, shouldSelectItemAt: prop, with: NSApp.currentEvent) != false {
-                    return prop
+                if let p = shouldSelectItem(at: prop) {
+                    return p
                 }
                 ip = prop
             }

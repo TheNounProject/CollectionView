@@ -1774,6 +1774,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /// If true, clicking empty space will deselect all items (default true)
     public var notifyDelegate: Bool = false
     
+    /// If true, selecting an already selected item will notify the delegate (default true)
+    public var repeatSelections: Bool = false
+    
     
     
     // MARK: - Selections
@@ -1954,10 +1957,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /*-------------------------------------------------------------------------------*/
     
     private func _selectItems(at indexPaths : Set<IndexPath>, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none, notify: Bool) {
-        let valid = indexPaths.subtracting(self._selectedIndexPaths)
+        let valid = repeatSelections ? indexPaths : indexPaths.subtracting(self._selectedIndexPaths)
         guard valid.count > 0 else { return }
         let approved = notify
-            ? (self.delegate?.collectionView?(self, shouldDeselectItemsAt: valid) ?? valid)
+            ? (self.delegate?.collectionView?(self, shouldSelectItemsAt: valid) ?? valid)
             : valid
         guard approved.count > 0 else { return }
         self._selectedIndexPaths.formUnion(approved)
@@ -2036,7 +2039,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             // Standard selection
         else {
-            
             var de = self._selectedIndexPaths
             de.remove(ip)
             self._deselectItems(at: de, animated: true, notify: true)
@@ -2090,6 +2092,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
         }
         else {
+            self._extendingStart = nil
             self._deselectItems(at: self._selectedIndexPaths.removing([indexPath]), animated: true, notify: true)
         }
         

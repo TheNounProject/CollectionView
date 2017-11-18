@@ -346,7 +346,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             sectionAttrs.frame.origin.y = top
             sectionAttrs.contentFrame.origin.y = top
             
-            let contentWidth = cv.contentVisibleRect.size.width - insets.left - insets.right
+            let contentWidth = cv.contentVisibleRect.size.width - (insets.left + insets.right)
             
             let heightHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? self.defaultHeaderHeight
             if heightHeader > 0 {
@@ -354,7 +354,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 attrs.frame = insetSupplementaryViews
                     ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - contentInsets.left - contentInsets.right, height: heightHeader)
+                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - (contentInsets.left + contentInsets.right), height: heightHeader)
                 sectionAttrs.header = attrs
                 sectionAttrs.frame = attrs.frame
                 top = attrs.frame.maxY

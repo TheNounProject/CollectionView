@@ -1893,6 +1893,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.selectItems(at: Set(indexPaths), animated: animated)
     }
     public func selectItems(at indexPaths: Set<IndexPath>, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) {
+        guard indexPaths.count > 0 else {
+            self.deselectAllItems()
+            return
+        }
         self._performProgramaticSelection(for: indexPaths, animated: animated, scrollPosition: scrollPosition)
     }
     
@@ -1944,11 +1948,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     
     private func _performProgramaticSelection(for indexPaths: Set<IndexPath>, animated: Bool, scrollPosition: CollectionViewScrollPosition) {
-        let de = self._selectedIndexPaths.filter({ (ip) -> Bool in
-            return !indexPaths.contains(ip)
-        })
-        self._deselectItems(at: de, animated: animated, notify: notifyDelegate)
-        self._selectItems(at: indexPaths, animated: animated, scrollPosition: scrollPosition, notify: notifyDelegate)
+        self._extendingStart = nil
+        self._selectItems(at: indexPaths, animated: animated, clear: true, scrollPosition: scrollPosition, notify: notifyDelegate)
     }
     
     
@@ -1956,12 +1957,23 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Internal Selection Handling
     /*-------------------------------------------------------------------------------*/
     
-    private func _selectItems(at indexPaths : Set<IndexPath>, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none, notify: Bool) {
-        let valid = repeatSelections ? indexPaths : indexPaths.subtracting(self._selectedIndexPaths)
-        guard valid.count > 0 else { return }
-        let approved = notify
-            ? (self.delegate?.collectionView?(self, shouldSelectItemsAt: valid) ?? valid)
-            : valid
+    private func _selectItems(at indexPaths : Set<IndexPath>, animated: Bool, clear: Bool = false, scrollPosition: CollectionViewScrollPosition = .none, notify: Bool) {
+        let needApproval = repeatSelections ? indexPaths : indexPaths.subtracting(self._selectedIndexPaths)
+        
+        var approved = needApproval
+//        var deselect = self._selectedIndexPaths.removing(indexPaths)
+        
+        // Only check with delegate if we have ips to validate
+        if needApproval.count > 0 {
+            approved = notify
+                ? (self.delegate?.collectionView?(self, shouldSelectItemsAt: needApproval) ?? needApproval)
+                : needApproval
+        }
+        
+        if clear {
+            let deselect = self._selectedIndexPaths.removing(indexPaths)
+            self._deselectItems(at: deselect, animated: true, notify: notify)
+        }
         guard approved.count > 0 else { return }
         self._selectedIndexPaths.formUnion(approved)
         if scrollPosition != .none, let ip = approved.first {
@@ -1999,6 +2011,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
     }
     
+    
+//    private func _shouldSelectItems(_ indexPaths: Set<IndexPath>) -> Set<IndexPath> {
+//
+//    }
     
     // MARK: Special Selections
     /*-------------------------------------------------------------------------------*/
@@ -2090,13 +2106,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
             else {
                 self._extendingStart = indexPath
             }
+            self._selectItems(at: indexesToSelect, animated: true, clear: false, notify: true)
         }
         else {
             self._extendingStart = nil
-            self._deselectItems(at: self._selectedIndexPaths.removing([indexPath]), animated: true, notify: true)
+            self._selectItems(at: indexesToSelect, animated: true, clear: true, notify: true)
         }
         
-        self._selectItems(at: indexesToSelect, animated: true, notify: true)
         self.scrollItem(at: indexPath, to: scrollPosition, animated: animated, completion: nil)
     }
    

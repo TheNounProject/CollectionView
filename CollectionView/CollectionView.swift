@@ -64,8 +64,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public init() {
         super.init(frame: NSZeroRect)
         self.setup()
-       
     }
+    
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        self.setup()
+    }
+    
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.setup()

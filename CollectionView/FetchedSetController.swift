@@ -64,19 +64,15 @@ public class FetchedSetController : NSObject {
     }
     
     deinit {
-        if _fetched {
-            unregister()
-        }
+        unregister()
     }
     
     
     private var _fetched: Bool = false
     
     private func setNeedsFetch() {
-        if _fetched {
-            _fetched = false
-            unregister()
-        }
+        _fetched = false
+        unregister()
     }
     
     
@@ -91,9 +87,7 @@ public class FetchedSetController : NSObject {
             throw ResultsControllerError.unknown
         }
         
-        if !_fetched && delegate != nil {
-            register()
-        }
+        register()
         _fetched = true
         
         self._storage.removeAll()
@@ -168,11 +162,14 @@ public class FetchedSetController : NSObject {
     
     // MARK: - Notification Registration
     /*-------------------------------------------------------------------------------*/
+    private var _registered = false
     private func register() {
+        guard !_registered, self.delegate != nil else { return }
         ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
         NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)    }
     
     private func unregister() {
+        guard _registered else { return }
         ResultsControllerCDManager.shared.remove(context: self.managedObjectContext)
         NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
     }

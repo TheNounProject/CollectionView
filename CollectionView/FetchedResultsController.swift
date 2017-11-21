@@ -197,9 +197,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         self._sections.removeAll()
         self.fetchRequest.predicate = nil
         
-        if _fetched {
-            unregister()
-        }
+        unregister()
     }
     
     
@@ -219,9 +217,8 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             throw ResultsControllerError.unknown
         }
         
-        if !_fetched && delegate != nil {
-            register()
-        }
+        
+        register()
         _fetched = true
         
         self._sections.removeAll()
@@ -576,13 +573,16 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     
     // MARK: - Notification Registration
     /*-------------------------------------------------------------------------------*/
+    private var _registered = false
     private func register() {
-        guard let moc = self._managedObjectContext else { return }
+        guard let moc = self._managedObjectContext, !_registered, self.delegate != nil else { return }
+        _registered = true
         ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
         NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: moc)    }
     
     private func unregister() {
-        guard let moc = self._managedObjectContext else { return }
+        guard let moc = self._managedObjectContext, _registered else { return }
+        _registered = false
         ResultsControllerCDManager.shared.remove(context: moc)
         NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: moc)
     }

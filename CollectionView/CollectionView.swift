@@ -758,8 +758,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private var _resizeStartBounds : CGRect = CGRect.zero
     open override func viewWillStartLiveResize() {
         _resizeStartBounds = self.contentVisibleRect
-        let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
-        if contentVisibleRect.origin.y > ignore {
+        if self.collectionViewLayout.scrollDirection == .vertical {
+            let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
+            if contentVisibleRect.origin.y > ignore {
+                _topIP = indexPathForFirstVisibleItem
+            }
+        }
+        else {
             _topIP = indexPathForFirstVisibleItem
         }
     }

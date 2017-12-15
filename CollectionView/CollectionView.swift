@@ -421,8 +421,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._reloadDataCounts()
         
         doLayoutPrep()
-        
-        contentDocumentView.frame.size = self.collectionViewLayout.collectionViewContentSize
+        setContentViewSize()
         self.reflectScrolledClipView(self.clipView!)
         
         self._selectedIndexPaths.formIntersection(self.allIndexPaths)
@@ -557,6 +556,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private func setContentViewSize(_ animated: Bool = false) {
         var newSize = self.collectionViewLayout.collectionViewContentSize
         var contain = self.frame.size
+        
         contain.width -= (contentInsets.left + contentInsets.right)
         contain.height -= (contentInsets.top + contentInsets.bottom)
         _lastViewSize = newSize
@@ -576,6 +576,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         else {
             contentDocumentView.frame.size = newSize
+            contentDocumentView.frame.origin.x = self.contentInsets.left
         }
         
     }
@@ -868,9 +869,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.scrollVelocity = CGPoint.zero
         self.peakScrollVelocity = CGPoint.zero
         
-        if trackSectionHover && NSApp.isActive, let point = self.window?.convertFromScreen(NSRect(origin: NSEvent.mouseLocation, size: CGSize.zero)).origin {
+        if let point = self.window?.convertFromScreen(NSRect(origin: NSEvent.mouseLocation, size: CGSize.zero)).origin {
             let loc = self.contentDocumentView.convert(point, from: nil)
-            self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSection(at: loc))
+            if let ip = self.indexPathForHighlightedItem, let cell = self.cellForItem(at: ip) {
+                cell.setHighlighted(cell.frame.contains(loc), animated: true)
+            }
+        
+            if trackSectionHover && NSApp.isActive {
+                self.delegate?.collectionView?(self, mouseMovedToSection: indexPathForSection(at: loc))
+            }
         }
     }
 

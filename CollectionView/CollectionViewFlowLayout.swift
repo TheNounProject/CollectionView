@@ -336,8 +336,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         for sec in 0..<numSections {
            
             var insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
-            insets.left += contentInsets.left
-            insets.right += contentInsets.right
+//            insets.left += contentInsets.left
+//            insets.right += contentInsets.right
             let transform = self.delegate?.collectionView(cv, flowLayout: self, rowTransformForSectionAt: sec) ?? self.defaultRowTransform
             
             var sectionAttrs = SectionAttributes(insets: insets, transform: transform)
@@ -346,7 +346,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             sectionAttrs.frame.origin.y = top
             sectionAttrs.contentFrame.origin.y = top
             
-            let contentWidth = cv.contentVisibleRect.size.width - (insets.left + insets.right)
+            let contentWidth = cv.contentVisibleRect.size.width - (insets.left + insets.right + contentInsets.left + contentInsets.right)
             
             let heightHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? self.defaultHeaderHeight
             if heightHeader > 0 {
@@ -406,7 +406,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                         // Check if the last row (if any) matches this items height
                         if !forceBreak, let prev = sectionAttrs.rows.last?.items.last, prev.frame.size.height == size.height {
                             // If there is enough space remaining, add it to the current row
-                            let rem = cv.frame.size.width - prev.frame.maxX - interitemSpacing - insets.right
+                            let rem = contentWidth - (prev.frame.maxX - contentInsets.left - insets.left) - interitemSpacing
                             if rem >= size.width {
                                 attrs.frame = CGRect(x: prev.frame.maxX + interitemSpacing, y: prev.frame.origin.y, width: size.width, height: size.height)
                                 sectionAttrs.rows[sectionAttrs.rows.count - 1].add(attributes: attrs)

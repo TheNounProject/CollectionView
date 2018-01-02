@@ -421,13 +421,14 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._reloadDataCounts()
         
         doLayoutPrep()
+        self.delegate?.collectionViewDidReloadLayout?(self)
         setContentViewSize()
         self.reflectScrolledClipView(self.clipView!)
         
         self._selectedIndexPaths.formIntersection(self.allIndexPaths)
         self.contentDocumentView.prepareRect(_preperationRect, animated: false)
         
-        self.delegate?.collectionViewDidReloadLayout?(self)
+        
     }
 
     

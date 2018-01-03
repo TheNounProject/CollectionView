@@ -573,16 +573,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
             NSAnimationContext.runAnimationGroup({ (ctx) in
                 ctx.duration = self.animationDuration
                 contentDocumentView.animator().frame.size = newSize
+//                contentDocumentView.frame.origin.x = 0 //ig self.contentInsets.left
             }, completionHandler: nil)
         }
         else {
             contentDocumentView.frame.size = newSize
             contentDocumentView.frame.origin.x = self.contentInsets.left
         }
-        
     }
     
     open override func layout() {
+        
         
 //        if #available(OSX 10.12, *) {
 //            // Do nothing
@@ -591,10 +592,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             _floatingSupplementaryView.frame = self.bounds
 //         }
         
-        if let v = self.leadingView {
-            v.frame.size.width = self.bounds.size.width
-            v.frame.origin.x = 0
-        }
+        self.layoutLeadingViews()
         
         super.layout()
         
@@ -607,16 +605,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             
             if let ip = _topIP {
                 self._scrollItem(at: ip, to: .leading, animated: false, prepare: false, completion: nil)
-//                if self.collectionViewLayout.scrollDirection == .vertical {
-//                    rect = CGRect(origin: rect.origin, size: self.bounds.size)
-//                    rect.origin.x = self.contentInsets.left
-//                }
-//                else {
-//                    rect = CGRect(origin: rect.origin, size: self.bounds.size)
-////                    rect.origin.y = self.contentInsets.top
-//                }
-                
-//                _ = self.clipView?.scrollRectToVisible(rect, animated: false, completion: nil)
             }
             self.reflectScrolledClipView(self.clipView!)
             self.contentDocumentView.prepareRect(_preperationRect, force: true)
@@ -625,6 +613,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         else {
             self.contentDocumentView.prepareRect(_preperationRect, force: false)
         }
+        
     }
     
     @available(*, unavailable, renamed: "reloadLayout(_:scrollPosition:completion:)")
@@ -651,9 +640,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     private func layoutLeadingViews() {
         if let v = self.leadingView {
-            v.frame.origin.x = self.contentInsets.left
             v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
+            v.frame.origin.x = 0
         }
+//        if let v = self.leadingView {
+//            v.frame.origin.x = self.contentInsets.left
+//            v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
+//        }
     }
     
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
@@ -675,7 +668,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             let newIP : IndexPath
         }
         
-        // var absoluteCellFrames = [CollectionReusableView:CGRect]()
         var viewSpecs = [ViewSpec]()
         if sizeChanged {
             for view in self.contentDocumentView.preparedCellIndex {
@@ -685,28 +677,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     viewSpecs.append(ViewSpec(view: v, frame: newRect, newIP: view.index))
                 }
             }
-            /*
-            for view in self.floatingContentView.subviews {
-                if !view.isHidden, let v = view as? CollectionReusableView, let attrs = v.attributes {
-                    absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
-                }
-            }
-             */
         }
         
-            for view in self.contentDocumentView.preparedSupplementaryViewIndex {
-                let v = view.value
-                if !view.value.isHidden, let attrs = v.attributes {
-                    let newRect = self.convert(attrs.frame, from: v.superview)
-                    viewSpecs.append(ViewSpec(view: v, frame: newRect, newIP: view.key.indexPath!))
-                    // absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
-                }
+        for view in self.contentDocumentView.preparedSupplementaryViewIndex {
+            let v = view.value
+            if !view.value.isHidden, let attrs = v.attributes {
+                let newRect = self.convert(attrs.frame, from: v.superview)
+                viewSpecs.append(ViewSpec(view: v, frame: newRect, newIP: view.key.indexPath!))
+                // absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
             }
+        }
         
         // TODO: Get removed items from pending updates and adjust them
-        
-        
-        
         
         if sizeChanged {
             if scrollPosition != .none, let ip = self._topIP,
@@ -1652,7 +1634,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.window?.makeFirstResponder(self)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
         mouseDownLocation = theEvent.locationInWindow
-        let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
+        let point = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
         
         if accept.itemSpecific {
             self.mouseDownIP = self.indexPathForItem(at: point)
@@ -1669,7 +1651,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return
         }
         
-        let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
+        let point = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
         let indexPath = self.indexPathForItem(at: point)
         self.delegate?.collectionView?(self, mouseUpInItemAt: indexPath, with: theEvent)
         
@@ -1693,7 +1675,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         guard res.accept else { return }
         var ip : IndexPath?
         if res.itemSpecific {
-            let point = self.contentView.convert(theEvent.locationInWindow, from: nil)
+            let point = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
             ip = self.indexPathForItem(at: point)
         }
         self.delegate?.collectionView?(self, didRightClickItemAt: ip, with: theEvent)
@@ -2568,7 +2550,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         
         if scrollDirection == .vertical {
-            rect.origin.x = contentInsets.left
+            rect.origin.x = 0
             rect.size.width = contentSize.width
         }
         else {

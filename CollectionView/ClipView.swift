@@ -73,6 +73,12 @@ open class ClipView : NSClipView {
         }
     }
     
+//    open override func constrainBoundsRect(_ proposedBounds: NSRect) -> NSRect {
+//        var rect = proposedBounds
+//        rect.origin.x = 50
+//        return rect
+//    }
+    
     var _displayLink : CVDisplayLink?
     
     var displayLink : CVDisplayLink {
@@ -133,6 +139,7 @@ open class ClipView : NSClipView {
         }
         return success
     }
+    
     
     func finishedScrolling(_ success: Bool) {
         self.completionBlock?(success)

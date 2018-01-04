@@ -573,7 +573,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             NSAnimationContext.runAnimationGroup({ (ctx) in
                 ctx.duration = self.animationDuration
                 contentDocumentView.animator().frame.size = newSize
-//                contentDocumentView.frame.origin.x = 0 //ig self.contentInsets.left
             }, completionHandler: nil)
         }
         else {
@@ -1766,7 +1765,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /// If true, clicking empty space will deselect all items (default true)
     public var allowsEmptySelection: Bool = true
     
-    /// If true, clicking empty space will deselect all items (default true)
+    /// If true, programatic changes will be reported to the delegate (i.e. selections)
     public var notifyDelegate: Bool = false
     
     /// If true, selecting an already selected item will notify the delegate (default true)
@@ -2442,9 +2441,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     
     public func scrollToTop(animated: Bool = false, completion: AnimationCompletion? = nil) {
-        self.scrollRect(CGRect.zero, to: .leading, animated: animated, completion: completion)
-//        guard self.numberOfSections > 0 && self.numberOfItems(in: 0) > 0 else { return }
-//        self.scrollItem(at: IndexPath.zero, to: .leading, animated: animated, completion: completion)
+        self.scrollRect(CGRect(x: 0, y: self.contentInsets.top, width: 0, height: 0),
+                        to: .leading,
+                        animated: animated,
+                        completion: completion)
     }
     
     /**
@@ -2660,7 +2660,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self.isDragging = true
             let session = self.beginDraggingSession(with: items, event: theEvent, source: self)
             if items.count > 1 {
-                session.draggingFormation = .pile
+                session.draggingFormation = .stack
             }
         }
     }

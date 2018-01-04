@@ -91,7 +91,7 @@ import Foundation
 }
 
 
-/// A list collection view layout for use in TableView style scroll views
+/// A list layout that makes CollectionView a perfect alternative to NSTableView
 public final class CollectionViewListLayout : CollectionViewLayout  {
     
     //MARK: - Default layout values

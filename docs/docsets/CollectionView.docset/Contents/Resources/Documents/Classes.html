@@ -107,6 +107,9 @@
                 <a class="nav-group-task-link" href="Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Classes/ManagedResultsController.html">ManagedResultsController</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
               </li>
               <li class="nav-group-task">
@@ -245,6 +248,43 @@
                       <div class="abstract">
                         <p>A variation of UICollectionViewFlowLayout</p>
 
+<p>This layout is primarily row based, but uses ItemStyles to group similar items together.</p>
+
+<p>The layout&rsquo;s delegate, CollectionViewDelegateFlowLayout, is responsible for providing a style for each item in the collection view.</p>
+
+<p>Flow items are grouped together, always placing as many same height items in each row as possible. If the row becomes full or an flow item of a different height is provided, the layout will just to the next row and continue.</p>
+
+<p>Span items are always placed an their own row and fill the width of the Collection View.</p>
+<h3 id='example' class='heading'>Example</h3>
+<pre class="highlight plaintext"><code>+---------------------------------+
+|   +-----+ +------------+ +--+   |
+|   |  1  | |     2      | | 3|   |
+|   |     | |            | |  |   |
+|   +-----+ +------------+ +--+   |
+|   +--------+ +---------+        |
+|   |   4    | |   5     |        |
+|   |        | |         |        |
+|   |        | |         |        |
+|   |        | |         |        |
+|   +--------+ +---------+        |
+|   +-------------------------+   |
+|   |         6. Span         |   |
+|   +-------------------------+   |
++---------------------------------+
+</code></pre>
+<h3 id='transformations' class='heading'>Transformations</h3>
+
+<p>Transformations allow you to adjust the content of each row before moving on to the next row.</p>
+
+<p>The <q>center</q> transformation will shift the of the row to be center aligned rather than left aligned.</p>
+
+<p>The fill tranformation will enlarge the items in a row proportionally to fill the row if their is empty space on the right. Note that this will affect the height of the entire row.</p>
+<h3 id='spacing' class='heading'>Spacing</h3>
+
+<p>Spacing options such as interspanSpacing and spanGroupSpacingBefore allow you to customize the space around different types of style groups.</p>
+
+<p>The spanGroupSpacingBefore/After options will apply a set amount of space before or after a group of span items (one or more spans).</p>
+
                         <a href="Classes/CollectionViewFlowLayout.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
@@ -275,14 +315,27 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A highliy customizable collection view with cell reuse, animated updates, and custom layouts</p>
+                        <p>A Collection View manages the presentation of items, your app&rsquo;s main job is to provide the data that those items are to represent.</p>
 
-<p>The content of the collection view is determined by it&rsquo;s CollectionViewLayout. Inlcuded layouts:</p>
+<p>A collection view gets its data from the data source, which is an object that conforms to the CollectionViewDataSource protocol. Data provided by the data source is represented items, which can also be organized into sections, and ultimately displayed as cells.</p>
+<h3 id='gathings-data' class='heading'>Gathings Data</h3>
+
+<p>The data source only has 3 requirements, provide the number of sections, the number of items, and a cell for each item. For performance, cells in a collection view are reusable since only a subset of all the items will often be visbile.</p>
+
+<p>Before you can load a cell, you need to register the cells you will need to represet your data. Cells can be registered from a nib or from a class using <code>register(class:forCellWithReuseIdentifier:)</code> or <code>register(nib:forCellWithReuseIdentifier:)</code>. The reuse identifier will later be use to get instances of the cell.</p>
+
+<p>To create the cells for each item in your data, implement the data source method <code>func collectionView(_:cellForItemAt:) -&gt; CollectionViewCell</code>. In here you will call <code>dequeueReusableCell(withReuseIdentifier:for:)</code> which will load an instance of the cell your previously registered for that resuse identifier. After you have dequeued the cell, update it as needed to properly represent the object at the given index path in your data, then return it.</p>
+<h3 id='laying-out-items' class='heading'>Laying Out Items</h3>
+
+<p>After the data source has provided all the cells to be displayed, the collection view looks to its CollectionViewLayout to determine where to place each one. The base layout object is designed to be subclassed to generate layout information for different use cases. The goal of a layout is to be able to provide information about the layout to the collection view quickly, this inlcudes the location of each cell, the overall size of all the items, etc.</p>
+
+<p>The following layouts are provided for common uses, for more custom layouts, create a custom CollectionViewLayout subclass.</p>
 
 <ul>
 <li>CollectionViewColumnLayout</li>
 <li>CollectionViewListLayout</li>
 <li>CollectionViewFlowLayout</li>
+<li>CollectionViewHorizontalLayout</li>
 </ul>
 
                         <a href="Classes/CollectionView.html" class="slightly-smaller">See more</a>
@@ -347,7 +400,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A list collection view layout for use in TableView style scroll views</p>
+                        <p>A list layout that makes CollectionView a perfect alternative to NSTableView</p>
 
                         <a href="Classes/CollectionViewListLayout.html" class="slightly-smaller">See more</a>
                       </div>
@@ -666,6 +719,38 @@ Delivery {}
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC"></a>
+                    <a name="//apple_ref/swift/Class/ManagedResultsController" class="dashAnchor"></a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC">ManagedResultsController</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A results controller not only manages data, it also provides an easy to use, consistent interface for working with CollectionViews. While a typical controller fetches and manages data changes internally, this slimmed down version leaves the manipulation of it&rsquo;s content up to you so you can use the same interface with any type of data.</p>
+
+                        <a href="Classes/ManagedResultsController.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ManagedResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">SectionRepresentable</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">Hashable</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt"><a href="Protocols/ResultsController.html">ResultsController</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <ul class="item-container">
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/c:@M@CollectionView@objc(cs)CollectionViewPreviewCell"></a>
                     <a name="//apple_ref/swift/Class/CollectionViewPreviewCell" class="dashAnchor"></a>
                     <a class="token" href="#/c:@M@CollectionView@objc(cs)CollectionViewPreviewCell">CollectionViewPreviewCell</a>
@@ -708,7 +793,23 @@ Delivery {}
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>A column based collection view layout with pinterest like layouts, and aspect ratio sizing.</p>
+                        <p>This layout is column based which means you provide the number of columns and cells are placed in the appropriate one. It can be display items all the same size or as a <q>Pinterest</q> style layout.</p>
+
+<p>The number of columns can be set dynamically by the delegate or you can provide a default value using <code>layout.columnCount</code>.</p>
+
+<p>You can also set the <code>sectionInsets</code> and <code>minimumColumnSpacing</code> which will affect the width of each column.</p>
+
+<p>With the itemWidth set by the column, you have 3 options to set the height of each item. They are used in the order here. So if aspectRatioForItemAtIndexPath is implemented it is used, otherwise, it checks the next one.</p>
+
+<ol>
+<li>aspectRatioForItemAtIndexPath (delegate)</li>
+<li>heightForItemAtIndexPath (delegate)</li>
+<li>layout.defaultItemHeight</li>
+</ol>
+
+<p>The delegate method aspectRatioForItemAtIndexPath scales the size of the cell to maintain that ratio while fitting within the caclulated column width.</p>
+
+<p>Mixed use of ratios and heights is also supported. Returning CGSize.zero for a ratio will fall back to the hight. If a valid ratio and height are provided, the height will be appended to the height to respect the ratio. For example, if the column width comes out to 100, a ratio of 1:2 will determine a height of 200. If a height is also provided by the delegate for the same item, say 20 it will be added, totalling 220.</p>
 
                         <a href="Classes/CollectionViewColumnLayout.html" class="slightly-smaller">See more</a>
                       </div>
@@ -795,7 +896,7 @@ Delivery {}
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2017-11-16)</p>
+      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-01-04)</p>
       <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>

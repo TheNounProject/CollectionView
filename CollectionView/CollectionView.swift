@@ -21,14 +21,27 @@ extension IndexSet {
 }
 
 /**
- A highliy customizable collection view with cell reuse, animated updates, and custom layouts
+ A Collection View manages the presentation of items, your app's main job is to provide the data that those items are to represent.
  
- The content of the collection view is determined by it's CollectionViewLayout. Inlcuded layouts:
+ A collection view gets its data from the data source, which is an object that conforms to the CollectionViewDataSource protocol. Data provided by the data source is represented items, which can also be organized into sections, and ultimately displayed as cells.
  
+ ### Gathings Data
+ 
+ The data source only has 3 requirements, provide the number of sections, the number of items, and a cell for each item. For performance, cells in a collection view are reusable since only a subset of all the items will often be visbile.
+ 
+ Before you can load a cell, you need to register the cells you will need to represet your data. Cells can be registered from a nib or from a class using `register(class:forCellWithReuseIdentifier:)` or `register(nib:forCellWithReuseIdentifier:)`. The reuse identifier will later be use to get instances of the cell.
+ 
+ To create the cells for each item in your data, implement the data source method `func collectionView(_:cellForItemAt:) -> CollectionViewCell`. In here you will call `dequeueReusableCell(withReuseIdentifier:for:)` which will load an instance of the cell your previously registered for that resuse identifier. After you have dequeued the cell, update it as needed to properly represent the object at the given index path in your data, then return it.
+ 
+ ### Laying Out Items
+ 
+ After the data source has provided all the cells to be displayed, the collection view looks to its CollectionViewLayout to determine where to place each one. The base layout object is designed to be subclassed to generate layout information for different use cases. The goal of a layout is to be able to provide information about the layout to the collection view quickly, this inlcudes the location of each cell, the overall size of all the items, etc.
+ 
+ The following layouts are provided for common uses, for more custom layouts, create a custom CollectionViewLayout subclass.
  - CollectionViewColumnLayout
  - CollectionViewListLayout
  - CollectionViewFlowLayout
-
+ - CollectionViewHorizontalLayout
  
 */
 open class CollectionView : ScrollView, NSDraggingSource {

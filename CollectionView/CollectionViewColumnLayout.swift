@@ -148,10 +148,23 @@ public struct CollectionViewLayoutElementKind {
 }
 
 
-
-
 /**
- A column based collection view layout with pinterest like layouts, and aspect ratio sizing.
+ This layout is column based which means you provide the number of columns and cells are placed in the appropriate one. It can be display items all the same size or as a "Pinterest" style layout.
+ 
+ The number of columns can be set dynamically by the delegate or you can provide a default value using `layout.columnCount`.
+ 
+ You can also set the `sectionInsets` and `minimumColumnSpacing` which will affect the width of each column.
+ 
+ With the itemWidth set by the column, you have 3 options to set the height of each item. They are used in the order here. So if aspectRatioForItemAtIndexPath is implemented it is used, otherwise, it checks the next one.
+ 
+ 1. aspectRatioForItemAtIndexPath (delegate)
+ 2. heightForItemAtIndexPath (delegate)
+ 3. layout.defaultItemHeight
+ 
+ The delegate method aspectRatioForItemAtIndexPath scales the size of the cell to maintain that ratio while fitting within the caclulated column width.
+ 
+ Mixed use of ratios and heights is also supported. Returning CGSize.zero for a ratio will fall back to the hight. If a valid ratio and height are provided, the height will be appended to the height to respect the ratio. For example, if the column width comes out to 100, a ratio of 1:2 will determine a height of 200. If a height is also provided by the delegate for the same item, say 20 it will be added, totalling 220.
+ 
 */
 open class CollectionViewColumnLayout : CollectionViewLayout {
     

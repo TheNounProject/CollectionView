@@ -108,6 +108,9 @@
                 <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
               </li>
               <li class="nav-group-task">
+                <a class="nav-group-task-link" href="../Classes/ManagedResultsController.html">ManagedResultsController</a>
+              </li>
+              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="../Classes/MergedFetchedResultsController.html">MergedFetchedResultsController</a>
               </li>
               <li class="nav-group-task">
@@ -228,14 +231,27 @@
 
                 </div>
               </div>
-            <p>A highliy customizable collection view with cell reuse, animated updates, and custom layouts</p>
+            <p>A Collection View manages the presentation of items, your app&rsquo;s main job is to provide the data that those items are to represent.</p>
 
-<p>The content of the collection view is determined by it&rsquo;s CollectionViewLayout. Inlcuded layouts:</p>
+<p>A collection view gets its data from the data source, which is an object that conforms to the CollectionViewDataSource protocol. Data provided by the data source is represented items, which can also be organized into sections, and ultimately displayed as cells.</p>
+<h3 id='gathings-data' class='heading'>Gathings Data</h3>
+
+<p>The data source only has 3 requirements, provide the number of sections, the number of items, and a cell for each item. For performance, cells in a collection view are reusable since only a subset of all the items will often be visbile.</p>
+
+<p>Before you can load a cell, you need to register the cells you will need to represet your data. Cells can be registered from a nib or from a class using <code>register(class:forCellWithReuseIdentifier:)</code> or <code>register(nib:forCellWithReuseIdentifier:)</code>. The reuse identifier will later be use to get instances of the cell.</p>
+
+<p>To create the cells for each item in your data, implement the data source method <code>func collectionView(_:cellForItemAt:) -&gt; CollectionViewCell</code>. In here you will call <code>dequeueReusableCell(withReuseIdentifier:for:)</code> which will load an instance of the cell your previously registered for that resuse identifier. After you have dequeued the cell, update it as needed to properly represent the object at the given index path in your data, then return it.</p>
+<h3 id='laying-out-items' class='heading'>Laying Out Items</h3>
+
+<p>After the data source has provided all the cells to be displayed, the collection view looks to its CollectionViewLayout to determine where to place each one. The base layout object is designed to be subclassed to generate layout information for different use cases. The goal of a layout is to be able to provide information about the layout to the collection view quickly, this inlcudes the location of each cell, the overall size of all the items, etc.</p>
+
+<p>The following layouts are provided for common uses, for more custom layouts, create a custom CollectionViewLayout subclass.</p>
 
 <ul>
 <li>CollectionViewColumnLayout</li>
 <li>CollectionViewListLayout</li>
 <li>CollectionViewFlowLayout</li>
+<li>CollectionViewHorizontalLayout</li>
 </ul>
 
           </div>
@@ -2233,7 +2249,7 @@ func loadContent() { Do complex loading }
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>If true, clicking empty space will deselect all items (default true)</p>
+                        <p>If true, programatic changes will be reported to the delegate (i.e. selections)</p>
 
                       </div>
                       <div class="declaration">
@@ -2241,6 +2257,33 @@ func loadContent() { Do complex loading }
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">notifyDelegate</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:14CollectionViewAAC16repeatSelectionsSbv"></a>
+                    <a name="//apple_ref/swift/Property/repeatSelections" class="dashAnchor"></a>
+                    <a class="token" href="#/s:14CollectionViewAAC16repeatSelectionsSbv">repeatSelections</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>If true, selecting an already selected item will notify the delegate (default true)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">repeatSelections</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span></code></pre>
 
                         </div>
                       </div>
@@ -3798,7 +3841,7 @@ func loadContent() { Do complex loading }
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2017 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2017-11-16)</p>
+      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-01-04)</p>
       <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>

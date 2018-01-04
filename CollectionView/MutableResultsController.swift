@@ -132,7 +132,7 @@ fileprivate class ManagedSectionInfo<ValueType: SectionRepresentable, Element: H
 
 
 /**
- This basic ResultsController fetches, manages, and updates the results of an NSFetchedRequest from a managed object context.
+ A results controller not only manages data, it also provides an easy to use, consistent interface for working with CollectionViews. While a typical controller fetches and manages data changes internally, this slimmed down version leaves the manipulation of it's content up to you so you can use the same interface with any type of data.
 */
 public class ManagedResultsController<Section: SectionRepresentable, Element: Hashable> : NSObject, ResultsController {
     

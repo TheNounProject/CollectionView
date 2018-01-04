@@ -17,6 +17,7 @@ import Foundation
 /**
  CollectionViewDelegateFlowLayout
 */
+
 public protocol CollectionViewDelegateFlowLayout  {
     
     // MARK: - Element Size
@@ -128,8 +129,51 @@ extension CollectionViewDelegateFlowLayout {
 
 
 /**
-  A variation of UICollectionViewFlowLayout
-*/
+ A variation of UICollectionViewFlowLayout
+ 
+ This layout is primarily row based, but uses ItemStyles to group similar items together.
+ 
+ The layout's delegate, CollectionViewDelegateFlowLayout, is responsible for providing a style for each item in the collection view.
+ 
+ Flow items are grouped together, always placing as many same height items in each row as possible. If the row becomes full or an flow item of a different height is provided, the layout will just to the next row and continue.
+ 
+ Span items are always placed an their own row and fill the width of the Collection View.
+ 
+ ### Example
+ ```
+ +---------------------------------+
+ |   +-----+ +------------+ +--+   |
+ |   |  1  | |     2      | | 3|   |
+ |   |     | |            | |  |   |
+ |   +-----+ +------------+ +--+   |
+ |   +--------+ +---------+        |
+ |   |   4    | |   5     |        |
+ |   |        | |         |        |
+ |   |        | |         |        |
+ |   |        | |         |        |
+ |   +--------+ +---------+        |
+ |   +-------------------------+   |
+ |   |         6. Span         |   |
+ |   +-------------------------+   |
+ +---------------------------------+
+ ```
+ 
+ ### Transformations
+ 
+ Transformations allow you to adjust the content of each row before moving on to the next row.
+ 
+ The "center" transformation will shift the of the row to be center aligned rather than left aligned.
+ 
+ The fill tranformation will enlarge the items in a row proportionally to fill the row if their is empty space on the right. Note that this will affect the height of the entire row.
+ 
+ 
+ ### Spacing
+ 
+ Spacing options such as interspanSpacing and spanGroupSpacingBefore allow you to customize the space around different types of style groups.
+ 
+ The spanGroupSpacingBefore/After options will apply a set amount of space before or after a group of span items (one or more spans).
+ 
+ */
 open class CollectionViewFlowLayout : CollectionViewLayout {
     
     // MARK: - Options

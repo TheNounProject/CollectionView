@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>FetchedResultsController Class Reference</title>
+    <title>ManagedResultsController Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset="utf-8">
@@ -14,9 +14,9 @@
   </head>
   <body>
 
-    <a name="//apple_ref/swift/Class/FetchedResultsController" class="dashAnchor"></a>
+    <a name="//apple_ref/swift/Class/ManagedResultsController" class="dashAnchor"></a>
 
-    <a title="FetchedResultsController Class Reference"></a>
+    <a title="ManagedResultsController Class Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -44,7 +44,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="../index.html">CollectionView Reference</a>
       <img class="carat" src="../img/carat.png" />
-      FetchedResultsController Class Reference
+      ManagedResultsController Class Reference
     </p>
 
     <div class="content-wrapper">
@@ -224,14 +224,14 @@
 
         <section class="section">
           <div class="section-content">
-            <h1>FetchedResultsController</h1>
+            <h1>ManagedResultsController</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">FetchedResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">SectionRepresentable</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt"><a href="../Protocols/ResultsController.html">ResultsController</a></span></code></pre>
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ManagedResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">SectionRepresentable</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">Hashable</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt"><a href="../Protocols/ResultsController.html">ResultsController</a></span></code></pre>
 
                 </div>
               </div>
-            <p>This basic ResultsController fetches, manages, and updates the results of an NSFetchedRequest from a managed object context.</p>
+            <p>A results controller not only manages data, it also provides an easy to use, consistent interface for working with CollectionViews. While a typical controller fetches and manages data changes internally, this slimmed down version leaves the manipulation of it&rsquo;s content up to you so you can use the same interface with any type of data.</p>
 
           </div>
         </section>
@@ -250,9 +250,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerCACyxq_GSo22NSManagedObjectContextC7context_So14NSFetchRequestCyq_G7requestSSSg14sectionKeyPathtcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(context:request:sectionKeyPath:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerCACyxq_GSo22NSManagedObjectContextC7context_So14NSFetchRequestCyq_G7requestSSSg14sectionKeyPathtcfc">init(context:request:sectionKeyPath:)</a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerCACyxq_Gycfc"></a>
+                    <a name="//apple_ref/swift/Method/init()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerCACyxq_Gycfc">init()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -267,7 +267,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span><span class="p">,</span> <span class="nv">request</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">sectionKeyPath</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">override</span> <span class="nf">init</span><span class="p">()</span></code></pre>
 
                         </div>
                       </div>
@@ -320,9 +320,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC12performFetchyyKF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC12performFetchyyKF"></a>
                     <a name="//apple_ref/swift/Method/performFetch()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC12performFetchyyKF">performFetch()</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC12performFetchyyKF">performFetch()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -352,9 +352,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC5resetyyF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC5resetyyF"></a>
                     <a name="//apple_ref/swift/Method/reset()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC5resetyyF">reset()</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC5resetyyF">reset()</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -390,90 +390,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC12fetchRequestSo07NSFetchG0Cyq_Gv"></a>
-                    <a name="//apple_ref/swift/Property/fetchRequest" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC12fetchRequestSo07NSFetchG0Cyq_Gv">fetchRequest</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The fetch request for the controller</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">fetchRequest</span> <span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC15sortDescriptorsSaySo16NSSortDescriptorCGSgv"></a>
-                    <a name="//apple_ref/swift/Property/sortDescriptors" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC15sortDescriptorsSaySo16NSSortDescriptorCGSgv">sortDescriptors</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>A convenience getter for the sort descriptors from <code><a href="../Classes/FetchedResultsController.html#/s:14CollectionView24FetchedResultsControllerC12fetchRequestSo07NSFetchG0Cyq_Gv">fetchRequest</a></code></p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sortDescriptors</span><span class="p">:</span> <span class="p">[</span><span class="kt">NSSortDescriptor</span><span class="p">]?</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC20managedObjectContextSo09NSManagedgH0Cv"></a>
-                    <a name="//apple_ref/swift/Property/managedObjectContext" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC20managedObjectContextSo09NSManagedgH0Cv">managedObjectContext</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The managed object context to fetch from</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">managedObjectContext</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC4sortSbq__q_tcSgv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC4sortSbq__q_tcSgv"></a>
                     <a name="//apple_ref/swift/Property/sort" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC4sortSbq__q_tcSgv">sort</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC4sortSbq__q_tcSgv">sort</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -498,9 +417,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC6sortByySbq__q_tcSgF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC6sortByySbq__q_tcSgF"></a>
                     <a name="//apple_ref/swift/Method/sortBy(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC6sortByySbq__q_tcSgF">sortBy(_:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC6sortByySbq__q_tcSgF">sortBy(_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -544,9 +463,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC14sectionKeyPathSSSgv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC14sectionKeyPathSSSgv"></a>
                     <a name="//apple_ref/swift/Property/sectionKeyPath" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC14sectionKeyPathSSSgv">sectionKeyPath</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC14sectionKeyPathSSSgv">sectionKeyPath</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -571,9 +490,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC8delegateAA0dE8Delegate_pSgXwv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC8delegateAA0dE8Delegate_pSgXwv"></a>
                     <a name="//apple_ref/swift/Property/delegate" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC8delegateAA0dE8Delegate_pSgXwv">delegate</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC8delegateAA0dE8Delegate_pSgXwv">delegate</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -609,9 +528,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC16numberOfSectionsSiv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC16numberOfSectionsSiv"></a>
                     <a name="//apple_ref/swift/Property/numberOfSections" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC16numberOfSectionsSiv">numberOfSections</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC16numberOfSectionsSiv">numberOfSections</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -636,9 +555,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC15numberOfObjectsS2i2in_tF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC15numberOfObjectsS2i2in_tF"></a>
                     <a name="//apple_ref/swift/Method/numberOfObjects(in:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC15numberOfObjectsS2i2in_tF">numberOfObjects(in:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC15numberOfObjectsS2i2in_tF">numberOfObjects(in:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -686,9 +605,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC10allObjectsSayypGv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC10allObjectsSayypGv"></a>
                     <a name="//apple_ref/swift/Property/allObjects" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC10allObjectsSayypGv">allObjects</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC10allObjectsSayypGv">allObjects</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -715,9 +634,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC8sectionsSayAA0dE11SectionInfo_pGv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC8sectionsSayAA0dE11SectionInfo_pGv"></a>
                     <a name="//apple_ref/swift/Property/sections" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC8sectionsSayAA0dE11SectionInfo_pGv">sections</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC8sectionsSayAA0dE11SectionInfo_pGv">sections</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -744,9 +663,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC11sectionNameSS10Foundation9IndexPathV12forSectionAt_tF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC11sectionNameSS10Foundation9IndexPathV12forSectionAt_tF"></a>
                     <a name="//apple_ref/swift/Method/sectionName(forSectionAt:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC11sectionNameSS10Foundation9IndexPathV12forSectionAt_tF">sectionName(forSectionAt:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC11sectionNameSS10Foundation9IndexPathV12forSectionAt_tF">sectionName(forSectionAt:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -760,7 +679,7 @@
 
 <p>If the objects have an attribute <code>category</code> of type int, and the sectionKeyPath is set to <code>category</code>, each category will represent the various Int values. Using CustomDisplayStringConvertible, that int will be returned as a string.</p>
 
-<p>For custom handling of this, use <code><a href="../Classes/FetchedResultsController.html#/s:14CollectionView24FetchedResultsControllerC6objectypSg10Foundation9IndexPathV12forSectionAt_tF">object(forSectionAt:)</a></code></p>
+<p>For custom handling of this, use <code><a href="../Classes/ManagedResultsController.html#/s:14CollectionView24ManagedResultsControllerC6objectypSg10Foundation9IndexPathV12forSectionAt_tF">object(forSectionAt:)</a></code></p>
 
                       </div>
                       <div class="declaration">
@@ -811,9 +730,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC11sectionInfoAA0de7SectionG0_pSg10Foundation9IndexPathV03forH2At_tF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC11sectionInfoAA0de7SectionG0_pSg10Foundation9IndexPathV03forH2At_tF"></a>
                     <a name="//apple_ref/swift/Method/sectionInfo(forSectionAt:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC11sectionInfoAA0de7SectionG0_pSg10Foundation9IndexPathV03forH2At_tF">sectionInfo(forSectionAt:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC11sectionInfoAA0de7SectionG0_pSg10Foundation9IndexPathV03forH2At_tF">sectionInfo(forSectionAt:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -861,9 +780,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC6objectypSg10Foundation9IndexPathV12forSectionAt_tF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC6objectypSg10Foundation9IndexPathV12forSectionAt_tF"></a>
                     <a name="//apple_ref/swift/Method/object(forSectionAt:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC6objectypSg10Foundation9IndexPathV12forSectionAt_tF">object(forSectionAt:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC6objectypSg10Foundation9IndexPathV12forSectionAt_tF">object(forSectionAt:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -903,7 +822,7 @@
                       </div>
                       <div>
                         <h4>Return Value</h4>
-                        <p>The value for <code><a href="../Classes/FetchedResultsController.html#/s:14CollectionView24FetchedResultsControllerC14sectionKeyPathSSSgv">sectionKeyPath</a></code> of each object in the section (or nil)</p>
+                        <p>The value for <code><a href="../Classes/ManagedResultsController.html#/s:14CollectionView24ManagedResultsControllerC14sectionKeyPathSSSgv">sectionKeyPath</a></code> of each object in the section (or nil)</p>
                       </div>
                     </section>
                   </div>
@@ -911,9 +830,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC6objectypSg10Foundation9IndexPathV2at_tF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC6objectypSg10Foundation9IndexPathV2at_tF"></a>
                     <a name="//apple_ref/swift/Method/object(at:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC6objectypSg10Foundation9IndexPathV2at_tF">object(at:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC6objectypSg10Foundation9IndexPathV2at_tF">object(at:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -972,9 +891,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC9indexPath10Foundation05IndexG0VSgAA0dE11SectionInfo_p2of_tF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC9indexPath10Foundation05IndexG0VSgAA0dE11SectionInfo_p2of_tF"></a>
                     <a name="//apple_ref/swift/Method/indexPath(of:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC9indexPath10Foundation05IndexG0VSgAA0dE11SectionInfo_p2of_tF">indexPath(of:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC9indexPath10Foundation05IndexG0VSgAA0dE11SectionInfo_p2of_tF">indexPath(of:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1022,9 +941,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC9indexPath10Foundation05IndexG0VSgq_2of_tF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC9indexPath10Foundation05IndexG0VSgq_2of_tF"></a>
                     <a name="//apple_ref/swift/Method/indexPath(of:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC9indexPath10Foundation05IndexG0VSgq_2of_tF">indexPath(of:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC9indexPath10Foundation05IndexG0VSgq_2of_tF">indexPath(of:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1072,9 +991,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC18indexPathOfSection10Foundation05IndexG0VSgxSg12representing_tF"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC18indexPathOfSection10Foundation05IndexG0VSgxSg12representing_tF"></a>
                     <a name="//apple_ref/swift/Method/indexPathOfSection(representing:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC18indexPathOfSection10Foundation05IndexG0VSgxSg12representing_tF">indexPathOfSection(representing:)</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC18indexPathOfSection10Foundation05IndexG0VSgxSg12representing_tF">indexPathOfSection(representing:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1084,7 +1003,7 @@
                       <div class="abstract">
                         <p>The index path of the section that represents a value</p>
 
-<p>Section value refers the the value of <code><a href="../Classes/FetchedResultsController.html#/s:14CollectionView24FetchedResultsControllerC14sectionKeyPathSSSgv">sectionKeyPath</a></code> for all objects in a section.</p>
+<p>Section value refers the the value of <code><a href="../Classes/ManagedResultsController.html#/s:14CollectionView24ManagedResultsControllerC14sectionKeyPathSSSgv">sectionKeyPath</a></code> for all objects in a section.</p>
 
                       </div>
                       <div class="declaration">
@@ -1135,9 +1054,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC18pendingChangeCountSiv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC18pendingChangeCountSiv"></a>
                     <a name="//apple_ref/swift/Property/pendingChangeCount" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC18pendingChangeCountSiv">pendingChangeCount</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC18pendingChangeCountSiv">pendingChangeCount</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1162,9 +1081,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC22pendingItemChangeCountSiv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC22pendingItemChangeCountSiv"></a>
                     <a name="//apple_ref/swift/Property/pendingItemChangeCount" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC22pendingItemChangeCountSiv">pendingItemChangeCount</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC22pendingItemChangeCountSiv">pendingItemChangeCount</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1189,9 +1108,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC19hasEmptyPlaceholderSbv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC19hasEmptyPlaceholderSbv"></a>
                     <a name="//apple_ref/swift/Property/hasEmptyPlaceholder" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC19hasEmptyPlaceholderSbv">hasEmptyPlaceholder</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC19hasEmptyPlaceholderSbv">hasEmptyPlaceholder</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1216,9 +1135,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView24FetchedResultsControllerC18placeholderChangesAA0D9ChangeSetVSgv"></a>
+                    <a name="/s:14CollectionView24ManagedResultsControllerC18placeholderChangesAA0D9ChangeSetVSgv"></a>
                     <a name="//apple_ref/swift/Property/placeholderChanges" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView24FetchedResultsControllerC18placeholderChangesAA0D9ChangeSetVSgv">placeholderChanges</a>
+                    <a class="token" href="#/s:14CollectionView24ManagedResultsControllerC18placeholderChangesAA0D9ChangeSetVSgv">placeholderChanges</a>
                     </code>
                   </div>
                   <div class="height-container">

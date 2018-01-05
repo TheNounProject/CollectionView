@@ -362,7 +362,13 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
      
      For performance reasons it is preferred to use object(at:)
      */
-    public var allObjects: [Any] { return Array(fetchedObjects) }
+    public var allObjects: [Any] {
+        var objects = [Any]()
+        for s in self.sections {
+            objects.append(contentsOf: s.objects)
+        }
+        return objects
+    }
     
     
     

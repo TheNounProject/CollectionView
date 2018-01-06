@@ -568,20 +568,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     private var _lastViewSize: CGSize = CGSize.zero
     private func setContentViewSize(_ animated: Bool = false) {
-        var newSize = self.collectionViewLayout.collectionViewContentSize
-        var contain = self.frame.size
+        let newSize = self.collectionViewLayout.collectionViewContentSize
         
-        contain.width -= (contentInsets.left + contentInsets.right)
-        contain.height -= (contentInsets.top + contentInsets.bottom)
-        _lastViewSize = newSize
-        
-        // Don't let the content size be less than the cv
-        if newSize.width < contain.width  {
-            newSize.width = contain.width
-        }
-        if newSize.height < contain.height {
-            newSize.height = contain.height
-        }
         if animated {
             NSAnimationContext.runAnimationGroup({ (ctx) in
                 ctx.duration = self.animationDuration
@@ -595,7 +583,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open override func layout() {
-        
         
 //        if #available(OSX 10.12, *) {
 //            // Do nothing
@@ -625,7 +612,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         else {
             self.contentDocumentView.prepareRect(_preperationRect, force: false)
         }
-        
     }
     
     @available(*, unavailable, renamed: "reloadLayout(_:scrollPosition:completion:)")
@@ -753,6 +739,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /*-------------------------------------------------------------------------------*/
     private var _resizeStartBounds : CGRect = CGRect.zero
     open override func viewWillStartLiveResize() {
+        self.verticalScroller?.isHidden = true
         _resizeStartBounds = self.contentVisibleRect
         if self.collectionViewLayout.scrollDirection == .vertical {
             let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
@@ -766,6 +753,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open override func viewDidEndLiveResize() {
+        self.setContentViewSize()
+        self.verticalScroller?.isHidden = false
         _topIP = nil
         self.delegate?.collectionViewDidEndLiveResize?(self)
         self.contentDocumentView.preparedRect = self._preperationRect

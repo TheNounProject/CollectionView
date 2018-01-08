@@ -49,6 +49,12 @@ public protocol CollectionViewPreviewControllerDelegate: class {
 
     */
     func collectionViewPreviewControllerWillDismiss(_ controller: CollectionViewPreviewController)
+    
+    func collectionViewPreview(_ controller: CollectionViewPreviewController, didMoveToItemAt indexPath: IndexPath)
+}
+
+extension CollectionViewPreviewControllerDelegate {
+    func collectionViewPreview(_ controller: CollectionViewPreviewController, didMoveToItemAt indexPath: IndexPath) { }
 }
 
 class BackgroundView : NSView {
@@ -252,6 +258,8 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     // MARK: - Transitions
     /*-------------------------------------------------------------------------------*/
     
+    public var layoutConstraintConfiguration : ((_ container: NSViewController, _ controller: CollectionViewPreviewController)->Void)?
+    
     /**
      The duration of present/dismiss transitions
      */
@@ -291,7 +299,12 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         
         controller.addChildViewController(self)
         controller.view.addSubview(self.view)
-        self.view.addConstraintsToMatchParent()
+        if let config = self.layoutConstraintConfiguration {
+            config(controller, self)
+        }
+        else {
+            self.view.addConstraintsToMatchParent()
+        }
         
         self.collectionView.reloadData()
         
@@ -392,6 +405,12 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         let cell = self.delegate?.collectionViewPreviewController(self, cellForItemAt: indexPath)
         precondition(cell != nil, "CollectionViewPreviewController was unable to load a cell for item at \(indexPath)")
         return cell!
+    }
+    
+    open func collectionView(_ collectionView: CollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
+        if let ip = indexPaths.first {
+            self.delegate?.collectionViewPreview(self, didMoveToItemAt: ip)
+        }
     }
     
     // MARK: - Interactive Gesture

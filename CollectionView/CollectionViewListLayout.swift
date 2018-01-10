@@ -175,7 +175,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
             let rowSpacing : CGFloat = self.delegate?.collectionView?(cv, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
             
             let contentWidth = cv.bounds.size.width - (contentInsets.left + contentInsets.right)
-            let itemWidth = cv.bounds.size.width - (insets.left + insets.right)
+            let itemWidth = contentWidth - (insets.left + insets.right)
             var sectionFrame: CGRect = CGRect(x: contentInsets.left, y: top, width: contentWidth, height: 0)
             
             /*

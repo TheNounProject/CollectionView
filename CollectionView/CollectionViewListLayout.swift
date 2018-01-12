@@ -253,10 +253,11 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     override open var collectionViewContentSize : CGSize {
         guard let cv = collectionView else { return CGSize.zero }
-        let numberOfSections = self.numSections
-        if numberOfSections == 0 { return CGSize.zero }
+        var size = cv.contentDocumentView.frame.size
         
-        var size = CGSize()
+        let numberOfSections = self.numSections
+        if numberOfSections == 0 { return size }
+        
         size.width = cv.bounds.size.width - (cv.contentInsets.left + cv.contentInsets.right)
         size.height = cv.bounds.height
         if let f = self.sectionFrames.last {

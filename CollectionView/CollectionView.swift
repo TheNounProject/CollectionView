@@ -629,7 +629,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     private func doLayoutPrep() {
         if !self.inLiveResize {
-            self._topIP = self.indexPathForFirstVisibleItem
+            let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
+            if contentVisibleRect.origin.y > ignore {
+                self._topIP = indexPathForFirstVisibleItem
+            }
+//            self._topIP = self.indexPathForFirstVisibleItem
         }
         self.delegate?.collectionViewWillReloadLayout?(self)
         self.leadingView?.layoutSubtreeIfNeeded()
@@ -840,7 +844,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     @objc final func willBeginScroll(_ notification: Notification) {
         self.isScrolling = true
-        self.delegate?.collectionViewWillBeginScrolling?(self)
+        self.delegate?.collectionViewWillBeginScrolling?(self, animated: false)
         self._previousOffset = self.contentVisibleRect.origin
         self.peakScrollVelocity = CGPoint.zero
         self.scrollVelocity = CGPoint.zero
@@ -849,7 +853,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     @objc final func didEndScroll(_ notification: Notification) {
         self.isScrolling = false
         
-        self.delegate?.collectionViewDidEndScrolling?(self, animated: true)
+        self.delegate?.collectionViewDidEndScrolling?(self, animated: false)
         self.scrollVelocity = CGPoint.zero
         self.peakScrollVelocity = CGPoint.zero
         
@@ -888,7 +892,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
      Returns the lowest index path of all visible items
     */
     open var indexPathForFirstVisibleItem : IndexPath? {
-        
         if self.delegate?.collectionViewLayoutAnchor == nil {
             return  _indexPathForFirstVisibleItem
         }
@@ -2540,7 +2543,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 return
             }
             
-            if rect.origin.y < visibleRect .origin.y {
+            if rect.origin.y < visibleRect.origin.y {
                 rect = visibleRect.offsetBy(dx: 0, dy: rect.origin.y - visibleRect.origin.y - self.contentInsets.top)
             }
             else if rect.maxY >  visibleRect.maxY {
@@ -2569,7 +2572,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 rect.origin.y = self.contentSize.height - self.frame.size.height + self.contentInsets.top
             }
         }
-        
+        if animated {
+            self.delegate?.collectionViewWillBeginScrolling?(self, animated: true)
+        }
         if animated && prepare {
             self.contentDocumentView.prepareRect(rect.union(visibleRect), force: false)
         }

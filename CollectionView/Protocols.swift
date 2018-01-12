@@ -449,9 +449,10 @@ import Foundation
      Notifies the delegate that the collection view will begin scrolling
      
      - Parameter collectionView: The collection view that will begin scrolling
+     - Parameter aniated: If the scroll is triggered by user input, this will be false
 
     */
-    @objc optional func collectionViewWillBeginScrolling(_ collectionView: CollectionView)
+    @objc optional func collectionViewWillBeginScrolling(_ collectionView: CollectionView, animated: Bool)
     
     
     /**

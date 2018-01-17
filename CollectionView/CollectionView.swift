@@ -629,11 +629,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     private func doLayoutPrep() {
         if !self.inLiveResize {
-            let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
-            if contentVisibleRect.origin.y > ignore {
+            if self.collectionViewLayout.scrollDirection == .vertical {
+                let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
+                if contentVisibleRect.origin.y > ignore {
+                    self._topIP = indexPathForFirstVisibleItem
+                }
+            }
+            else {
                 self._topIP = indexPathForFirstVisibleItem
             }
-//            self._topIP = self.indexPathForFirstVisibleItem
         }
         self.delegate?.collectionViewWillReloadLayout?(self)
         self.leadingView?.layoutSubtreeIfNeeded()

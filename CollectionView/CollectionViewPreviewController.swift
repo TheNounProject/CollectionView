@@ -457,6 +457,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
                 self.pauseGesture = false
                 if  let ip = self.collectionView.indexPathForFirstVisibleItem {
                     self.collectionView.selectItem(at: ip, animated: false)
+                    self.delegate?.collectionViewPreview(self, didMoveToItemAt: ip)
                 }
             }
         }

@@ -202,6 +202,9 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
 
     /// If supplementary views should respect section insets or fill the CollectionView width
     open var insetSupplementaryViews : Bool = false { didSet{ invalidate() }}
+    
+    /// If set to true, the layout will invalidate on all bounds changes, if false only on width changes
+    open var invalidateOnBoundsChange : Bool = false { didSet{ invalidate() }}
 
     /// Default insets for all sections
     open var sectionInset : NSEdgeInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8) { didSet{ invalidate() }}
@@ -266,10 +269,13 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     }
     
     
-    private var _cvWidth : CGFloat = 0
+    private var _lastSize = CGSize.zero
     override open func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
-        defer { self._cvWidth = newBounds.size.width }
-        return _cvWidth != newBounds.size.width
+        defer { self._lastSize = newBounds.size }
+//        if invalidateOnBoundsChange {
+        return _lastSize != newBounds.size
+//        }
+//        return _lastSize.width != newBounds.size.width
     }
     
     override open func prepare(){

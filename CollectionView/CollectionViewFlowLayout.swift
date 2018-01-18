@@ -358,10 +358,10 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     // MARK: - Layout Overrides
     /*-------------------------------------------------------------------------------*/
     
-    private var _cvWidth : CGFloat = 0
+    private var _lastSize = CGSize.zero
     open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        defer { self._cvWidth = newBounds.size.width }
-        return _cvWidth != newBounds.size.width
+        defer { self._lastSize = newBounds.size }
+        return _lastSize != newBounds.size
     }
     
     override open func prepare() {

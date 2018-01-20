@@ -746,8 +746,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Live Resize
     /*-------------------------------------------------------------------------------*/
     private var _resizeStartBounds : CGRect = CGRect.zero
+    
+    var preResizeScrollBar : (NSScroller?, NSScroller?)?
     open override func viewWillStartLiveResize() {
-        self.verticalScroller?.isHidden = true
+        self.preResizeScrollBar = (self.horizontalScroller, self.verticalScroller)
+        
+        self.verticalScroller = nil
+        self.horizontalScroller = nil
         _resizeStartBounds = self.contentVisibleRect
         if self.collectionViewLayout.scrollDirection == .vertical {
             let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
@@ -762,7 +767,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     open override func viewDidEndLiveResize() {
         self.setContentViewSize()
-        self.verticalScroller?.isHidden = false
+        self.horizontalScroller = self.preResizeScrollBar?.0
+        self.verticalScroller = self.preResizeScrollBar?.1
         _topIP = nil
         self.delegate?.collectionViewDidEndLiveResize?(self)
         self.contentDocumentView.preparedRect = self._preperationRect

@@ -565,11 +565,11 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 let frame = currentAttrs.frame
                 
                 let lead = cv.leadingView?.bounds.size.height ?? 0
-                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
-                    currentAttrs.frame.origin.y = lead
-                    currentAttrs.floating = false
-                }
-                else {
+//                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
+//                    currentAttrs.frame.origin.y = lead
+//                    currentAttrs.floating = false
+//                }
+//                else {
                     var nextHeaderOrigin = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude)
                     if let nextHeader = self.sectionAttributes.object(at: indexPath._section + 1)?.header {
                         nextHeaderOrigin = nextHeader.frame.origin
@@ -577,7 +577,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     let topInset = cv.contentInsets.top
                     currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
                     currentAttrs.floating = indexPath._section == 0 || currentAttrs.frame.origin.y > frame.origin.y
-                }
+//                }
             }
             return attrs
         }

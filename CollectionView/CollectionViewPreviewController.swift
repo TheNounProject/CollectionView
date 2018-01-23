@@ -234,6 +234,14 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         self.collectionView.reloadData()
     }
     
+    open override func keyUp(with event: NSEvent) {
+        self.interpretKeyEvents([event])
+        super.keyUp(with: event)
+    }
+    open override func cancelOperation(_ sender: Any?) {
+        self.dismiss(animated: true)
+    }
+    
     
     func startEventMonitor() {
         

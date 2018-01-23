@@ -2575,10 +2575,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         if !animated && scrollPosition == .centered || scrollPosition == .leading {
             if contentSize.height < self.contentVisibleRect.size.height {
-                completion?(true)
-                return
+                rect.origin.y = 0
             }
-            if rect.origin.y > self.contentSize.height - self.frame.size.height {
+            else if rect.origin.y > self.contentSize.height - self.frame.size.height {
                 rect.origin.y = self.contentSize.height - self.frame.size.height + self.contentInsets.top
             }
         }

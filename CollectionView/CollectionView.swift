@@ -769,6 +769,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.setContentViewSize()
         self.horizontalScroller = self.preResizeScrollBar?.0
         self.verticalScroller = self.preResizeScrollBar?.1
+        self.reflectScrolledClipView(self.clipView!)
         _topIP = nil
         self.delegate?.collectionViewDidEndLiveResize?(self)
         self.contentDocumentView.preparedRect = self._preperationRect

@@ -236,15 +236,19 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     
     open override func keyUp(with event: NSEvent) {
         self.interpretKeyEvents([event])
-        super.keyUp(with: event)
+//        super.keyUp(with: event)
     }
     open override func cancelOperation(_ sender: Any?) {
         self.dismiss(animated: true)
     }
-    
+    open override func insertText(_ insertString: Any) {
+        
+    }
+    open override func doCommand(by selector: Selector) {
+        
+    }
     
     func startEventMonitor() {
-        
         let events : NSEvent.EventTypeMask = [
             NSEvent.EventTypeMask.scrollWheel
             ]

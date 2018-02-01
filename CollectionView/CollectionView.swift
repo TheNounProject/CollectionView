@@ -766,9 +766,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     open override func viewDidEndLiveResize() {
-        self.setContentViewSize()
         self.horizontalScroller = self.preResizeScrollBar?.0
         self.verticalScroller = self.preResizeScrollBar?.1
+        self.setContentViewSize()
         self.reflectScrolledClipView(self.clipView!)
         _topIP = nil
         self.delegate?.collectionViewDidEndLiveResize?(self)

@@ -23,7 +23,7 @@
 		DE82E95E1D78BFC900346B9E /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE82E95D1D78BFC900346B9E /* Constants.swift */; };
 		DE9071ED1CAC7FD800AD0E37 /* CollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE98600B1E6F956100B6A3EC /* FetchedSetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */; };
-		DEA638B1200874950023F2BD /* CollectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA638B0200874950023F2BD /* CollectionViewTests.swift */; };
+		DEA638B1200874950023F2BD /* SelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA638B0200874950023F2BD /* SelectionTests.swift */; };
 		DEA638B3200874950023F2BD /* CollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CollectionView.framework */; };
 		DEA6BA631D52E00900B3EF24 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA6BA621D52E00900B3EF24 /* CollectionViewController.swift */; };
 		DEAFE2A71E41655C00FCF9C6 /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */; };
@@ -82,7 +82,7 @@
 		DE9072171CAC807900AD0E37 /* ClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClipView.swift; sourceTree = "<group>"; };
 		DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedSetController.swift; sourceTree = "<group>"; };
 		DEA638AE200874950023F2BD /* CollectionViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollectionViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DEA638B0200874950023F2BD /* CollectionViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewTests.swift; sourceTree = "<group>"; };
+		DEA638B0200874950023F2BD /* SelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionTests.swift; sourceTree = "<group>"; };
 		DEA638B2200874950023F2BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DEA6BA621D52E00900B3EF24 /* CollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
@@ -191,7 +191,7 @@
 		DEA638AF200874950023F2BD /* CollectionViewTests */ = {
 			isa = PBXGroup;
 			children = (
-				DEA638B0200874950023F2BD /* CollectionViewTests.swift */,
+				DEA638B0200874950023F2BD /* SelectionTests.swift */,
 				DEA638B2200874950023F2BD /* Info.plist */,
 			);
 			path = CollectionViewTests;
@@ -355,7 +355,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEA638B1200874950023F2BD /* CollectionViewTests.swift in Sources */,
+				DEA638B1200874950023F2BD /* SelectionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

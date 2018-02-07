@@ -9,11 +9,9 @@
 import XCTest
 import CollectionView
 
-class CollectionViewTests: XCTestCase, CollectionViewDataSource  {
-    
+class SelectionTests: XCTestCase, CollectionViewDataSource  {
     
     var collectionView : CollectionView!
-    
     
     override func setUp() {
         super.setUp()
@@ -38,7 +36,6 @@ class CollectionViewTests: XCTestCase, CollectionViewDataSource  {
     func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
         return CollectionViewCell.deque(for: indexPath, in: collectionView)
     }
-    
     
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.

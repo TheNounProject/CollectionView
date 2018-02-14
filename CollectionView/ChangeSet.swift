@@ -140,13 +140,13 @@ public struct EditOperationIndex<T:Hashable> {
         for e in edits {
             switch e.operation {
             case .insertion:
-                inserts.insert(e, with: e.index)
+                inserts.insert(e, for: e.index)
             case .deletion:
-                deletes.insert(e, with: e.index)
+                deletes.insert(e, for: e.index)
             case .substitution:
-                substitutions.insert(e, with: e.index)
+                substitutions.insert(e, for: e.index)
             case .move(origin: _):
-                moves.insert(e, with: e.index)
+                moves.insert(e, for: e.index)
             }
         }
     }
@@ -525,7 +525,7 @@ public struct ChangeSet<T: Collection> where T.Iterator.Element: Hashable, T.Ind
             self.operationIndex.inserts.remove(target.value)
             
             let newEdit = Edit(.move(origin: source), value: target.value.value, index: target.index)
-            self.operationIndex.moves.insert(newEdit, with: target.index)
+            self.operationIndex.moves.insert(newEdit, for: target.index)
         }
         
 //        for element in _shared {

@@ -747,7 +747,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 }
                 
                 let newEdit = Edit(.move(origin: source._item), value: object, index: targetIP._item)
-                processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: targetIP._item)
+                processedSections[targetSection]?.operationIndex.moves.insert(newEdit, for: targetIP._item)
                 
                 processedSections[targetSection]?.remove(edit: proposedEdit)
                 
@@ -757,7 +757,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 }
                 else if case .substitution = proposedEdit.operation, let obj = self.context.objectChangeSet.object(for: targetIP) {
                     let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
-                    processedSections[targetSection]?.operationIndex.deletes.insert(insert, with: targetIP._item)
+                    processedSections[targetSection]?.operationIndex.deletes.insert(insert, for: targetIP._item)
                 }
                 
                 
@@ -779,7 +779,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 if case .substitution = sourceEdit.operation {
                     if let ip = self.indexPath(of: sourceEdit.value) {
                         let insert = Edit(.insertion, value: sourceEdit.value, index: ip._item)
-                        processedSections[sourceInfo]?.operationIndex.inserts.insert(insert, with: insert.index)
+                        processedSections[sourceInfo]?.operationIndex.inserts.insert(insert, for: insert.index)
                     }
                     _ = reduceCrossSectional(sourceEdit.value, targetEdit: sourceEdit)
                 }

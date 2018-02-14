@@ -51,19 +51,19 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
     
     public init(dictionaryLiteral elements: (Index, Value)...) {
         for e in elements {
-            self.insert(e.1, with: e.0)
+            self.insert(e.1, for: e.0)
         }
     }
     public init(_ dictionary: Dictionary<Index, Value>) {
         for e in dictionary {
-            self.insert(e.1, with: e.0)
+            self.insert(e.1, for: e.0)
         }
     }
     
     public subscript(index: Index) -> Value? {
         get { return value(for: index) }
         set(newValue) {
-            if let v = newValue { insert(v, with: index) }
+            if let v = newValue { insert(v, for: index) }
             else { _ = removeValue(for: index) }
         }
     }
@@ -87,39 +87,56 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
     }
     
     
-    public mutating func update(_ value: Value, with index: Index) {
-        if let oldIndex = byValue.updateValue(index, forKey: value) {
-            byIndex.removeValue(forKey: oldIndex)
-        }
-        byIndex[index] = value
-        assert(byIndex.count == byValue.count)
-    }
     
-    public mutating func insert(_ value: Value, with index: Index) {
-        guard byValue[value] == nil else { return }
-        if let object = self.byIndex.removeValue(forKey: index) {
-            byValue.removeValue(forKey: object)
+    /**
+     Set the value-index pair removing any existing entries for either
+
+     - Parameter value: The value
+     - Parameter index: The index
+
+    */
+    public mutating func set(_ value: Value, for index: Index) {
+        if self.removeValue(for: index) != nil {
+            log.debug("⚠️ Removing duplicate value on set")
         }
-        
+        if self.remove(value) != nil {
+            log.debug("⚠️ Removing duplicate index on set")
+        }
         byValue[value] = index
         byIndex[index] = value
-        assert(byIndex.count == byValue.count)
+    }
+    
+    /**
+     Insert value for the given index if the value does not exist.
+
+     - Parameter value: A value
+     - Parameter index: An index
+
+    */
+    public mutating func insert(_ value: Value, for index: Index) {
+        self.set(value, for: index)
+//        guard byValue[value] == nil else { return }
+//        if let object = self.byIndex.removeValue(forKey: index) {
+//            byValue.removeValue(forKey: object)
+//        }
+//
+//        byValue[value] = index
+//        byIndex[index] = value
+//        assert(byIndex.count == byValue.count)
     }
     
     @discardableResult public mutating func removeValue(for index: Index) -> Value? {
-        guard let object = byIndex.removeValue(forKey: index) else {
+        guard let value = byIndex.removeValue(forKey: index) else {
             return nil
         }
-        byValue.removeValue(forKey: object)
-        assert(byIndex.count == byValue.count)
-        return object
+        byValue.removeValue(forKey: value)
+        return value
     }
-    @discardableResult mutating func remove(_ value: Value) -> Index? {
+    @discardableResult public mutating func remove(_ value: Value) -> Index? {
         guard let index = byValue.removeValue(forKey: value) else {
             return nil
         }
         byIndex.removeValue(forKey: index)
-        assert(byIndex.count == byValue.count)
         return index
     }
     
@@ -131,7 +148,6 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
     
     public typealias Iterator = AnyIterator<(index: Index, value: Value)>
     public func makeIterator() -> Iterator {
-        
         var it = byIndex.makeIterator()
         return AnyIterator {
             if let val = it.next() {
@@ -142,40 +158,22 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
     }
 }
 
-//extension IndexedSet {
-//    
-//    func index(ofHash hash: HashValue) -> Index? {
-//        return byValue[hash]
-//    }
-//    func value(withHash hash: HashValue) -> Value? {
-//        guard let i = byValue[hash] else { return nil }
-//        return self.value(for: i)
-//    }
-//    func containsValue(withHash hash: HashValue) -> Bool {
-//        return byValue[hash] != nil
-//    }
-//    
-//}
-
 
 extension IndexedSet {
-    
     func union(_ other: IndexedSet) -> IndexedSet {
         var new = self
         for e in other.byIndex {
-            new.insert(e.value, with: e.key)
+            new.insert(e.value, for: e.key)
         }
         return new
     }
-    
 }
 
-/// :nodoc:
 extension Array where Element:Hashable {
     public var indexedSet : IndexedSet<Int, Element> {
         var set = IndexedSet<Int, Element>()
         for (idx, v) in self.enumerated() {
-            set.insert(v, with: idx)
+            set.insert(v, for: idx)
         }
         return set
     }
@@ -185,7 +183,7 @@ extension Collection where Iterator.Element:Hashable {
     public var indexedSet : IndexedSet<Int, Iterator.Element> {
         var set = IndexedSet<Int, Iterator.Element>()
         for (idx, v) in self.enumerated() {
-            set.insert(v, with: idx)
+            set.insert(v, for: idx)
         }
         return set
     }

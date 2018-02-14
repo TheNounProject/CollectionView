@@ -17,7 +17,6 @@ class GridCell : CollectionViewPreviewCell {
     @IBOutlet weak var titleLabel : NSTextField!
     @IBOutlet weak var detailLabel : NSTextField!
     
-    
     override func awakeFromNib() {
         super.awakeFromNib()
         self.useMask = false
@@ -32,7 +31,7 @@ class GridCell : CollectionViewPreviewCell {
     
     func setup(with child: Child) {
         
-        self.badgeLabel.unbind("value")
+        self.badgeLabel.unbind(NSBindingName(rawValue: "value"))
         
         self.child = child
         
@@ -48,7 +47,7 @@ class GridCell : CollectionViewPreviewCell {
 
     
     override class func register(in collectionView: CollectionView) {
-        collectionView.register(nib: NSNib(nibNamed: "GridCell", bundle: nil)!, forCellWithReuseIdentifier: self.defaultReuseIdentifier)
+        collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!, forCellWithReuseIdentifier: self.defaultReuseIdentifier)
     }
     
     

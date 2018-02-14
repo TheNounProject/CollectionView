@@ -705,7 +705,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             }
             
             let newEdit = Edit(.move(origin: source._item), value: object, index: targetIP._item)
-            processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: targetIP._item)
+            processedSections[targetSection]?.operationIndex.moves.insert(newEdit, for: targetIP._item)
             processedSections[targetSection]?.remove(edit: proposedEdit)
             
             if let s = self._sectionsCopy?.object(at: source._section) ?? _sections._object(at: source._section),
@@ -718,7 +718,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             }
             else if case .substitution = proposedEdit.operation, let obj = self.context.objectChanges.object(for: targetIP) {
                 let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
-                processedSections[targetSection]?.operationIndex.deletes.insert(insert, with: targetIP._item)
+                processedSections[targetSection]?.operationIndex.deletes.insert(insert, for: targetIP._item)
             }
             return true
         }

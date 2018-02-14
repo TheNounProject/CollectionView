@@ -293,11 +293,11 @@ internal struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: Custom
     }
     
     mutating func add(updated object: Object, for index: Index) {
-        self.updated.insert(object, with: index)
+        self.updated.insert(object, for: index)
     }
     
     mutating func add(deleted object: Object, for index: Index) {
-        self.deleted.insert(object, with: index)
+        self.deleted.insert(object, for: index)
     }
     
     func object(for index: Index) -> Object? {

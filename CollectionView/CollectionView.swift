@@ -1397,7 +1397,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
             if let cell = self.cellForItem(at: from) {
                 _updateContext.updates.append(ItemUpdate(cell: cell, indexPath: to, type: .update))
                 contentDocumentView.preparedCellIndex.removeValue(for: from)
-                _finalizedCellMap.insert(cell, with: to)
+                _finalizedCellMap.insert(cell, for: to)
             }
         }
         

@@ -19,17 +19,16 @@ extension Int {
     }
 }
 
-extension MutableCollection where Indices.Iterator.Element == Index {
+extension MutableCollection {
     /// Shuffles the contents of this collection.
     mutating func shuffle() {
         let c = count
         guard c > 1 else { return }
         
-        for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
+        for (firstUnshuffled, unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
             let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
-            guard d != 0 else { continue }
             let i = index(firstUnshuffled, offsetBy: d)
-            swap(&self[firstUnshuffled], &self[i])
+            swapAt(firstUnshuffled, i)
         }
     }
 }
@@ -56,6 +55,7 @@ extension Array {
 
 
 class ViewController: CollectionViewController, ResultsControllerDelegate, BasicHeaderDelegate, CollectionViewDelegateColumnLayout, CollectionViewDelegateFlowLayout, CollectionViewPreviewControllerDelegate {
+
 
     var relational: Bool = false
     
@@ -104,7 +104,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         
         // The default way of registering cells
-        collectionView.register(nib: NSNib(nibNamed: "GridCell", bundle: nil)!, forCellWithReuseIdentifier: "GridCell")
+        collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!, forCellWithReuseIdentifier: "GridCell")
         
         // A shortcut way to register cells
         ListCell.register(collectionView)
@@ -386,7 +386,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         collectionView.reloadData()
     }
     
-    func delete(_ sender: Any?) {
+    @IBAction func delete(_ sender: Any?) {
         for ip in collectionView.indexPathsForSelectedItems {
             if let item = resultsController.object(at: ip) as? NSManagedObject {
                 item.managedObjectContext?.delete(item)
@@ -402,9 +402,6 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         guard  let section = self.resultsController.sectionInfo(forSectionAt: ip)?.object as? Parent else { return }
         
         let flags = NSApp.currentEvent?.modifierFlags
-        
-        
-        
         
         if flags?.contains(.control) == true {
             let moc = section.managedObjectContext
@@ -506,7 +503,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         if !cell.reused {
             cell.inset = 16
             cell.style = .split
-            cell.titleLabel.font = NSFont.systemFont(ofSize: 12, weight: NSFontWeightThin)
+            cell.titleLabel.font = NSFont.systemFont(ofSize: 12, weight: NSFont.Weight.thin)
         }
         
 //        cell.titleLabel.bind("stringValue", to: child, withKeyPath: "displayOrder", options: nil)
@@ -516,8 +513,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     }
     
     
-    
-    func collectionView(_ collectionView: CollectionView, gridLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
+    func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
         
         if indexPath._item % 20 == 0 {
             return .span(CGSize(width: collectionView.frame.size.width, height: 50))
@@ -527,12 +523,16 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         let displaySize = (CGFloat(Int(item.second.floatValue/3 + 1)))
         
-        let size : CGFloat = 100 // (displaySize * (30 + (displaySize * 15))) + 80
+        let size : CGFloat = 180 // (displaySize * (30 + (displaySize * 15))) + 80
         return .flow(CGSize(width: size  + (50 * CGFloat(indexPath._item % 5)), height: size))
     }
     
-    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, insetsForSectionAt section: Int) -> EdgeInsets {
-        return EdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, rowTransformForSectionAt section: Int) -> CollectionViewFlowLayout.RowTransform {
+        return .center
+    }
+    
+    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, insetsForSectionAt section: Int) -> NSEdgeInsets {
+        return NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
     }
     
     func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, heightForFooterInSection section: Int) -> CGFloat {
@@ -804,6 +804,14 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
         cell.setup(with: child)
         return cell
+    }
+    
+    func collectionViewPreviewControllerWillDismiss(_ controller: CollectionViewPreviewController) {
+        
+    }
+    
+    func collectionViewPreview(_ controller: CollectionViewPreviewController, didMoveToItemAt indexPath: IndexPath) {
+        
     }
     
     

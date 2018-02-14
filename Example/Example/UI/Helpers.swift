@@ -38,7 +38,7 @@ extension String {
     func sub(from: Int, to: Int) -> String {
         let start = self.index(self.startIndex, offsetBy: from)
         let end = self.index(self.startIndex, offsetBy: to)
-        return self[start..<end]
+        return String(self[start..<end])
     }
     
 }

@@ -112,7 +112,6 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         child.second = NSNumber(value: Int(s/6))
         child.group = dateGroupFormatter.string(from: Date())
         
-        
         return child
     }
     

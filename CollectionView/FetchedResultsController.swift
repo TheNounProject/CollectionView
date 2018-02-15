@@ -1,3 +1,4 @@
+
 //
 //  FetchedResultsController.swift
 //  CollectionView
@@ -217,7 +218,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             throw ResultsControllerError.unknown
         }
         
-        
         register()
         _fetched = true
         
@@ -324,9 +324,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     
     
     
-    
-    
-    
     // MARK: - Controller Contents
     /*-------------------------------------------------------------------------------*/
     
@@ -336,13 +333,10 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     private var _sections = OrderedSet<SectionInfo>()
     
     
-    
-    
     /// The number of sections in the controller
     public var numberOfSections : Int {
         return _sections.count
     }
-    
 
     
     /**

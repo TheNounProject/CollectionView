@@ -109,29 +109,16 @@ class IndexedSetTests: XCTestCase {
         XCTAssertTrue(set.contains("one"))
     }
     
-//    func testSet_newIndex() {
-//        var set : IndexedSet = [
-//            "index_one" : "one",
-//            "index_two" : "two"
-//        ]
-//        set.set("two", for: "index_one")
-//        XCTAssertEqual(set.count, 1)
-//        XCTAssertTrue(set.containsValue(for: "index_one"))
-//        XCTAssertFalse(set.containsValue(for: "index_two"))
-//        XCTAssertTrue(set.contains("two"))
-//    }
-//
-//    func testSet_existingValueAndIndex() {
-//        var set : IndexedSet = [
-//            "index_one" : "one",
-//            "index_two" : "two"
-//        ]
-//        set.set("two", for: "index_one")
-//        XCTAssertEqual(set.count, 1)
-//        XCTAssertTrue(set.containsValue(for: "index_one"))
-//        XCTAssertTrue(set.contains("two"))
-//    }
-    
+    func testInsert_subscript() {
+        var set : IndexedSet = [
+            "index_one" : "one",
+            "index_two" : "two"
+        ]
+        set["index_three"] = "three"
+        XCTAssertEqual(set.count, 3)
+        XCTAssertTrue(set.containsValue(for: "index_three"))
+        XCTAssertTrue(set.contains("three"))
+    }
     
     // MARK: - Removing
     /*-------------------------------------------------------------------------------*/
@@ -182,10 +169,35 @@ class IndexedSetTests: XCTestCase {
     }
     
 
-    func testPerformanceExample() {
+    func testInitPerformance() {
         // This is an example of a performance test case.
+        var source = [String:String]()
+        for n in 0..<5000 {
+            source["index_\(n)"] = "value_\(n)"
+        }
         self.measure {
-            // Put the code you want to measure the time of here.
+            _ = IndexedSet<String,String>(source)
+        }
+    }
+    
+    func testInsertPerformance() {
+        self.measure {
+            var set = IndexedSet<String,String>()
+            for n in 0..<5000 {
+                set["index_\(n)"] = "value_\(n)"
+            }
+        }
+    }
+    
+    func testDiplicatePerformance() {
+        self.measure {
+            var set = IndexedSet<String,String>()
+            for n in 0..<5000 {
+                set["index_\(n)"] = "value_\(n)"
+            }
+            for n in stride(from: 0, to: 5000, by: 2) {
+                set["index_\(n)"] = "value_\(n)"
+            }
         }
     }
 

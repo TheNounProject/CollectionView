@@ -41,7 +41,7 @@
 /* Begin PBXFileReference section */
 		1C3A4ADF1E3D9D5D00A2AF0C /* GridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridCell.swift; sourceTree = "<group>"; };
 		1C3A4AE11E3D9D6D00A2AF0C /* GridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GridCell.xib; sourceTree = "<group>"; };
-		1C6E50881E2DA6C300C85946 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		1C6E50881E2DA6C300C85946 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		1C6E508A1E2DB99200C85946 /* ResultsController.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ResultsController.xcdatamodel; sourceTree = "<group>"; };
 		1C6E508B1E2DB99200C85946 /* Subclasses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Subclasses.swift; sourceTree = "<group>"; };
 		1C6E508F1E2DBD9E00C85946 /* BasicCells.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BasicCells.swift; sourceTree = "<group>"; };

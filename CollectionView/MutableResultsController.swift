@@ -28,42 +28,43 @@ fileprivate struct ChangeContext<Element:Hashable> : CustomStringConvertible {
 
 
 
-fileprivate class ManagedSectionInfo<ValueType: SectionRepresentable, Element: Hashable>: NSObject, Comparable, ResultsControllerSectionInfo {
+public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     
-    public var object : Any? { return self._value }
-    public var objects: [Any] { return _storage.objects }
+    public let representedObject : Section?
+    public var objects: [Element] { return _storage.objects }
     
     public var numberOfObjects : Int { return _storage.count }
     
-    private(set) var _value : ValueType?
-    private(set) var _storage = OrderedSet<Element>()
-    private(set) var _storageCopy = OrderedSet<Element>()
+    private(set) var _storage : OrderedSet<Element>
+    private var _storageCopy = OrderedSet<Element>()
     
-    internal init(value: ValueType?, objects: [Element] = []) {
-        self._value = value
-        _storage.add(contentsOf: objects)
+    internal init(object: Section?, objects: [Element] = []) {
+        self.representedObject = object
+        _storage = OrderedSet(elements: objects)
     }
     
     
     
     // MARK: - Equatable
     /*-------------------------------------------------------------------------------*/
-    override public var hashValue: Int {
-        return _value?.hashValue ?? 0
+    public var hashValue: Int {
+        return representedObject?.hashValue ?? 0
     }
-    fileprivate override func isEqual(_ object: Any?) -> Bool {
-        return self._value == (object as? ManagedSectionInfo<ValueType, Element>)?._value
+
+//    fileprivate override func isEqual(_ object: ManagedSectionInfo?) -> Bool {
+//        return self._value == object?.representedObject
+//    }
+    public static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {
+        return lhs.representedObject == rhs.representedObject
     }
-    public static func ==(lhs: ManagedSectionInfo, rhs: ManagedSectionInfo) -> Bool {
-        return lhs._value == rhs._value
-    }
-    static func <(lhs: ManagedSectionInfo, rhs: ManagedSectionInfo) -> Bool {
-        if let v1 = lhs._value,
-            let v2 = rhs._value {
-            return v1 < v2
-        }
-        return lhs._value != nil
-    }
+
+//    static func <(lhs: ManagedSectionInfo, rhs: ManagedSectionInfo) -> Bool {
+//        if let v1 = lhs._value,
+//            let v2 = rhs._value {
+//            return v1 < v2
+//        }
+//        return lhs._value != nil
+//    }
     
     
     // MARK: - Objects
@@ -80,6 +81,14 @@ fileprivate class ManagedSectionInfo<ValueType: SectionRepresentable, Element: H
     @discardableResult func remove(_ object: Element) -> Int? {
         return _storage.remove(object)
     }
+    
+    func append(_ element: Element) {
+        self._storage.add(element)
+    }
+    
+    func sort(using sortDescriptors: [SortDescriptor<Element>]) {
+        self._storage.sort(using: sortDescriptors)
+    }
 
     
     // MARK: - Editing
@@ -87,7 +96,7 @@ fileprivate class ManagedSectionInfo<ValueType: SectionRepresentable, Element: H
     
     private(set) var needsSort : Bool = false
     private(set) var isEditing: Bool = false
-//    private var _added = Set<Element>() // Tracks added items needing sort, if one do insert for performance
+//    private var _added = Set<Element>() // Tracks added items needing sort, to allow for performance optimizations
     
     func beginEditing() {
         assert(!isEditing, "Mutiple calls to beginEditing() for RelationalResultsControllerSection")
@@ -120,13 +129,9 @@ fileprivate class ManagedSectionInfo<ValueType: SectionRepresentable, Element: H
             let _ = _storage.index(of: element)
             return
         }
-        
         self.needsSort = self.needsSort || self._storage.count > 0
-//        _added.insert(element)
         self._storage.add(element)
     }
-
-    
 }
 
 
@@ -134,11 +139,9 @@ fileprivate class ManagedSectionInfo<ValueType: SectionRepresentable, Element: H
 /**
  A results controller not only manages data, it also provides an easy to use, consistent interface for working with CollectionViews. While a typical controller fetches and manages data changes internally, this slimmed down version leaves the manipulation of it's content up to you so you can use the same interface with any type of data.
 */
-public class ManagedResultsController<Section: SectionRepresentable, Element: Hashable> : NSObject, ResultsController {
+public class ManagedResultsController<Section: SectionType, Element: Hashable> : NSObject, ResultsController {
     
-    fileprivate typealias SectionInfo = ManagedSectionInfo<Section, Element>
-    
-    
+    fileprivate typealias WrappedSectionInfo = SectionInfo<Section, Element>
 
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
@@ -160,13 +163,50 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
         self._sections.removeAll()
     }
     
-    
-    public func setContent(_ content: [(Section,[Element])]) {
+    public func setContent(_ content: [Element]) {
+
         self._sections = []
-        for section in content {
-            self._sections.add(SectionInfo(value: section.0, objects: section.1))
+        if let kp = self.sectionKeyPath {
+            for element in content {
+                let s = getOrCreateSectionInfo(for: element[keyPath: kp])
+                s.append(element)
+            }
+        }
+        else {
+            let s = WrappedSectionInfo(object: nil, objects: content)
+            self._sections = [s]
+        }
+        self.sortSections()
+        self.sortObjects()
+    }
+    
+    
+    func sortObjects() {
+        guard !self.sortDescriptors.isEmpty else { return }
+        for s in _sections {
+            s.sort(using: self.sortDescriptors)
         }
     }
+    
+    func sortSections() {
+        guard !self.sectionSortDescriptors.isEmpty else { return }
+        self._sections.sort { (a, b) -> Bool in
+            if a.representedObject == nil { return false }
+            if b.representedObject == nil { return true }
+            return sectionSortDescriptors.compare(a.representedObject!, b.representedObject!) == .ascending
+        }
+    }
+    
+    
+    private func getOrCreateSectionInfo(for section: Section?) -> WrappedSectionInfo {
+        if let s = self.sectionInfo(representing: section) { return s }
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        let s = WrappedSectionInfo(object: section, objects: [])
+        _sections.add(s)
+        return s
+    }
+
+        
     
     /**
      Performs the provided fetch request to populate the controller. Calling again resets the controller.
@@ -195,26 +235,16 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
     
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
-    public typealias Sorter = (Element, Element) -> Bool
     
     /**
      A closuer for providing custom sorting
      */
-    public var sort : Sorter?
+    public var sortDescriptors : [SortDescriptor<Element>] = []
+    public var sectionSortDescriptors : [SortDescriptor<Section>] = []
     
-    
-    /**
-     A convenience function for setting the custom sorter
-     
-     - Parameter sorter: A closure to handle custom sorting or nil to remove the sorter
-     
-     */
-    public func sortBy(_ sorter: Sorter?) {
-        self.sort = sorter
-    }
     
     /// A key path of the elements to use for section groupings
-    public var sectionKeyPath: String?
+    public var sectionKeyPath: KeyPath<Element,Section>?
     
     
     /**
@@ -228,9 +258,9 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
     /*-------------------------------------------------------------------------------*/
     
     private var fetchedObjects = Set<Element>()
-    private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
+    private var _objectSectionMap = [Element:WrappedSectionInfo]() // Map between elements and the last group it was known to be in
     private var _fetchedObjects = [Element]()
-    private var _sections = OrderedSet<SectionInfo>()
+    private var _sections = OrderedSet<WrappedSectionInfo>()
     
     
     /// The number of sections in the controller
@@ -238,7 +268,7 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
         return _sections.count
     }
     
-
+    
     
     /**
      The number of objects in a given section
@@ -266,7 +296,7 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
      
      For performance reasons accessing the controllers data should be done via the controller getters such as sectionInfo(forSectionAt:) or object(at:)
      */
-    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
+    public var sections: [SectionInfo<Section,Element>] { return _sections.objects }
     
     
     /**
@@ -284,7 +314,7 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
 
     */
     public func sectionName(forSectionAt indexPath: IndexPath) -> String {
-        return _sectionInfo(at: indexPath)?._value?.displayDescription ?? ""
+        return (object(forSectionAt: indexPath) as? CustomDisplayStringConvertible)?.displayDescription ?? ""
     }
     
     
@@ -300,8 +330,8 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
      - Returns: The info for the given section (or nil if indexPath.section is out of range)
 
     */
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
-        return self._sectionInfo(at: sectionIndexPath)
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo<Section,Element>? {
+        return self._sections._object(at: sectionIndexPath._section)
     }
     
     
@@ -313,8 +343,8 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
      - Returns: The value for `sectionKeyPath` of each object in the section (or nil)
 
     */
-    public func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
-        return self._object(forSectionAt: sectionIndexPath)
+    public func object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
+        return self.sectionInfo(forSectionAt: sectionIndexPath)?.representedObject
     }
     
     
@@ -326,34 +356,10 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
      - Returns: The object at the given indexPath (or nil if it is out of range)
 
     */
-    public func object(at indexPath: IndexPath) -> Any? {
-        return self._object(at: indexPath)
+    public func object(at indexPath: IndexPath) -> Element? {
+        return self.sectionInfo(at: indexPath)?._storage._object(at: indexPath._item)
     }
-    
-    
-    // MARK: - Types Object Acccess
-    /*-------------------------------------------------------------------------------*/
 
-    public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
-        return self._sectionInfo(at: sectionIndexPath)?._value
-    }
-    
-    public func _object(at indexPath: IndexPath) -> Element? {
-        return self._sectionInfo(at: indexPath)?._storage._object(at: indexPath._item)
-    }
-    
-    public func _indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(value: sectionObject)
-        if let idx = _sections.index(of: _wrap) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    
-
-
-    
     
     
     // MARK: - Getting IndexPaths
@@ -368,9 +374,8 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
      - Returns: The index path of the section matching the given info (or nil)
      
      */
-    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
-        guard let info = sectionInfo as? SectionInfo else { return nil }
-        if let idx = _sections.index(of: info) {
+    public func indexPath(of sectionInfo: SectionInfo<Section,Element>) -> IndexPath? {
+        if let idx = _sections.index(of: sectionInfo) {
             return IndexPath.for(section: idx)
         }
         return nil
@@ -411,7 +416,7 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
      
      */
     public func indexPathOfSection(representing sectionValue: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(value: sectionValue)
+        let _wrap = WrappedSectionInfo(object: sectionValue)
         if let idx =  _sections.index(of: _wrap) {
             return IndexPath.for(section: idx)
         }
@@ -423,18 +428,18 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
     
     // MARK: - Private Helpers
     /*-------------------------------------------------------------------------------*/
-    private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
-        return self._sectionInfo(at: sectionIndexPath._section)
+    public func sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo<Section,Element>? {
+        return self.sectionInfo(at: sectionIndexPath._section)
     }
     
-    private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
+    public func sectionInfo(at sectionIndex: Int) -> SectionInfo<Section,Element>? {
         guard sectionIndex < self.numberOfSections else { return nil }
         return self._sections.object(at: sectionIndex)
     }
     
-    private func _sectionInfo(representing section: Section?) -> SectionInfo? {
-        guard let ip = self._indexPathOfSection(representing: section) else { return nil }
-        return self._sectionInfo(at: ip)
+    public func sectionInfo(representing section: Section?) -> SectionInfo<Section,Element>? {
+        guard let ip = self.indexPathOfSection(representing: section) else { return nil }
+        return self.sectionInfo(at: ip)
     }
     
     private func contains(object: Element) -> Bool {
@@ -445,23 +450,20 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
     // MARK: - Storage Manipulation
     /*-------------------------------------------------------------------------------*/
     
-    private func _insert(section: Section?) -> SectionInfo {
-        if let s = self._sectionInfo(representing: section) { return s }
+    private func _insert(section: Section?) -> WrappedSectionInfo {
+        if let s = self.sectionInfo(representing: section) { return s }
         if _sectionsCopy == nil { _sectionsCopy = _sections }
-        let s = SectionInfo(value: section, objects: [])
+        let s = WrappedSectionInfo(object: section, objects: [])
         _sections.add(s)
         return s
     }
     
     private func _remove(_ section: Section?) {
-        guard let ip = self._indexPathOfSection(representing: section) else { return }
+        guard let ip = self.indexPathOfSection(representing: section) else { return }
         if _sectionsCopy == nil { _sectionsCopy = _sections }
         _sections.remove(at: ip._section)
     }
     
-    private func sortSections() {
-        self._sections.sort()
-    }
     
     
     
@@ -490,7 +492,7 @@ public class ManagedResultsController<Section: SectionRepresentable, Element: Ha
     
     
 //    private var context = ChangeContext<Element>()
-    private var _sectionsCopy : OrderedSet<SectionInfo>?
+    private var _sectionsCopy : OrderedSet<WrappedSectionInfo>?
     
     
     func delete(section: Section) {

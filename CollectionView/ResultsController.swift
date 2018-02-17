@@ -9,6 +9,13 @@
 import CoreData
 
 
+
+public protocol SectionType : Hashable { }
+public protocol ResultType : Hashable { }
+
+
+
+
 /**
  A ResultsController manages data in a way that is usable by a collection view.
  
@@ -17,7 +24,7 @@ import CoreData
  
 */
 public protocol ResultsController {
-
+    
     // MARK: - Delegate
     /*-------------------------------------------------------------------------------*/
     /// The delegate to notify about data changes
@@ -41,16 +48,6 @@ public protocol ResultsController {
     func numberOfObjects(in section: Int) -> Int
     
     
-    /// Returns the section info for all sections in the controller
-    var sections : [ResultsControllerSectionInfo] { get }
-    
-    /**
-     Returns all objects in the controller
-     
-     **Warning:**   This is not fully implemented yet...
-    */
-    var allObjects : [Any] { get }
-    
     // MARK: - Getting Items
     /*-------------------------------------------------------------------------------*/
     /**
@@ -61,7 +58,7 @@ public protocol ResultsController {
      - Returns: The section info
 
     */
-    func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo?
+//    func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo?
 
     
     /**
@@ -72,7 +69,9 @@ public protocol ResultsController {
      - Returns: An object at the specfied index path
 
     */
-    func object(at indexPath: IndexPath) -> Any?
+//    func object(at indexPath: IndexPath) -> Element? {
+//        return nil
+//    }
     
     
     /**
@@ -85,13 +84,41 @@ public protocol ResultsController {
     */
     func sectionName(forSectionAt indexPath :IndexPath) -> String
     
-    
-    /// Execute a fetch to populate the controller
-    func performFetch() throws
-    
     /// Clear all storage for the controller and stop all observing
     func reset()
 }
+
+
+struct NoSectionType : SectionType {
+    var hashValue: Int { return 0 }
+    static func ==(lhs: NoSectionType, rhs: NoSectionType) -> Bool { return true }
+}
+extension String : SectionType { }
+extension NSNumber : SectionType { }
+extension Int : SectionType { }
+
+/**
+ Information about the sections of a results controller
+ */
+//public protocol SectionInfo {
+//    associatedtype RepresentedType = SectionType
+//    associatedtype Item = ResultType
+//    /**
+//     The object represented by the section
+//     */
+//    var object : RepresentedType? { get }
+//    /**
+//     The number of objects in the section
+//     */
+//    var numberOfObjects : Int { get }
+//    /**
+//     The objects in the section
+//     
+//     - Note: Calling this method incurs large overhead and should be avoided. Use getter methods on the ResultsController instead.
+//     */
+//    var objects : [Item] { get }
+//}
+
 
 
 
@@ -113,6 +140,8 @@ public extension Array where Element:Any {
 public enum ResultsControllerError: Error {
     case unknown
 }
+
+
 
 
 
@@ -152,26 +181,6 @@ extension NSNumber : Comparable {
 
 
 
-/**
- Information about the sections of a results controller
-*/
-public protocol ResultsControllerSectionInfo {
-    /**
-     The object represented by the section
-    */
-    var object : Any? { get }
-    /**
-     The number of objects in the section
-    */
-    var numberOfObjects : Int { get }
-    /**
-     The objects in the section
-     
-     - Note: Calling this method incurs large overhead and should be avoided. Use getter methods on the ResultsController instead.
-    */
-    var objects : [Any] { get }
-}
-
 
 
 /**
@@ -207,7 +216,7 @@ public protocol ResultsControllerDelegate: class {
      - Parameter changeType: The type of change
 
     */
-    func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSectionInfo, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    func controller(_ controller: ResultsController, didChangeSection section: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
     
     
     /**

@@ -10,8 +10,6 @@
 import Foundation
 
 
-
-
 fileprivate struct ChangeContext<Element:NSManagedObject> : CustomStringConvertible {
     
     var objectChanges = ObjectChangeSet<IndexPath, Element>()
@@ -32,7 +30,7 @@ fileprivate struct ChangeContext<Element:NSManagedObject> : CustomStringConverti
 
 public typealias SectionRepresentable = Comparable & Hashable & CustomDisplayStringConvertible
 
-fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: NSManagedObject>: NSObject, Comparable, ResultsControllerSectionInfo {
+fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: NSManagedObject>: NSObject, Comparable, SectionInfo {
     
     public var object : Any? { return self._value }
     public var objects: [Any] { return _storage.objects }
@@ -261,7 +259,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         self.fetchedObjects.removeAll()
         self._fetchedObjects.removeAll()
         self._sectionsCopy = nil
-        self._fetchedObjects.removeAll()
         self._objectSectionMap.removeAll()
         
     }
@@ -371,7 +368,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
      
      For performance reasons accessing the controllers data should be done via the controller getters such as sectionInfo(forSectionAt:) or object(at:)
      */
-    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
+    public var sections: [SectionInfo] { return _sections.objects }
     
     
     /**
@@ -405,7 +402,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
      - Returns: The info for the given section (or nil if indexPath.section is out of range)
 
     */
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo? {
         return self._sectionInfo(at: sectionIndexPath)
     }
     
@@ -473,7 +470,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
      - Returns: The index path of the section matching the given info (or nil)
      
      */
-    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
+    public func indexPath(of sectionInfo: SectionInfo) -> IndexPath? {
         guard let info = sectionInfo as? SectionInfo else { return nil }
         if let idx = _sections.index(of: info) {
             return IndexPath.for(section: idx)
@@ -543,7 +540,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     }
     
     private func contains(object: Element) -> Bool {
-        return _fetchedObjects.contains(object)
+        return self._objectSectionMap[object] != nil
     }
     
     
@@ -803,9 +800,25 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
                 objects.add(deleted: o, for: ip)
             }
             
+            func _updatedObject(_ o: Element) {
+                let _ip = self.indexPath(of: o)
+                let match = fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true
+                
+                if let ip = _ip {
+                    if !match { objects.add(deleted: o, for: ip) }
+                    else { objects.add(updated: o, for: ip) }
+                }
+                else if match {
+                    objects.add(inserted: o)
+                }
+            }
+            
             for obj in itemChanges.inserted {
                 if let o = obj as? Element {
-                    if fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true {
+                    if self.contains(object: o) {
+                        _updatedObject(o)
+                    }
+                    else if fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true {
                         objects.add(inserted: o)
                     }
                 }
@@ -814,16 +827,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
             for obj in itemChanges.updated {
                 if let o = obj as? Element {
                     
-                    let _ip = self.indexPath(of: o)
-                    let match = fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true
-                    
-                    if let ip = _ip {
-                        if !match { objects.add(deleted: o, for: ip) }
-                        else { objects.add(updated: o, for: ip) }
-                    }
-                    else if match {
-                        objects.add(inserted: o)
-                    }
+                    _updatedObject(o)
                 }
             }
         }

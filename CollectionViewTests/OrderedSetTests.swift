@@ -260,5 +260,67 @@ class OrderedSetTests: XCTestCase {
             set.remove(at: set.count - 1)
         }
     }
+    
+    struct Person : Hashable {
+        let name : String
+        let age : Int
+        var hashValue: Int {
+            return name.hashValue^age
+        }
+        static func ==(lhs: OrderedSetTests.Person, rhs: OrderedSetTests.Person) -> Bool {
+            return lhs.age == rhs.age && lhs.name == rhs.name
+        }
+    }
+    
+    func randomName(length: Int) -> String {
+        let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        let len = UInt32(letters.length)
+        
+        var randomString = ""
+        
+        for _ in 0 ..< length {
+            let rand = arc4random_uniform(len)
+            var nextChar = letters.character(at: Int(rand))
+            randomString += NSString(characters: &nextChar, length: 1) as String
+        }
+        return randomString
+    }
+    func peopleSet(with n: Int, randomAge: Bool = false) -> OrderedSet<Person> {
+        var set = OrderedSet<Person>()
+        for n in 0..<10000 {
+            let age = randomAge ? Int(arc4random_uniform(50) + 10) : n
+            set.add(Person(name: randomName(length: 8), age: age))
+        }
+        return set
+    }
+    
+    func testValueSortDescriptorPerformance_inPlace() {
+        var set = peopleSet(with: 5000)
+        let sort = SortDescriptor(\Person.age)
+        self.measure {
+            set.sort(using: [sort])
+        }
+    }
+    func testValueSortDescriptorPerformance_copy() {
+        let set = peopleSet(with: 5000)
+        let sort = SortDescriptor(\Person.age)
+        self.measure {
+            _ = set.sorted(using: [sort])
+        }
+    }
+    func testValueSortDescriptorPerformance_multiple() {
+        let set = peopleSet(with: 5000)
+        let sort = [SortDescriptor(\Person.age), SortDescriptor(\Person.name)]
+        self.measure {
+            _ = set.sorted(using: sort)
+        }
+    }
+    func testValueSortDescriptorPerformance_reverseCopy() {
+        let set = peopleSet(with: 5000)
+        let sort = SortDescriptor(\Person.age, ascending: false)
+        self.measure {
+            _ = set.sorted(using: [sort])
+        }
+    }
 
 }

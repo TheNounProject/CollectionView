@@ -832,7 +832,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         changes.addChange(forItemAt: indexPath, with: changeType)
     }
     
-    func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSectionInfo, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+    func controller(_ controller: ResultsController, didChangeSection section: SectionInfo, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
         changes.addChange(forSectionAt: indexPath, with: changeType)
     }
     

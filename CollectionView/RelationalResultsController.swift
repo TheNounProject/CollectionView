@@ -35,7 +35,7 @@ fileprivate class UpdateContext<Section: NSManagedObject, Element:NSManagedObjec
 }
 
 
-fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSManagedObject>: NSObject, ResultsControllerSectionInfo {
+fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSManagedObject>: NSObject, SectionInfo {
     
     public var object : Any? { return self._object }
     public var objects: [Any] { return _storage.objects  }
@@ -425,7 +425,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
      
      - Note: accessing the sections here incurs fairly large overhead, avoid if possible. Use `numberOfSections` and sectionInfo(forSectionAt:) when possible.
      */
-    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
+    public var sections: [SectionInfo] { return _sections.objects }
     
     
     private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
@@ -456,7 +456,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return (obj as? CustomDisplayStringConvertible)?.displayDescription ?? ""
     }
     
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo? {
         return self._sectionInfo(at: sectionIndexPath)
     }
     
@@ -479,7 +479,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return IndexPath.for(item: idx, section: sIdx)
     }
     
-    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
+    public func indexPath(of sectionInfo: SectionInfo) -> IndexPath? {
         guard let info = sectionInfo as? SectionInfo else { return nil }
         if let idx = _sections.index(of: info) {
             return IndexPath.for(section: idx)

@@ -419,7 +419,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 var forceBreak: Bool = false
                 for item in 0..<numItems {
-                    allIndexPaths.add(IndexPath.for(item: item, section: sec))
+                    allIndexPaths.append(IndexPath.for(item: item, section: sec))
                     let ip = IndexPath.for(item: item, section: sec)
                     let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
                     var attrs = CollectionViewLayoutAttributes(forCellWith: ip)

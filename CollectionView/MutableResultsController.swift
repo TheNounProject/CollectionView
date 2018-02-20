@@ -83,7 +83,7 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     }
     
     func append(_ element: Element) {
-        self._storage.add(element)
+        self._storage.append(element)
     }
     
     func sort(using sortDescriptors: [SortDescriptor<Element>]) {
@@ -130,9 +130,11 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
             return
         }
         self.needsSort = self.needsSort || self._storage.count > 0
-        self._storage.add(element)
+        self._storage.append(element)
     }
 }
+
+
 
 
 
@@ -163,72 +165,6 @@ public class ManagedResultsController<Section: SectionType, Element: Hashable> :
         self._sections.removeAll()
     }
     
-    public func setContent(_ content: [Element]) {
-
-        self._sections = []
-        if let kp = self.sectionKeyPath {
-            for element in content {
-                let s = getOrCreateSectionInfo(for: element[keyPath: kp])
-                s.append(element)
-            }
-        }
-        else {
-            let s = WrappedSectionInfo(object: nil, objects: content)
-            self._sections = [s]
-        }
-        self.sortSections()
-        self.sortObjects()
-    }
-    
-    
-    func sortObjects() {
-        guard !self.sortDescriptors.isEmpty else { return }
-        for s in _sections {
-            s.sort(using: self.sortDescriptors)
-        }
-    }
-    
-    func sortSections() {
-        guard !self.sectionSortDescriptors.isEmpty else { return }
-        self._sections.sort { (a, b) -> Bool in
-            if a.representedObject == nil { return false }
-            if b.representedObject == nil { return true }
-            return sectionSortDescriptors.compare(a.representedObject!, b.representedObject!) == .ascending
-        }
-    }
-    
-    
-    private func getOrCreateSectionInfo(for section: Section?) -> WrappedSectionInfo {
-        if let s = self.sectionInfo(representing: section) { return s }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
-        let s = WrappedSectionInfo(object: section, objects: [])
-        _sections.add(s)
-        return s
-    }
-
-        
-    
-    /**
-     Performs the provided fetch request to populate the controller. Calling again resets the controller.
-     
-     - Throws: If the fetch request is invalid or the fetch fails
-     */
-    
-    public func performFetch() throws {
-        assertionFailure("Perform fetch is not available for ManagedResultsController. Use setContent instead.")
-    }
-    
-    
-    /// Clears all data and stops monitoring for changes in the context.
-    public func reset() {
-        self._sections.removeAll()
-        self.fetchedObjects.removeAll()
-        self._fetchedObjects.removeAll()
-        self._sectionsCopy = nil
-        self._fetchedObjects.removeAll()
-        self._objectSectionMap.removeAll()
-        
-    }
 
     
     
@@ -450,11 +386,55 @@ public class ManagedResultsController<Section: SectionType, Element: Hashable> :
     // MARK: - Storage Manipulation
     /*-------------------------------------------------------------------------------*/
     
-    private func _insert(section: Section?) -> WrappedSectionInfo {
+    public func setContent(_ content: [Element]) {
+        self._sections = []
+        if let kp = self.sectionKeyPath {
+            for element in content {
+                let s = getOrCreateSectionInfo(for: element[keyPath: kp])
+                s.append(element)
+            }
+        }
+        else {
+            let s = WrappedSectionInfo(object: nil, objects: content)
+            self._sections = [s]
+        }
+        self.sortSections()
+        self.sortObjects()
+    }
+    
+    /// Clears all data and stops monitoring for changes in the context.
+    public func reset() {
+        self._sections.removeAll()
+        self.fetchedObjects.removeAll()
+        self._fetchedObjects.removeAll()
+        self._sectionsCopy = nil
+        self._fetchedObjects.removeAll()
+        self._objectSectionMap.removeAll()
+    }
+    
+    
+    func sortObjects() {
+        guard !self.sortDescriptors.isEmpty else { return }
+        for s in _sections {
+            s.sort(using: self.sortDescriptors)
+        }
+    }
+    
+    func sortSections() {
+        guard !self.sectionSortDescriptors.isEmpty else { return }
+        self._sections.sort { (a, b) -> Bool in
+            if a.representedObject == nil { return false }
+            if b.representedObject == nil { return true }
+            return sectionSortDescriptors.compare(a.representedObject!, b.representedObject!) == .ascending
+        }
+    }
+    
+    
+    private func getOrCreateSectionInfo(for section: Section?) -> WrappedSectionInfo {
         if let s = self.sectionInfo(representing: section) { return s }
         if _sectionsCopy == nil { _sectionsCopy = _sections }
         let s = WrappedSectionInfo(object: section, objects: [])
-        _sections.add(s)
+        _sections.append(s)
         return s
     }
     
@@ -464,6 +444,7 @@ public class ManagedResultsController<Section: SectionType, Element: Hashable> :
         _sections.remove(at: ip._section)
     }
     
+
     
     
     
@@ -494,8 +475,30 @@ public class ManagedResultsController<Section: SectionType, Element: Hashable> :
 //    private var context = ChangeContext<Element>()
     private var _sectionsCopy : OrderedSet<WrappedSectionInfo>?
     
+    private var _editing = 0
+    
+    func beginEditing() {
+        if _editing == 0 {
+            // Prepare for editing
+        }
+        _editing += 1
+    }
+    func endEditing() {
+        precondition(_editing > 0, "Internal ResultsController error. Unbalanced calls to beginEditing/endEditing")
+        if _editing > 1 {
+            _editing -= 1
+            return
+        }
+        _editing = 0
+        
+        // Finalize edits
+    }
     
     func delete(section: Section) {
+        
+    }
+    
+    func deleteSection(at index: Int) {
         
     }
     
@@ -504,6 +507,10 @@ public class ManagedResultsController<Section: SectionType, Element: Hashable> :
     }
     
     func move(section: Section, to index: Int) {
+        
+    }
+    
+    func deleteObject(at indexPath: IndexPath) {
         
     }
     

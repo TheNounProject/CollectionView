@@ -104,7 +104,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
     // MARK: - Appending
     /*-------------------------------------------------------------------------------*/
 
-    @discardableResult public mutating func add(_ object: Element) -> Bool {
+    @discardableResult public mutating func append(_ object: Element) -> Bool {
         guard !self.contains(object) else { return false }
         self.needsSort = true
         _data.append(object)
@@ -112,9 +112,9 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return true
     }
     
-    public mutating func add<C : Collection>(contentsOf newElements: C) where C.Iterator.Element == Element {
+    public mutating func append<C : Collection>(contentsOf newElements: C) where C.Iterator.Element == Element {
         for e in newElements {
-            self.add(e)
+            self.append(e)
         }
     }
 

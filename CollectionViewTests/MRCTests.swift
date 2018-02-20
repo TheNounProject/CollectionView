@@ -9,60 +9,50 @@
 import XCTest
 @testable import CollectionView
 
-struct Object : ResultType {
+struct Child : ResultType {
     let id = UUID()
     var rank : Int
     var name : String
-    var container : Container
+    var parent : Parent
     
     var hashValue: Int {
         return id.hashValue
     }
-    static func ==(lhs: Object, rhs: Object) -> Bool {
+    static func ==(lhs: Child, rhs: Child) -> Bool {
         return lhs.id == rhs.id
     }
 }
-struct Container : SectionType {
+struct Parent : SectionType {
     let id = UUID()
     var rank : Int
     var name : String
     var hashValue: Int {
         return id.hashValue
     }
-    static func ==(lhs: Container, rhs: Container) -> Bool {
+    static func ==(lhs: Parent, rhs: Parent) -> Bool {
         return lhs.id == rhs.id
     }
 }
 
 class MRCTests: XCTestCase {
     
-    func create(containers: Int, objects: Int) -> (containers: [UUID:Container], objects: [Object]) {
-        var _containers = [UUID:Container]()
-        var _objects = [Object]()
+    func create(containers: Int, objects: Int) -> (containers: [UUID:Parent], objects: [Child]) {
+        var _containers = [UUID:Parent]()
+        var _objects = [Child]()
         for cIdx in 0..<containers {
-            let container = Container(rank: cIdx, name: "Container \(cIdx)")
+            let container = Parent(rank: cIdx, name: "Container \(cIdx)")
             _containers[container.id] = container
             for oIdx in 0..<objects {
-                _objects.append(Object(rank: oIdx, name: "Object \(oIdx)", container: container))
+                _objects.append(Child(rank: oIdx, name: "Object \(oIdx)", parent: container))
             }
         }
         return (_containers, _objects)
     }
 
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
     func test_noSections() {
         let data = create(containers: 5, objects: 5)
         
-        let mrc = ManagedResultsController<NoSectionType, Object>()
+        let mrc = ManagedResultsController<NoSectionType, Child>()
         mrc.setContent(data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 1)
@@ -72,8 +62,8 @@ class MRCTests: XCTestCase {
     func test_noSections_sorted() {
         let data = create(containers: 1, objects: 10)
         
-        let mrc = ManagedResultsController<NoSectionType, Object>()
-        mrc.sortDescriptors = [SortDescriptor(\Object.rank, ascending: false)]
+        let mrc = ManagedResultsController<NoSectionType, Child>()
+        mrc.sortDescriptors = [SortDescriptor(\Child.rank, ascending: false)]
         mrc.setContent(data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 1)
@@ -86,8 +76,8 @@ class MRCTests: XCTestCase {
     func test_withSections() {
         let data = create(containers: 5, objects: 5)
         
-        let mrc = ManagedResultsController<Container, Object>()
-        mrc.sectionKeyPath = \Object.container
+        let mrc = ManagedResultsController<Parent, Child>()
+        mrc.sectionKeyPath = \Child.parent
         mrc.setContent(data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 5)
@@ -99,10 +89,10 @@ class MRCTests: XCTestCase {
     func test_withSections_sorted() {
         let data = create(containers: 5, objects: 5)
         
-        let mrc = ManagedResultsController<Container, Object>()
-        mrc.sectionKeyPath = \Object.container
-        mrc.sortDescriptors = [SortDescriptor(\Object.rank)]
-        mrc.sectionSortDescriptors = [SortDescriptor(\Container.rank)]
+        let mrc = ManagedResultsController<Parent, Child>()
+        mrc.sectionKeyPath = \Child.parent
+        mrc.sortDescriptors = [SortDescriptor(\Child.rank)]
+        mrc.sectionSortDescriptors = [SortDescriptor(\Parent.rank)]
         mrc.setContent(data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 5)
@@ -114,10 +104,15 @@ class MRCTests: XCTestCase {
     
     
 
-    func testPerformanceExample() {
+    func testPerformance_withSections_sorted() {
         // This is an example of a performance test case.
+        let data = create(containers: 10, objects: 500)
         self.measure {
-            // Put the code you want to measure the time of here.
+            let mrc = ManagedResultsController<Parent, Child>()
+            mrc.sectionKeyPath = \Child.parent
+            mrc.sortDescriptors = [SortDescriptor(\Child.rank)]
+            mrc.sectionSortDescriptors = [SortDescriptor(\Parent.rank)]
+            mrc.setContent(data.objects)
         }
     }
 

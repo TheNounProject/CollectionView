@@ -25,6 +25,9 @@
 		DE9071ED1CAC7FD800AD0E37 /* CollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE98600B1E6F956100B6A3EC /* FetchedSetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */; };
 		DE9A6220203782F100210035 /* MRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A621F203782F100210035 /* MRCTests.swift */; };
+		DE9A6222203CBE7200210035 /* SectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A6221203CBE7200210035 /* SectionInfo.swift */; };
+		DE9A6224203CE8CC00210035 /* FRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90669E2034E5F8007B73E7 /* FRCTests.swift */; };
+		DE9A6226203D1B9500210035 /* RelationalResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */; };
 		DEA638B1200874950023F2BD /* SelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA638B0200874950023F2BD /* SelectionTests.swift */; };
 		DEA638B3200874950023F2BD /* CollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CollectionView.framework */; };
 		DEA6BA631D52E00900B3EF24 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA6BA621D52E00900B3EF24 /* CollectionViewController.swift */; };
@@ -87,6 +90,7 @@
 		DE9072171CAC807900AD0E37 /* ClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClipView.swift; sourceTree = "<group>"; };
 		DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedSetController.swift; sourceTree = "<group>"; };
 		DE9A621F203782F100210035 /* MRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MRCTests.swift; sourceTree = "<group>"; };
+		DE9A6221203CBE7200210035 /* SectionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionInfo.swift; sourceTree = "<group>"; };
 		DEA638AE200874950023F2BD /* CollectionViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollectionViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEA638B0200874950023F2BD /* SelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionTests.swift; sourceTree = "<group>"; };
 		DEA638B2200874950023F2BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -126,6 +130,7 @@
 				1C6E50821E2D9C2A00C85946 /* ResultsController.swift */,
 				DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */,
 				1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */,
+				DE9A6221203CBE7200210035 /* SectionInfo.swift */,
 				1CC05C211FF6F564001E6936 /* MutableResultsController.swift */,
 				DEE5F7AD1E92D79A0002079C /* MergedFetchedResultsController.swift */,
 				1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */,
@@ -275,7 +280,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Noun Project";
 				TargetAttributes = {
 					DE9071E81CAC7FD800AD0E37 = {
@@ -328,6 +333,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE9A6226203D1B9500210035 /* RelationalResultsController.swift in Sources */,
 				DE82E95C1D78BF9300346B9E /* Protocols.swift in Sources */,
 				DEB4D5631E64EEC00044026F /* CollectionViewFlowLayout.swift in Sources */,
 				DEB0F4401E4105D100C2260B /* DelegateChangeSets.swift in Sources */,
@@ -337,6 +343,7 @@
 				DEB7366A1E8599E7008467F8 /* CollectionViewPreviewController.swift in Sources */,
 				DEF14B9E1CBDD83B00553CEF /* CollectionViewCells.swift in Sources */,
 				DEF14B9B1CBDD83B00553CEF /* CollectionViewHorizontalLayout.swift in Sources */,
+				DE9A6222203CBE7200210035 /* SectionInfo.swift in Sources */,
 				DEF14B9C1CBDD83B00553CEF /* CollectionViewLayout.swift in Sources */,
 				DE316FAD1CC72ABC00F763E6 /* ClipView.swift in Sources */,
 				DE82E95E1D78BFC900346B9E /* Constants.swift in Sources */,
@@ -364,6 +371,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DE9A6224203CE8CC00210035 /* FRCTests.swift in Sources */,
 				DE8B448A20337DC100F16614 /* OrderedSetTests.swift in Sources */,
 				DEA638B1200874950023F2BD /* SelectionTests.swift in Sources */,
 				DE9A6220203782F100210035 /* MRCTests.swift in Sources */,
@@ -530,7 +538,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = thenounproject.CollectionView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};

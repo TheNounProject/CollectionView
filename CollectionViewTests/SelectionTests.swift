@@ -59,11 +59,5 @@ class SelectionTests: XCTestCase, CollectionViewDataSource  {
         assert(collectionView.itemAtIndexPathIsSelected(ip2), "Index path 2 selected after deselect")
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
     
 }

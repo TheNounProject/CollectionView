@@ -635,7 +635,6 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
         processInserted()
         processUpdated()
         
-        
         var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
         for s in _sections {
             if s.needsSort {

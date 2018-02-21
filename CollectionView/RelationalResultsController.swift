@@ -9,32 +9,234 @@
 import Foundation
 
 
-//extension OrderedSet where Element
 
 
 
-fileprivate class UpdateContext<Section: NSManagedObject, Element:NSManagedObject> : CustomStringConvertible {
+
+
+class FetchedResultsController<Section: SectionType, Element: NSManagedObject> : MutableResultsController<Section, Element> {
     
-    typealias SectionInfo = RelationalSectionInfo<Section, Element>
-
-    // Changes from context
-    var objectChangeSet = ObjectChangeSet<IndexPath, Element>()
-    var sectionChangeSet = ObjectChangeSet<Int, Section>()
     
-    var itemsWithSectionChange = Set<Element>()
+    // MARK: - Initialization
+    /*-------------------------------------------------------------------------------*/
     
-    func reset() {
-        self.sectionChangeSet.reset()
-        self.objectChangeSet.reset()
+    /**
+     Controller initializer a given context and fetch request
+     
+     - Parameter context: A managed object context
+     - Parameter request: A fetch request with an entity name
+     - Parameter sectionKeyPath: An optional key path to use for section groupings
+     
+     */
+    public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionKeyPath: KeyPath<Element,Section>? = nil) {
+        
+        
+        assert(request.entityName != nil, "request is missing entity name")
+        let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: context)
+        assert(objectEntity != nil, "Unable to load entity description for object \(request.entityName!)")
+        request.entity = objectEntity
+        
+        request.returnsObjectsAsFaults = false
+        
+        self._managedObjectContext = context
+        self.fetchRequest = request
+        
+        super.init()
+        self.sectionKeyPath = sectionKeyPath
     }
     
-    var description: String {
-        return "Context Items: \(objectChangeSet.deleted.count) Deleted, \(objectChangeSet.inserted.count) Inserted, \(objectChangeSet.updated.count) Updated"
-        + "Context Sections: \(sectionChangeSet.inserted.count) Inserted, \(sectionChangeSet.deleted.count) Deleted \(sectionChangeSet.updated.count) Updated"
+    deinit {
+        self.fetchRequest.predicate = nil
+        unregister()
+    }
+    
+    
+    
+    // MARK: - Configuration
+    /*-------------------------------------------------------------------------------*/
+    
+    /**
+     An object the report to when content in the controller changes
+     */
+    public override weak var delegate: ResultsControllerDelegate? {
+        didSet {
+            if (oldValue == nil) == (delegate == nil) { return }
+            if delegate == nil { unregister() }
+            else if _fetched { register() }
+        }
+    }
+    
+    ///The fetch request for the controller
+    public let fetchRequest : NSFetchRequest<Element>
+    
+    fileprivate weak var _managedObjectContext: NSManagedObjectContext?
+    
+    /// The managed object context to fetch from
+    public var managedObjectContext: NSManagedObjectContext {
+        return self._managedObjectContext!
+    }
+    
+    /**
+     Update the managed object context used by the controller
+     
+     - Parameter moc: The new context to use
+     
+     - Returns: This implicitly calls performFetch which can throw
+     
+     */
+    public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
+        guard moc != self.managedObjectContext else { return }
+        self.setNeedsFetch()
+        self._managedObjectContext = moc
+        validateRequests()
+        
+        try self.performFetch()
+    }
+    
+    func validateRequests() {
+        assert(fetchRequest.entityName != nil, "request is missing entity name")
+        let objectEntity = NSEntityDescription.entity(forEntityName: fetchRequest.entityName!, in: self.managedObjectContext)
+        assert(objectEntity != nil, "Unable to load entity description for object \(fetchRequest.entityName!)")
+        fetchRequest.entity = objectEntity
+    }
+    
+    public override var sectionKeyPath: KeyPath<Element, Section>? {
+        didSet {
+            self.setNeedsFetch()
+        }
+    }
+    
+    func evaluate(object: Element) -> Bool {
+        guard let p = self.fetchRequest.predicate else { return true }
+        return p.evaluate(with: object)
+    }
+    
+    
+    
+    // MARK: - Status
+    /*-------------------------------------------------------------------------------*/
+    var _fetched: Bool = false
+    private var _registered = false
+    
+    
+    func setNeedsFetch() {
+        _fetched = false
+        unregister()
+    }
+    
+    func register() {
+        guard let moc = self._managedObjectContext, !_registered, self.delegate != nil else { return }
+        _registered = true
+        ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: moc)    }
+    
+    func unregister() {
+        guard let moc = self._managedObjectContext, _registered else { return }
+        _registered = false
+        ResultsControllerCDManager.shared.remove(context: moc)
+        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: moc)
+    }
+    
+    
+    /**
+     Performs the provided fetch request to populate the controller. Calling again resets the controller.
+     
+     - Throws: If the fetch request is invalid or the fetch fails
+     */
+    
+    public func performFetch() throws {
+        validateRequests()
+        
+        register()
+        _fetched = true
+        
+        let _objects = try managedObjectContext.fetch(self.fetchRequest)
+        self.setContent(_objects)
+    }
+    
+    
+    /// Clears all data and stops monitoring for changes in the context.
+    public override func reset() {
+        self.setNeedsFetch()
+        super.reset()
+    }
+    
+    override func shouldRemoveEmptySection(_ section: SectionInfo<Section, Element>) -> Bool {
+        return true
+    }
+    
+    
+    @objc func handleChangeNotification(_ notification: Notification) {
+        guard let delegate = self.delegate, self._fetched else {
+            print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
+            return
+        }
+        guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
+            return
+        }
+        
+        if let itemChanges = changes[fetchRequest.entity!] {
+            self.beginEditing()
+            for obj in itemChanges.deleted {
+                if let o = obj as? Element {
+                    self.delete(object: o)
+                }
+            }
+            
+            func _updatedObject(_ o: Element) {
+                let match = evaluate(object: o)
+                
+                if self.contains(object: o) {
+                    if !match { self.delete(object: o) }
+                    else { self.didUpdate(object: o) }
+                }
+                else if match {
+                    self.insert(object: o)
+                }
+            }
+            
+            for obj in itemChanges.inserted {
+                if let o = obj as? Element {
+                    _updatedObject(o)
+                }
+            }
+            
+            for obj in itemChanges.updated {
+                if let o = obj as? Element {
+                    _updatedObject(o)
+                }
+            }
+            self.endEditing()
+        }
     }
 }
 
 
+
+
+//fileprivate class UpdateContext<Section: NSManagedObject, Element:NSManagedObject> : CustomStringConvertible {
+//
+//    typealias SectionInfo = RelationalSectionInfo<Section, Element>
+//
+//    // Changes from context
+//    var objectChangeSet = ObjectChangeSet<IndexPath, Element>()
+//    var sectionChangeSet = ObjectChangeSet<Int, Section>()
+//
+//    var itemsWithSectionChange = Set<Element>()
+//
+//    func reset() {
+//        self.sectionChangeSet.reset()
+//        self.objectChangeSet.reset()
+//    }
+//
+//    var description: String {
+//        return "Context Items: \(objectChangeSet.deleted.count) Deleted, \(objectChangeSet.inserted.count) Inserted, \(objectChangeSet.updated.count) Updated"
+//        + "Context Sections: \(sectionChangeSet.inserted.count) Inserted, \(sectionChangeSet.deleted.count) Deleted \(sectionChangeSet.updated.count) Updated"
+//    }
+//}
+
+
+/*
 fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSManagedObject>: NSObject, SectionInfo {
     
     public var object : Any? { return self._object }
@@ -160,6 +362,7 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
         self._added.insert(element)
     }
 }
+ */
 
 
 /**
@@ -194,30 +397,19 @@ fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSMan
     <No employees>
  ```
  
- In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController the sections a derived from the available properties in the fetched objects. Here though you can opt to fetch both the sections and object independently (see `fetchSections`).
+ In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController where sections consist of the available values in the fetched objects, the "Delivery" would not be included. With a RelationalResultsController though you can opt to fetch both the sections and object independently (see `fetchSections`).
 */
-public class RelationalResultsController<Section: NSManagedObject, Element: NSManagedObject> : NSObject, ResultsController {
-    
-    fileprivate typealias SectionInfo = RelationalSectionInfo<Section, Element>
-
-
-
+public class RelationalResultsController<Section: NSManagedObject, Element: NSManagedObject> : FetchedResultsController<Section, Element> {
     
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
     
-    
-    
-    public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionRequest: NSFetchRequest<Section>, sectionKeyPath keyPath: String) {
+    public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionRequest: NSFetchRequest<Section>, sectionKeyPath keyPath: KeyPath<Element, Section>) {
         
-        self._managedObjectContext = context
-        self.fetchRequest = request
         self.sectionFetchRequest = sectionRequest
-        
-        request.returnsObjectsAsFaults = false
         sectionRequest.returnsObjectsAsFaults = false
         
-        super.init()
+        super.init(context: context, request: request, sectionKeyPath: keyPath)
         
         validateRequests()
         
@@ -225,132 +417,46 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
     
     deinit {
-        self._sections.removeAll()
-        self._objectSectionMap.removeAll()
-        self.fetchRequest.predicate = nil
-        unregister()
+        self.sectionFetchRequest.predicate = nil
     }
     
     
-    private func validateRequests() {
-        assert(fetchRequest.entityName != nil, "request is missing entity name")
+    override func validateRequests() {
+        super.validateRequests()
         assert(sectionFetchRequest.entityName != nil, "sectionRequest is missing entity name")
-        
-        let objectEntity = NSEntityDescription.entity(forEntityName: fetchRequest.entityName!, in: self.managedObjectContext)
         let sectionEntity = NSEntityDescription.entity(forEntityName: sectionFetchRequest.entityName!, in: self.managedObjectContext)
-        
-        assert(objectEntity != nil, "Unable to load entity description for object \(fetchRequest.entityName!)")
         assert(sectionEntity != nil, "Unable to load entity description for section \(sectionFetchRequest.entityName!)")
-        
-        fetchRequest.entity = objectEntity
         sectionFetchRequest.entity = sectionEntity
     }
     
     
+    func evaluate(section: Section) -> Bool {
+        guard let p = self.fetchRequest.predicate else { return true }
+        return p.evaluate(with: section)
+    }
+    
     /// Executes a fetch to populate the controller
-    public func performFetch() throws {
-        
-        guard self.fetchRequest.entityName != nil else {
-            assertionFailure("fetch request must have an entity when performing fetch")
-            throw ResultsControllerError.unknown
-        }
-        guard self.sectionFetchRequest.entityName != nil else {
-            assertionFailure("fetch request must have an entity when performing fetch")
-            throw ResultsControllerError.unknown
-        }
-        
-        let _objects = try managedObjectContext.fetch(fetchRequest)
+    override public func performFetch() throws {
+        // Validation
+        validateRequests()
+        precondition(sectionKeyPath != nil, "RelationalResultsController must have a sectionKeyPath")
         
         // Manage notification registration
-        
         register()
         _fetched = true
         
-        self._sections.removeAll()
-        
-        // Add the queried sections
+        // Add the queried sections if desired
         if self.fetchSections {
-            for s in try managedObjectContext.fetch(self.sectionFetchRequest) {
-                _ = self._insert(section: s)
+            for section in try managedObjectContext.fetch(self.sectionFetchRequest) {
+                _ = self.getOrCreateSectionInfo(for: section)
             }
         }
-        
-        // Add the object into sections
-        // No need to sort since they were just fetched with the sort descriptors
-        for object in _objects {
-            let parent = object.value(forKey: sectionKeyPath) as? Section
-            let p = self._insert(section: parent)
-            _ = p.appendOrdered(object)
-            _objectSectionMap[object] = p
-        }
-        
-        // Sort the sections all at once
-        self.sortSections()
+        try super.performFetch()
     }
-    
-    
-    /// Clear all storage for the controller and stop all observing
-    public func reset() {
-        self._sections.removeAll()
-        self._objectSectionMap.removeAll()
-        self.setNeedsFetch()
-    }
-    
-    
-    private var _fetched: Bool = false
-    private func setNeedsFetch() {
-        _fetched = false
-        unregister()
-    }
-    
 
     
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
-    
-    
-    /**
-     An object the report to when content in the controller changes
-     */
-    public weak var delegate: ResultsControllerDelegate? {
-        didSet {
-            if (oldValue == nil) == (delegate == nil) { return }
-            if delegate == nil { unregister() }
-            else if _fetched { register() }
-        }
-    }
-    
-        /**
-     A fetch request used to fetch, filter, and sort the results of the controller.
-     */
-    public let fetchRequest : NSFetchRequest<Element>
-    
-    
-    private weak var _managedObjectContext : NSManagedObjectContext?
-    
-    /// The managed object context to fetch from and observe for changes
-    public var managedObjectContext: NSManagedObjectContext {
-        return self._managedObjectContext!
-    }
-    
-    /**
-     Update the managed object context used by the controller
-     
-     - Parameter moc: The new context to use
-     
-     - Returns: This implicitly calls performFetch which can throw
-     
-     */
-    public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
-        guard moc != self.managedObjectContext else { return }
-        self.setNeedsFetch()
-        self._managedObjectContext = moc
-        validateRequests()
-        
-        try self.performFetch()
-    }
-
-    
     
     /**
      A fetch request used to fetch, filter, and sort the section results of the controller.
@@ -360,11 +466,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
      A parent object that does not match the request here, may still be visible if it has children that match the predicate of fetchRequest.
      */
     public let sectionFetchRequest : NSFetchRequest<Section>
-    
-    /**
-     The keyPath of the controllers objects which represents a to-one relationship to the section object
-     */
-    public var sectionKeyPath: String = "" { didSet { setNeedsFetch() }}
     
     /**
      A keyPath of the section objects to get the displayable name
@@ -382,71 +483,34 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     public var fetchSections : Bool = true
     
     
-
-
-    
+    override func shouldRemoveEmptySection(_ section: SectionInfo<Section, Element>) -> Bool {
+        guard fetchSections, let s = section.representedObject else { return true }
+        return !self.evaluate(section: s)
+    }
     
     
     // MARK: - Controller Contents
     /*-------------------------------------------------------------------------------*/
     
     /**
-     The number of sections in the controller
-    */
-    public var numberOfSections : Int {
-        return _sections.count
-    }
-    
-    
-    /**
-     The number of objects in a specified section
-
-     - Parameter section: The section to count objects in
-     
-     - Returns: The number of objects in the specified section
-
-    */
-    public func numberOfObjects(in section: Int) -> Int {
-        return self._sections[section].numberOfObjects
-    }
-    
-    
-    public var allObjects: [Any] {
-        var objects = [Element]()
-        for section in _sections {
-            objects.append(contentsOf: section._storage)
-        }
-        return objects
-    }
-    
-    
-    /**
      An array of all sections
      
      - Note: accessing the sections here incurs fairly large overhead, avoid if possible. Use `numberOfSections` and sectionInfo(forSectionAt:) when possible.
      */
-    public var sections: [SectionInfo] { return _sections.objects }
+//    public var sections: [SectionInfo] { return _sections.objects }
     
     
-    private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
-    private var _sections = OrderedSet<SectionInfo>()
+//    private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
+//    private var _sections = OrderedSet<SectionInfo>()
     
 
     
     
-    // MARK: - Querying Objects
+    // MARK: - Section Names
     /*-------------------------------------------------------------------------------*/
     
-    public final func object(at indexPath: IndexPath) -> Any? {
-        return self._object(at: indexPath)
-    }
-    
-    public func _object(at indexPath: IndexPath) -> Element? {
-        return self._sectionInfo(at: indexPath)?._storage._object(at: indexPath._item)
-    }
-    
-    public func sectionName(forSectionAt indexPath: IndexPath) -> String {
-        guard let obj = _sectionInfo(at: indexPath)?._object else {
+    public override func sectionName(forSectionAt indexPath: IndexPath) -> String {
+        guard let obj = sectionInfo(at: indexPath)?.representedObject else {
             return "Ungrouped"
         }
         if let key = self.sectionNameKeyPath,
@@ -456,151 +520,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return (obj as? CustomDisplayStringConvertible)?.displayDescription ?? ""
     }
     
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo? {
-        return self._sectionInfo(at: sectionIndexPath)
-    }
-    
-    public final func object(forSectionAt sectionIndexPath: IndexPath) -> Any? {
-        return self._object(forSectionAt: sectionIndexPath)
-    }
-    
-    public func _object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
-        return self._sectionInfo(at: sectionIndexPath)?._object
-    }
-    
-    
-    // MARK: - Getting IndexPaths
-    /*-------------------------------------------------------------------------------*/
-    public func indexPath(of object: Element) -> IndexPath? {
-        guard let section = self._objectSectionMap[object],
-            let sIdx = self._sections.index(of: section),
-            let idx = section.index(of: object) else { return nil }
-        
-        return IndexPath.for(item: idx, section: sIdx)
-    }
-    
-    public func indexPath(of sectionInfo: SectionInfo) -> IndexPath? {
-        guard let info = sectionInfo as? SectionInfo else { return nil }
-        if let idx = _sections.index(of: info) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    public func indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {
-        let _wrap = SectionInfo(controller: self, object: sectionObject)
-        if let idx = _sections.index(of: _wrap) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    
-    // MARK: - Private Accessors
-    /*-------------------------------------------------------------------------------*/
-    private func _sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo? {
-        return self._sections._object(at: sectionIndexPath._section)
-    }
-    
-    private func _sectionInfo(at sectionIndex: Int) -> SectionInfo? {
-        return self._sections._object(at: sectionIndex)
-    }
-    
-    private func _sectionInfo(representing section: Section?) -> SectionInfo? {
-        guard let ip = self.indexPathOfSection(representing: section) else { return nil }
-        return self._sectionInfo(at: ip)
-    }
-    
-    private func contains(sectionObject: Section) -> Bool {
-        let _wrap = SectionInfo(controller: self, object: sectionObject)
-        return _sections.contains(_wrap)
-    }
-    
-    private func contains(object: Element) -> Bool {
-        return indexPath(of: object) != nil
-    }
-    
-    
-    // MARK: - Logging
-    /*-------------------------------------------------------------------------------*/
-    private func printSectionOrderKeys() {
-        var str = "Section Ordering Keys:\n"
-        if let s = self.sectionFetchRequest.sortDescriptors {
-            s.forEachKey(describing: _sections, do: { (k, o) in
-                str += "\(k): \(o._object?.value(forKey: k) ?? "-- Ungrouped")  "
-            })
-        }
-        else {
-            print("No section sort descriptors")
-        }
-        print(str)
-    }
-    
-    private func logSections() {
-        print("\(_sections.count) Sections")
-        for (idx, res) in _sections.enumerated() {
-            let str = "\(idx) - \(res.description(with: fetchRequest.sortDescriptors ?? []))"
-            print(str)
-        }
-    }
-    
-    
-    // MARK: - Notification Registration
-    /*-------------------------------------------------------------------------------*/
-    
-    private var _registered = false
-    private func register() {
-        guard let moc = self._managedObjectContext, !_registered, self.delegate != nil else { return }
-        _registered = true
-        ResultsControllerCDManager.shared.add(context: moc)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: moc)    }
-    
-    private func unregister() {
-        guard let moc = self._managedObjectContext, _registered else { return }
-        _registered = false
-        ResultsControllerCDManager.shared.remove(context: moc)
-        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: moc)
-    }
-    
-
-    
-    
     
     // MARK: - Storage Manipulation
     /*-------------------------------------------------------------------------------*/
-    private func _ensureSectionCopy() {
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
-    }
-    
-    private func _insert(section: Section?) -> SectionInfo {
-        if let s = self._sectionInfo(representing: section) { return s }
-        _ensureSectionCopy()
-        let s = SectionInfo(controller: self, object: section, objects: [])
-        _sections.add(s)
-        return s
-    }
-    
-    private func _remove(_ section: Section?, ip: IndexPath? = nil) {
-        guard let ip = ip ?? self.indexPathOfSection(representing: section) else { return }
-        _ensureSectionCopy()
-        _sections.remove(at: ip._section)
-    }
-    
-    private func sortSections() {
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
-        self._sections.needsSort = false
-        guard let sort = sectionFetchRequest.sortDescriptors, sort.count > 0 else {
-            return
-        }
-        let s = self._sections.sorted(by: { (s1, s2) -> Bool in
-            if let o1 = s1._object,
-                let o2 = s2._object {
-                return sort.compare(o1, to: o2) == .orderedAscending
-            }
-            return s1.object != nil
-        })
-        self._sections = OrderedSet(elements: s)
-    }
-    
+//    private func _ensureSectionCopy() {
+//        if _sectionsCopy == nil { _sectionsCopy = _sections }
+//    }
     
     
     // MARK: - Empty Sections
@@ -628,34 +553,80 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     // MARK: - Handling Changes
     /*-------------------------------------------------------------------------------*/
     
-    fileprivate var context = UpdateContext<Section, Element>()
-    fileprivate var _sectionsCopy : OrderedSet<SectionInfo>?
+//    fileprivate var context = UpdateContext<Section, Element>()
+//    fileprivate var _sectionsCopy : OrderedSet<SectionInfo>?
     
     
     /// Returns the number of item & section changes processed during an update. Only valid during controllDidChangeContent(_)
-    public var pendingChangeCount : Int {
-        return pendingItemChangeCount + pendingSectionChangeCount
-    }
-    /// Returns the number of item changes processed during an update. Only valid during controllDidChangeContent(_)
-    public var pendingItemChangeCount : Int {
-        return context.objectChangeSet.count
-    }
+//    public var pendingChangeCount : Int {
+//        return pendingItemChangeCount + pendingSectionChangeCount
+//    }
+//    /// Returns the number of item changes processed during an update. Only valid during controllDidChangeContent(_)
+//    public var pendingItemChangeCount : Int {
+//        return context.objectChangeSet.count
+//    }
     
     /// Returns the number of section changes processed during an update. Only valid during controllDidChangeContent(_)
-    public var pendingSectionChangeCount : Int {
-        return context.sectionChangeSet.count
-    }
+//    public var pendingSectionChangeCount : Int {
+//        return context.sectionChangeSet.count
+//    }
     
     
-    @objc func handleChangeNotification(_ notification: Notification) {
+    @objc override func handleChangeNotification(_ notification: Notification) {
         
-        guard let moc = self._managedObjectContext, let delegate = self.delegate, self._fetched else {
+        guard let delegate = self.delegate, self._fetched else {
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
             return
         }
+        guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
+            return
+        }
         
-        moc.perform { [unowned self] in
+        self.beginEditing()
+        if let sectionChanges = changes[sectionFetchRequest.entity!] {
             
+            for obj in sectionChanges.deleted {
+                if let section = obj as? Section, self.contains(sectionObject: section) {
+                    self.delete(section: section)
+                }
+            }
+            
+            
+            func _updated(section: Section) {
+                let match = self.evaluate(section: section)
+                if self.fetchSections {
+                    if self.contains(sectionObject: section) {
+                        if !match { self.delete(section: section) }
+                        else { self.didUpdate(section: section) }
+                    }
+                    else if match {
+                        self.insert(section: section)
+                    }
+                }
+                else if self.contains(sectionObject: section) {
+                    self.didUpdate(section: section)
+                }
+            }
+            
+            for obj in sectionChanges.inserted {
+                if let section = obj as? Section {
+                    _updated(section: section)
+                }
+            }
+            
+            for obj in sectionChanges.updated {
+                if let section = obj as? Section {
+                    _updated(section: section)
+                }
+            }
+        }
+        
+        super.handleChangeNotification(notification)
+        endEditing()
+
+            
+            
+            /*
             self.emptySectionChanges = nil
             self._sectionsCopy = nil
             self.context.reset()
@@ -851,229 +822,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             self.emptySectionChanges = nil
             self._sectionsCopy = nil
         }
+ */
         
     }
-    
-    private func preprocess(notification: Notification) {
-        
-        var sections = ObjectChangeSet<Int, Section>()
-        var objects = ObjectChangeSet<IndexPath, Element>()
-        
-        guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
-            return
-        }
-        
-        if let sectionChanges = changes[sectionFetchRequest.entity!] {
-            for obj in sectionChanges.deleted {
-                guard let o = obj as? Section, let index = self.indexPathOfSection(representing: o)?._section else { continue }
-                sections.add(deleted: o, for: index)
-            }
-            
-            
-            for obj in sectionChanges.inserted {
-                if let o = obj as? Section {
-                    if sectionFetchRequest.predicate == nil || sectionFetchRequest.predicate?.evaluate(with: o) == true {
-                        sections.add(inserted: o)
-                    }
-                }
-            }
-            
-            for obj in sectionChanges.updated {
-                if let o = obj as? Section {
-                    let _ip = self.indexPathOfSection(representing: o)
-                    if fetchSections {
-                        let match = sectionFetchRequest.predicate == nil || sectionFetchRequest.predicate?.evaluate(with: o) == true
-                        
-                        if let ip = _ip {
-                            if !match { sections.add(deleted: o, for: ip._section) }
-                            else { sections.add(updated: o, for: ip._section) }
-                        }
-                        else if match {
-                            sections.add(inserted: o)
-                        }
-                    }
-                    else if let ip = _ip {
-                        sections.add(updated: o, for: ip._section)
-                    }
-                }
-            }
-        }
-        
-        if let itemChanges = changes[fetchRequest.entity!] {
-            for obj in itemChanges.deleted {
-                guard let o = obj as? Element, let ip = self.indexPath(of: o) else { continue }
-                objects.add(deleted: o, for: ip)
-            }
-            
-            
-            for obj in itemChanges.inserted {
-                if let o = obj as? Element {
-                    if fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true {
-                        objects.add(inserted: o)
-                    }
-                }
-            }
-            
-            for obj in itemChanges.updated {
-                if let o = obj as? Element {
-                    
-                    let _ip = self.indexPath(of: o)
-                    let match = fetchRequest.predicate == nil || fetchRequest.predicate?.evaluate(with: o) == true
-                    
-                    if let ip = _ip, sections.deleted.containsValue(for: ip._section) == false {
-                        if !match { objects.add(deleted: o, for: ip) }
-                        else { objects.add(updated: o, for: ip) }
-                    }
-                    else if match {
-                        objects.add(inserted: o)
-                    }
-                }
-            }
-        }
-        self.context.objectChangeSet = objects
-        self.context.sectionChangeSet = sections
-        
-    }
-    
-    
-    
-    // MARK: - Section Processing
-    /*-------------------------------------------------------------------------------*/
-    
-    private func processDeletedSections() {
-        for change in context.sectionChangeSet.deleted {
-            
-            let object = change.value
-            guard let ip = self.indexPathOfSection(representing: object) else { continue }
-            
-            let section = self._sections[ip._section]
-            for obj in section._storage {
-                _objectSectionMap[obj] = nil
-            }
-            self._remove(object, ip: ip)
-        }
-    }
-    
-    private func processInsertedSections() {
-        for object in context.sectionChangeSet.inserted {
-            _ = self._insert(section: object)
-        }
-    }
-  
-    private func processUpdatedSections() {
-        if context.sectionChangeSet.updated.count > 0 {
-            _sections.needsSort = true
-        }
-    }
-    
-    private func postProcesssSections() {
-        if _sections.needsSort {
-            _sections.sort(using: sectionFetchRequest.sortDescriptors ?? [])
-        }
-        
-        // Need to do a changeSet on the sections and create section moves
-        // Maybe just use sectionChangeSet and create from there
-    }
-    
-    
-    
-    // MARK: - Object Processing
-    /*-------------------------------------------------------------------------------*/
-    
-    private func processDeletedObjects() {
-        
-        for change in context.objectChangeSet.deleted {
-            
-            let object = change.value
-            defer {
-                _objectSectionMap[object] = nil
-            }
-            
-            let oldIP = change.index
-            
-            // If the section was deleted, ignore the items
-            guard self.context.sectionChangeSet.deleted.containsValue(for: oldIP._section) == false,
-            let section = self._objectSectionMap[object] else {
-                continue
-            }
-            
-            section.ensureEditing()
-            _ = section.remove(object)
-            
-        }
-    }
-    
-    private func processInsertedObjects() {
-        
-        for object in context.objectChangeSet.inserted {
-            
-            guard self.contains(object: object) == false else { continue }
-            let sectionValue = object.value(forKeyPath: self.sectionKeyPath) as? Section
-            
-            if let existingIP = self.indexPathOfSection(representing: sectionValue),
-                let existingSection = self._sectionInfo(at: existingIP) {
-                existingSection.ensureEditing()
-                existingSection._add(object)
-                _objectSectionMap[object] = existingSection
-                
-                // Should items in inserted sections be included?
-            }
-            else {
-                let sec = self._insert(section: sectionValue)
-                sec.ensureEditing()
-                sec._add(object)
-                _objectSectionMap[object] = sec
-            }
-        }
-    }
-    
-    
-    private func processUpdatedObjects() {
-        
-        for change in context.objectChangeSet.updated {
-            
-            let object = change.value
-            
-            guard let tempIP = self.indexPath(of: object),
-                let currentSection = _sectionInfo(at: tempIP) else {
-                    print("Skipping object update")
-                    continue
-            }
-            currentSection.ensureEditing()
-            
-            let sectionValue = object.value(forKeyPath: sectionKeyPath) as? Section
-            
-            // Move within the same section
-            if sectionValue == currentSection._object {
-                currentSection.ensureEditing()
-                currentSection._modified(object)
-                _objectSectionMap[object] = currentSection
-            }
-                
-                // Moved to another section
-            else if let newSip = self.indexPathOfSection(representing: sectionValue),
-                let newSection = self._sectionInfo(at: newSip) {
-                _ = currentSection.remove(object)
-                newSection.ensureEditing()
-                newSection._add(object)
-                self.context.itemsWithSectionChange.insert(object)
-                _objectSectionMap[object] = newSection
-            }
-                
-                // Move to new section
-            else {
-                // The section value doesn't exist yet, the section will be inserted
-                let sec = self._insert(section: sectionValue)
-                _ = currentSection.remove(object)
-                sec.ensureEditing()
-                sec._add(object)
-                _objectSectionMap[object] = sec
-                self.context.itemsWithSectionChange.insert(object)
-            }
-            
-        }
-    }
-    
 
 }
 

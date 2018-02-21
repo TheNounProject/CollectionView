@@ -40,6 +40,24 @@ public struct SortDescriptor<T> {
     }
 }
 
+extension SortDescriptor where T:Comparable {
+    
+    public static var ascending : SortDescriptor<T> {
+        return SortDescriptor({ (a, b) -> SortDescriptorResult in
+            if a == b { return .same }
+            if a > b { return .descending }
+            return .ascending
+        })
+    }
+    public static var descending : SortDescriptor<T> {
+        return SortDescriptor({ (a, b) -> SortDescriptorResult in
+            if a == b { return .same }
+            if a > b { return .descending }
+            return .ascending
+        })
+    }
+}
+
 protocol Comparer {
     associatedtype Compared
     var ascending: Bool { get }

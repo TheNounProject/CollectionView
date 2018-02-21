@@ -122,7 +122,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
     // MARK: - Inserting
     /*-------------------------------------------------------------------------------*/
     
-    mutating public func insert(_ object: Element, at index: Int) -> Bool {
+    @discardableResult mutating public func insert(_ object: Element, at index: Int) -> Bool {
         guard !self.contains(object) else { return false }
         self._data.insert(object, at: index)
         _remap(startingAt: index)

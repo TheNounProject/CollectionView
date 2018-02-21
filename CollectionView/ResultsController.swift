@@ -10,9 +10,6 @@ import CoreData
 
 
 
-public protocol SectionType : Hashable { }
-public protocol ResultType : Hashable { }
-
 
 
 
@@ -89,6 +86,9 @@ public protocol ResultsController {
 }
 
 
+public protocol SectionType : Hashable { }
+
+
 struct NoSectionType : SectionType {
     var hashValue: Int { return 0 }
     static func ==(lhs: NoSectionType, rhs: NoSectionType) -> Bool { return true }
@@ -96,6 +96,11 @@ struct NoSectionType : SectionType {
 extension String : SectionType { }
 extension NSNumber : SectionType { }
 extension Int : SectionType { }
+
+
+public protocol ResultType : Hashable { }
+extension NSManagedObject : ResultType { }
+extension NSManagedObject : SectionType { }
 
 /**
  Information about the sections of a results controller
@@ -277,7 +282,7 @@ public enum ResultsControllerChangeType  {
 
 
 /// A set of changes for an entity with with mappings to original Indexes
-internal struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: CustomStringConvertible {
+internal struct ObjectChangeSet<Index: Hashable, Object:Hashable>: CustomStringConvertible {
     
     var inserted = Set<Object>()
     var updated = IndexedSet<Index, Object>()
@@ -288,7 +293,7 @@ internal struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: Custom
     }
     
     var description: String {
-        let str = "Change Set \(Object.className()):"
+        let str = "Change Set \(Object.self):"
         + " \(updated.count) Updated, "
         + " \(inserted.count) Inserted, "
         + " \(deleted.count) Deleted"

@@ -349,7 +349,7 @@ fileprivate class Parent : NSManagedObject {
     }
     func createChild() -> Child {
         let child = Child.createOrphan(in: self.managedObjectContext!)
-        let order = self.children.sorted(using: [NSSortDescriptor(key: "displayOrder", ascending: true)]).last?.displayOrder.intValue ?? -1
+        let order = self.children.sorted(using: SortDescriptor(\Child.displayOrder)).last?.displayOrder.intValue ?? -1
         child.displayOrder = NSNumber(value: order + 1)
         child.parent = self
         return child

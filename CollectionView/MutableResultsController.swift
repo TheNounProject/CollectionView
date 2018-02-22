@@ -41,7 +41,9 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         
     }
     
-    init(sectionKeyPath: KeyPath<Element,Section>? = nil, sortDescriptors: [SortDescriptor<Element>] = [], sectionSortDescriptors: [SortDescriptor<Section>] = []) {
+    init(sectionKeyPath: KeyPath<Element,Section>? = nil,
+         sortDescriptors: [SortDescriptor<Element>] = [],
+         sectionSortDescriptors: [SortDescriptor<Section>] = []) {
         self.sectionKeyPath = sectionKeyPath
         self.sortDescriptors = sortDescriptors
         self.sectionSortDescriptors = sectionSortDescriptors
@@ -237,7 +239,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
      */
     public func indexPathOfSection(representing sectionValue: Section?) -> IndexPath? {
         let _wrap = WrappedSectionInfo(object: sectionValue)
-        if let idx =  _sections.index(of: _wrap) {
+        if let idx = _sections.index(of: _wrap) {
             return IndexPath.for(section: idx)
         }
         return nil
@@ -361,7 +363,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
     
     
-    func shouldRemoveEmptySection(_ section: WrappedSectionInfo)-> Bool {
+    func shouldRemoveEmptySection(_ section: SectionInfo<Section, Element>)-> Bool {
         return true
     }
     
@@ -536,6 +538,12 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     
     
     
+
+
+}
+
+
+extension MutableResultsController where Section:AnyObject {
     
     // MARK: - Section Manipulation
     /*-------------------------------------------------------------------------------*/
@@ -561,6 +569,10 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         _sections.needsSort = true
         self.endEditing()
     }
+}
+
+
+extension MutableResultsController where Element:AnyObject {
     
     
     // MARK: - Object Manipulation
@@ -590,9 +602,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         if let keyPath = self.sectionKeyPath {
             
             let sectionValue = object[keyPath: keyPath]
-            if let existingIP = self.indexPathOfSection(representing: sectionValue),
-                let existingSection = self.sectionInfo(at: existingIP) {
-                
+            if let existingSection = self.sectionInfo(representing: sectionValue) {
                 existingSection.ensureEditing()
                 existingSection.add(object)
                 _objectSectionMap[object] = existingSection
@@ -645,7 +655,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                 newSection.ensureEditing()
                 newSection.add(object)
                 // TODO:
-//                self.context.itemsWithSectionChange.insert(object)
+                //                self.context.itemsWithSectionChange.insert(object)
                 _objectSectionMap[object] = newSection
             }
         }
@@ -662,14 +672,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         self._editingContext.objectChanges.add(updated: object, for: tempIP)
         endEditing()
     }
-    
 }
-
-
-
-
-
-
 
 
 

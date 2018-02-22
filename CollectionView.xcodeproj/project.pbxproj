@@ -9,9 +9,8 @@
 /* Begin PBXBuildFile section */
 		1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2DC5161E329CA000EBC234 /* IndexedSet.swift */; };
 		1C6E50851E2D9C2A00C85946 /* ResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50821E2D9C2A00C85946 /* ResultsController.swift */; };
-		1C6E50861E2D9C2A00C85946 /* ResultsControllerHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */; };
 		1CC05C221FF6F564001E6936 /* MutableResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC05C211FF6F564001E6936 /* MutableResultsController.swift */; };
-		DE13C18B1E4CE46100CEC80C /* FetchedResultsObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE13C18A1E4CE46100CEC80C /* FetchedResultsObserver.swift */; };
+		DE13C18B1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */; };
 		DE297DE01E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */; };
 		DE316FAD1CC72ABC00F763E6 /* ClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* ClipView.swift */; };
 		DE35BE1F20376FCC008FEF6F /* SortDescriptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE35BE1E20376FCC008FEF6F /* SortDescriptor.swift */; };
@@ -24,10 +23,11 @@
 		DE8B448C2033903500F16614 /* IndexedSetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8B448B2033903500F16614 /* IndexedSetTests.swift */; };
 		DE9071ED1CAC7FD800AD0E37 /* CollectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = DE9071EC1CAC7FD800AD0E37 /* CollectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		DE98600B1E6F956100B6A3EC /* FetchedSetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */; };
-		DE9A6220203782F100210035 /* MRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A621F203782F100210035 /* MRCTests.swift */; };
+		DE9A6220203782F100210035 /* MRCValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A621F203782F100210035 /* MRCValueTests.swift */; };
 		DE9A6222203CBE7200210035 /* SectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A6221203CBE7200210035 /* SectionInfo.swift */; };
 		DE9A6224203CE8CC00210035 /* FRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90669E2034E5F8007B73E7 /* FRCTests.swift */; };
-		DE9A6226203D1B9500210035 /* RelationalResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */; };
+		DE9A6226203D1B9500210035 /* CoreDataResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */; };
+		DE9A6228203E6B8900210035 /* MRCObjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A6227203E6B8900210035 /* MRCObjectTests.swift */; };
 		DEA638B1200874950023F2BD /* SelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA638B0200874950023F2BD /* SelectionTests.swift */; };
 		DEA638B3200874950023F2BD /* CollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CollectionView.framework */; };
 		DEA6BA631D52E00900B3EF24 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA6BA621D52E00900B3EF24 /* CollectionViewController.swift */; };
@@ -59,17 +59,16 @@
 
 /* Begin PBXFileReference section */
 		1C2DC5161E329CA000EBC234 /* IndexedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedSet.swift; sourceTree = "<group>"; };
-		1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelationalResultsController.swift; sourceTree = "<group>"; };
+		1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataResultsController.swift; sourceTree = "<group>"; };
 		1C6E50821E2D9C2A00C85946 /* ResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsController.swift; sourceTree = "<group>"; };
 		1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsControllerHelpers.swift; sourceTree = "<group>"; };
 		1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedResultsController.swift; sourceTree = "<group>"; };
 		1CC05C211FF6F564001E6936 /* MutableResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableResultsController.swift; sourceTree = "<group>"; };
-		DE13C18A1E4CE46100CEC80C /* FetchedResultsObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedResultsObserver.swift; sourceTree = "<group>"; };
+		DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedObjectContextObservationCoordinator.swift; sourceTree = "<group>"; };
 		DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupplementaryViewIdentifier.swift; sourceTree = "<group>"; };
 		DE35BE1E20376FCC008FEF6F /* SortDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortDescriptor.swift; sourceTree = "<group>"; };
 		DE3E47551E4259B800F19D9E /* ChangeSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeSet.swift; sourceTree = "<group>"; };
 		DE57F41E1CBC915A00F9E23C /* CollectionViewGridLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewGridLayout.swift; sourceTree = "<group>"; };
-		DE704B6D1E49B33A007C2F89 /* _OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = _OrderedSet.swift; sourceTree = "<group>"; };
 		DE82E9561D78B6E700346B9E /* ScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollView.swift; sourceTree = "<group>"; };
 		DE82E9581D78B78300346B9E /* CollectionViewLayoutAttributes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewLayoutAttributes.swift; sourceTree = "<group>"; };
 		DE82E95B1D78BF9300346B9E /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
@@ -89,8 +88,9 @@
 		DE90720A1CAC7FF000AD0E37 /* CollectionViewDocumentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewDocumentView.swift; sourceTree = "<group>"; };
 		DE9072171CAC807900AD0E37 /* ClipView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClipView.swift; sourceTree = "<group>"; };
 		DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchedSetController.swift; sourceTree = "<group>"; };
-		DE9A621F203782F100210035 /* MRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MRCTests.swift; sourceTree = "<group>"; };
+		DE9A621F203782F100210035 /* MRCValueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MRCValueTests.swift; sourceTree = "<group>"; };
 		DE9A6221203CBE7200210035 /* SectionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionInfo.swift; sourceTree = "<group>"; };
+		DE9A6227203E6B8900210035 /* MRCObjectTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MRCObjectTests.swift; sourceTree = "<group>"; };
 		DEA638AE200874950023F2BD /* CollectionViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CollectionViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DEA638B0200874950023F2BD /* SelectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionTests.swift; sourceTree = "<group>"; };
 		DEA638B2200874950023F2BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -129,19 +129,18 @@
 			children = (
 				1C6E50821E2D9C2A00C85946 /* ResultsController.swift */,
 				DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */,
-				1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */,
 				DE9A6221203CBE7200210035 /* SectionInfo.swift */,
 				1CC05C211FF6F564001E6936 /* MutableResultsController.swift */,
+				1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */,
+				DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */,
 				DEE5F7AD1E92D79A0002079C /* MergedFetchedResultsController.swift */,
-				1C6E50811E2D9C2A00C85946 /* RelationalResultsController.swift */,
-				DE13C18A1E4CE46100CEC80C /* FetchedResultsObserver.swift */,
 				DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */,
 				DE3E47551E4259B800F19D9E /* ChangeSet.swift */,
-				1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */,
 				DE35BE1E20376FCC008FEF6F /* SortDescriptor.swift */,
 				1C2DC5161E329CA000EBC234 /* IndexedSet.swift */,
 				DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */,
-				DE704B6D1E49B33A007C2F89 /* _OrderedSet.swift */,
+				1C6E50831E2D9C2A00C85946 /* ResultsControllerHelpers.swift */,
+				1C6E50971E2DD0CE00C85946 /* FetchedResultsController.swift */,
 			);
 			name = ResultsController;
 			sourceTree = "<group>";
@@ -207,7 +206,8 @@
 				DE8B448920337DC100F16614 /* OrderedSetTests.swift */,
 				DE8B448B2033903500F16614 /* IndexedSetTests.swift */,
 				DE90669E2034E5F8007B73E7 /* FRCTests.swift */,
-				DE9A621F203782F100210035 /* MRCTests.swift */,
+				DE9A621F203782F100210035 /* MRCValueTests.swift */,
+				DE9A6227203E6B8900210035 /* MRCObjectTests.swift */,
 				DEA638B2200874950023F2BD /* Info.plist */,
 			);
 			path = CollectionViewTests;
@@ -333,13 +333,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE9A6226203D1B9500210035 /* RelationalResultsController.swift in Sources */,
+				DE9A6226203D1B9500210035 /* CoreDataResultsController.swift in Sources */,
 				DE82E95C1D78BF9300346B9E /* Protocols.swift in Sources */,
 				DEB4D5631E64EEC00044026F /* CollectionViewFlowLayout.swift in Sources */,
 				DEB0F4401E4105D100C2260B /* DelegateChangeSets.swift in Sources */,
 				DE98600B1E6F956100B6A3EC /* FetchedSetController.swift in Sources */,
 				DEE3B5851D246CB100AD34F1 /* CollectionViewListLayout.swift in Sources */,
-				1C6E50861E2D9C2A00C85946 /* ResultsControllerHelpers.swift in Sources */,
 				DEB7366A1E8599E7008467F8 /* CollectionViewPreviewController.swift in Sources */,
 				DEF14B9E1CBDD83B00553CEF /* CollectionViewCells.swift in Sources */,
 				DEF14B9B1CBDD83B00553CEF /* CollectionViewHorizontalLayout.swift in Sources */,
@@ -349,7 +348,7 @@
 				DE82E95E1D78BFC900346B9E /* Constants.swift in Sources */,
 				1C6E50851E2D9C2A00C85946 /* ResultsController.swift in Sources */,
 				DEA6BA631D52E00900B3EF24 /* CollectionViewController.swift in Sources */,
-				DE13C18B1E4CE46100CEC80C /* FetchedResultsObserver.swift in Sources */,
+				DE13C18B1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift in Sources */,
 				DEF14B9D1CBDD83B00553CEF /* Helpers.swift in Sources */,
 				DEB7366B1E8599E7008467F8 /* CollectionViewPreviewLayout.swift in Sources */,
 				DEF14BA01CBDD83B00553CEF /* CollectionView.swift in Sources */,
@@ -372,9 +371,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				DE9A6224203CE8CC00210035 /* FRCTests.swift in Sources */,
+				DE9A6228203E6B8900210035 /* MRCObjectTests.swift in Sources */,
 				DE8B448A20337DC100F16614 /* OrderedSetTests.swift in Sources */,
 				DEA638B1200874950023F2BD /* SelectionTests.swift in Sources */,
-				DE9A6220203782F100210035 /* MRCTests.swift in Sources */,
+				DE9A6220203782F100210035 /* MRCValueTests.swift in Sources */,
 				DE8B448C2033903500F16614 /* IndexedSetTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -555,12 +555,14 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_OPTIMIZATION_LEVEL = s;
 				INFOPLIST_FILE = CollectionViewTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = com.thenounproject.CollectionViewTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;

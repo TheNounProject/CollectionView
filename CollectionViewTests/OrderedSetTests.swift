@@ -348,25 +348,28 @@ class OrderedSetTests: XCTestCase {
     }
 
     func testArraySort() {
-        var arr = Person.set().objects
+        
         let sort = SortDescriptor(\Person.age)
         self.measure {
-            arr.sort(using: [sort])
+            var arr = Person.set().objects
+            arr.sort(using: sort)
         }
     }
     
     // NSSortDescriptor
     func testSortPerformance_withNSSortDescriptors() {
-        var arr = NSPerson.array()
         let sort = NSSortDescriptor(key: "age", ascending: true)
+        let content = NSPerson.array()
         self.measure {
+            let arr = NSMutableArray(array: content)
             arr.sort(using: [sort])
         }
     }
     // Direct
     func testSortPerformance_withComparator() {
-        var set = Person.set()
+        
         self.measure {
+            var set = Person.set()
             set.sort(by: { (a, b) -> Bool in
                 return a.age < b.age
             })
@@ -383,29 +386,32 @@ class OrderedSetTests: XCTestCase {
     }
     func testSortPerformance_sortDescriptors_uniquePreordered() {
         let sort = SortDescriptor(\Person.age)
-        var set = Person.set(randomAge: false)
+        
         self.measure {
-            set.sort(using: [sort])
+            var set = Person.set(randomAge: false)
+            set.sort(using: sort)
         }
     }
     func testSortPerformance_sortDescriptors() {
         var set = Person.set()
         let sort = SortDescriptor(\Person.age)
         self.measure {
-            set.sort(using: [sort])
+            set.sort(using: sort)
         }
     }
     func testSortedPerformance_sortDescriptors() {
         let set = Person.set()
-        let sort = SortDescriptor(\Person.age)
+        
         self.measure {
-            _ = set.sorted(using: [sort])
+            let sort = SortDescriptor(\Person.age)
+            _ = set.sorted(using: sort)
         }
     }
     func testSortedPerformance_multipleSortDescriptors() {
-        let set = Person.set()
+        
         let sort = [SortDescriptor(\Person.age), SortDescriptor(\Person.name)]
         self.measure {
+            let set = Person.set()
             _ = set.sorted(using: sort)
         }
     }

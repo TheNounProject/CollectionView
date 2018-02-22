@@ -14,6 +14,13 @@ import Foundation
 
 
 
+/**
+ A FetchedResultsController provides the same data store and change reporting as a MutableResultsController but sources it's contents from a CoreData context.
+ 
+ Given an NSFetchRequest, the results from the provided context are fetched and analyzed to provide the data necessary to populate a CollectionView.
+ 
+ The controller can also be sorted, grouped into sections and automatically updated when changes are made in the managed obejct context.
+ */
 class FetchedResultsController<Section: SectionType, Element: NSManagedObject> : MutableResultsController<Section, Element> {
     
     
@@ -69,6 +76,12 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
     ///The fetch request for the controller
     public let fetchRequest : NSFetchRequest<Element>
     
+    public override var sectionKeyPath: KeyPath<Element, Section>? {
+        didSet {
+            self.setNeedsFetch()
+        }
+    }
+    
     fileprivate weak var _managedObjectContext: NSManagedObjectContext?
     
     /// The managed object context to fetch from
@@ -100,11 +113,7 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
         fetchRequest.entity = objectEntity
     }
     
-    public override var sectionKeyPath: KeyPath<Element, Section>? {
-        didSet {
-            self.setNeedsFetch()
-        }
-    }
+    
     
     func evaluate(object: Element) -> Bool {
         guard let p = self.fetchRequest.predicate else { return true }
@@ -127,14 +136,14 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
     func register() {
         guard let moc = self._managedObjectContext, !_registered, self.delegate != nil else { return }
         _registered = true
-        ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: moc)    }
+        ManagedObjectContextObservationCoordinator.shared.add(context: self.managedObjectContext)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ManagedObjectContextObservationCoordinator.Notification.name, object: moc)    }
     
     func unregister() {
         guard let moc = self._managedObjectContext, _registered else { return }
         _registered = false
-        ResultsControllerCDManager.shared.remove(context: moc)
-        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: moc)
+        ManagedObjectContextObservationCoordinator.shared.remove(context: moc)
+        NotificationCenter.default.removeObserver(self, name: ManagedObjectContextObservationCoordinator.Notification.name, object: moc)
     }
     
     
@@ -171,7 +180,7 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
             return
         }
-        guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
+        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
             return
         }
         
@@ -210,159 +219,6 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
         }
     }
 }
-
-
-
-
-//fileprivate class UpdateContext<Section: NSManagedObject, Element:NSManagedObject> : CustomStringConvertible {
-//
-//    typealias SectionInfo = RelationalSectionInfo<Section, Element>
-//
-//    // Changes from context
-//    var objectChangeSet = ObjectChangeSet<IndexPath, Element>()
-//    var sectionChangeSet = ObjectChangeSet<Int, Section>()
-//
-//    var itemsWithSectionChange = Set<Element>()
-//
-//    func reset() {
-//        self.sectionChangeSet.reset()
-//        self.objectChangeSet.reset()
-//    }
-//
-//    var description: String {
-//        return "Context Items: \(objectChangeSet.deleted.count) Deleted, \(objectChangeSet.inserted.count) Inserted, \(objectChangeSet.updated.count) Updated"
-//        + "Context Sections: \(sectionChangeSet.inserted.count) Inserted, \(sectionChangeSet.deleted.count) Deleted \(sectionChangeSet.updated.count) Updated"
-//    }
-//}
-
-
-/*
-fileprivate class RelationalSectionInfo<Section: NSManagedObject, Element: NSManagedObject>: NSObject, SectionInfo {
-    
-    public var object : Any? { return self._object }
-    public var objects: [Any] { return _storage.objects  }
-    public var numberOfObjects: Int { return _storage.count }
-    
-    private unowned let controller : RelationalResultsController<Section,Element>
-    
-    fileprivate let _object : Section?
-    
-    private(set) var isEditing: Bool = false
-    
-    private(set) var _storage = OrderedSet<Element>()
-    private var _storageCopy = OrderedSet<Element>()
-    
-    override public var hashValue: Int {
-        return _object?.hashValue ?? 0
-    }
-    
-    fileprivate override func isEqual(_ object: Any?) -> Bool {
-        return self._object == (object as? RelationalSectionInfo<Section, Element>)?._object
-    }
-    
-    public static func ==(lhs: RelationalSectionInfo, rhs: RelationalSectionInfo) -> Bool {
-        return lhs._object == rhs._object
-    }
-    
-    internal init(controller: RelationalResultsController<Section,Element>, object: Section?, objects: [Element] = []) {
-        self.controller = controller
-        self._object = object
-        _storage.add(contentsOf: objects)
-    }
-    
-    func index(of object: Element) -> Int? {
-        return _storage.index(of: object)
-    }
-    
-    func appendOrdered(_ object: Element) -> Int {
-        self._storage.add(object)
-        return self._storage.count - 1
-    }
-    
-    func remove(_ object: Element) -> Int? {
-        return _storage.remove(object)
-    }
-    
-    func sortItems(using sortDescriptors: [NSSortDescriptor]) {
-        
-        if self.isEditing {
-            Swift.print("Attempt to call sort items on relations section info while editing.")
-            return;
-        }
-        
-//        self.needsSort = false
-        self._storage.sort(using: sortDescriptors)
-    }
-    
-    
-    func description(with descriptors: [NSSortDescriptor]) -> String {
-        var str = "\(_storage.count) Objects"
-        
-        if descriptors.count > 0 {
-            var sortValues = [String]()
-            for o in _storage {
-                sortValues.append(o.description)
-//                sortValues.append(descriptors.description(of: o))
-            }
-            str += "[\n"
-            str += sortValues.joined(separator: "\n")
-            str += "]"
-        }
-        else {
-            str += "No sort"
-        }
-        return str
-    }
-    override var description: String {
-        return description(with: [])
-    }
-    
-    // MARK: - Editing
-    /*-------------------------------------------------------------------------------*/
-    
-    private var _added = Set<Element>() // Tracks added items needing sort, if one do insert for performance
-    
-    var isEmpty : Bool {
-        return self.numberOfObjects == 0 && _added.count == 0
-    }
-    
-    func beginEditing() {
-        assert(!isEditing, "Mutiple calls to beginEditing() for RelationalResultsControllerSection")
-        isEditing = true
-        _storageCopy = _storage
-        _added.removeAll()
-    }
-    
-    func ensureEditing() {
-        if isEditing { return }
-        beginEditing()
-    }
-    
-    func endEditing(forceUpdates: Set<Element>) -> ChangeSet<OrderedSet<Element>> {
-        assert(isEditing, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
-        
-        if self._added.count > 0, let desc = controller.fetchRequest.sortDescriptors {
-            let ordered = self._added.sorted(using: desc)
-            _storage.insert(contentsOf: ordered, using: desc)
-        }
-        
-        isEditing = false
-        let changes = ChangeSet(source: _storageCopy, target: _storage, forceUpdates: forceUpdates)
-        self._storageCopy.removeAll()
-        return changes
-    }
-    
-    func _modified(_ element: Element) {
-        assert(self.isEditing, "Attempt to call modified object while NOT editing")
-        self._added.insert(element)
-    }
-    
-    func _add(_ element: Element) {
-        assert(self.isEditing, "Attempt to call modified object while NOT editing")
-        self._added.insert(element)
-    }
-}
- */
 
 
 /**
@@ -578,7 +434,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
             return
         }
-        guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
+        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
             return
         }
         

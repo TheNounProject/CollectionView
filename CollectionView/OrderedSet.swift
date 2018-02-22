@@ -248,6 +248,12 @@ extension OrderedSet {
  */
     }
     
+    public mutating func sort(using sortDescriptor: SortDescriptor<Element>) {
+        self._data.sort(using: sortDescriptor)
+        self._map.removeAll(keepingCapacity: true)
+        self._remap()
+    }
+    
     public mutating func sort(using sortDescriptors: [SortDescriptor<Element>]) {
         guard sortDescriptors.count > 0 else { return }
         self._data.sort(using: sortDescriptors)

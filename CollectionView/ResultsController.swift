@@ -88,7 +88,6 @@ public protocol ResultsController {
 
 public protocol SectionType : Hashable { }
 
-
 struct NoSectionType : SectionType {
     var hashValue: Int { return 0 }
     static func ==(lhs: NoSectionType, rhs: NoSectionType) -> Bool { return true }

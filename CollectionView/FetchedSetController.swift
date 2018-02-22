@@ -165,13 +165,13 @@ public class FetchedSetController : NSObject {
     private var _registered = false
     private func register() {
         guard !_registered, self.delegate != nil else { return }
-        ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)    }
+        ManagedObjectContextObservationCoordinator.shared.add(context: self.managedObjectContext)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ManagedObjectContextObservationCoordinator.Notification.name, object: self.managedObjectContext)    }
     
     private func unregister() {
         guard _registered else { return }
-        ResultsControllerCDManager.shared.remove(context: self.managedObjectContext)
-        NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
+        ManagedObjectContextObservationCoordinator.shared.remove(context: self.managedObjectContext)
+        NotificationCenter.default.removeObserver(self, name: ManagedObjectContextObservationCoordinator.Notification.name, object: self.managedObjectContext)
     }
     
     
@@ -179,7 +179,7 @@ public class FetchedSetController : NSObject {
     public var wait: Bool = true
     
     @objc func handleChangeNotification(_ notification: Notification) {
-        guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
+        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
             return
         }
         

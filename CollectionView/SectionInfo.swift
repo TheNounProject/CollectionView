@@ -33,21 +33,9 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
         return representedObject?.hashValue ?? 0
     }
     
-    //    fileprivate override func isEqual(_ object: ManagedSectionInfo?) -> Bool {
-    //        return self._value == object?.representedObject
-    //    }
     public static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {
         return lhs.representedObject == rhs.representedObject
     }
-    
-    //    static func <(lhs: ManagedSectionInfo, rhs: ManagedSectionInfo) -> Bool {
-    //        if let v1 = lhs._value,
-    //            let v2 = rhs._value {
-    //            return v1 < v2
-    //        }
-    //        return lhs._value != nil
-    //    }
-    
     
     // MARK: - Objects
     /*-------------------------------------------------------------------------------*/

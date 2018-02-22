@@ -441,7 +441,7 @@ public class FetchedResultsController<Section: SectionRepresentable, Element: NS
     }
     
     public func _object(at indexPath: IndexPath) -> Element? {
-        return self._sectionInfo(at: indexPath)?._storage.object(at: indexPath._item)
+        return self._sectionInfo(at: indexPath)?._storage._object(at: indexPath._item)
     }
     
     public func _indexPathOfSection(representing sectionObject: Section?) -> IndexPath? {

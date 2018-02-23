@@ -211,7 +211,7 @@ extension OrderedSet {
         
         // TODO:
         for e in newElements {
-            self.insert(e, using: sortDescriptors)
+            _ = self.insert(e, using: sortDescriptors)
         }
         /*
         var new = newElements.sorted(using: sortDescriptors)

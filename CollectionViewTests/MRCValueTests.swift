@@ -87,7 +87,7 @@ class MRCValueTests: XCTestCase {
         let data = create(containers: 5, objects: 5)
         
         let mrc = MutableResultsController<Parent, Child>()
-        mrc.sectionKeyPath = \Child.parent
+        mrc.setSectionKeyPath(\Child.parent)
         mrc.setContent(data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 5)
@@ -100,7 +100,7 @@ class MRCValueTests: XCTestCase {
         let data = create(containers: 5, objects: 5)
         
         let mrc = MutableResultsController<Parent, Child>()
-        mrc.sectionKeyPath = \Child.parent
+        mrc.setSectionKeyPath(\Child.parent)
         mrc.sortDescriptors = [SortDescriptor(\Child.rank)]
         mrc.sectionSortDescriptors = [SortDescriptor(\Parent.rank)]
         mrc.setContent(data.objects)
@@ -116,7 +116,7 @@ class MRCValueTests: XCTestCase {
         let data = create(containers: 10, objects: 500)
         self.measure {
             let mrc = MutableResultsController<Parent, Child>()
-            mrc.sectionKeyPath = \Child.parent
+            mrc.setSectionKeyPath(\Child.parent)
             mrc.sortDescriptors = [SortDescriptor(\Child.rank)]
             mrc.sectionSortDescriptors = [SortDescriptor(\Parent.rank)]
             mrc.setContent(data.objects)

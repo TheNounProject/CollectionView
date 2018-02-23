@@ -21,7 +21,7 @@ import Foundation
  
  The controller can also be sorted, grouped into sections and automatically updated when changes are made in the managed obejct context.
  */
-class FetchedResultsController<Section: SectionType, Element: NSManagedObject> : MutableResultsController<Section, Element> {
+public class FetchedResultsController<Section: SectionType, Element: NSManagedObject> : MutableResultsController<Section, Element> {
     
     
     // MARK: - Initialization
@@ -37,7 +37,6 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
      */
     public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionKeyPath: KeyPath<Element,Section>? = nil) {
         
-        
         assert(request.entityName != nil, "request is missing entity name")
         let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: context)
         assert(objectEntity != nil, "Unable to load entity description for object \(request.entityName!)")
@@ -48,8 +47,7 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
         self._managedObjectContext = context
         self.fetchRequest = request
         
-        super.init()
-        self.sectionKeyPath = sectionKeyPath
+        super.init(sectionKeyPath: sectionKeyPath)
     }
     
     deinit {
@@ -76,7 +74,7 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
     ///The fetch request for the controller
     public let fetchRequest : NSFetchRequest<Element>
     
-    public override var sectionKeyPath: KeyPath<Element, Section>? {
+    override var sectionGetter: ((Element) -> Section?)? {
         didSet {
             self.setNeedsFetch()
         }
@@ -124,7 +122,7 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
     
     // MARK: - Status
     /*-------------------------------------------------------------------------------*/
-    var _fetched: Bool = false
+    fileprivate var _fetched: Bool = false
     private var _registered = false
     
     
@@ -133,13 +131,13 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
         unregister()
     }
     
-    func register() {
+    fileprivate func register() {
         guard let moc = self._managedObjectContext, !_registered, self.delegate != nil else { return }
         _registered = true
         ManagedObjectContextObservationCoordinator.shared.add(context: self.managedObjectContext)
         NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ManagedObjectContextObservationCoordinator.Notification.name, object: moc)    }
     
-    func unregister() {
+    fileprivate func unregister() {
         guard let moc = self._managedObjectContext, _registered else { return }
         _registered = false
         ManagedObjectContextObservationCoordinator.shared.remove(context: moc)
@@ -174,16 +172,7 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
         return true
     }
     
-    
-    @objc func handleChangeNotification(_ notification: Notification) {
-        guard let delegate = self.delegate, self._fetched else {
-            print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
-            return
-        }
-        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
-            return
-        }
-        
+    func processChanges(_ changes: [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
         if let itemChanges = changes[fetchRequest.entity!] {
             self.beginEditing()
             for obj in itemChanges.deleted {
@@ -217,6 +206,17 @@ class FetchedResultsController<Section: SectionType, Element: NSManagedObject> :
             }
             self.endEditing()
         }
+    }
+    
+    @objc func handleChangeNotification(_ notification: Notification) {
+        guard let _ = self.delegate, self._fetched else {
+            print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
+            return
+        }
+        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
+            return
+        }
+        self.processChanges(changes)
     }
 }
 
@@ -268,8 +268,16 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         super.init(context: context, request: request, sectionKeyPath: keyPath)
         
         validateRequests()
+    }
+    
+    public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionRequest: NSFetchRequest<Section>, sectionKeyPath keyPath: KeyPath<Element, Section?>) {
         
-        self.sectionKeyPath = keyPath
+        self.sectionFetchRequest = sectionRequest
+        sectionRequest.returnsObjectsAsFaults = false
+        
+        super.init(context: context, request: request)
+        setSectionKeyPath(keyPath)
+        validateRequests()
     }
     
     deinit {
@@ -295,7 +303,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     override public func performFetch() throws {
         // Validation
         validateRequests()
-        precondition(sectionKeyPath != nil, "RelationalResultsController must have a sectionKeyPath")
+        precondition(isSectioned, "RelationalResultsController must have a sectionKeyPath")
         
         // Manage notification registration
         register()
@@ -428,13 +436,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
 //    }
     
     
-    @objc override func handleChangeNotification(_ notification: Notification) {
-        
+    override func processChanges(_ changes: [NSEntityDescription : ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
         guard let delegate = self.delegate, self._fetched else {
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
-            return
-        }
-        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
             return
         }
         
@@ -477,7 +481,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
             }
         }
         
-        super.handleChangeNotification(notification)
+        super.processChanges(changes)
         endEditing()
 
             

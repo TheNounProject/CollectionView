@@ -100,7 +100,7 @@ class MRCObjectTests: XCTestCase {
     func test_insertObjects_withSections() {
         let mrc = MutableResultsController<Parent, Child>()
         mrc.sortDescriptors = [SortDescriptor(\Child.rank)]
-        mrc.sectionKeyPath = \Child.parent
+        mrc.setSectionKeyPath(\Child.parent)
         
         let children = create(containers: 3, objects: 5).objects
         mrc.beginEditing()

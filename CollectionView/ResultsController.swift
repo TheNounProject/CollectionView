@@ -96,7 +96,6 @@ extension String : SectionType { }
 extension NSNumber : SectionType { }
 extension Int : SectionType { }
 
-
 public protocol ResultType : Hashable { }
 extension NSManagedObject : ResultType { }
 extension NSManagedObject : SectionType { }

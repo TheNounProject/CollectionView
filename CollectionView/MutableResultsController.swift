@@ -27,12 +27,16 @@ fileprivate struct EditingContext<Element:Hashable> : CustomStringConvertible {
 
 
 
+
+
 /**
  A results controller not only manages data, it also provides an easy to use, consistent interface for working with CollectionViews. While a typical controller fetches and manages data changes internally, this slimmed down version leaves the manipulation of it's content up to you so you can use the same interface with any type of data.
 */
 public class MutableResultsController<Section: SectionType, Element: ResultType> : ResultsController {
     
     typealias WrappedSectionInfo = SectionInfo<Section, Element>
+    
+    typealias SectionAccessor = (Element) -> Section?
 
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
@@ -44,7 +48,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     init(sectionKeyPath: KeyPath<Element,Section>? = nil,
          sortDescriptors: [SortDescriptor<Element>] = [],
          sectionSortDescriptors: [SortDescriptor<Section>] = []) {
-        self.sectionKeyPath = sectionKeyPath
+        self.setSectionKeyPath(sectionKeyPath)
         self.sortDescriptors = sortDescriptors
         self.sectionSortDescriptors = sectionSortDescriptors
     }
@@ -53,16 +57,40 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         self._sections.removeAll()
     }
     
-    
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
     
     public var sortDescriptors : [SortDescriptor<Element>] = []
     public var sectionSortDescriptors : [SortDescriptor<Section>] = []
     
+    var sectionGetter : SectionAccessor?
+    public var isSectioned: Bool {
+        return sectionGetter != nil
+    }
+    func section(for element: Element) -> Section? {
+        return sectionGetter?(element)
+    }
     
+    public func setSectionKeyPath(_ keyPath: KeyPath<Element, Section>?) {
+        guard let kp = keyPath else {
+            sectionGetter = nil
+            return
+        }
+        sectionGetter = {
+            $0[keyPath: kp]
+        }
+    }
+    public func setSectionKeyPath(_ keyPath: KeyPath<Element, Section?>) {
+        sectionGetter = {
+            return $0[keyPath: keyPath]
+        }
+    }
     /// A key path of the elements to use for section groupings
-    public var sectionKeyPath: KeyPath<Element,Section>?
+//    public var sectionKeyPath: KeyPath<Element, Section>? {
+//        didSet {
+//
+//        }
+//    }
     
     
     /**
@@ -214,7 +242,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
      */
     public func indexPath(of object: Element) -> IndexPath? {
         
-        if self.sectionKeyPath != nil {
+        if self.sectionGetter != nil {
             guard let section = self._objectSectionMap[object],
                 let sIndex = self._sections.index(of: section),
                 let idx = section.index(of: object) else { return nil }
@@ -298,9 +326,9 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     
     public func setContent(_ content: [Element]) {
         self._sections = []
-        if let kp = self.sectionKeyPath {
+        if let sectionAccessor = self.sectionGetter {
             for element in content {
-                let s = getOrCreateSectionInfo(for: element[keyPath: kp])
+                let s = getOrCreateSectionInfo(for: sectionAccessor(element))
                 s.append(element)
                 self._objectSectionMap[element] = s
             }
@@ -599,9 +627,9 @@ extension MutableResultsController where Element:AnyObject {
     func insert(object: Element) {
         guard self.contains(object: object) == false else { return }
         self.beginEditing()
-        if let keyPath = self.sectionKeyPath {
+        if let sectionAccessor = self.sectionGetter {
             
-            let sectionValue = object[keyPath: keyPath]
+            let sectionValue = sectionAccessor(object)
             if let existingSection = self.sectionInfo(representing: sectionValue) {
                 existingSection.ensureEditing()
                 existingSection.add(object)
@@ -611,8 +639,8 @@ extension MutableResultsController where Element:AnyObject {
             }
             else {
                 // The section value doesn't exist yet, the section will be inserted
-                let sec = SectionInfo(object: sectionValue, objects: [object])
-                self._sections.append(sec)
+                let sec = getOrCreateSectionInfo(for: sectionValue)
+                sec.add(object)
                 _objectSectionMap[object] = sec
             }
         }
@@ -641,8 +669,8 @@ extension MutableResultsController where Element:AnyObject {
         }
         beginEditing()
         currentSection.ensureEditing()
-        if let keyPath = self.sectionKeyPath {
-            let sectionValue = object[keyPath:keyPath]
+        if let sectionAccessor = self.sectionGetter {
+            let sectionValue = sectionAccessor(object)
             
             if sectionValue == currentSection.representedObject {
                 // Move within the same section

@@ -252,7 +252,7 @@ class OrderedSetTests: XCTestCase {
     
     func testInsertMultiple() {
         var set : OrderedSet<String> = ["one", "four"]
-        set.insert(contentsOf: ["two", "three"], at: 1)
+        _ = set.insert(contentsOf: ["two", "three"], at: 1)
         XCTAssertEqual(set.count, 4)
         XCTAssertEqual(set[1], "two")
         XCTAssertEqual(set[2], "three")

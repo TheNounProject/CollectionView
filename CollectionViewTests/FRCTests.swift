@@ -45,7 +45,6 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
 
     func test_performFetch_empty() {
         let frc = FetchedResultsController<String,Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
-        frc.sectionKeyPath = nil
         XCTAssertNoThrow(try frc.performFetch())
         XCTAssertEqual(frc.numberOfSections, 0)
     }
@@ -53,7 +52,6 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     func test_noSectionKeyPaths() {
         _ = Parent.create(in: self.context, children: 5)
         let frc = FetchedResultsController<String,Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
-        frc.sectionKeyPath = nil
         XCTAssertNoThrow(try frc.performFetch())
         XCTAssertEqual(frc.numberOfSections, 1)
         XCTAssertEqual(frc.numberOfObjects(in: 0), 5)
@@ -61,9 +59,8 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     
     
     func test_sectionKeyPath() {
-        self.createItemsBySection(5, items: 1)
-        let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
-        frc.sectionKeyPath = \Child.second
+        _ = self.createItemsBySection(5, items: 1)
+        let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"), sectionKeyPath: \Child.second)
         XCTAssertNoThrow(try frc.performFetch())
         XCTAssertEqual(frc.numberOfSections, 5)
         for n in 0..<5 {
@@ -74,7 +71,6 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     func testSortDescriptors() {
         _ = self.createItemsBySection(1, items: 10)
         let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
-        
         // Check ascending TRUE
         frc.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
         XCTAssertNoThrow(try frc.performFetch())
@@ -129,7 +125,7 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     
     func test_delegate_insertMultipleSections() {
         let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
-        frc.sectionKeyPath = \Child.second
+        frc.setSectionKeyPath(\Child.second)
         frc.delegate = self
         XCTAssertNoThrow(try frc.performFetch())
         XCTAssertEqual(frc.numberOfSections, 0)
@@ -156,7 +152,7 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
         frc.delegate = self
         if sections > 1 {
-            frc.sectionKeyPath = \Child.second
+            frc.setSectionKeyPath(\Child.second)
         }
         frc.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
         frc.sortDescriptors = [SortDescriptor<Child>(\Child.displayOrder)]
@@ -262,9 +258,8 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     
     func test_delegate_moveItemToFront() {
         print("MOVE ITEM TO FRONT")
-        let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
+        let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"), sectionKeyPath: \Child.second)
         frc.delegate = self
-        frc.sectionKeyPath = \Child.second
         frc.sectionSortDescriptors = [SortDescriptor<NSNumber>.ascending]
         frc.sortDescriptors = [SortDescriptor<Child>(\Child.displayOrder)]
         frc.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
@@ -321,7 +316,16 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     }
 
 }
-extension NSAttributeDescription {
+
+
+/*-------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------*/
+// MARK: - Helpers
+/*-------------------------------------------------------------------------------*/
+/*-------------------------------------------------------------------------------*/
+
+
+fileprivate extension NSAttributeDescription {
     convenience init(name: String, type: NSAttributeType) {
         self.init()
         self.name = name

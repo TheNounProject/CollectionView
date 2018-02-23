@@ -25,24 +25,15 @@ let dateGroupFormatter : DateFormatter = {
 
 
 
-
-
-
-
-
 class Parent : NSManagedObject, CustomDisplayStringConvertible {
     
-
     @NSManaged var children : Set<Child>
     @NSManaged var created: Date
-    
-	
 	
     @NSManaged var displayOrder : NSNumber
     
     
     static func create(in moc : NSManagedObjectContext? = nil, withChild child: Bool = true) -> Parent {
-        
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let req = NSFetchRequest<Parent>(entityName: "Parent")
         req.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
@@ -62,8 +53,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
 	
     func createChild() -> Child {
         let child = Child.createOrphan(in: self.managedObjectContext)
-        
-        let order = self.children.sorted(using: [NSSortDescriptor(key: "displayOrder", ascending: true)]).last?.displayOrder.intValue ?? -1
+        let order = self.children.sorted(using: SortDescriptor(\Child.displayOrder)).last?.displayOrder.intValue ?? -1
         child.displayOrder = NSNumber(value: order + 1)
         child.parent = self
         return child
@@ -99,7 +89,6 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
     }
     
     static func createOrphan(in moc : NSManagedObjectContext? = nil) -> Child {
-        
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: moc) as! Child
         
@@ -107,7 +96,6 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         
         let d = Date()
         child.created = d
-        
         let s = Calendar.current.component(.second, from: d)
         child.second = NSNumber(value: Int(s/6))
         child.group = dateGroupFormatter.string(from: Date())
@@ -119,11 +107,9 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
 
 
 extension NSManagedObject {
-    
     var isValid : Bool {
         return self.managedObjectContext != nil && self.isDeleted == false
     }
-    
     var idString : String {
         let str = self.objectID.uriRepresentation().lastPathComponent
         if self.objectID.isTemporaryID { return str.sub(from: -3) }

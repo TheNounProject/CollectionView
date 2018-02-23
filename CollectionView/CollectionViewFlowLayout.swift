@@ -564,7 +564,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
                 
-                let lead = cv.leadingView?.bounds.size.height ?? 0
+//                let lead = cv.leadingView?.bounds.size.height ?? 0
 //                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
 //                    currentAttrs.frame.origin.y = lead
 //                    currentAttrs.floating = false

@@ -137,20 +137,24 @@ class WindowController : NSWindowController {
 
     
     @IBAction func groupSelectorChanged(_ sender: NSSegmentedControl) {
+        let grid = (self.window?.toolbar?.items[0].view as? NSSegmentedControl)?.selectedSegment == 1
         if sender.selectedSegment == 0 {
             fetchedController.view.frame.size = self.window!.frame.size
             self.fetchedController.content.setSectionKeyPath(nil)
+            self.fetchedController.setLayout(grid: grid)
             self.fetchedController.reload(nil)
             self.contentViewController = fetchedController
         }
         else if sender.selectedSegment == 1 {
             fetchedController.view.frame.size = self.window!.frame.size
             self.fetchedController.content.setSectionKeyPath(\Child.second)
+            self.fetchedController.setLayout(grid: grid)
             self.fetchedController.reload(nil)
             self.contentViewController = fetchedController
         }
         else {
             relationalController.view.frame.size = self.window!.frame.size
+            self.relationalController.setLayout(grid: grid)
             self.relationalController.reload(nil)
             self.contentViewController = relationalController
         }
@@ -161,7 +165,7 @@ class WindowController : NSWindowController {
 
 
 
-class BaseController : CollectionViewController, ResultsControllerDelegate, CollectionViewDelegateFlowLayout, CollectionViewDelegateListLayout {
+class BaseController : CollectionViewController, ResultsControllerDelegate, CollectionViewDelegateFlowLayout, CollectionViewDelegateListLayout, CollectionViewPreviewControllerDelegate {
     
     var listLayout = CollectionViewListLayout()
     var gridLayout = CollectionViewFlowLayout()
@@ -198,10 +202,14 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     }
     
     @IBAction func layoutSelectorChanged(_ sender: NSSegmentedControl) {
-        self.collectionView.collectionViewLayout = sender.selectedSegment == 0
-            ? self.listLayout
-            : self.gridLayout
+        self.setLayout(grid: sender.selectedSegment > 0)
         self.collectionView.reloadData()
+    }
+    
+    func setLayout(grid: Bool) {
+        self.collectionView.collectionViewLayout = grid
+            ? self.gridLayout
+            : self.listLayout
     }
     
     
@@ -270,12 +278,15 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     
     func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
         
-        // Randomly apply a style
-        if indexPath._item % 20 == 0 {
+        let variance = (self.child(at: indexPath)?.second.intValue ?? 0) * 2
+        
+        // semi-Randomly apply a style
+        if variance % 20 == 0  {
             return .span(CGSize(width: collectionView.frame.size.width, height: 50))
         }
-        let size : CGFloat = 180
-        return .flow(CGSize(width: size  + (50 * CGFloat(indexPath._item % 5)), height: size))
+        let size : CGFloat = 150
+        let multiplier = CGFloat(variance % 5)
+        return .flow(CGSize(width: size  + (50 * multiplier), height: size))
     }
     
     func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, rowTransformForSectionAt section: Int) -> CollectionViewFlowLayout.RowTransform {
@@ -390,9 +401,9 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     }
     
     func collectionViewPreviewController(_ controller: CollectionViewPreviewController, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
-//        let child = content.object(at: indexPath) as! Child
+        let child = self.child(at: indexPath)!
         let cell = GridCell.deque(for: indexPath, in: controller.collectionView) as! GridCell
-//        cell.setup(with: child)
+        cell.setup(with: child)
         return cell
     }
     

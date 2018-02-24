@@ -31,9 +31,9 @@ public struct SortDescriptor<T> {
         }
         self.ascending = ascending
     }
-    public init(_ comparator: @escaping ((T,T)->SortDescriptorResult), ascending: Bool = true) {
+    public init(_ comparator: @escaping ((T,T)->SortDescriptorResult)) {
         self.comparator = comparator
-        self.ascending = ascending
+        self.ascending = true
     }
     public func compare(_ a:T, to b:T) -> SortDescriptorResult {
         return comparator(a, b)

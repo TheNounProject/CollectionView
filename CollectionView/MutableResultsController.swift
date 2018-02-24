@@ -371,10 +371,14 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         }
     }
     
+    func ensureSectionCopy() {
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
+    }
+    
     
     func getOrCreateSectionInfo(for section: Section?) -> WrappedSectionInfo {
         if let s = self.sectionInfo(representing: section) { return s }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        self.ensureSectionCopy()
         let s = WrappedSectionInfo(object: section, objects: [])
         _sections.append(s)
         return s
@@ -382,7 +386,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     
     private func _removeSection(representing section: Section?) {
         guard let ip = self.indexPathOfSection(representing: section) else { return }
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        self.ensureSectionCopy()
         _sections.remove(at: ip._section)
     }
     private func _removeSection(info sectionInfo: WrappedSectionInfo) {
@@ -454,6 +458,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         }
         
         if self._sections.needsSort {
+            self.ensureSectionCopy()
             self.sortSections()
         }
         

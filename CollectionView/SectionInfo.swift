@@ -44,20 +44,27 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
         return _storage.index(of: object)
     }
     
-    @discardableResult func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor] = []) -> Int {
-        self.add(object)
-        return self._storage.count - 1
+//    @discardableResult func insert(_ object: Element, using sortDescriptors: [SortDescriptor<Element>] = []) -> Int {
+//        return self._storage.insert(object, using: sortDescriptors)
+//    }
+    func remove(_ object: Element) {
+        if self.isEditing {
+            self._removed.insert(object)
+        }
+        else {
+            _storage.remove(object)
+        }
     }
-    @discardableResult func remove(_ object: Element) -> Int? {
-        return _storage.remove(object)
-    }
-    
-    func append(_ element: Element) {
-        self._storage.append(element)
+    func add(_ element: Element) {
+        if self.isEditing {
+            self._updated.insert(element)
+        }
+        else {
+            self._storage.append(element)
+        }
     }
     
     func sort(using sortDescriptors: [SortDescriptor<Element>]) {
-        self.needsSort = false
         self._storage.sort(using: sortDescriptors)
     }
     
@@ -65,15 +72,15 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     // MARK: - Editing
     /*-------------------------------------------------------------------------------*/
     
-    private(set) var needsSort : Bool = false
     private(set) var isEditing: Bool = false
-    //    private var _added = Set<Element>() // Tracks added items needing sort, to allow for performance optimizations
+    private var _removed = Set<Element>() // Tracks removed items needing sort, to allow for performance optimizations
+    private var _updated = Set<Element>() // Tracks added items needing sort, to allow for performance optimizations
     
     func beginEditing() {
         assert(!isEditing, "Mutiple calls to beginEditing() for RelationalResultsControllerSection")
         isEditing = true
-        _storageCopy = _storage
-        //        _added.removeAll()
+        self._updated.removeAll()
+        self._removed.removeAll()
     }
     
     func ensureEditing() {
@@ -81,27 +88,28 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
         beginEditing()
     }
     
-    func endEditing(forceUpdates: Set<Element>) -> ChangeSet<OrderedSet<Element>> {
-        assert(isEditing, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
-        assert(!needsSort, "endEditing() called but the section still needs to be sorted.")
-        isEditing = false
-        self.needsSort = false
-        let changes = ChangeSet(source: _storageCopy, target: _storage, forceUpdates: forceUpdates)
-        self._storageCopy.removeAll()
-        return changes
-    }
-    
-    func markNeedsSort() {
-        self.needsSort = true
-    }
-    
-    func add(_ element: Element) {
-        guard self._storage.contains(element) == false else {
-            let _ = _storage.index(of: element)
-            return
+    func endEditing(sorting: [SortDescriptor<Element>], forceUpdates: Set<Element>) -> EditDistance<OrderedSet<Element>>? {
+//        assert(, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
+        defer {
+            isEditing = false
         }
-        self.needsSort = self.needsSort || self._storage.count > 0
-        self._storage.append(element)
+        guard isEditing, (!self._updated.isEmpty || !self._removed.isEmpty) else {
+            return nil
+        }
+        let source = self._storage
+//        print("Updated: \(self._updated)")
+//        print("Removed: \(self._removed)")
+        
+        self._storage.remove(contentsOf: _removed)
+        self._storage.insert(contentsOf: _updated, using: sorting)
+//        print("Source: \(source)")
+//        print("Target: \(self._storage)")
+       
+        let changes = EditDistance(source: source, target: _storage)
+        self._storageCopy.removeAll()
+        self._removed.removeAll()
+        self._updated.removeAll()
+        return changes
     }
 }
 

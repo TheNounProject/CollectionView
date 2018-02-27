@@ -159,6 +159,19 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return index
     }
     
+    public mutating func remove<C : Collection>(contentsOf removeElements: C) where C.Iterator.Element == Element {
+        var removeIndex = [Int]()
+        for e in removeElements {
+            if let e = self._map.removeValue(forKey: e) {
+                removeIndex.append(e)
+            }
+        }
+        // Remove in descending index
+        for idx in removeIndex.sorted().reversed() {
+            self._data.remove(at: idx)
+        }
+    }
+    
     var needsSort : Bool = false
     mutating func _batchRemove(_ object: Element) {
         self.needsSort = true
@@ -210,15 +223,14 @@ extension OrderedSet {
     public mutating func insert<C : Collection>(contentsOf newElements: C, using sortDescriptors: [SortDescriptor<Element>]) where C.Iterator.Element == Element {
         
         // TODO:
-        for e in newElements {
-            _ = self.insert(e, using: sortDescriptors)
-        }
-        /*
+//        for e in newElements {
+//            _ = self.insert(e, using: sortDescriptors)
+//        }
+        
         var new = newElements.sorted(using: sortDescriptors)
         var fMatch = self._data.count
         
         var remove = IndexSet()
-        
         for obj in new.reversed() {
             if let index = self.index(of: obj) {
                 remove.insert(index)
@@ -233,7 +245,7 @@ extension OrderedSet {
         var checkIdx = 0
         while new.count > 0, checkIdx < _data.count {
             let check = _data[checkIdx]
-            if sortDescriptors.compare(new[0], to: check) == .orderedAscending {
+            if sortDescriptors.compare(new[0], check) == SortDescriptorResult.ascending {
                 if checkIdx < fMatch { fMatch = checkIdx }
                 _data.insert(new[0], at: checkIdx)
                 new.removeFirst()
@@ -245,7 +257,6 @@ extension OrderedSet {
             _data.append(n)
         }
         self._remap(startingAt: fMatch)
- */
     }
     
     public mutating func sort(using sortDescriptor: SortDescriptor<Element>) {

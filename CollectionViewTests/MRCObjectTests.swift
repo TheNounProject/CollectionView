@@ -207,6 +207,101 @@ class MRCObjectTests: XCTestCase {
         XCTAssertEqual(mrc.object(at: IndexPath.for(item: 4, section: 0))!, move)
     }
     
+    func test_moveAllObjectsOutOfSection() {
+        let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
+                                                          sortDescriptors: [SortDescriptor(\Child.rank)],
+                                                          sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
+        
+        let p1 = Parent(rank: 1)
+        let p2 = Parent(rank: 2)
+        let p3 = Parent(rank: 2)
+        let c1 = p1.createChildren(5)
+        let c2 = p2.createChildren(5)
+        let c3 = p3.createChildren(5)
+        
+        mrc.setContent([(p1, c1), (p2, c2), (p3, c3)])
+        
+        mrc.beginEditing()
+        for c in c1 {
+            c.parent = p2
+            mrc.didUpdate(object: c)
+        }
+        mrc.endEditing()
+        
+        XCTAssertEqual(mrc.numberOfSections, 2)
+        XCTAssertEqual(mrc.object(forSectionAt: IndexPath.for(section: 0)), p2)
+        XCTAssertEqual(mrc.object(forSectionAt: IndexPath.for(section: 1)), p3)
+        XCTAssertEqual(mrc.numberOfObjects(in: 0), 10)
+        XCTAssertEqual(mrc.numberOfObjects(in: 1), 5)
+    }
+    
+    
+    
+    func testSmallInsertPerformance() {
+        let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
+                                                          sortDescriptors: [SortDescriptor(\Child.rank)],
+                                                          sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
+        
+        let data = self.create(containers: 1, objects: 1000)
+        let parent = data.containers.first!.value
+        
+        self.measure {
+            mrc.setContent(data.objects)
+            mrc.beginEditing()
+            mrc.insert(objects: parent.createChildren(200))
+            mrc.endEditing()
+        }
+    }
+    
+    
+    func testMediumInsertPerformance() {
+        let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
+                                                          sortDescriptors: [SortDescriptor(\Child.rank)],
+                                                          sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
+        
+        let data = self.create(containers: 1, objects: 2000)
+        let parent = data.containers.first!.value
+        
+        self.measure {
+            mrc.setContent(data.objects)
+            mrc.beginEditing()
+            mrc.insert(objects: parent.createChildren(200))
+            mrc.endEditing()
+        }
+    }
+    
+    func testLargeInsertPerformance() {
+        let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
+                                                          sortDescriptors: [SortDescriptor(\Child.rank)],
+                                                          sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
+        
+        let data = self.create(containers: 1, objects: 5000)
+        let parent = data.containers.first!.value
+        
+        self.measure {
+            mrc.setContent(data.objects)
+            mrc.beginEditing()
+            mrc.insert(objects: parent.createChildren(500))
+            mrc.endEditing()
+        }
+    }
+    
+    func testHugeInsertPerformance() {
+        let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
+                                                          sortDescriptors: [SortDescriptor(\Child.rank)],
+                                                          sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
+        
+        let data = self.create(containers: 1, objects: 10000)
+        let parent = data.containers.first!.value
+        
+        self.measure {
+            mrc.setContent(data.objects)
+            mrc.beginEditing()
+            mrc.insert(objects: parent.createChildren(1000))
+            mrc.endEditing()
+        }
+    }
+    
     
     
     

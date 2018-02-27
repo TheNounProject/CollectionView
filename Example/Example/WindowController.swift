@@ -12,9 +12,6 @@ import CollectionView
 
 class WindowController : NSWindowController {
     
-    
-    
-    
     override func windowDidLoad() {
         super.windowDidLoad()
 
@@ -263,6 +260,7 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     // MARK: - List Layout Delegate
     /*-------------------------------------------------------------------------------*/
     
+    
     func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForHeaderInSection section: Int) -> CGFloat {
         return 50
     }
@@ -278,7 +276,7 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     
     func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
         
-        let variance = (self.child(at: indexPath)?.second.intValue ?? 0) * 2
+        let variance = (self.child(at: indexPath)?.displayOrder.intValue ?? 0) * 2
         
         // semi-Randomly apply a style
         if variance % 20 == 0  {

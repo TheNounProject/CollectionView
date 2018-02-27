@@ -10,13 +10,46 @@ import Foundation
 
 
 
+@available(*, unavailable, renamed: "ResultsControllerProvider")
+public struct ResultsChangeSet { }
+
+
 /**
  A helper object to easily track changes reported by a ResultsController and apply them to a CollectionView
 */
-public struct ResultsChangeSet {
+public class ResultsControllerProvider {
     
     var items = ItemChangeSet()
     var sections = SectionChangeSet()
+    
+    
+    
+    /**
+     If true, a cell will be inserted when a section becomes empty
+     
+     ## Discussion
+     When displaying sections within a CollectionView, it can be helpful to fill empty sections with a placholder cell. This causes an issue when responding to updates from a results controller. For example, when an object is inserted into an empty section, the results controller will report a single insert change. The CollectionView though would need to remove the exisitng cell AND insert the new one.
+     
+     Setting hasEmptySectionPlaceholders to true, will report changes as such, making it easy to propagate the reported changes to a CollectionView.
+     
+    */
+    public var populateEmptySections = false
+    
+    /**
+     If true, a cell will be inserted when a collection view becomes completely empty
+     
+     ## Discussion
+     When displaying sections within a CollectionView, it can be helpful to display a cell representing the empty state. This causes an issue when responding to updates from a results controller. For example, when the last section is removed from a data source (i.e. ResultsController), the controller will report a single remove change. The CollectionView though would need to remove those cells AND insert the new one to act as the palceholder.
+     
+     Setting populateWhenEmpty to true, will report changes as such, making it easy to propagate the reported changes to a CollectionView.
+     
+     */
+    public var populateWhenEmpty = false
+    
+    
+    /// When set as the delegate
+    public weak var collectionView : CollectionView?
+    
     
     public init() { }
     
@@ -29,7 +62,7 @@ public struct ResultsChangeSet {
      - Parameter changeType: The change type
      
      */
-    public mutating func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
+    public func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         items.addChange(forItemAt: source, with: changeType)
     }
     
@@ -42,7 +75,7 @@ public struct ResultsChangeSet {
      - Parameter changeType: The change type
 
     */
-    public mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
+    public func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         sections.addChange(forSectionAt: source, with: changeType)
     }
     
@@ -60,9 +93,19 @@ public struct ResultsChangeSet {
     }
     
     /// Remove all changes
-    public mutating func removeAll() {
+    @available(*, deprecated, renamed: "prepareForUpdates")
+    public func removeAll() {
+        self.prepareForUpdates()
+    }
+    
+    public func prepareForUpdates() {
         items.reset()
         sections.reset()
+    }
+    
+    public func commit() {
+        precondition(self.collectionView != nil, "ResultsControllerProvider must have a collection view to commit changes to")
+        
     }
     
     
@@ -72,7 +115,7 @@ public struct ResultsChangeSet {
      - Parameter other: Another change set
 
     */
-    public mutating func union(with other: ResultsChangeSet) {
+    public func union(with other: ResultsControllerProvider) {
         self.items.inserted.formUnion(other.items.inserted)
         self.items.deleted.formUnion(other.items.deleted)
         self.items.updated.formUnion(other.items.updated)
@@ -81,6 +124,50 @@ public struct ResultsChangeSet {
         self.sections.deleted.formUnion(other.sections.deleted)
         self.sections.updated.formUnion(other.sections.updated)
     }
+}
+
+extension ResultsControllerProvider : ResultsControllerDelegate {
+    public func controllerWillChangeContent(controller: ResultsController) {
+        self.prepareForUpdates()
+    }
+    
+    public func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+        self.addChange(forItemAt: indexPath, with: changeType)
+    }
+    
+    public func controller(_ controller: ResultsController, didChangeSection section: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+        self.addChange(forSectionAt: indexPath, with: changeType)
+    }
+    
+    public func controllerDidChangeContent(controller: ResultsController) {
+        guard let collectionView = self.collectionView else {
+            print("ERROR: ResultsContrllerProvider with a delegate must have a collection view")
+            return
+        }
+        
+        if self.populateWhenEmpty {
+            let isEmpty = controller.numberOfSections == 0
+            let wasEmpty = collectionView.numberOfSections == 0
+            if !wasEmpty && isEmpty {
+                // populate
+                self.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
+            }
+            else if wasEmpty && !isEmpty {
+                // Remove placeholder
+                self.addChange(forItemAt: IndexPath.zero, with: .delete)
+            }
+        }
+        else if self.populateEmptySections && controller.numberOfSections > 0 {
+            
+            
+        }
+        
+        
+    }
+    
+    
+    
+    
 }
 
 

@@ -103,14 +103,13 @@ class RelationalController : BaseController, BasicHeaderDelegate {
             _ = section.createChild()
         }))
         menu.addItem(ActionMenuItem(title: "Append 10 Items", handler: { (_) in
-            repeatBlock(10) {
-                _ = section.createChild()
-            }
+            section.createChildren(10)
         }))
         menu.addItem(ActionMenuItem(title: "Append 100 Items", handler: { (_) in
-            repeatBlock(100) {
-                _ = section.createChild()
-            }
+            section.createChildren(100)
+        }))
+        menu.addItem(ActionMenuItem(title: "Append 500 Items", handler: { (_) in
+            section.createChildren(500)
         }))
         
         

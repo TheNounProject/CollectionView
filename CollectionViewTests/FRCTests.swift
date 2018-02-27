@@ -116,7 +116,7 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         
         waitForExpectations(timeout: 0.1) { (err) in
             // TODO: This should be 0 since we are inserting the section
-//            XCTAssertEqual(self.changeSet.items.inserted.count, 0)
+            XCTAssertEqual(self.changeSet.items.inserted.count, 4)
             XCTAssertEqual(self.changeSet.sections.inserted.count, 1)
             XCTAssertEqual(frc.numberOfSections, 1)
             XCTAssertEqual(frc.numberOfObjects(in: 0), 5)
@@ -135,8 +135,8 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         _ = self.createItemsBySection(5, items: 5)
         waitForExpectations(timeout: 0.1) { (err) in
             // TODO: This should be 0 since we are inserting the section
-//            XCTAssertEqual(self.changeSet.items.inserted.count, 25)
-//            XCTAssertEqual(self.changeSet.sections.inserted.count, 5)
+            XCTAssertEqual(self.changeSet.items.inserted.count, 20)
+            XCTAssertEqual(self.changeSet.sections.inserted.count, 5)
             XCTAssertEqual(frc.numberOfSections, 5)
             for s in 0..<frc.numberOfSections {
                 XCTAssertEqual(frc.numberOfObjects(in: s), 5)
@@ -275,9 +275,8 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         
         self.waitForExpectations(timeout: 0.5) { (err) in
             // There should really only be one move
-//            XCTAssertEqual(self.changeSet.items.count, 1)
-//            XCTAssertEqual(self.changeSet.items.moved.count, 1)
-            XCTAssertGreaterThan(self.changeSet.items.moved.count, 0)
+            XCTAssertEqual(self.changeSet.items.count, 3)
+            XCTAssertEqual(self.changeSet.items.moved.count, 3)
             print(self.changeSet)
             XCTAssertEqual(frc.object(at: IndexPath.zero), moved)
             for move in self.changeSet.items.moved {
@@ -286,6 +285,37 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         }
     }
     
+    
+    func test_moveItemsCrossSection() {
+        
+        let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"), sectionKeyPath: \Child.second)
+        frc.delegate = self
+        frc.sectionSortDescriptors = [SortDescriptor<NSNumber>.ascending]
+        frc.sortDescriptors = [SortDescriptor<Child>(\Child.displayOrder)]
+        
+        let children = self.createItemsBySection(5, items: 5)
+        try! frc.performFetch()
+        self._expectation = expectation(description: "Delegate")
+        
+        let m1 = children[2][2]
+        m1.displayOrder = 5
+        m1.second = NSNumber(value: 1)
+        
+        let m2 = children[2][3]
+        m2.displayOrder = 6
+        m2.second = NSNumber(value: 1)
+        
+        self.waitForExpectations(timeout: 0.5) { (err) in
+            // There should really only be one move
+            XCTAssertEqual(self.changeSet.items.count, 2)
+            XCTAssertEqual(self.changeSet.items.moved.count, 2)
+            print(self.changeSet)
+            XCTAssertEqual(frc.numberOfObjects(in: 1), 7)
+            XCTAssertEqual(frc.numberOfObjects(in: 2), 3)
+            XCTAssertEqual(frc.object(at: IndexPath.for(item: 5, section: 1)), m1)
+            XCTAssertEqual(frc.object(at: IndexPath.for(item: 6, section: 1)), m2)
+        }   
+    }
     
     var changeSet = ResultsChangeSet()
     var _expectation : XCTestExpectation?
@@ -305,14 +335,6 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         print("CONTROLLER DID CHANGE")
         _expectation?.fulfill()
         _expectation = nil
-    }
-    
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
     }
 
 }

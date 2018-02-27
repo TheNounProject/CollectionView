@@ -52,11 +52,30 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     
 	
     func createChild() -> Child {
-        let child = Child.createOrphan(in: self.managedObjectContext)
-        let order = self.children.sorted(using: SortDescriptor(\Child.displayOrder)).last?.displayOrder.intValue ?? -1
-        child.displayOrder = NSNumber(value: order + 1)
-        child.parent = self
-        return child
+        return createChildren(1).first!
+    }
+    
+    func createChildren(_ count: Int = 1) -> [Child] {
+        let start = NSFetchRequest<Child>(entityName: "Child")
+        start.predicate = NSPredicate(format: "parent = %@", self)
+        start.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
+        start.fetchLimit = 1
+        var order = 0
+        do {
+            if let first = try self.managedObjectContext?.fetch(start).first?.displayOrder.intValue {
+                order = first
+            }
+        }
+        catch { }
+        
+        var res = [Child]()
+        for n in 0..<count {
+            let child = Child.createOrphan(in: self.managedObjectContext)
+            child.displayOrder = NSNumber(value: order + n)
+            child.parent = self
+            res.append(child)
+        }
+        return res
     }
     
     var displayDescription: String {

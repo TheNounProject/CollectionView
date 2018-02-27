@@ -100,31 +100,6 @@ public protocol ResultType : Hashable { }
 extension NSManagedObject : ResultType { }
 extension NSManagedObject : SectionType { }
 
-/**
- Information about the sections of a results controller
- */
-//public protocol SectionInfo {
-//    associatedtype RepresentedType = SectionType
-//    associatedtype Item = ResultType
-//    /**
-//     The object represented by the section
-//     */
-//    var object : RepresentedType? { get }
-//    /**
-//     The number of objects in the section
-//     */
-//    var numberOfObjects : Int { get }
-//    /**
-//     The objects in the section
-//     
-//     - Note: Calling this method incurs large overhead and should be avoided. Use getter methods on the ResultsController instead.
-//     */
-//    var objects : [Item] { get }
-//}
-
-
-
-
 
 public extension Array where Element:Any {
     public func object(at index: Int) -> Element? {
@@ -143,8 +118,6 @@ public extension Array where Element:Any {
 public enum ResultsControllerError: Error {
     case unknown
 }
-
-
 
 
 
@@ -174,7 +147,6 @@ extension NSNumber : Comparable {
     public static func ==(lhs: NSNumber, rhs: NSNumber) -> Bool {
         return lhs.compare(rhs) == .orderedSame
     }
-    
     public static func <(lhs: NSNumber, rhs: NSNumber) -> Bool {
         return lhs.compare(rhs) == .orderedAscending
     }

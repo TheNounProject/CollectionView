@@ -18,12 +18,14 @@ class FetchedController : BaseController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.provider = CollectionViewProvider(self.collectionView, resultsController: content)
+        self.provider.populateWhenEmpty = true
+        
         content.setSectionKeyPath(\Child.second)
         let creationSort = NSSortDescriptor(key: "created", ascending: true)
         content.fetchRequest.sortDescriptors = [creationSort]
         content.sortDescriptors = [SortDescriptor(\Child.created)]
         content.sectionSortDescriptors = [SortDescriptor<NSNumber>.ascending]
-        content.delegate = self
         self.reload(nil)
     }
     
@@ -45,24 +47,12 @@ class FetchedController : BaseController {
         }
     }
     
-    override func numberOfSections(in collectionView: CollectionView) -> Int {
-        return content.numberOfSections
-    }
-    
-    override func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
-        return content.numberOfObjects(in: section)
-    }
-    
     override func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView {
         let view = super.collectionView(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath) as! BasicHeaderView
         let name = content.sectionName(forSectionAt: indexPath)
         view.titleLabel.stringValue = name
         view.accessoryButton.isHidden = true
         return view
-    }
-    
-    override func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
-        return super.cellFor(child: content.object(at: indexPath)!, at: indexPath, in: collectionView)
     }
     
 }

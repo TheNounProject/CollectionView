@@ -208,7 +208,7 @@ extension CGPoint {
         return CGPoint(x: _x, y: _y)
     }
     
-    func maxXY(_ other: CGPoint) -> CGPoint {
+    func unionMax(_ other: CGPoint) -> CGPoint {
         return CGPoint(x: max(self.x, other.x), y: max(self.y, other.y))
     }
     func maxX(_ other: CGPoint) -> CGPoint {
@@ -248,46 +248,67 @@ extension CGRect {
         rect.size.height = self.size.height * scale
         return rect
     }
+    
+    /**
+     Subtract r2 from r1 along
+     
+     ## Discussion:
+     
+     ```
+     |-------------|
+     |---- r1 -----|
+     |-------------|
+     |             |
+     |   overlap   |
+     |_____________| v MaxYEdge
+     |*************|
+     |**** r2 *****|
+     |*************|
+     ```
+     
+     - Parameters:
+        - other: The rect to subtract from the target
+        - edge: The edge to subtract along
+      - Returns: The rect remaining from the target after subtracting the given rect
+     */
+    
+    func subtracting(_ other: CGRect, edge: CGRectEdge) -> CGRect {
+        if other.contains(self) { return CGRect.zero }
+        if other.isEmpty { return self }
+        if !self.intersects(other) { return self }
+        
+        switch edge {
+        case .minXEdge:
+            let origin = CGPoint(x: other.maxX, y: self.origin.y)
+            let size = CGSize(width: self.maxX - origin.x , height: self.size.height)
+            return CGRect(origin: origin, size: size)
+            
+        case .maxXEdge:
+            return CGRect(origin: self.origin, size: CGSize(width: other.origin.x - self.origin.x, height: self.size.height))
+            
+        case .minYEdge:
+            let origin = CGPoint(x: self.origin.x, y: other.maxY)
+            let size = CGSize(width: self.size.width, height: self.maxY - origin.y)
+            return CGRect(origin: origin, size: size)
+            
+        case .maxYEdge:
+            return CGRect(origin: self.origin, size: CGSize(width: self.size.width, height: other.origin.y - self.origin.y))
+        }
+    }
 }
 
 
 
-
-/*
-    Subtract r2 from r1 along
-    -------------
-   |\\\\ r1 \\\\\|
-   |\\\\\\\\\\\\\|
-   |-------------|
-   !   overlap   !
-   !_____________!
-   I/////////////I
-   I//// r2 /////I
-   I-------------I
-*/
-
-func CGRectSubtract(_ rect1: CGRect, rect2: CGRect, edge: CGRectEdge) -> CGRect {
-    
-    if rect2.contains(rect1) { return CGRect.zero }
-    if rect2.isEmpty { return rect1 }
-    if !rect1.intersects(rect2) { return rect1 }
-    
-    switch edge {
-    case .minXEdge:
-        let origin = CGPoint(x: rect2.maxX, y: rect1.origin.y)
-        let size = CGSize(width: rect1.maxX - origin.x , height: rect1.size.height)
-        return CGRect(origin: origin, size: size)
-        
-    case .maxXEdge:
-        return CGRect(origin: rect1.origin, size: CGSize(width: rect2.origin.x - rect1.origin.x, height: rect1.size.height))
-        
-    case .minYEdge:
-        let origin = CGPoint(x: rect1.origin.x, y: rect2.maxY)
-        let size = CGSize(width: rect1.size.width, height: rect1.maxY - origin.y)
-        return CGRect(origin: origin, size: size)
-        
-    case .maxYEdge:
-        return CGRect(origin: rect1.origin, size: CGSize(width: rect1.size.width, height: rect2.origin.y - rect1.origin.y))
+extension NSEdgeInsets {
+    static var zero : NSEdgeInsets { return NSEdgeInsetsZero }
+    init(_ all: CGFloat) {
+        self.init(top: all, left: all, bottom: all, right: all)
+    }
+    var height: CGFloat {
+        return self.top + self.bottom
+    }
+    var width: CGFloat {
+        return self.left + self.right
     }
 }
 

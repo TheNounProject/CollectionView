@@ -39,7 +39,7 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     override func tearDown() {
         self.context.reset()
         self._expectation = nil
-        self.changeSet.removeAll()
+        self.changeSet.prepareForUpdates()
         super.tearDown()
     }
 
@@ -317,11 +317,11 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         }   
     }
     
-    var changeSet = ResultsChangeSet()
+    var changeSet = CollectionViewResultsProxy()
     var _expectation : XCTestExpectation?
     func controllerWillChangeContent(controller: ResultsController) {
         print("CONTROLLER WILL CHANGE")
-        changeSet.removeAll()
+        changeSet.prepareForUpdates()
     }
     func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
         print("DID CHANGE OBJECT: ip: \(indexPath?.description ?? "nil")  type: \(changeType)")

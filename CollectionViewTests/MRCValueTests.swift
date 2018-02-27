@@ -63,7 +63,7 @@ class MRCValueTests: XCTestCase {
         let data = create(containers: 5, objects: 5)
         
         let mrc = MutableResultsController<NoSectionType, Child>()
-        mrc.setContent(data.objects)
+        mrc.setContent(objects: data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 1)
         XCTAssertEqual(mrc.numberOfObjects(in: 0), 25)
@@ -74,7 +74,7 @@ class MRCValueTests: XCTestCase {
         
         let mrc = MutableResultsController<NoSectionType, Child>()
         mrc.sortDescriptors = [SortDescriptor(\Child.rank, ascending: false)]
-        mrc.setContent(data.objects)
+        mrc.setContent(objects: data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 1)
         XCTAssertEqual(mrc.numberOfObjects(in: 0), 10)
@@ -88,7 +88,7 @@ class MRCValueTests: XCTestCase {
         
         let mrc = MutableResultsController<Parent, Child>()
         mrc.setSectionKeyPath(\Child.parent)
-        mrc.setContent(data.objects)
+        mrc.setContent(objects: data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 5)
         for s in 0..<5 {
@@ -103,7 +103,7 @@ class MRCValueTests: XCTestCase {
         mrc.setSectionKeyPath(\Child.parent)
         mrc.sortDescriptors = [SortDescriptor(\Child.rank)]
         mrc.sectionSortDescriptors = [SortDescriptor(\Parent.rank)]
-        mrc.setContent(data.objects)
+        mrc.setContent(objects: data.objects)
         
         XCTAssertEqual(mrc.numberOfSections, 5)
         for s in 0..<5 {
@@ -119,7 +119,7 @@ class MRCValueTests: XCTestCase {
             mrc.setSectionKeyPath(\Child.parent)
             mrc.sortDescriptors = [SortDescriptor(\Child.rank)]
             mrc.sectionSortDescriptors = [SortDescriptor(\Parent.rank)]
-            mrc.setContent(data.objects)
+            mrc.setContent(objects: data.objects)
         }
     }
     

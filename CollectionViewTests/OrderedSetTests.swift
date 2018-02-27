@@ -289,8 +289,9 @@ class OrderedSetTests: XCTestCase {
         for n in 0..<10000 {
             list.append("Object_\(n)")
         }
-        var set = OrderedSet<String>()
-        self.measure {
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = OrderedSet<String>()
+            self.startMeasuring()
             set.append(contentsOf: list)
         }
     }
@@ -305,15 +306,18 @@ class OrderedSetTests: XCTestCase {
     
     func testRemoveFromMiddlePerformance() {
         // This is an example of a performance test case.
-        var set = self.setWithObjects(5000)
-        self.measure {
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = self.setWithObjects(10000)
+            self.startMeasuring()
             set.remove(at: 5000)
         }
     }
     func testRemoveFromEndPerformance() {
         // This is an example of a performance test case.
-        var set = self.setWithObjects(10000)
-        self.measure {
+        
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = self.setWithObjects(10000)
+            self.startMeasuring()
             set.remove(at: set.count - 1)
         }
     }
@@ -348,10 +352,10 @@ class OrderedSetTests: XCTestCase {
     }
 
     func testArraySort() {
-        
         let sort = SortDescriptor(\Person.age)
-        self.measure {
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
             var arr = Person.set().objects
+            self.startMeasuring()
             arr.sort(using: sort)
         }
     }
@@ -359,17 +363,19 @@ class OrderedSetTests: XCTestCase {
     // NSSortDescriptor
     func testSortPerformance_withNSSortDescriptors() {
         let sort = NSSortDescriptor(key: "age", ascending: true)
-        let content = NSPerson.array()
-        self.measure {
-            let arr = NSMutableArray(array: content)
+        
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            let arr = NSMutableArray(array: NSPerson.array())
+            self.startMeasuring()
             arr.sort(using: [sort])
         }
     }
     // Direct
     func testSortPerformance_withComparator() {
         
-        self.measure {
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
             var set = Person.set()
+            self.startMeasuring()
             set.sort(by: { (a, b) -> Bool in
                 return a.age < b.age
             })
@@ -377,8 +383,10 @@ class OrderedSetTests: XCTestCase {
     }
     // Key Paths
     func testSortPerformance_withKeyPaths() {
-        var set = Person.set()
-        self.measure {
+        
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = Person.set()
+            self.startMeasuring()
             set.sort(by: { (a, b) -> Bool in
                 return a[keyPath: \Person.age] < b[keyPath: \Person.age]
             })
@@ -386,32 +394,34 @@ class OrderedSetTests: XCTestCase {
     }
     func testSortPerformance_sortDescriptors_uniquePreordered() {
         let sort = SortDescriptor(\Person.age)
-        
-        self.measure {
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
             var set = Person.set(randomAge: false)
+            self.startMeasuring()
             set.sort(using: sort)
         }
     }
     func testSortPerformance_sortDescriptors() {
-        var set = Person.set()
         let sort = SortDescriptor(\Person.age)
-        self.measure {
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = Person.set()
+            self.startMeasuring()
             set.sort(using: sort)
         }
     }
     func testSortedPerformance_sortDescriptors() {
-        let set = Person.set()
-        
-        self.measure {
-            let sort = SortDescriptor(\Person.age)
+        let sort = SortDescriptor(\Person.age)
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            let set = Person.set()
+            self.startMeasuring()
             _ = set.sorted(using: sort)
         }
     }
     func testSortedPerformance_multipleSortDescriptors() {
         
         let sort = [SortDescriptor(\Person.age), SortDescriptor(\Person.name)]
-        self.measure {
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
             let set = Person.set()
+            self.startMeasuring()
             _ = set.sorted(using: sort)
         }
     }

@@ -10,20 +10,93 @@ import Foundation
 
 
 
-@available(*, unavailable, renamed: "ResultsControllerProvider")
+@available(*, unavailable, renamed: "CollectionViewProvider")
 public struct ResultsChangeSet { }
+
+
+
+public class CollectionViewResultsProxy  {
+    var items = ItemChangeSet()
+    var sections = SectionChangeSet()
+    
+    
+    /**
+     Add an item change
+     
+     - Parameter source: The source index path of the section
+     - Parameter changeType: The change type
+     
+     */
+    public func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
+        items.addChange(forItemAt: source, with: changeType)
+    }
+    
+    
+    
+    /**
+     Add a section change
+     
+     - Parameter source: The source index path of the section
+     - Parameter changeType: The change type
+     
+     */
+    public func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
+        sections.addChange(forSectionAt: source, with: changeType)
+    }
+    
+    public func didInsertSection(at indexPath: IndexPath) -> Bool {
+        return self.sections.inserted.contains(indexPath._section)
+    }
+    
+    public func didInsertObject(at indexPath: IndexPath) -> Bool {
+        return self.items.inserted.contains(indexPath)
+    }
+    
+    /// The count of changes in the set
+    public var count : Int {
+        return items.count + sections.count
+    }
+    
+    public func prepareForUpdates() {
+        items.reset()
+        sections.reset()
+    }
+    
+    /**
+     Merge this set with another
+     
+     - Parameter other: Another change set
+     
+     */
+    public func union(with other: CollectionViewResultsProxy) {
+        self.items.inserted.formUnion(other.items.inserted)
+        self.items.deleted.formUnion(other.items.deleted)
+        self.items.updated.formUnion(other.items.updated)
+        
+        self.sections.inserted.formUnion(other.sections.inserted)
+        self.sections.deleted.formUnion(other.sections.deleted)
+        self.sections.updated.formUnion(other.sections.updated)
+    }
+}
 
 
 /**
  A helper object to easily track changes reported by a ResultsController and apply them to a CollectionView
 */
-public class ResultsControllerProvider {
+public class CollectionViewProvider : CollectionViewResultsProxy {
     
-    var items = ItemChangeSet()
-    var sections = SectionChangeSet()
+    /// When set as the delegate
+    unowned let collectionView : CollectionView
+    unowned let resultsController : ResultsController
     
+    public init(_ collectionView: CollectionView, resultsController: ResultsController) {
+        self.collectionView = collectionView
+        self.resultsController = resultsController
+        super.init()
+        self.resultsController.delegate = self
+    }
     
-    
+
     /**
      If true, a cell will be inserted when a section becomes empty
      
@@ -46,87 +119,50 @@ public class ResultsControllerProvider {
      */
     public var populateWhenEmpty = false
     
-    
-    /// When set as the delegate
-    public weak var collectionView : CollectionView?
-    
-    
-    public init() { }
-    
-    
-    
-    /**
-     Add an item change
-     
-     - Parameter source: The source index path of the section
-     - Parameter changeType: The change type
-     
-     */
-    public func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
-        items.addChange(forItemAt: source, with: changeType)
-    }
-    
-    
-    
-    /**
-     Add a section change
 
-     - Parameter source: The source index path of the section
-     - Parameter changeType: The change type
 
-    */
-    public func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
-        sections.addChange(forSectionAt: source, with: changeType)
-    }
-    
-    public func didInsertSection(at indexPath: IndexPath) -> Bool {
-        return self.sections.inserted.contains(indexPath._section)
-    }
-    
-    public func didInsertObject(at indexPath: IndexPath) -> Bool {
-        return self.items.inserted.contains(indexPath)
-    }
-    
-    /// The count of changes in the set
-    public var count : Int {
-        return items.count + sections.count
-    }
-    
-    /// Remove all changes
-    @available(*, deprecated, renamed: "prepareForUpdates")
-    public func removeAll() {
-        self.prepareForUpdates()
-    }
-    
-    public func prepareForUpdates() {
-        items.reset()
-        sections.reset()
-    }
-    
-    public func commit() {
-        precondition(self.collectionView != nil, "ResultsControllerProvider must have a collection view to commit changes to")
-        
-    }
-    
-    
-    /**
-     Merge this set with another
+}
 
-     - Parameter other: Another change set
 
-    */
-    public func union(with other: ResultsControllerProvider) {
-        self.items.inserted.formUnion(other.items.inserted)
-        self.items.deleted.formUnion(other.items.deleted)
-        self.items.updated.formUnion(other.items.updated)
-
-        self.sections.inserted.formUnion(other.sections.inserted)
-        self.sections.deleted.formUnion(other.sections.deleted)
-        self.sections.updated.formUnion(other.sections.updated)
+// MARK: - Data Source
+/*-------------------------------------------------------------------------------*/
+extension CollectionViewProvider {
+    
+    public var numberOfSections : Int {
+        let count = resultsController.numberOfSections
+        if count == 0 && self.populateWhenEmpty {
+            return 1
+        }
+        return count
+    }
+    
+    public func numberOfItems(in section: Int) -> Int {
+        guard resultsController.numberOfSections > 0 else {
+            return 1 // Must be populated empty state
+        }
+        let count = resultsController.numberOfObjects(in: section)
+        if count == 0 && self.populateEmptySections {
+            return 1
+        }
+        return count
+    }
+    
+    public var showEmptyState : Bool {
+        return resultsController.numberOfSections == 0
+            && self.populateWhenEmpty
+    }
+    
+    public func showEmptySection(at indexPath: IndexPath) -> Bool {
+        return self.populateEmptySections
+            && self.resultsController.numberOfObjects(in: indexPath.section) == 0
     }
 }
 
-extension ResultsControllerProvider : ResultsControllerDelegate {
+
+// MARK: - Results Controller Delegate
+/*-------------------------------------------------------------------------------*/
+extension CollectionViewProvider : ResultsControllerDelegate {
+    
     public func controllerWillChangeContent(controller: ResultsController) {
         self.prepareForUpdates()
     }
@@ -140,14 +176,9 @@ extension ResultsControllerProvider : ResultsControllerDelegate {
     }
     
     public func controllerDidChangeContent(controller: ResultsController) {
-        guard let collectionView = self.collectionView else {
-            print("ERROR: ResultsContrllerProvider with a delegate must have a collection view")
-            return
-        }
-        
         if self.populateWhenEmpty {
             let isEmpty = controller.numberOfSections == 0
-            let wasEmpty = collectionView.numberOfSections == 0
+            let wasEmpty = self.collectionView.numberOfSections == 0
             if !wasEmpty && isEmpty {
                 // populate
                 self.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
@@ -159,15 +190,20 @@ extension ResultsControllerProvider : ResultsControllerDelegate {
         }
         else if self.populateEmptySections && controller.numberOfSections > 0 {
             
-            
         }
         
-        
+        self.collectionView.applyChanges(from: self)
     }
     
-    
-    
-    
+}
+
+
+// Deprecated
+extension CollectionViewResultsProxy {
+    @available(*, deprecated, renamed: "prepareForUpdates")
+    public func removeAll() {
+        self.prepareForUpdates()
+    }
 }
 
 
@@ -262,7 +298,7 @@ public extension CollectionView {
      - Parameter completion: A close to call when the update finishes
 
     */
-    public func applyChanges(from changeSet: ResultsChangeSet, completion: AnimationCompletion? = nil) {
+    public func applyChanges(from changeSet: CollectionViewResultsProxy, completion: AnimationCompletion? = nil) {
         guard changeSet.count > 0 else {
             completion?(true)
             return

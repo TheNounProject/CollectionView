@@ -28,93 +28,38 @@ class WindowController : NSWindowController {
     
     
     @IBAction func radomize(_ sender: Any?) {
-    /*
-        guard relational else { return }
         
-        var num = self.relationalResultsController.numberOfSections
+        let moc = AppDelegate.current.managedObjectContext
+        let parents = (try! moc.fetch(Parent.fetchRequest()) as! [Parent]).shuffled()
+        var children = (try! moc.fetch(Child.fetchRequest()) as! [Child]).shuffled()
         
-        for section in self.relationalResultsController.sections {
-            guard let p = section.object as? Parent else { continue }
-            p.displayOrder = NSNumber(value: num)
-            num -= 1
-        }
-        
-        return;
-        
-        
-        if let t = test {
-            for (idx, section) in self.relationalResultsController.sections.enumerated() {
-                let test = t.core[idx]
-                
-                for (cIdx, _c) in section.objects.enumerated() {
-                    let child = _c as! Child
-                    
-                    if let ip = test[cIdx] {
-                        if ip._section != idx {
-                            child.parent = self.relationalResultsController._object(forSectionAt: ip)
-                        }
-                        child.displayOrder = NSNumber(value: ip._item)
-                    }
-                    else {
-                        child.managedObjectContext?.delete(child)
-                    }
-                }
+        if children.count > 0 {
+            let removed = children.sample(0.2)
+            for del in removed {
+                moc.delete(del)
             }
-            
-            for ip in t.inserts {
-                if let p = relationalResultsController._object(forSectionAt: ip) {
-                    let c = p.createChild()
-                    c.displayOrder = NSNumber(value: ip._item)
-                }
-            }
-            return
-        }
-        
-        
-        let sections = relationalResultsController.sections
-        
-        var parents = [Parent:[Child]]()
-        for s in sections {
-            if let p = s.object as? Parent {
-                parents[p] = [Child]()
-            }
-        }
-        
-        for section in sections {
-            for item in section.objects {
-                let c = item as! Child
-                if let p = sections.random()?.object as? Parent {
-                    
-                    // Delete randomly
-                    if Int.random(in: 0...20) % 5 == 0 {
-                        c.managedObjectContext?.delete(c)
-                        continue
-                    }
-                    
-                    c.parent = p
-                    parents[p]?.append(c)
-                    
-                    if Int.random(in: 0...20) % 3 == 0 {
-                        let newC = p.createChild()
-                        parents[p]?.append(newC)
-                    }
-                    
-                    
-                }
+            for _ in 0..<removed.count {
+                children.append(Child.createOrphan())
             }
         }
         
         
-        for parentSet in parents {
-            
-            var sectionIndexes = [Int](0..<parentSet.value.count)
-            sectionIndexes.shuffle()
-            
-            for (idx, child) in parentSet.value.enumerated() {
-                child.displayOrder = NSNumber(value: sectionIndexes[idx])
+        let childrentPerParent = Int(ceil(Double(children.count)/Double(parents.count)))
+        for parent in parents {
+            var _n = 0
+            while _n < childrentPerParent, children.count > 0 {
+                let child = children.removeLast()
+                child.parent = parent
+                child.displayOrder = NSNumber(value: _n)
+                _n += 1
             }
         }
- */
+        
+        for p in parents.enumerated() {
+            p.element.displayOrder = NSNumber(value: p.offset)
+        }
+        
+        AppDelegate.current.saveAction(nil)
     }
     
     
@@ -162,25 +107,33 @@ class WindowController : NSWindowController {
 
 
 
-class BaseController : CollectionViewController, ResultsControllerDelegate, CollectionViewDelegateFlowLayout, CollectionViewDelegateListLayout, CollectionViewPreviewControllerDelegate {
+class BaseController : CollectionViewController, CollectionViewDelegateFlowLayout, CollectionViewDelegateListLayout, CollectionViewPreviewControllerDelegate{
     
     var listLayout = CollectionViewListLayout()
     var gridLayout = CollectionViewFlowLayout()
+    
+    var provider : CollectionViewProvider!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.collectionView.contentInsets.top = 70
         
-        listLayout.itemHeight = 36
-        listLayout.headerHeight = 36
+        listLayout.itemHeight = 40
+        listLayout.headerHeight = 50
         collectionView.collectionViewLayout = listLayout
+        
+        gridLayout.defaultSectionInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        gridLayout.defaultHeaderHeight = 50
+        gridLayout.defaultRowTransform = .none
         
         // The default way of registering cells
         collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!, forCellWithReuseIdentifier: "GridCell")
         
         // A shortcut way to register cells
-        ListCell.register(collectionView)
+        collectionView.register(class: ListCell.self,
+                                forCellWithReuseIdentifier: "EmptyCell")
+        ListCell.register(in: collectionView)
         BasicHeaderView.register(collectionView)
     }
     
@@ -209,7 +162,6 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
             : self.listLayout
     }
     
-    
     func child(at indexPath: IndexPath) -> Child? {
         return nil
     }
@@ -222,8 +174,6 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
             }
         }
     }
-    
-    
     
     
     @IBAction func refresh(_ sender: AnyObject?) {
@@ -239,36 +189,33 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     // MARK: - Results Controller Delegate
     /*-------------------------------------------------------------------------------*/
     
-    var changes = ResultsChangeSet()
-    func controllerWillChangeContent(controller: ResultsController) {
-        changes.removeAll()
+//    var changes = CollectionViewProvider()
+//    func controllerWillChangeContent(controller: ResultsController) {
+//        changes.prepareForUpdates()
+//    }
+//
+//    func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+//        changes.addChange(forItemAt: indexPath, with: changeType)
+//    }
+//
+//    func controller(_ controller: ResultsController, didChangeSection section: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+//        changes.addChange(forSectionAt: indexPath, with: changeType)
+//    }
+//
+//    func controllerDidChangeContent(controller: ResultsController) {
+//        collectionView.applyChanges(from: changes)
+//    }
+    
+    
+    
+    
+    override func numberOfSections(in collectionView: CollectionView) -> Int {
+        return provider.numberOfSections
     }
     
-    func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
-        changes.addChange(forItemAt: indexPath, with: changeType)
+    override func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
+        return provider.numberOfItems(in: section)
     }
-    
-    func controller(_ controller: ResultsController, didChangeSection section: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
-        changes.addChange(forSectionAt: indexPath, with: changeType)
-    }
-    
-    func controllerDidChangeContent(controller: ResultsController) {
-        collectionView.applyChanges(from: changes)
-    }
-    
-    
-    // MARK: - List Layout Delegate
-    /*-------------------------------------------------------------------------------*/
-    
-    
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForHeaderInSection section: Int) -> CGFloat {
-        return 50
-    }
-    
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForItemAt indexPath: IndexPath) -> CGFloat {
-        return 50
-    }
-    
     
     
     // MARK: - FlowLayout Delegate
@@ -276,7 +223,14 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     
     func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
         
-        let variance = (self.child(at: indexPath)?.displayOrder.intValue ?? 0) * 2
+        if provider.showEmptyState {
+            return .span(collectionView.fillSize)
+        }
+        if provider.showEmptySection(at: indexPath) {
+            return .span(CGSize(width: collectionView.bounds.size.width, height: 200))
+        }
+        let child = self.child(at: indexPath)!
+        let variance = Int("\(child.created.timeIntervalSinceReferenceDate)".removingCharactersInSet(CharacterSet(charactersIn: "0123456789")))!
         
         // semi-Randomly apply a style
         if variance % 20 == 0  {
@@ -287,18 +241,27 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
         return .flow(CGSize(width: size  + (50 * multiplier), height: size))
     }
     
-    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, rowTransformForSectionAt section: Int) -> CollectionViewFlowLayout.RowTransform {
-        return .none
-    }
-    
-    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, insetsForSectionAt section: Int) -> NSEdgeInsets {
-        return NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-    }
-    
-    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, heightForHeaderInSection section: Int) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForItemAt indexPath: IndexPath) -> CGFloat {
+        if provider.showEmptyState {
+            return collectionView.fillSize.height
+        }
+        if provider.showEmptySection(at: indexPath) {
+            return 200
+        }
         return 50
     }
     
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForHeaderInSection section: Int) -> CGFloat {
+        if provider.showEmptyState {
+            return 0
+        }
+        return 50
+    }
+    
+    func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, heightForHeaderInSection section: Int) -> CGFloat {
+        return self.collectionView(collectionView, layout:collectionViewLayout, heightForHeaderInSection:section)
+    }
+
     
     func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView {
         let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "BasicHeaderView", for: indexPath) as! BasicHeaderView
@@ -313,29 +276,42 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
         return view
     }
     
-    
-    
-    func cellFor(child: Child, at indexPath: IndexPath, in collectionView: CollectionView) -> CollectionViewCell {
+    override func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
+        
+        // If no child,
+        guard let child = self.child(at: indexPath) else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "EmptyCell", for: indexPath) as! ListCell
+            cell.style = .basic
+            cell.titleLabel.alignment = .center
+            cell.titleLabel.textColor = NSColor.lightGray
+            cell.titleLabel.font = NSFont.boldSystemFont(ofSize: 24)
+            cell.disableHighlight = true
+            cell.titleLabel.stringValue = provider.showEmptyState ? "No data" : "Empty Section"
+            return cell
+        }
+        
         if collectionView.collectionViewLayout is CollectionViewFlowLayout {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GridCell", for: indexPath) as! GridCell
+            let cell = GridCell.deque(for: indexPath, in: collectionView) as! GridCell
             cell.setup(with: child)
             return cell
         }
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ListCell", for: indexPath) as! ListCell
-        cell.restingBackgroundColor = NSColor(white: 0.98, alpha: 1)
-        cell.highlightedBackgroundColor = NSColor(white: 0.95, alpha: 1)
-        cell.selectedBackgroundColor = NSColor(white: 0.95, alpha: 1)
+        let cell = ListCell.deque(for: indexPath, in: collectionView) as! ListCell
         
         if !cell.reused {
+            cell.restingBackgroundColor = NSColor(white: 0.98, alpha: 1)
+            cell.highlightedBackgroundColor = NSColor(white: 0.95, alpha: 1)
+            cell.selectedBackgroundColor = NSColor(white: 0.95, alpha: 1)
             cell.inset = 16
             cell.style = .split
             cell.titleLabel.font = NSFont.systemFont(ofSize: 12, weight: NSFont.Weight.thin)
+            cell.titleLabel.stringValue = ""
         }
         
-        //        cell.titleLabel.bind("stringValue", to: child, withKeyPath: "displayOrder", options: nil)
+        
         cell.detailLabel.stringValue = "\(child.idString) \(child.dateString) -- \(indexPath)"
         return cell
+        
     }
     
     // MARK: - Collection View Delegate
@@ -348,6 +324,9 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     
     
     
+    
+    // MARK: - Preview
+    /*-------------------------------------------------------------------------------*/
     
     lazy var previewController : CollectionViewPreviewController = {
         let controller =  CollectionViewPreviewController()
@@ -370,8 +349,7 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
         if isPreviewing { return }
         
         // If you need to restrict which items can be previewed
-        //        let isItemPreviewable: Bool = true
-        //        if !isItemPreviewable { return }
+        guard self.child(at: indexPath) != nil else { return }
         
         self.isPreviewing = true
         self.previewController.present(in: self, source: self.collectionView, indexPath: indexPath)
@@ -395,7 +373,7 @@ class BaseController : CollectionViewController, ResultsControllerDelegate, Coll
     }
     
     func collectionViewPreviewController(_ controller: CollectionViewPreviewController, canPreviewItemAt indexPath: IndexPath) -> Bool {
-        return true
+        return self.child(at: indexPath) != nil
     }
     
     func collectionViewPreviewController(_ controller: CollectionViewPreviewController, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {

@@ -246,7 +246,7 @@ class MRCObjectTests: XCTestCase {
         let parent = data.containers.first!.value
         
         self.measure {
-            mrc.setContent(data.objects)
+            mrc.setContent(objects: data.objects)
             mrc.beginEditing()
             mrc.insert(objects: parent.createChildren(200))
             mrc.endEditing()
@@ -263,7 +263,7 @@ class MRCObjectTests: XCTestCase {
         let parent = data.containers.first!.value
         
         self.measure {
-            mrc.setContent(data.objects)
+            mrc.setContent(objects: data.objects)
             mrc.beginEditing()
             mrc.insert(objects: parent.createChildren(200))
             mrc.endEditing()
@@ -279,7 +279,7 @@ class MRCObjectTests: XCTestCase {
         let parent = data.containers.first!.value
         
         self.measure {
-            mrc.setContent(data.objects)
+            mrc.setContent(objects: data.objects)
             mrc.beginEditing()
             mrc.insert(objects: parent.createChildren(500))
             mrc.endEditing()
@@ -295,7 +295,7 @@ class MRCObjectTests: XCTestCase {
         let parent = data.containers.first!.value
         
         self.measure {
-            mrc.setContent(data.objects)
+            mrc.setContent(objects: data.objects)
             mrc.beginEditing()
             mrc.insert(objects: parent.createChildren(1000))
             mrc.endEditing()

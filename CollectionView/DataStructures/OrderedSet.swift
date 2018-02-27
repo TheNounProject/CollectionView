@@ -166,10 +166,13 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
                 removeIndex.append(e)
             }
         }
+        guard removeIndex.count > 0 else { return }
         // Remove in descending index
-        for idx in removeIndex.sorted().reversed() {
+        let sorted = removeIndex.sorted()
+        for idx in sorted.reversed() {
             self._data.remove(at: idx)
         }
+        self._remap(startingAt: sorted[0])
     }
     
     var needsSort : Bool = false

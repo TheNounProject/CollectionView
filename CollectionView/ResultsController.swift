@@ -20,7 +20,7 @@ import CoreData
  - RelationalResultsController
  
 */
-public protocol ResultsController {
+public protocol ResultsController : class {
     
     // MARK: - Delegate
     /*-------------------------------------------------------------------------------*/
@@ -83,6 +83,12 @@ public protocol ResultsController {
     
     /// Clear all storage for the controller and stop all observing
     func reset()
+}
+
+public extension ResultsController {
+    var isEmpty : Bool {
+        return self.numberOfSections == 0
+    }
 }
 
 

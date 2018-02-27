@@ -345,23 +345,28 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
     
     
-    
     /// Set the content of the controller to be sorted and grouped according to options
     ///
     /// - Parameter content: An array of elements
-    public func setContent(_ content: [Element]) {
+    public func setContent(sections: [Section] = [], objects: [Element]) {
         self._sections = []
         if let sectionAccessor = self.sectionGetter {
-            for element in content {
+            for section in sections {
+                _ = getOrCreateSectionInfo(for: section)
+            }
+            for element in objects {
                 let s = getOrCreateSectionInfo(for: sectionAccessor(element))
                 s.add(element)
                 self._objectSectionMap[element] = s
             }
         }
-        else if !content.isEmpty {
-            let s = WrappedSectionInfo(object: nil, objects: content)
+        else if !objects.isEmpty {
+            if !sections.isEmpty {
+                print("ResultsController Warning: sections provided but no sectionKeyPath has been set")
+            }
+            let s = WrappedSectionInfo(object: nil, objects: objects)
             self._sections = [s]
-            for o in content {
+            for o in objects {
                 self._objectSectionMap[o] = s
             }
         }
@@ -397,7 +402,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
     
     private func ensureSectionCopy() {
-        if self._editing > 0 && _sectionsCopy == nil { _sectionsCopy = _sections }
+        if _sectionsCopy == nil { _sectionsCopy = _sections }
     }
     
     
@@ -415,7 +420,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         _sections.remove(at: ip._section)
     }
     private func _removeSection(info sectionInfo: WrappedSectionInfo) {
-        if _sectionsCopy == nil { _sectionsCopy = _sections }
+        self.ensureSectionCopy()
         self._sections.remove(sectionInfo)
     }
     
@@ -441,12 +446,12 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
 
     
     /// If true, changes reported to the delegate account for a placeholer cell that is not reported in the controllers data
-    @available(*, deprecated, message: "This functionality has been deprecated and will be replaced soon.")
+    @available(*, unavailable, message: "This functionality has been deprecated and will be replaced soon.")
     public var hasEmptyPlaceholder : Bool = false
     
     /// A special set of changes if hasEmptyPlaceholder is true that can be passed along to a Collection View
-    @available(*, deprecated, message: "This functionality has been deprecated and will be replaced soon.")
-    public private(set) var placeholderChanges : ResultsChangeSet?
+    @available(*, unavailable, message: "This functionality has been deprecated and will be replaced soon.")
+    public private(set) var placeholderChanges : CollectionViewProvider?
     
     
     private var _sectionsCopy : OrderedSet<WrappedSectionInfo>?
@@ -509,7 +514,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                 }
             }
         }
-        let _previousSectionCount = _sectionsCopy?.count
         
         func reduceCrossSectional(_ object: Element) {
             

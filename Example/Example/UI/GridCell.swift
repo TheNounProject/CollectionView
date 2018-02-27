@@ -45,6 +45,10 @@ class GridCell : CollectionViewPreviewCell {
     }
 
     
+    override class var defaultReuseIdentifier : String {
+        return "GridCell"
+    }
+    
     override class func register(in collectionView: CollectionView) {
         collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!, forCellWithReuseIdentifier: self.defaultReuseIdentifier)
     }

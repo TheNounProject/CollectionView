@@ -20,26 +20,20 @@ class RelationalController : BaseController, BasicHeaderDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        content.delegate = self
+        
         content.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
         content.sectionFetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
-        
         content.sortDescriptors = [SortDescriptor(\Child.displayOrder)]
         content.sectionSortDescriptors = [SortDescriptor(\Parent.displayOrder)]
         
-        collectionView.reloadData()
+        self.provider = CollectionViewProvider(self.collectionView, resultsController: self.content)
+        self.provider.populateWhenEmpty = true
+        self.provider.populateEmptySections = true
+        self.reload(nil)
     }
     
     override func child(at indexPath: IndexPath) -> Child? {
         return content.object(at: indexPath)
-    }
-    
-    override func numberOfSections(in collectionView: CollectionView) -> Int {
-        return content.numberOfSections
-    }
-    
-    override func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
-        return content.numberOfObjects(in: section)
     }
     
     override func reload(_ sender: AnyObject?) {
@@ -103,13 +97,13 @@ class RelationalController : BaseController, BasicHeaderDelegate {
             _ = section.createChild()
         }))
         menu.addItem(ActionMenuItem(title: "Append 10 Items", handler: { (_) in
-            section.createChildren(10)
+            _ = section.createChildren(10)
         }))
         menu.addItem(ActionMenuItem(title: "Append 100 Items", handler: { (_) in
-            section.createChildren(100)
+            _ = section.createChildren(100)
         }))
         menu.addItem(ActionMenuItem(title: "Append 500 Items", handler: { (_) in
-            section.createChildren(500)
+            _ = section.createChildren(500)
         }))
         
         
@@ -135,13 +129,6 @@ class RelationalController : BaseController, BasicHeaderDelegate {
         }))
         
         menu.popUp(positioning: nil, at: view.accessoryButton.frame.origin, in: view)
-    }
-    
-    
-    
-    
-    override func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
-        return super.cellFor(child: content.object(at: indexPath)!, at: indexPath, in: collectionView)
     }
     
     

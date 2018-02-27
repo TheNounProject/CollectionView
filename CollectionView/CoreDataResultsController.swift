@@ -158,7 +158,7 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         _fetched = true
         
         let _objects = try managedObjectContext.fetch(self.fetchRequest)
-        self.setContent(_objects)
+        self.setContent(objects:_objects)
     }
     
     
@@ -306,16 +306,19 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         precondition(isSectioned, "RelationalResultsController must have a sectionKeyPath")
         
         // Manage notification registration
-        register()
-        _fetched = true
+        
         
         // Add the queried sections if desired
+        var sections : [Section]?
         if self.fetchSections {
-            for section in try managedObjectContext.fetch(self.sectionFetchRequest) {
-                _ = self.getOrCreateSectionInfo(for: section)
-            }
+            sections = try managedObjectContext.fetch(self.sectionFetchRequest)
         }
-        try super.performFetch()
+        
+        let _objects = try managedObjectContext.fetch(self.fetchRequest)
+        self.setContent(sections: sections ?? [], objects: _objects)
+            
+        register()
+        _fetched = true
     }
 
     
@@ -398,12 +401,12 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
      
      Setting hasEmptySectionPlaceholders to true, will report changes as such, making it easy to propagate the reported changes to a CollectionView.
      */
-    public var hasEmptySectionPlaceholders : Bool = false
+//    public var hasEmptySectionPlaceholders : Bool = false
     
     
     
     /// A special set of changes if empty sections are enabled that can be passed along to a Collection View
-    public private(set) var emptySectionChanges : ResultsChangeSet?
+//    public private(set) var emptySectionChanges : ResultsChangeSet?
     
     
     

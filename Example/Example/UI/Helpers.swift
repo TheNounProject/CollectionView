@@ -13,10 +13,10 @@ extension String {
     
     var numericString : String {
         let set = CharacterSet(charactersIn: "0123456789.")
-        return self.stringByValidatingCharactersInSet(set)
+        return self.removingCharactersInSet(set)
     }
     
-    func stringByValidatingCharactersInSet(_ set: CharacterSet) -> String {
+    func removingCharactersInSet(_ set: CharacterSet) -> String {
         let comps = self.components(separatedBy: set.inverted)
         return comps.joined(separator: "")
     }

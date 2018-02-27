@@ -23,6 +23,10 @@ extension Int {
         let max = range.upperBound
         return Int(arc4random_uniform(UInt32(1 + max - min))) + min
     }
+    
+    func sampleSize(_ size: Float) -> Int {
+        return Swift.min(Int(round(Float(self)/size)), self)
+    }
 }
 
 extension MutableCollection {
@@ -55,6 +59,21 @@ extension Array {
         guard self.count > 0 else { return nil }
         let idx = Int.random(in: 0...self.count - 1)
         return self[idx]
+    }
+    mutating func removeRandom() -> Element? {
+        guard self.count > 0 else { return nil }
+        let idx = Int.random(in: 0...self.count - 1)
+        return self.remove(at: idx)
+    }
+    
+    mutating func sample(_ size: Float) -> [Element] {
+        guard self.count > 1 else { return [] }
+        let by =  Swift.max(1, self.count.sampleSize(size))
+        var sample = [Element]()
+        for idx in stride(from: self.count - 1, through: 0, by: -by) {
+            sample.append(self.remove(at: idx))
+        }
+        return sample
     }
 }
 

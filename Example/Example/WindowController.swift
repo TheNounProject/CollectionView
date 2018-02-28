@@ -39,7 +39,7 @@ class WindowController : NSWindowController {
                 moc.delete(del)
             }
             for _ in 0..<removed.count {
-                children.append(Child.createOrphan())
+                children.append(Child.create())
             }
         }
         
@@ -66,7 +66,7 @@ class WindowController : NSWindowController {
     @IBAction func addChild(_ sender: AnyObject?) {
         let count = NSApp.currentEvent?.modifierFlags.contains(.option) == true ? 5 : 1
         repeatBlock(count) {
-            _ = Child.createOrphan()
+            _ = Child.create()
         }
     }
     
@@ -230,10 +230,10 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
             return .span(CGSize(width: collectionView.bounds.size.width, height: 200))
         }
         let child = self.child(at: indexPath)!
-        let variance = Int("\(child.created.timeIntervalSinceReferenceDate)".removingCharactersInSet(CharacterSet(charactersIn: "0123456789")))!
+        let variance = child.variable.intValue
         
         // semi-Randomly apply a style
-        if variance % 20 == 0  {
+        if (variance * 2) % 20  == 0  {
             return .span(CGSize(width: collectionView.frame.size.width, height: 50))
         }
         let size : CGFloat = 150
@@ -309,7 +309,7 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         }
         
         
-        cell.detailLabel.stringValue = "\(child.idString) \(child.dateString) -- \(indexPath)"
+        cell.detailLabel.stringValue = "\(child.name) \(indexPath)"
         return cell
         
     }

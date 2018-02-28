@@ -31,6 +31,8 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     @NSManaged var created: Date
 	
     @NSManaged var displayOrder : NSNumber
+    @NSManaged var name : String
+    
     
     
     static func create(in moc : NSManagedObjectContext? = nil, withChild child: Bool = true) -> Parent {
@@ -43,6 +45,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         let new = NSEntityDescription.insertNewObject(forEntityName: "Parent", into: moc) as! Parent
         new.displayOrder = NSNumber(value: _order + 1)
         new.created = Date()
+        new.name = String.random(10)
         
         if child {
             _ = new.createChild()
@@ -70,7 +73,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         
         var res = [Child]()
         for n in 0..<count {
-            let child = Child.createOrphan(in: self.managedObjectContext)
+            let child = Child.create(in: self.managedObjectContext)
             child.displayOrder = NSNumber(value: order + n)
             child.parent = self
             res.append(child)
@@ -79,7 +82,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     }
     
     var displayDescription: String {
-        return "Parent \(displayOrder) - \(formatter.string(from: created))"
+        return self.name
     }
 }
 
@@ -90,6 +93,8 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
     @NSManaged var created: Date
     @NSManaged var group: String
     @NSManaged var second: NSNumber
+    @NSManaged var name : String
+    @NSManaged var variable: NSNumber
     @NSManaged var displayOrder : NSNumber
     
     var displayDescription: String {
@@ -107,7 +112,7 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         return formatter.string(from: created)
     }
     
-    static func createOrphan(in moc : NSManagedObjectContext? = nil) -> Child {
+    static func create(in moc : NSManagedObjectContext? = nil) -> Child {
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: moc) as! Child
         
@@ -115,9 +120,12 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         
         let d = Date()
         child.created = d
+        
         let s = Calendar.current.component(.second, from: d)
         child.second = NSNumber(value: Int(s/6))
         child.group = dateGroupFormatter.string(from: Date())
+        child.name = String.random(10)
+        child.variable = NSNumber(value: Int.random(in: 0...20))
         
         return child
     }
@@ -129,6 +137,7 @@ extension NSManagedObject {
     var isValid : Bool {
         return self.managedObjectContext != nil && self.isDeleted == false
     }
+    
     var idString : String {
         let str = self.objectID.uriRepresentation().lastPathComponent
         if self.objectID.isTemporaryID { return str.sub(from: -3) }

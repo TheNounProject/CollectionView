@@ -1267,10 +1267,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
 
     
-    
-    
-    
-    
     private var _finalizedCellMap = IndexedSet<IndexPath, CollectionViewCell>()
     private var _pendingCellMap = IndexedSet<IndexPath, CollectionViewCell>()
     private var _finalizedViewMap = IndexedSet<SupplementaryViewIdentifier, CollectionReusableView>()
@@ -1319,30 +1315,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._reloadDataCounts()
         
         var sectionDelta = self._updateContext.insertedSections.count - self._updateContext.deletedSections.count
-        
         if self.sections.count - oldDataCounts.count != sectionDelta {
             log.error("❌ Invalid section changes. Given change of \(sectionDelta) but expected \(self.sections.count - oldDataCounts.count)")
-        }
-        
-        for s in self.sections {
-            guard let old = oldDataCounts[s.key] else { continue }
-            var _insert = self._updateContext.insertedItems.filter({ (ip) -> Bool in
-                ip._section == s.key
-            }).count
-            var _remove = self._updateContext.deletedItems.filter({ (ip) -> Bool in
-                ip._section == s.key
-            }).count
-            for m in self._updateContext.movedItems {
-                if m.index._section != m.value._section {
-                    if m.index._section == s.key { _remove += 1 }
-                    if m.value._section == s.key { _insert += 1 }
-                }
-            }
-            let _delta = _insert - _remove
-            let _expected = (old + _delta)
-            if s.value != _expected {
-                log.error("❌ Invalid change in section \(s.key). Had \(old) inserted \(_insert) removed \(_remove) for a total of \(_expected) but data source reported \(s.value)")
-            }
         }
         
         doLayoutPrep()
@@ -2835,4 +2809,5 @@ extension CollectionView {
         return CGSize(width: w, height: h)
     }
 }
+
 

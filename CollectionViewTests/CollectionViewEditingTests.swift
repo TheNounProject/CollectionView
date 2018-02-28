@@ -136,7 +136,108 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
     }
     
     
+    class Section : CustomStringConvertible {
+        var source : Int?
+        var target: Int?
+        var count : Int = 0
+
+        var expected : Int {
+            guard self.target != nil else { return 0 }
+            return count + inserted.count - removed.count
+        }
+        var inserted = Set<Int>()
+        var removed = Set<Int>()
+        
+        init(source: Int?, target: Int?, count: Int) {
+            self.source = source
+            self.target = target
+            self.count = count
+        }
+        
+        var description: String {
+            return "Source: \(source ?? -1) Target: \(self.target ?? -1) Count: \(count) expected: \(expected)"
+        }
+        
+    }
     
+    
+    func testUpdates() {
+        
+
+        let data = [3, 3, 3]
+        // a -b  c
+        // j  h >k
+        // x  y  z
+        
+        // <k  x y  z
+        // a  c
+        // +g j  h
+        // m, n, o
+        let insertedItems : [IndexPath] = [[1,0]]
+        let deletedItems : [IndexPath] = [[0,1]]
+        let movedItems : [(IndexPath, IndexPath)] = [([1,2],[0,0])]
+        let insertedSections : [Int] = [3]
+        let movedSections : [(Int, Int)] = [(2,0)]
+        let deletedSections : [Int] = []
+        
+        let newData = [4, 2, 3, 3]
+        
+        var sections = [Section]()
+        for s in data.enumerated() {
+            sections.append(Section(source: s.offset, target: nil, count: s.element))
+        }
+        
+        var newSections = [Section?](repeatElement(nil, count: 4))
+        for section in insertedSections {
+            newSections[section] = Section(source: nil, target: section, count: newData[section])
+        }
+        var transfered = Set<Int>()
+        for moved in movedSections {
+            transfered.insert(moved.0)
+            sections[moved.0].target = moved.1
+            newSections[moved.1] = sections[moved.0]
+        }
+
+        var idx = 0
+        func incrementInsert() {
+            while idx < newSections.count && newSections[idx] != nil {
+                idx += 1
+            }
+        }
+        for section in sections where !transfered.contains(section.source!) && !deletedSections.contains(section.source!) {
+            incrementInsert()
+            section.target = idx
+            newSections[idx] = section
+        }
+        
+        for d in deletedItems {
+            sections[d._section].removed.insert(d._item)
+        }
+        for i in insertedItems {
+            sections[i._section].inserted.insert(i._item)
+        }
+        for i in movedItems {
+            sections[i.0._section].removed.insert(i.0._item)
+            newSections[i.1._section]!.inserted.insert(i.1._item)
+        }
+        
+        func section(for previousSection: Int) -> Int {
+            return sections[previousSection].target!
+        }
+        print("---")
+        for i in 0..<3 {
+            print("Section \(i) is now \(section(for: i))")
+        }
+        print("---")
+        for p in sections {
+            print(p)
+        }
+        print("---")
+        for p in newSections {
+            print(p!)
+        }
+        print("---")
+    }
     
 
 }

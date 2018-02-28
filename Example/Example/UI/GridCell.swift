@@ -24,24 +24,23 @@ class GridCell : CollectionViewPreviewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.badgeLabel.unbind(NSBindingName(rawValue: "value"))
+        self.titleLabel.unbind(NSBindingName(rawValue: "value"))
     }
     
     var child: Child?
     
     func setup(with child: Child) {
-        
-        self.badgeLabel.unbind(NSBindingName(rawValue: "value"))
-        
         self.child = child
         
         if !self.reused {
             self.layer?.cornerRadius = 3
         }
         self.badgeLabel.stringValue = "\(child.displayOrder)"
-        self.titleLabel.stringValue = "Child \(child.idString)"
-        self.detailLabel.stringValue = child.dateString
+        self.titleLabel.stringValue = child.name
+        self.detailLabel.stringValue = ""
         
         self.badgeLabel.bind(NSBindingName(rawValue: "value"), to: child, withKeyPath: "displayOrder", options: nil)
+        self.titleLabel.bind(NSBindingName(rawValue: "value"), to: child, withKeyPath: "name", options: nil)
     }
 
     

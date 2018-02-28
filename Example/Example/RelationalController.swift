@@ -166,7 +166,7 @@ class RelationalController : BaseController, BasicHeaderDelegate {
         guard let child = self.content.object(at: indexPath),
             let parent = child.parent else { return }
         
-        let new = Child.createOrphan()
+        let new = Child.create()
         new.parent = parent
         let adjust = before ? 0 : 1
         let insert = child.displayOrder.intValue + adjust

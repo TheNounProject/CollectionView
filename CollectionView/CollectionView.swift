@@ -18,6 +18,12 @@ extension IndexSet {
         return res
     }
     
+    var normalized : IndexSet {
+        return self.filteredIndexSet(includeInteger: { (idx) -> Bool in
+            return idx >= 0
+        })
+    }
+    
 }
 
 /**
@@ -1117,6 +1123,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // MARK: - Internal Manipulation
     /*-------------------------------------------------------------------------------*/
+
     
     private struct UpdateContext {
         
@@ -1236,6 +1243,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                     locked.insert(idx + adjust)
                     catchup()
                     continue
+                    
                 }
                 if let f = open.subtracting(locked).first, f <= idx, !locked.contains(f) {
                     _map[idx] = f
@@ -1271,21 +1279,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
     private var _updateContext = UpdateContext()
     private var _editing = 0
     private var _sectionMap: [Int:Int] = [:]
-
-    
-    var sectionShift = ShiftSet(count: 0)
-    var itemShifts = [Int:ShiftSet]()
-    
     
     private func beginEditing() {
         if _editing == 0 {
+            
             
 //            log.debug("BEGIN EDITING: *************************************")
             
 //            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex)")
 //            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
             
-            self.itemShifts.removeAll()
+//            self.itemShifts.removeAll()
             self._extendingStart = nil
             
             self._updateContext.reset()
@@ -1306,11 +1310,41 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         _editing = 0
         
+        var sectionShift = ShiftSet(count: 0)
+        var itemShifts = [Int:ShiftSet]()
+        
         sectionShift = ShiftSet(count: self.numberOfSections)
         
         let oldDataCounts = self.sections
-        
         self._reloadDataCounts()
+        
+        var sectionDelta = self._updateContext.insertedSections.count - self._updateContext.deletedSections.count
+        
+        if self.sections.count - oldDataCounts.count != sectionDelta {
+            log.error("❌ Invalid section changes. Given change of \(sectionDelta) but expected \(self.sections.count - oldDataCounts.count)")
+        }
+        
+        for s in self.sections {
+            guard let old = oldDataCounts[s.key] else { continue }
+            var _insert = self._updateContext.insertedItems.filter({ (ip) -> Bool in
+                ip._section == s.key
+            }).count
+            var _remove = self._updateContext.deletedItems.filter({ (ip) -> Bool in
+                ip._section == s.key
+            }).count
+            for m in self._updateContext.movedItems {
+                if m.index._section != m.value._section {
+                    if m.index._section == s.key { _remove += 1 }
+                    if m.value._section == s.key { _insert += 1 }
+                }
+            }
+            let _delta = _insert - _remove
+            let _expected = (old + _delta)
+            if s.value != _expected {
+                log.error("❌ Invalid change in section \(s.key). Had \(old) inserted \(_insert) removed \(_remove) for a total of \(_expected) but data source reported \(s.value)")
+            }
+        }
+        
         doLayoutPrep()
         
         // Section shifting

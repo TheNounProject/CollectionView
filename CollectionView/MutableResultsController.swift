@@ -459,9 +459,24 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     private var _editing = 0
     
     
+    
+    func logContents(prefix: String) {
+        print("")
+        print("\(prefix) -----------")
+        for section in _sections.enumerated() {
+            print("  Section \(section.offset) - \(section.element)")
+            for item in section.element._storage.enumerated() {
+                print("    \(item.offset): \(item.element)")
+            }
+        }
+        print("")
+    }
+    
+    
     /// Begin an esiting session to group multiple changes (see `endEditing()`)
     public func beginEditing() {
         if _editing == 0 {
+            self.logContents(prefix: "BEGIN EDITING")
             delegate?.controllerWillChangeContent(controller: self)
             _sectionsCopy = nil
             self._editingContext.reset()
@@ -494,15 +509,23 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             self.sortSections()
         }
         
+        self.logContents(prefix: "END EDITING")
+        
+        var insertedSections = IndexSet()
+        var deletedSections = IndexSet()
+        
         if let oldSections = _sectionsCopy {
             var sectionChanges = EditDistance(source: oldSections, target: _sections)
             
             for change in sectionChanges.edits {
+                print(change)
                 switch change.operation {
                 case .insertion:
+                    insertedSections.insert(change.index)
                     let ip = IndexPath.for(section: change.index)
                     delegate?.controller(self, didChangeSection: change.value, at: nil, for: .insert(ip))
                 case .deletion:
+                    deletedSections.insert(change.index)
                     let ip = IndexPath.for(section: change.index)
                     delegate?.controller(self, didChangeSection: change.value, at: ip, for: .delete)
                 case .substitution:
@@ -559,28 +582,35 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             // but there is no apparent reason why order is important.
             
             for edit in changes {
+                print(edit)
                 switch edit.operation {
                     
                 case .move(origin: _):
+                    // Get the source and target
                     guard let source = self._editingContext.objectChanges.updated.index(of: edit.value),
                         let dest = self.indexPath(of: edit.value) else {
                             continue
                     }
-                    
                     delegate?.controller(self, didChangeObject: edit.value, at: source, for: .move(dest))
                     
                 case .substitution:
+                    // TODO: Should this be the source IP?
                     let ip = IndexPath.for(item: edit.index, section: sectionIndex)
                     delegate?.controller(self, didChangeObject: edit.value, at: ip, for: .update)
                     
                 case .insertion:
-                    guard let ip = self.indexPath(of: edit.value) else {
+                    // Get the new IP – if the section was inserted we can skip
+                    guard let ip = self.indexPath(of: edit.value), !insertedSections.contains(ip._section) else {
                         continue
                     }
                     delegate?.controller(self, didChangeObject: edit.value, at: nil, for: .insert(ip))
                     
                 case .deletion:
-                    let source = IndexPath.for(item: edit.index, section: sectionIndex)
+                    // Get the original IP – if the section was removed, we can skip
+                    guard let source = self._editingContext.objectChanges.index(for: edit.value),
+                        !deletedSections.contains(source._section) else {
+                        continue
+                    }
                     delegate?.controller(self, didChangeObject: edit.value, at: source, for: .delete)
                 }
             }
@@ -649,7 +679,6 @@ extension MutableResultsController where Element:AnyObject {
     // MARK: - Object Manipulation
     /*-------------------------------------------------------------------------------*/
     
-    
     /// Delete objects from the controller
     ///
     /// - Parameter deletedObjects: A collection objects in the controller
@@ -661,14 +690,17 @@ extension MutableResultsController where Element:AnyObject {
             self.delete(object: o)
         }
     }
+    
     /// Delete an object from the controller
     ///
     /// - Parameter object: An object in the controller
     public func delete(object: Element) {
         self.beginEditing()
         defer { self.endEditing() }
+        guard let section = self._objectSectionMap.removeValue(forKey: object),
+            let ip = self.indexPath(of: object) else { return }
+        self._editingContext.objectChanges.add(deleted: object, for: ip)
         
-        guard let section = self._objectSectionMap.removeValue(forKey: object) else { return }
         section.ensureEditing()
         section.remove(object)
     }
@@ -683,7 +715,6 @@ extension MutableResultsController where Element:AnyObject {
         for o in newObjects {
             self.insert(object: o)
         }
-        
     }
 
     

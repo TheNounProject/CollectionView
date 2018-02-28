@@ -317,6 +317,12 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     // MARK: - Collection View Delegate
     /*-------------------------------------------------------------------------------*/
     
+    func collectionView(_ collectionView: CollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath> {
+        return indexPaths.filter({ (ip) -> Bool in
+            return self.child(at: ip) != nil
+        })
+    }
+    
     func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath) {
         
         

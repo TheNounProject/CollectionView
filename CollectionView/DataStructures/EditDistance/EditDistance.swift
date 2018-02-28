@@ -60,13 +60,13 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     public var description: String {
         switch self.operation {
         case let .move(origin):
-            return "Edit: Move \(origin) to \(self.index)"
+            return "Edit: Move \(self.value) from \(origin) to \(self.index)"
         case .substitution:
-            return "Edit: Replace item at \(self.index)"
+            return "Edit: Replace \(self.value) at \(self.index)"
         case .insertion:
-            return "Edit: Insert at \(self.index)"
+            return "Edit: Insert \(self.value) at \(self.index)"
         case .deletion:
-            return "Edit: Delete item at \(self.index)"
+            return "Edit: Delete \(self.value) at \(self.index)"
         }
     }
 

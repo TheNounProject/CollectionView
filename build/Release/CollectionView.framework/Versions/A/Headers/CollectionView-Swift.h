@@ -293,6 +293,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, getter=isCompatibleW
 
 
 
+
+
 /// A CollectionViewCell object presents the content for a single data item when that item is within the collection view’s visible bounds. You can use this class as-is or subclass it to add additional properties and methods. The layout and presentation of cells is managed by the collection view and its corresponding layout object.
 SWIFT_CLASS("_TtC14CollectionView18CollectionViewCell")
 @interface CollectionViewCell : CollectionReusableView
@@ -521,7 +523,9 @@ SWIFT_PROTOCOL("_TtP14CollectionView22CollectionViewDelegate_")
 /// Notifies the delegate that the collection view will begin scrolling
 /// \param collectionView The collection view that will begin scrolling
 ///
-- (void)collectionViewWillBeginScrolling:(CollectionView * _Nonnull)collectionView;
+/// \param aniated If the scroll is triggered by user input, this will be false
+///
+- (void)collectionViewWillBeginScrolling:(CollectionView * _Nonnull)collectionView animated:(BOOL)animated;
 /// Notifies the delegate that the collection view did end scrolling
 /// \param collectionView The collection view that was scrolled
 ///
@@ -960,7 +964,6 @@ SWIFT_CLASS("_TtC14CollectionView24CollectionViewListLayout")
 /// A default implementation of CollectionViewPreviewTransitionCell
 SWIFT_CLASS("_TtC14CollectionView25CollectionViewPreviewCell")
 @interface CollectionViewPreviewCell : CollectionViewCell
-- (void)scrollWheel:(NSEvent * _Nonnull)event;
 - (void)prepareForReuse;
 - (nonnull instancetype)initWithFrame:(NSRect)frameRect OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
@@ -984,9 +987,14 @@ SWIFT_CLASS("_TtC14CollectionView31CollectionViewPreviewController")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
 /// CollectionViewDelegatePreviewLayout
 - (void)viewDidLoad;
+- (void)keyUp:(NSEvent * _Nonnull)event;
+- (void)cancelOperation:(id _Nullable)sender;
+- (void)insertText:(id _Nonnull)insertString;
+- (void)doCommandBySelector:(SEL _Nonnull)selector;
 - (NSInteger)numberOfSectionsIn:(CollectionView * _Nonnull)collectionView SWIFT_WARN_UNUSED_RESULT;
 - (NSInteger)collectionView:(CollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 - (CollectionViewCell * _Nonnull)collectionView:(CollectionView * _Nonnull)collectionView cellForItemAt:(NSIndexPath * _Nonnull)indexPath SWIFT_WARN_UNUSED_RESULT;
+- (void)collectionView:(CollectionView * _Nonnull)collectionView didSelectItemsAt:(NSSet<NSIndexPath *> * _Nonnull)indexPaths;
 - (BOOL)wantsScrollEventsForSwipeTrackingOnAxis:(NSEventGestureAxis)axis SWIFT_WARN_UNUSED_RESULT;
 - (BOOL)wantsForwardedScrollEventsForAxis:(NSEventGestureAxis)axis SWIFT_WARN_UNUSED_RESULT;
 - (void)scrollWheel:(NSEvent * _Nonnull)event;
@@ -1012,6 +1020,10 @@ SWIFT_CLASS("_TtC14CollectionView24HorizontalCollectionView")
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder OBJC_DESIGNATED_INITIALIZER;
 @end
+
+
+
+
 
 
 

@@ -15,7 +15,9 @@ public struct ResultsChangeSet { }
 
 
 
-public class CollectionViewResultsProxy  {
+
+/// A Helper to 
+public class CollectionViewResultsProxy : CustomDebugStringConvertible  {
     var items = ItemChangeSet()
     var sections = SectionChangeSet()
     
@@ -77,6 +79,20 @@ public class CollectionViewResultsProxy  {
         self.sections.deleted.formUnion(other.sections.deleted)
         self.sections.updated.formUnion(other.sections.updated)
     }
+    public var debugDescription: String {
+        var str = ""
+        str += "\nDeleted Sections: \(Array(sections.deleted))"
+        str += "\nInserted Sections: \(Array(sections.inserted))"
+        str += "\nUpdated Sections: \(Array(sections.updated))"
+        str += "\nMoved Sections: \(Array(sections.moved))"
+        str += "\n"
+        str += "\nDeleted Items: \(items.deleted)"
+        str += "\nInserted Items: \(items.inserted)"
+        str += "\nUpdated Items: \(items.updated)"
+        str += "\nMoved Items: \(items.moved)"
+        str += ""
+        return str
+    }
 }
 
 
@@ -89,9 +105,13 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
     unowned let collectionView : CollectionView
     unowned let resultsController : ResultsController
     
+    /// The last known section count of real data
+    private var sectionCount = 0
+    
     public init(_ collectionView: CollectionView, resultsController: ResultsController) {
         self.collectionView = collectionView
         self.resultsController = resultsController
+        self.sectionCount = resultsController.numberOfSections
         super.init()
         self.resultsController.delegate = self
     }
@@ -176,22 +196,24 @@ extension CollectionViewProvider : ResultsControllerDelegate {
     }
     
     public func controllerDidChangeContent(controller: ResultsController) {
+        defer {
+            self.sectionCount = controller.numberOfSections
+        }
         if self.populateWhenEmpty {
             let isEmpty = controller.numberOfSections == 0
-            let wasEmpty = self.collectionView.numberOfSections == 0
+            let wasEmpty = self.sectionCount == 0
             if !wasEmpty && isEmpty {
                 // populate
-                self.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
+                self.addChange(forSectionAt: nil, with: .insert(IndexPath.zero))
             }
             else if wasEmpty && !isEmpty {
                 // Remove placeholder
-                self.addChange(forItemAt: IndexPath.zero, with: .delete)
+                self.addChange(forSectionAt: IndexPath.zero, with: .delete)
             }
         }
         else if self.populateEmptySections && controller.numberOfSections > 0 {
             
         }
-        
         self.collectionView.applyChanges(from: self)
     }
     
@@ -224,16 +246,16 @@ struct ItemChangeSet {
     mutating func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         switch changeType {
         case .delete:
-//            print("Delete item at \(source!)")
+            print("Delete item at \(source!)")
             deleted.insert(source!)
         case .update:
-//            print("Update item at \(source!)")
+            print("Update item at \(source!)")
             updated.insert(source!)
         case let .move(newIndexPath):
-//            print("Move item at \(source!) to \(newIndexPath)")
+            print("Move item at \(source!) to \(newIndexPath)")
             moved.append((source!, newIndexPath))
         case let .insert(newIndexPath):
-//            print("Insert item at \(newIndexPath)")
+            print("Insert item at \(newIndexPath)")
             inserted.insert(newIndexPath)
         }
     }
@@ -263,17 +285,17 @@ struct SectionChangeSet {
      mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         switch changeType {
         case .delete:
-//            print("Delete section at \(source!)")
+            print("Delete section at \(source!)")
             deleted.insert(source!._section)
         case .update:
-//            print("Update section at \(source!)")
+            print("Update section at \(source!)")
             updated.insert(source!._section)
             break;
         case let .move(newIndexPath):
-//            print("Move section \(source!) to \(newIndexPath)")
+            print("Move section \(source!) to \(newIndexPath)")
             moved.append((source!._section, newIndexPath._section))
         case let .insert(newIndexPath):
-//            print("Insert section at \(newIndexPath)")
+            print("Insert section at \(newIndexPath)")
             inserted.insert(newIndexPath._section)
         }
     }
@@ -303,6 +325,7 @@ public extension CollectionView {
             completion?(true)
             return
         }
+//        debugPrint(changeSet)
         self.performBatchUpdates({
             _applyChanges(changeSet.items)
             _applyChanges(changeSet.sections)

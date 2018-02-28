@@ -33,6 +33,11 @@ class FetchedController : BaseController {
         return content.object(at: indexPath)
     }
     
+    override func viewWillDisappear() {
+        super.viewWillDisappear()
+        self.content.reset()
+    }
+    
     override func reload(_ sender: AnyObject?) {
         do {
             try self.content.performFetch()

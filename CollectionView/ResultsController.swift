@@ -257,53 +257,6 @@ public enum ResultsControllerChangeType  {
 
 
 
-/// A set of changes for an entity with with mappings to original Indexes
-internal struct ObjectChangeSet<Index: Hashable, Object:Hashable>: CustomStringConvertible {
-    
-    var inserted = Set<Object>()
-    var updated = IndexedSet<Index, Object>()
-    var deleted = IndexedSet<Index, Object>()
-    
-    var count : Int {
-        return inserted.count + updated.count + deleted.count
-    }
-    
-    var description: String {
-        let str = "Change Set \(Object.self):"
-        + " \(updated.count) Updated, "
-        + " \(inserted.count) Inserted, "
-        + " \(deleted.count) Deleted"
-        return str
-    }
-    
-    init() { }
-    
-    mutating func add(inserted object: Object) {
-        inserted.insert(object)
-    }
-    
-    mutating func add(updated object: Object, for index: Index) {
-        self.updated.insert(object, for: index)
-    }
-    
-    mutating func add(deleted object: Object, for index: Index) {
-        self.deleted.insert(object, for: index)
-    }
-    
-    func object(for index: Index) -> Object? {
-        return updated[index] ?? deleted[index]
-    }
-    
-    func index(for object: Object) -> Index? {
-        return updated.index(of: object) ?? deleted.index(of: object)
-    }
-    
-    mutating func reset() {
-        self.inserted.removeAll()
-        self.deleted.removeAll()
-        self.updated.removeAll()
-    }
-}
 
 
 

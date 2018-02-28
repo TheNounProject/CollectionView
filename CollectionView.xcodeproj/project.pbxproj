@@ -109,6 +109,7 @@
 		DEB736691E8599E7008467F8 /* CollectionViewPreviewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewPreviewCell.swift; sourceTree = "<group>"; };
 		DECA70CB1D8751010006D795 /* CollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		DED9FFAA204503AA00478480 /* CollectionViewEditingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewEditingTests.swift; sourceTree = "<group>"; };
+		DED9FFAD20466C1200478480 /* IndexPathSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexPathSet.swift; sourceTree = "<group>"; };
 		DEE3B5841D246CB100AD34F1 /* CollectionViewListLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewListLayout.swift; sourceTree = "<group>"; };
 		DEE5F7AD1E92D79A0002079C /* MergedFetchedResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MergedFetchedResultsController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -153,6 +154,7 @@
 				DE35BE1E20376FCC008FEF6F /* SortDescriptor.swift */,
 				1C2DC5161E329CA000EBC234 /* IndexedSet.swift */,
 				DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */,
+				DED9FFAD20466C1200478480 /* IndexPathSet.swift */,
 				DE46308C2044C114001AF02E /* EditDistance */,
 			);
 			path = DataStructures;

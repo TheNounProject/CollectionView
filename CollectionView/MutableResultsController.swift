@@ -10,22 +10,53 @@
 import Foundation
 
 
-
-fileprivate struct EditingContext<Element:Hashable> : CustomStringConvertible {
+/// A set of changes for an entity with with mappings to original Indexes
+fileprivate struct ChangeIndex<Index: Hashable, Object:Hashable>: CustomStringConvertible {
     
-    var objectChanges = ObjectChangeSet<IndexPath, Element>()
-    var itemsWithSectionChange = Set<Element>()
+    var inserted = Set<Object>()
+    var updated = IndexedSet<Index, Object>()
+    var deleted = IndexedSet<Index, Object>()
     
-    mutating func reset() {
-        self.objectChanges.reset()
+    var count : Int {
+        return inserted.count + updated.count + deleted.count
     }
     
     var description: String {
-        return "Context Items: \(objectChanges.deleted.count) Deleted, \(objectChanges.inserted.count) Inserted, \(objectChanges.updated.count) Updated"
+        let str = "Change Set \(Object.self):"
+            + " \(updated.count) Updated, "
+            + " \(inserted.count) Inserted, "
+            + " \(deleted.count) Deleted"
+        return str
+    }
+    
+    init() { }
+    
+    mutating func inserted(_ object: Object) {
+        inserted.insert(object)
+    }
+    
+    mutating func updated(_ object: Object, at index: Index) {
+        self.updated.insert(object, for: index)
+    }
+    
+    mutating func deleted(_ object: Object, at index: Index) {
+        self.deleted.insert(object, for: index)
+    }
+    
+    func object(for index: Index) -> Object? {
+        return updated[index] ?? deleted[index]
+    }
+    
+    func index(for object: Object) -> Index? {
+        return updated.index(of: object) ?? deleted.index(of: object)
+    }
+    
+    mutating func reset() {
+        self.inserted.removeAll()
+        self.deleted.removeAll()
+        self.updated.removeAll()
     }
 }
-
-
 
 
 
@@ -37,6 +68,24 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     typealias WrappedSectionInfo = SectionInfo<Section, Element>
     
     typealias SectionAccessor = (Element) -> Section?
+    
+    
+    private struct EditingContext: CustomStringConvertible {
+        
+        var objectChanges = ChangeIndex<IndexPath, Element>()
+        var sectionChanges = ChangeIndex<Int, Section>()
+        var itemsWithSectionChange = Set<Element>()
+        
+        mutating func reset() {
+            self.objectChanges.reset()
+        }
+        
+        var description: String {
+            return "Context Items: \(objectChanges.deleted.count) Deleted, \(objectChanges.inserted.count) Inserted, \(objectChanges.updated.count) Updated"
+        }
+    }
+    
+    
 
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
@@ -100,9 +149,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     // MARK: - Controller Contents
     /*-------------------------------------------------------------------------------*/
     
-    private var fetchedObjects = Set<Element>()
     private var _objectSectionMap = [Element:WrappedSectionInfo]() // Map between elements and the last group it was known to be in
-    private var _fetchedObjects = [Element]()
     private var _sections = OrderedSet<WrappedSectionInfo>()
     
     
@@ -377,10 +424,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     /// Clears all data and stops monitoring for changes in the context.
     public func reset() {
         self._sections.removeAll()
-        self.fetchedObjects.removeAll()
-        self._fetchedObjects.removeAll()
         self._sectionsCopy = nil
-        self._fetchedObjects.removeAll()
         self._objectSectionMap.removeAll()
     }
     
@@ -455,7 +499,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     
     
     private var _sectionsCopy : OrderedSet<WrappedSectionInfo>?
-    private var _editingContext = EditingContext<Element>()
+    private var _editingContext = EditingContext()
     private var _editing = 0
     
     
@@ -697,9 +741,9 @@ extension MutableResultsController where Element:AnyObject {
     public func delete(object: Element) {
         self.beginEditing()
         defer { self.endEditing() }
-        guard let section = self._objectSectionMap.removeValue(forKey: object),
-            let ip = self.indexPath(of: object) else { return }
-        self._editingContext.objectChanges.add(deleted: object, for: ip)
+        guard let ip = self.indexPath(of: object),
+            let section = self._objectSectionMap.removeValue(forKey: object) else { return }
+        self._editingContext.objectChanges.deleted(object, at: ip)
         
         section.ensureEditing()
         section.remove(object)
@@ -751,7 +795,7 @@ extension MutableResultsController where Element:AnyObject {
             s.add(object)
             _objectSectionMap[object] = s
         }
-        self._editingContext.objectChanges.add(inserted: object)
+        self._editingContext.objectChanges.inserted(object)
     }
     
     
@@ -799,7 +843,7 @@ extension MutableResultsController where Element:AnyObject {
             // Maybe check if the sort keys were actually updated before doing this
             _objectSectionMap[object] = sec
         }
-        self._editingContext.objectChanges.add(updated: object, for: tempIP)
+        self._editingContext.objectChanges.updated(object, at: tempIP)
     }
 }
 

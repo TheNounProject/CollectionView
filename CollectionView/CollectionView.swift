@@ -1277,21 +1277,20 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     struct Section {
-        let inserted : IndexSet
-        let removed : IndexSet
+        var removed : IndexSet
+        let deltas : [Int:Int]
         let count : Int
         
         private var storage = [Int?]()
         private var idx : Int = 0
         private var next : Int = 0
-        private var maxOver : Int = 0
+        private var adjust : Int = 0
         
-        init(count: Int, deltas: IndexSet, pinned: IndexSet, removed: IndexSet) {
-            self.count = count - inserted.count + removed.count
+        init(newCount: Int, deltas: [Int:Int], inserted: Int, removed: IndexSet) {
+            self.count = newCount
             self.storage.reserveCapacity(count)
-            self.inserted = inserted.union(pinned)
+            self.deltas = deltas
             self.removed = removed
-            self.maxOver = count + inserted.count
         }
         
         mutating func index(of previousIndex: Int) -> Int? {
@@ -1301,15 +1300,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         
         mutating func populate(to: Int) {
-            while idx < count && next <= to + maxOver {
+            while storage.count <= to {
                 if removed.contains(idx) {
                     storage.append(nil)
                 }
                 else {
-                    if inserted.contains(idx) {
-                        next += 1
+                    let delta = deltas[idx] ?? 0
+                    if next == idx  {
+                        adjust -= delta
                     }
-                    storage.append(next)
+                    else {
+                        adjust += delta
+                    }
+                    storage.append(next + adjust)
                     next += 1
                 }
                 idx += 1
@@ -1416,9 +1419,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
         // target or source are used depending on the type of action and if it is refferring to a new index path or an old one
         for d in _updateContext.items.deleted {
             source[d._section].removed.insert(d._item)
+            source[d._section].deltas[d._item] = -1
         }
         for i in _updateContext.items.inserted {
             target[i._section]!.inserted.insert(i._item)
+            target[i._section]!.deltas[i._item] = +1
         }
         for m in _updateContext.items.moved {
             let s = source[m.0._section]
@@ -1427,9 +1432,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 s.movedOut.insert(m.0._item)
                 t.movedIn.insert(m.1._item)
             }
-            else {
-                t.pinned.insert(m.1._item)
-            }
+            s.deltas[m.0._item] = -1
+            s.deltas[m.1._item] = 1
         }
  
         // Validate the final sections
@@ -1442,9 +1446,9 @@ open class CollectionView : ScrollView, NSDraggingSource {
             print(self._updateContext)
             precondition(s.target != nil, "Invalid target index for section \(s)")
             precondition(s.estimatedCount == newData[s.target!], "Invalid update: invalid number of items in section \(s.target!). The number of items contained in an existing section after the update \(s.estimatedCount) must be equal to the number of items contained in that section before the update \(s.count), plus or minus the number of items inserted or deleted from that section (\(s.inserted.count) inserted, \(s.removed.count) deleted) and plus or minus the number of items moved into or out of that section (\(s.movedIn.count) moved in, \(s.movedOut.count) moved out). Data source reported \(newData[s.target!]) items.")
-            return Section(count: newData[s.target!],
-                           inserted: s.inserted.union(s.movedIn),
-                           pinned: s.pinned,
+            return Section(newCount: newData[s.target!],
+                           deltas: s.deltas,
+                           inserted: s.inserted.union(s.movedIn).count,
                            removed: s.removed.union(s.movedOut))
         }
         

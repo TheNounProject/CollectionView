@@ -26,7 +26,6 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     }
     
     
-    
     // MARK: - Equatable
     /*-------------------------------------------------------------------------------*/
     public var hashValue: Int {
@@ -112,5 +111,3 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
         return changes
     }
 }
-
-

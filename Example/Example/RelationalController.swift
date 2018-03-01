@@ -28,7 +28,7 @@ class RelationalController : BaseController, BasicHeaderDelegate {
         
         self.provider = CollectionViewProvider(self.collectionView, resultsController: self.content)
         self.provider.populateWhenEmpty = true
-        self.provider.populateEmptySections = true
+        self.provider.populateEmptySections = false
         self.reload(nil)
     }
     

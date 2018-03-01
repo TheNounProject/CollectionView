@@ -509,9 +509,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         print("\(prefix) -----------")
         for section in _sections.enumerated() {
             print("  Section \(section.offset) - \(section.element)")
-            for item in section.element._storage.enumerated() {
-                print("    \(item.offset): \(item.element)")
-            }
+            debugPrint(section.element._storage)
         }
         print("")
     }
@@ -537,20 +535,21 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         }
         _editing = 0
         
-        var processedSections = [WrappedSectionInfo:EditDistance<OrderedSet<Element>>]()
-        for s in _sections {
+        if self._sections.needsSort {
+            self.ensureSectionCopy()
+            self.sortSections()
+        }
+        
+        var processedSections = [Int:EditDistance<OrderedSet<Element>>]()
+        for (idx, s) in _sections.enumerated() {
             if let changeSet = s.endEditing(sorting: sortDescriptors, forceUpdates: Set()) {
                 if s.numberOfObjects == 0 && self.shouldRemoveEmptySection(s) {
                     self._removeSection(info: s)
                     continue;
                 }
-                processedSections[s] = changeSet
+                processedSections[idx] = changeSet
+                print(changeSet.edits)
             }
-        }
-        
-        if self._sections.needsSort {
-            self.ensureSectionCopy()
-            self.sortSections()
         }
         
         self.logContents(prefix: "END EDITING")
@@ -582,33 +581,54 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             }
         }
         
+        
+        
         func reduceCrossSectional(_ object: Element) {
             
-            guard let source = self._editingContext.objectChanges.updated.index(of: object),
-                let targetIP = self.indexPath(of: object),
-                let targetSection = self.sectionInfo(at: targetIP) else {
+            // Get the sourceIP, targetIP and section info of the target
+            guard let sourceIP = self._editingContext.objectChanges.updated.index(of: object),
+                let targetIP = self.indexPath(of: object) else {
                     return
             }
             
-            guard let proposedEdit = processedSections[targetSection]?.edit(for: object) else {
+            guard let proposedInsert = processedSections[targetIP._section]?.edit(for: object) else {
                 return
             }
             
-            let newEdit = Edit(.move(origin: source._item), value: object, index: targetIP._item)
-            processedSections[targetSection]?.operationIndex.moves.insert(newEdit, for: targetIP._item)
-            processedSections[targetSection]?.remove(edit: proposedEdit)
+            // Add the new move edit
+            let newEdit = Edit(.move(origin: sourceIP._item), value: object, index: targetIP._item)
+            processedSections[targetIP._section]?.operationIndex.moves.insert(newEdit, for: targetIP._item)
             
-            if let s = self._sectionsCopy?.object(at: source._section) ?? _sections._object(at: source._section),
-                let e = processedSections[s]?.edit(for: object) {
-                processedSections[s]?.remove(edit: e)
+            // Remove the old insert operation
+            processedSections[targetIP._section]?.remove(edit: proposedInsert)
+            
+            
+            // If we were going to substitute the item at the target, remove it
+            if case .substitution = proposedInsert.operation, let obj = self._editingContext.objectChanges.object(for: targetIP) {
+                let insert = Edit(.deletion, value: obj, index: proposedInsert.index)
+                processedSections[targetIP._section]?.operationIndex.deletes.insert(insert, for: targetIP._item)
             }
             
-            if targetIP._item != proposedEdit.index {
-                let _ = processedSections[targetSection]?.edit(withSource: targetIP._item)
+            // Get the new index for the section this object came from (more work to do if sections have changed)
+            var sourceSectionIndex = sourceIP._section
+            if let originalSections = self._sectionsCopy {
+                // If the original has been removed, nothing to do
+                guard let s = self._sections.index(of: originalSections.object(at: sourceSectionIndex)) else {
+                    return
+                }
+                sourceSectionIndex = s
             }
-            else if case .substitution = proposedEdit.operation, let obj = self._editingContext.objectChanges.object(for: targetIP) {
-                let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
-                processedSections[targetSection]?.operationIndex.deletes.insert(insert, for: targetIP._item)
+            
+            // There should always be a source edit (delete or replace)
+            guard let sourceEdit = processedSections[sourceSectionIndex]?.edit(for: object) else { return }
+            
+            // Go ahead and drop that edit
+            processedSections[sourceSectionIndex]?.remove(edit: sourceEdit)
+            
+            // If it was a substitution, replace it with an insert
+            if case .substitution = sourceEdit.operation {
+                let insert = Edit(.insertion, value: sourceEdit.value, index: sourceEdit.index)
+                processedSections[sourceSectionIndex]?.operationIndex.inserts.insert(insert, for: insert.index)
             }
         }
         
@@ -618,9 +638,8 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         
         _sectionsCopy = nil
         
-        for section in processedSections.keys {
-            let changes = processedSections[section]!.operationIndex.allEdits
-            guard let sectionIndex = self.indexPath(of: section)?._section else { continue }
+        for sectionIndex in processedSections.keys {
+            let changes = processedSections[sectionIndex]!.operationIndex.allEdits
             
             // Could merge all the edits together to dispatch the delegate calls in order of operation
             // but there is no apparent reason why order is important.
@@ -744,6 +763,7 @@ extension MutableResultsController where Element:AnyObject {
         guard let ip = self.indexPath(of: object),
             let section = self._objectSectionMap.removeValue(forKey: object) else { return }
         self._editingContext.objectChanges.deleted(object, at: ip)
+        print("DELETING item \(object) from ip \(ip)")
         
         section.ensureEditing()
         section.remove(object)

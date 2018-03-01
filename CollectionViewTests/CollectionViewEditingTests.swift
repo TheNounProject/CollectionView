@@ -69,7 +69,8 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
     
     func testInsertItemsWithoutSection() {
         self.data = [1]
-        self.collectionView.insertItems(at: [IndexPath.zero], animated: false)
+        
+        self.collectionView.insertSections([0], animated: false)
         XCTAssertEqual(collectionView.numberOfSections, 1)
         XCTAssertEqual(collectionView.numberOfItems(in: 0), 1)
         XCTAssertNotNil(collectionView.cellForItem(at: IndexPath.zero))
@@ -136,32 +137,102 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
     }
     
     
-    class Section : CustomStringConvertible {
-        var source : Int?
-        var target: Int?
-        var count : Int = 0
-
-        var expected : Int {
-            guard self.target != nil else { return 0 }
-            return count + inserted.count - removed.count
-        }
-        var inserted = Set<Int>()
-        var removed = Set<Int>()
+    
+    
+    func testBroken() {
         
-        init(source: Int?, target: Int?, count: Int) {
-            self.source = source
-            self.target = target
-            self.count = count
-        }
+        self.data = [7, 7, 6]
+        self.collectionView.reloadData()
         
-        var description: String {
-            return "Source: \(source ?? -1) Target: \(self.target ?? -1) Count: \(count) expected: \(expected)"
+        let exp = self.expectation(description: "Done")
+        
+        self.collectionView.performBatchUpdates({
+            self.collectionView.moveSection(1, to: 0, animated: true)
+            self.collectionView.moveSection(0, to: 1, animated: true)
+            self.collectionView.insertItems(at: [
+                [0, 0],
+//                [1, 7]
+                ], animated: true)
+            self.collectionView.deleteItems(at: [
+                [2, 5],
+//                [1, 2]
+                ], animated: true)
+            self.collectionView.moveItems([
+                ([1, 5], [1, 4]),
+                ([2, 0], [0, 2]),
+                ([1, 2], [1, 0]),
+                ([0, 1], [2, 4]),
+                ([1, 1], [1, 1]),
+                ([0, 4], [0, 5]),
+                ([1, 7], [2, 2]),
+                ([0, 3], [1, 5]),
+                ([2, 3], [0, 4]),
+                ([1, 0], [2, 5]),
+                ([2, 2], [1, 6]),
+                ([0, 0], [0, 1]),
+                ([0, 7], [2, 1]),
+                ([1, 6], [1, 2]),
+                ([0, 2], [2, 3]),
+                ([1, 3], [0, 6]),
+                ([2, 1], [0, 7]),
+                ([1, 4], [0, 3]),
+                ], animated: true)
+        }) { (_) in
+            exp.fulfill()
         }
+        self.waitForExpectations(timeout: 2) { (err) in
+            print("Finished")
+        }
+        /*
+        Move section [2, 0] to [0, 0]
+        Move section [0, 0] to [2, 0]
+        Insert item at [0, 0]
+        Delete item at [2, 0]
+        Move item at [1, 3] to [0, 5]
+        Move item at [0, 6] to [0, 2]
+        Move item at [0, 1] to [0, 3]
+        Move item at [1, 4] to [0, 1]
+        Move item at [1, 6] to [0, 4]
+        Move item at [2, 3] to [1, 6]
+        Move item at [2, 1] to [1, 0]
+        Move item at [0, 5] to [1, 2]
+        Move item at [0, 0] to [1, 4]
+        Move item at [0, 2] to [1, 1]
+        Move item at [2, 4] to [1, 3]
+        Move item at [1, 0] to [2, 2]
+        Move item at [1, 1] to [2, 4]
+        Move item at [1, 2] to [2, 3]
+        Move item at [2, 2] to [2, 1]
+        */
         
     }
+
     
     
     func testUpdates() {
+        
+        class Section : CustomStringConvertible {
+            var source : Int?
+            var target: Int?
+            var count : Int = 0
+            
+            var expected : Int {
+                guard self.target != nil else { return 0 }
+                return count + inserted.count - removed.count
+            }
+            var inserted = Set<Int>()
+            var removed = Set<Int>()
+            
+            init(source: Int?, target: Int?, count: Int) {
+                self.source = source
+                self.target = target
+                self.count = count
+            }
+            
+            var description: String {
+                return "Source: \(source ?? -1) Target: \(self.target ?? -1) Count: \(count) expected: \(expected)"
+            }
+        }
         
 
         let data = [3, 3, 3]

@@ -37,9 +37,12 @@ class WindowController : NSWindowController {
             let removed = children.sample(0.2)
             for del in removed {
                 moc.delete(del)
+                print("Adding child \(del)")
             }
             for _ in 0..<removed.count {
-                children.append(Child.create())
+                let c = Child.create()
+                children.append(c)
+                print("Adding child \(c)")
             }
         }
         

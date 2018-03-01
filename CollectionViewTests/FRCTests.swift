@@ -115,8 +115,7 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         _ = self.createItemsBySection(1, items: 5)
         
         waitForExpectations(timeout: 0.1) { (err) in
-            // TODO: This should be 0 since we are inserting the section
-            XCTAssertEqual(self.changeSet.items.inserted.count, 4)
+            XCTAssertEqual(self.changeSet.items.inserted.count, 0)
             XCTAssertEqual(self.changeSet.sections.inserted.count, 1)
             XCTAssertEqual(frc.numberOfSections, 1)
             XCTAssertEqual(frc.numberOfObjects(in: 0), 5)
@@ -134,8 +133,7 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         self._expectation = expectation(description: "Delegate")
         _ = self.createItemsBySection(5, items: 5)
         waitForExpectations(timeout: 0.1) { (err) in
-            // TODO: This should be 0 since we are inserting the section
-            XCTAssertEqual(self.changeSet.items.inserted.count, 20)
+            XCTAssertEqual(self.changeSet.items.inserted.count, 0)
             XCTAssertEqual(self.changeSet.sections.inserted.count, 5)
             XCTAssertEqual(frc.numberOfSections, 5)
             for s in 0..<frc.numberOfSections {

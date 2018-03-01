@@ -21,6 +21,7 @@ struct Person : Hashable {
         return lhs.age == rhs.age && lhs.name == rhs.name
     }
     
+    /// Defaults to 5000
     static func set(with n: Int = 5000, randomAge: Bool = true) -> OrderedSet<Person> {
         var set = OrderedSet<Person>()
         for n in 0..<n {

@@ -84,6 +84,10 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     var displayDescription: String {
         return self.name
     }
+    
+    override var description: String {
+        return "Parent \(name) - [\(self.displayOrder)]"
+    }
 }
 
 
@@ -99,9 +103,9 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
     
     var displayDescription: String {
         guard self.isValid else {
-            return "Child \(idString) -- Deleted"
+            return "Child \(name) -- Deleted"
         }
-        return "Child \(self.idString) - [\(self.parent?.displayOrder.description ?? "?"), \(displayOrder)]"
+        return "Child \(name) - [\(self.parent?.displayOrder.description ?? "?"), \(displayOrder)]"
     }
     
     override var description: String {

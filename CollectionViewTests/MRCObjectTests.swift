@@ -9,7 +9,7 @@
 import XCTest
 @testable import CollectionView
 
-fileprivate class Child : ResultType {
+fileprivate class Child : ResultType, CustomStringConvertible {
     let id = UUID()
     var rank : Int
     var name : String
@@ -27,8 +27,11 @@ fileprivate class Child : ResultType {
     static func ==(lhs: Child, rhs: Child) -> Bool {
         return lhs.id == rhs.id
     }
+    var description: String {
+        return "Child \(self.name) - [\(self.parent.rank), \(self.rank)]"
+    }
 }
-fileprivate class Parent : SectionType {
+fileprivate class Parent : SectionType, CustomStringConvertible {
     let id = UUID()
     var rank : Int
     var name : String
@@ -50,9 +53,26 @@ fileprivate class Parent : SectionType {
         }
         return _children
     }
+    var description: String {
+        return "Parent \(self.id) - \(self.rank)"
+    }
 }
 
-class MRCObjectTests: XCTestCase {
+extension MutableCollection {
+    /// Shuffles the contents of this collection.
+    mutating func shuffle() {
+        let c = count
+        guard c > 1 else { return }
+        
+        for (firstUnshuffled, unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
+            let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
+            let i = index(firstUnshuffled, offsetBy: d)
+            swapAt(firstUnshuffled, i)
+        }
+    }
+}
+
+class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
     
     fileprivate func create(containers: Int, objects: Int) -> (containers: [UUID:Parent], objects: [Child]) {
         var _parents = [UUID:Parent]()
@@ -235,6 +255,117 @@ class MRCObjectTests: XCTestCase {
         XCTAssertEqual(mrc.numberOfObjects(in: 1), 5)
     }
     
+    
+    
+    func testBreakingOperation() {
+        
+        let p0 = Parent(rank: 0)
+        let c0 = p0.createChildren(8)
+        
+        let p1 = Parent(rank: 1)
+        let c1 = p0.createChildren(8)
+        
+        let p2 = Parent(rank: 2)
+        var c2 = p0.createChildren(6)
+        
+        for n in ["lwpYbKhfiG", "mkIMIFswjn", "ltNeWStiEM", "druXHaGSbQ", "rVQAeFgtlf", "fzTRcptguz", "lIUPRmNvCg", "fxuRNRbcMw"].enumerated() {
+            c0[n.offset].name = n.element
+        }
+        
+        for n in ["JqxaRRwiwn", "mkCZsTjRGb", "YiEApHQDdK", "DgXqDmWzye", "KqmuVFUwVu", "sCLUNVUWeg", "jSKlGSZNbG", "MKdrVDyWnU"].enumerated() {
+            c1[n.offset].name = n.element
+        }
+        for n in ["QhpuDscFdA", "TVVMWMtNxW", "oWhWzJhrlw", "XiBDxjsdUu", "mUYSuqGpoA", "nqASWhRVMu"].enumerated() {
+            c2[n.offset].name = n.element
+        }
+        
+        let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
+                                                          sortDescriptors: [SortDescriptor(\Child.rank)],
+                                                          sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
+        
+        mrc.setContent([(p0, c0), (p1, c1), (p2, c2)])
+        mrc.delegate = self
+        
+        let c0Rank = [1, 4, 3, 5, 5, 3, 7, 1]
+        let c0Parents = [p1, p2, p2, p0, p1, p0, p0, p2]
+        
+        let c1Rank = [5, 1, 0, 6, 3, 4, 2, 2]
+        let c1Parents = [p2, p0, p0, p1, p1, p0, p0, p2]
+        
+        let c2Rank = [2, 7, 6, 4, 0]
+        let c2Parents = [p1, p1, p0, p1, p2]
+        
+        self._expectation = expectation(description: "Delegate")
+        
+        for c in c0.enumerated() {
+            c.element.rank = c0Rank[c.offset]
+            c.element.parent = c0Parents[c.offset]
+        }
+        for c in c1.enumerated() {
+            c.element.rank = c1Rank[c.offset]
+            c.element.parent = c1Parents[c.offset]
+        }
+        let r = c2.removeLast()
+        for c in c2.enumerated() {
+            c.element.rank = c2Rank[c.offset]
+            c.element.parent = c2Parents[c.offset]
+        }
+        
+        p1.rank = 0
+        p0.rank = 1
+        
+        let new = p1.createChildren(1)[0]
+        new.name = "SyDBgaLenT"
+        new.rank = 0
+        
+        mrc.beginEditing()
+        
+        
+        
+        var objects = c0
+        objects.append(contentsOf: c1)
+        objects.append(contentsOf: c2)
+        objects.shuffle()
+        for c in objects {
+            mrc.didUpdate(object: c)
+        }
+        
+        mrc.delete(object: r)
+        mrc.insert(object: new)
+        mrc.didUpdate(section: p0)
+        mrc.didUpdate(section: p1)
+
+        
+        mrc.endEditing()
+        self.waitForExpectations(timeout: 0.5) { (err) in
+            XCTAssertEqual(self.changeSet.items.inserted.count, 1)
+            XCTAssertEqual(self.changeSet.items.deleted.count, 1)
+            print("Done")
+        }
+    }
+    
+    var changeSet = CollectionViewResultsProxy()
+    var _expectation : XCTestExpectation?
+    func controllerWillChangeContent(controller: ResultsController) {
+        changeSet.prepareForUpdates()
+    }
+    func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+        changeSet.addChange(forItemAt: indexPath, with: changeType)
+    }
+    func controller(_ controller: ResultsController, didChangeSection section: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+        changeSet.addChange(forSectionAt: indexPath, with: changeType)
+    }
+    func controllerDidChangeContent(controller: ResultsController) {
+        _expectation?.fulfill()
+        _expectation = nil
+    }
+    
+    
+    
+    
+    
+    // MARK: - Performance Tests
+    /*-------------------------------------------------------------------------------*/
     
     
     func testSmallInsertPerformance() {

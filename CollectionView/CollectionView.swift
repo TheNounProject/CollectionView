@@ -125,9 +125,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._reusableCells.removeAll()
         self._reusableSupplementaryView.removeAll()
         self._updateContext.reset()
-        self._pendingCellMap.removeAll()
-        self._finalizedCellMap.removeAll()
-        self._finalizedViewMap.removeAll()
         self.contentDocumentView.preparedCellIndex.removeAll()
         self.contentDocumentView.preparedSupplementaryViewIndex.removeAll()
         for view in self.contentDocumentView.subviews {
@@ -408,7 +405,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     // MARK: - Data
     /*-------------------------------------------------------------------------------*/
     
-    private var sections = [Int:Int]()
+    private var sections = [Int]()
     
     
     /**
@@ -429,7 +426,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     */
     public func numberOfItems(in section: Int) -> Int {
-        return self.sections[section] ?? 0
+        return self.sections.object(at: section) ?? 0
     }
     
     
@@ -455,10 +452,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     
     private func _reloadDataCounts() {
-        self.sections = [:]
+        self.sections = []
         let sCount = self.dataSource?.numberOfSections(in: self) ?? 0
         for sIndex in 0..<sCount {
-            self.sections[sIndex] = self.dataSource?.collectionView(self, numberOfItemsInSection: sIndex) ?? 0
+            self.sections.append(self.dataSource?.collectionView(self, numberOfItemsInSection: sIndex) ?? 0)
         }
     }
     
@@ -1000,7 +997,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public func insertSections(_ sections: IndexSet, animated: Bool) {
         guard sections.count > 0 else { return }
         self.beginEditing()
-        self._updateContext.insertedSections.formUnion(sections)
+        self._updateContext.sections.inserted.formUnion(sections)
         self.endEditing(animated)
     }
     
@@ -1015,7 +1012,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public func deleteSections(_ sections: IndexSet, animated: Bool) {
         guard sections.count > 0 else { return }
         self.beginEditing()
-        self._updateContext.deletedSections.formUnion(sections)
+        self._updateContext.sections.deleted.formUnion(sections)
         self.endEditing(animated)
     }
     
@@ -1034,7 +1031,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
 	*/
     public func moveSection(_ section: Int, to newSection: Int, animated: Bool) {
         self.beginEditing()
-        self._updateContext.movedSections[section] = newSection
+        self._updateContext.sections.moved[section] = newSection
         self.endEditing(animated)
     }
     
@@ -1058,7 +1055,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public func insertItems(at indexPaths: [IndexPath], animated: Bool) {
         guard indexPaths.count > 0 else { return }
         self.beginEditing()
-        self._updateContext.insertedItems.formUnion(indexPaths)
+        self._updateContext.items.inserted.formUnion(indexPaths)
 //        self._insertItems(at: indexPaths)
         self.endEditing(animated)
     }
@@ -1074,7 +1071,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     public func deleteItems(at indexPaths: [IndexPath], animated: Bool) {
         guard indexPaths.count > 0 else { return }
         self.beginEditing()
-        self._updateContext.deletedItems.formUnion(indexPaths)
+        self._updateContext.items.deleted.formUnion(indexPaths)
         self.endEditing(animated)
     }
     
@@ -1106,7 +1103,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     */
     public func moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath, animated: Bool) {
         self.beginEditing()
-        self._updateContext.movedItems[indexPath] = destinationIndexPath
+        self._updateContext.items.moved[indexPath] = destinationIndexPath
         self.endEditing(animated)
     }
     
@@ -1114,7 +1111,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         guard moves.count > 0 else { return }
         self.beginEditing()
         for m in moves {
-            self._updateContext.movedItems[m.source] = m.destination
+            self._updateContext.items.moved[m.source] = m.destination
         }
         self.endEditing(animated)
     }
@@ -1125,37 +1122,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /*-------------------------------------------------------------------------------*/
 
     
-    private struct UpdateContext {
-        
-        var updates = [ItemUpdate]()
-        
-        var insertedItems = Set<IndexPath>()
-        var deletedItems = Set<IndexPath>()
-        var movedItems = IndexedSet<IndexPath, IndexPath>()
-        
-        var deletedSections   = IndexSet() // Original Indexes for deleted sections
-        var insertedSections  = IndexSet() // Destination Indexes for inserted sections
-        var movedSections = IndexedSet<Int, Int>() // Source and Destination indexes for moved sections
-        
-        var reloadedItems = Set<IndexPath>() // Track reloaded items to reload after adjusting IPs
-        
-        mutating func reset() {
-            
-            insertedItems.removeAll()
-            deletedItems.removeAll()
-            movedItems.removeAll()
-            
-            updates.removeAll()
-            deletedSections.removeAll()
-            insertedSections.removeAll()
-            movedSections.removeAll()
 
-            reloadedItems.removeAll()
-        }
-        
-    }
-    
-    
     struct ShiftSet {
         var storage : [Int]
         
@@ -1265,13 +1232,62 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return _map
         }
     }
-
     
-    private var _finalizedCellMap = IndexedSet<IndexPath, CollectionViewCell>()
-    private var _pendingCellMap = IndexedSet<IndexPath, CollectionViewCell>()
-    private var _finalizedViewMap = IndexedSet<SupplementaryViewIdentifier, CollectionReusableView>()
     
-    private var _updateSelections : Set<IndexPath>?
+    private struct ItemTracker {
+        var inserted = Set<IndexPath>()
+        var deleted = Set<IndexPath>()
+        var moved = IndexedSet<IndexPath, IndexPath>()
+    }
+    private struct SectionTracker {
+        var deleted   = IndexSet() // Original Indexes for deleted sections
+        var inserted  = IndexSet() // Destination Indexes for inserted sections
+        var moved = IndexedSet<Int, Int>() // Source and Destination indexes for moved sections
+    }
+    
+    private class Section : CustomStringConvertible {
+        var source : Int?
+        var target: Int?
+        var count : Int = 0
+        
+        var estimatedCount : Int {
+            guard self.target != nil else { return 0 }
+            guard self.source != nil else { return count }
+            return count + inserted.count - removed.count
+        }
+        var inserted = Set<Int>()
+        var removed = Set<Int>()
+        
+        init(source: Int?, target: Int?, count: Int) {
+            self.source = source
+            self.target = target
+            self.count = count
+        }
+        
+        var description: String {
+            return "Source: \(source ?? -1) Target: \(self.target ?? -1) Count: \(count) expected: \(estimatedCount)"
+        }
+    }
+    
+    
+    
+    private struct UpdateContext {
+        var sections = SectionTracker()
+        var items = ItemTracker()
+        var reloadedItems = Set<IndexPath>() // Track reloaded items to reload after adjusting IPs
+        
+        var updates = [ItemUpdate]()
+        
+        mutating func reset() {
+            self.items = ItemTracker()
+            self.sections = SectionTracker()
+            updates.removeAll()
+            reloadedItems.removeAll()
+        }
+   
+    }
+    
+    
     private var _updateContext = UpdateContext()
     private var _editing = 0
     private var _sectionMap: [Int:Int] = [:]
@@ -1285,14 +1301,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
 //            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex)")
 //            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
             
-//            self.itemShifts.removeAll()
             self._extendingStart = nil
-            
             self._updateContext.reset()
-            self._finalizedCellMap.removeAll()
-            self._finalizedViewMap.removeAll()
-            self._pendingCellMap.removeAll()
-            self._updateSelections = Set<IndexPath>()
         }
         _editing += 1
     }
@@ -1306,18 +1316,145 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         _editing = 0
         
+        
+        let oldData = self.sections
+        self._reloadDataCounts()
+        let newData = self.sections
+        
+        
+        // Validate the section changes
+        var sectionDelta = self._updateContext.sections.inserted.count - self._updateContext.sections.deleted.count
+        precondition(newData.count - oldData.count == sectionDelta, "Invalid section changes. Had \(oldData.count) delta of \(sectionDelta) is \(oldData.count - sectionDelta) but expected \(newData.count)")
+        
+        var source = [Section]()
+        var target = [Section?](repeatElement(nil, count: newData.count))
+        var selections = Set<IndexPath>()
+        
+        // Populate source with existing data
+        for s in oldData.enumerated() {
+            source.append(Section(source: s.offset, target: nil, count: s.element))
+        }
+        
+        // Populate target with inserted
+        for s in _updateContext.sections.inserted {
+            target[s] = Section(source: nil, target: s, count: newData[s])
+        }
+        
+        // The things in source that we want to ignore beow
+        var transferred = _updateContext.sections.deleted
+        
+        // Populate target with moved
+        for m in _updateContext.sections.moved {
+            transferred.insert(m.0)
+            source[m.0].target = m.1
+            target[m.1] = source[m.0]
+        }
+        
+        // Insert the remaining sections from source that are carrying over (not deleted)
+        // After this target should be fully populated
+        var idx = 0
+        func incrementInsert() {
+            while idx < target.count && target[idx] != nil {
+                idx += 1
+            }
+        }
+        for section in source where !transferred.contains(section.source!) {
+            incrementInsert()
+            section.target = idx
+            target[idx] = section
+        }
+        
+        // Dispatch out the item changes to each section
+        // target or source are used depending on the type of action and if it is refferring to a new index path or an old one
+        for d in _updateContext.items.deleted {
+            source[d._section].removed.insert(d._item)
+        }
+        for i in _updateContext.items.inserted {
+            target[i._section]!.inserted.insert(i._item)
+        }
+        for m in _updateContext.items.moved {
+            source[m.0._section].removed.insert(m.0._item)
+            target[m.1._section]!.inserted.insert(m.1._item)
+        }
+        
+        func section(for previousSection: Int) -> Int? {
+            return source[previousSection].target
+        }
+        
+        // Validate the final sections
+        var final = target.map { (section) -> Section in
+            guard let s = section else {
+                preconditionFailure("CollectionView: missing section after updates")
+            }
+            print(source)
+            print(target)
+            print(self._updateContext)
+            precondition(s.target != nil, "Invalid target index for section \(s)")
+            precondition(s.estimatedCount == newData[s.target!], "Invalid update: invalid number of items in section \(s.target!). The number of items contained in an existing section after the update \(s.estimatedCount) must be equal to the number of items contained in that section before the update \(s.count), plus or minus the number of items inserted or deleted from that section including items moved in or out (\(s.inserted.count) inserted, \(s.removed.count) deleted). Expected \(newData[s.target!]) items according to data source.")
+            return s
+        }
+        
+        
+        // Do the layout prep
+        doLayoutPrep()
+        
+        var updateViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
+        var updatedCellIndex = IndexedSet<IndexPath, CollectionViewCell>()
+        var updatedSelections = Set<IndexPath>()
+        
+        // Update the supplementary views
+        for (id, view) in self.contentDocumentView.preparedSupplementaryViewIndex {
+            guard let ip = id.indexPath else {
+                log.error("Collection View Error: A supplemenary view identifier has a nil indexPath when trying to adjust views")
+                continue
+            }
+            
+            guard let newSection = section(for: ip._section) else {
+                // The section was deleted
+                if let attrs = view.attributes {
+                    _updateContext.updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: id))
+                }
+                continue
+            }
+            if ip._section == newSection {
+                // No changes
+                updateViewIndex[id] = view
+            }
+            else {
+                let newIP = IndexPath.for(section: newSection)
+                let newID = id.copy(with: newIP)
+                updateViewIndex[newID] = view
+                _updateContext.updates.append(ItemUpdate(view: view, indexPath: newIP, type: .update, identifier: newID))
+            }
+        }
+        
+//        if let cell = self.cellForItem(at: d) {
+//            _updateContext.updates.append(ItemUpdate(cell: cell, attrs: cell.attributes!, type: .remove))
+//            _ = contentDocumentView.preparedCellIndex.removeValue(for: d)
+//        }
+        
+        
+        self._selectedIndexPaths = selections
+        self.contentDocumentView.pendingUpdates = _updateContext.updates
+//        self.contentDocumentView.preparedCellIndex = updatedCellIndex
+        self.contentDocumentView.preparedSupplementaryViewIndex = updateViewIndex
+        self._reloadLayout(animated, scrollPosition: .none, completion: completion, needsRecalculation: false)
+        
+
+        return;
+        
+        
+        /*
         var sectionShift = ShiftSet(count: 0)
         var itemShifts = [Int:ShiftSet]()
         
         sectionShift = ShiftSet(count: self.numberOfSections)
         
-        let oldDataCounts = self.sections
-        self._reloadDataCounts()
+//        let oldDataCounts = self.sections
+//        self._reloadDataCounts()
         
-        var sectionDelta = self._updateContext.insertedSections.count - self._updateContext.deletedSections.count
-        if self.sections.count - oldDataCounts.count != sectionDelta {
-            log.error("❌ Invalid section changes. Given change of \(sectionDelta) but expected \(self.sections.count - oldDataCounts.count)")
-        }
+        // Validate the section changes
+        
         
         doLayoutPrep()
         
@@ -1344,7 +1481,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         
         func countIn(section: Int) -> Int {
-            return max(oldDataCounts[section] ?? 0, self.numberOfItems(in: section))
+            return max(oldData[section], self.numberOfItems(in: section))
         }
         
         // Item shifting
@@ -1530,7 +1667,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.contentDocumentView.preparedCellIndex = newCellIndex
         self.contentDocumentView.preparedSupplementaryViewIndex = newViewIndex.dictionary
         self._reloadLayout(animated, scrollPosition: .none, completion: completion, needsRecalculation: false)
-        
+     */
     }
     
     

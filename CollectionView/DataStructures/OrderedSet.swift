@@ -46,8 +46,9 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
     
     public var description: String {
         var str = "\(type(of: self)) [\n"
-        for i in self.enumerated() {
-            str += "\(i.offset) : \(i.element) \(i.element.hashValue)\n"
+        for i in 0..<count {
+            let e = _data[i]
+            str += "\(_map[e]!): \(e)\n"
         }
         str += "]"
         return str

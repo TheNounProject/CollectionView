@@ -77,7 +77,7 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
     }
     
     func testMoveItemInSection() {
-        self.data = [2,2]
+        self.data = [2]
         self.collectionView.reloadData()
         
         let ips = [IndexPath.zero, IndexPath.for(item: 1, section: 0)]
@@ -310,5 +310,78 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
         print("---")
     }
     
+
+    
+    struct FinalSection {
+        let inserted : IndexSet
+        let removed : IndexSet
+        let count : Int
+        
+        private var map = [Int:Int]()
+        private var storage = [Int?]()
+        private var idx : Int = 0
+        private var next : Int = 0
+        
+        init(count: Int, inserted: IndexSet, removed: IndexSet) {
+            self.count = count - inserted.count + removed.count
+            self.storage.reserveCapacity(count)
+            self.inserted = inserted
+            self.removed = removed
+        }
+        
+        mutating func index(of previousIndex: Int) -> Int? {
+            if removed.contains(previousIndex) { return nil }
+            populate(to: previousIndex)
+            return storage[previousIndex]
+        }
+        
+        mutating func populate(to: Int) {
+            while idx < count && next <= to {
+                if removed.contains(idx) {
+                    storage.append(nil)
+                }
+                else {
+                    if inserted.contains(idx) {
+                        next += 1
+                    }
+                    storage.append(next)
+                    map[next] = idx
+                    next += 1
+                }
+                idx += 1
+            }
+        }
+    }
+    
+    
+    func testItemAdjust() {
+
+        // 0, 1, 2, 3, 3, 4, 6, 7, 8, 9
+        // 0, 1, 2, nil, 3, 4, 6, 7, 8, 9
+        // 0, 1, 2, 4, nil, 5, 6, 7, 8, 9
+        var section = FinalSection(count: 10, inserted: [3], removed: [5])
+        
+        section.populate(to: section.count)
+        print(section)
+        
+        for n in 0..<10 {
+            print("Item \(n) -> \(section.index(of: n)?.description ?? "removed")")
+        }
+    }
+    
+    func testAdjustPerformance() {
+        
+        let inserted = IndexSet(integersIn: 6...7)
+        let removed = IndexSet(integersIn: 2...4)
+        
+        let finalCount = 10 + inserted.count - removed.count
+        self.measure {
+            var section = FinalSection(count: 10, inserted: inserted, removed: removed)
+            for n in 0..<finalCount {
+//                _ = section.index(of: n)
+                print("Item \(n) -> \(section.index(of: n)?.description ?? "removed")")
+            }
+        }
+    }
 
 }

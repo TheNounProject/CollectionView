@@ -1245,7 +1245,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var moved = IndexedSet<Int, Int>() // Source and Destination indexes for moved sections
     }
     
-    private class Section : CustomStringConvertible {
+    private class SectionValidator : Equatable, CustomStringConvertible {
         var source : Int?
         var target: Int?
         var count : Int = 0
@@ -1253,10 +1253,13 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var estimatedCount : Int {
             guard self.target != nil else { return 0 }
             guard self.source != nil else { return count }
-            return count + inserted.count - removed.count
+            return count + (inserted.count + movedIn.count) - (removed.count + movedOut.count)
         }
-        var inserted = Set<Int>()
-        var removed = Set<Int>()
+        var inserted = IndexSet()
+        var removed = IndexSet()
+        var movedOut = IndexSet()
+        var movedIn = IndexSet()
+        var deltas = [Int:Int]()
         
         init(source: Int?, target: Int?, count: Int) {
             self.source = source
@@ -1264,8 +1267,53 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self.count = count
         }
         
+        static func ==(lhs: CollectionView.SectionValidator, rhs: CollectionView.SectionValidator) -> Bool {
+            return lhs.source == rhs.source && lhs.target == rhs.target
+        }
+        
         var description: String {
             return "Source: \(source ?? -1) Target: \(self.target ?? -1) Count: \(count) expected: \(estimatedCount)"
+        }
+    }
+    
+    struct Section {
+        let inserted : IndexSet
+        let removed : IndexSet
+        let count : Int
+        
+        private var storage = [Int?]()
+        private var idx : Int = 0
+        private var next : Int = 0
+        private var maxOver : Int = 0
+        
+        init(count: Int, deltas: IndexSet, pinned: IndexSet, removed: IndexSet) {
+            self.count = count - inserted.count + removed.count
+            self.storage.reserveCapacity(count)
+            self.inserted = inserted.union(pinned)
+            self.removed = removed
+            self.maxOver = count + inserted.count
+        }
+        
+        mutating func index(of previousIndex: Int) -> Int? {
+            if removed.contains(previousIndex) { return nil }
+            populate(to: previousIndex)
+            return storage[previousIndex]
+        }
+        
+        mutating func populate(to: Int) {
+            while idx < count && next <= to + maxOver {
+                if removed.contains(idx) {
+                    storage.append(nil)
+                }
+                else {
+                    if inserted.contains(idx) {
+                        next += 1
+                    }
+                    storage.append(next)
+                    next += 1
+                }
+                idx += 1
+            }
         }
     }
     
@@ -1326,18 +1374,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var sectionDelta = self._updateContext.sections.inserted.count - self._updateContext.sections.deleted.count
         precondition(newData.count - oldData.count == sectionDelta, "Invalid section changes. Had \(oldData.count) delta of \(sectionDelta) is \(oldData.count - sectionDelta) but expected \(newData.count)")
         
-        var source = [Section]()
-        var target = [Section?](repeatElement(nil, count: newData.count))
+        var source = [SectionValidator]()
+        var target = [SectionValidator?](repeatElement(nil, count: newData.count))
         var selections = Set<IndexPath>()
         
         // Populate source with existing data
         for s in oldData.enumerated() {
-            source.append(Section(source: s.offset, target: nil, count: s.element))
+            source.append(SectionValidator(source: s.offset, target: nil, count: s.element))
         }
         
         // Populate target with inserted
         for s in _updateContext.sections.inserted {
-            target[s] = Section(source: nil, target: s, count: newData[s])
+            target[s] = SectionValidator(source: nil, target: s, count: newData[s])
         }
         
         // The things in source that we want to ignore beow
@@ -1373,14 +1421,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
             target[i._section]!.inserted.insert(i._item)
         }
         for m in _updateContext.items.moved {
-            source[m.0._section].removed.insert(m.0._item)
-            target[m.1._section]!.inserted.insert(m.1._item)
+            let s = source[m.0._section]
+            let t = target[m.1._section]!
+            if s != t {
+                s.movedOut.insert(m.0._item)
+                t.movedIn.insert(m.1._item)
+            }
+            else {
+                t.pinned.insert(m.1._item)
+            }
         }
-        
-        func section(for previousSection: Int) -> Int? {
-            return source[previousSection].target
-        }
-        
+ 
         // Validate the final sections
         var final = target.map { (section) -> Section in
             guard let s = section else {
@@ -1390,10 +1441,26 @@ open class CollectionView : ScrollView, NSDraggingSource {
             print(target)
             print(self._updateContext)
             precondition(s.target != nil, "Invalid target index for section \(s)")
-            precondition(s.estimatedCount == newData[s.target!], "Invalid update: invalid number of items in section \(s.target!). The number of items contained in an existing section after the update \(s.estimatedCount) must be equal to the number of items contained in that section before the update \(s.count), plus or minus the number of items inserted or deleted from that section including items moved in or out (\(s.inserted.count) inserted, \(s.removed.count) deleted). Expected \(newData[s.target!]) items according to data source.")
-            return s
+            precondition(s.estimatedCount == newData[s.target!], "Invalid update: invalid number of items in section \(s.target!). The number of items contained in an existing section after the update \(s.estimatedCount) must be equal to the number of items contained in that section before the update \(s.count), plus or minus the number of items inserted or deleted from that section (\(s.inserted.count) inserted, \(s.removed.count) deleted) and plus or minus the number of items moved into or out of that section (\(s.movedIn.count) moved in, \(s.movedOut.count) moved out). Data source reported \(newData[s.target!]) items.")
+            return Section(count: newData[s.target!],
+                           inserted: s.inserted.union(s.movedIn),
+                           pinned: s.pinned,
+                           removed: s.removed.union(s.movedOut))
         }
         
+        
+        func section(for previousSection: Int) -> Int? {
+            return source[previousSection].target
+        }
+        
+        func indexPath(for previous: IndexPath) -> IndexPath? {
+            if let ip = _updateContext.items.moved[previous] {
+                return ip
+            }
+            guard let s = section(for: previous._section) else { return nil }
+            guard let i = final[s].index(of: previous._item) else { return nil }
+            return IndexPath.for(item: i, section: s)
+        }
         
         // Do the layout prep
         doLayoutPrep()
@@ -1401,6 +1468,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var updateViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
         var updatedCellIndex = IndexedSet<IndexPath, CollectionViewCell>()
         var updatedSelections = Set<IndexPath>()
+        
+        self._selectedIndexPaths = Set(self._selectedIndexPaths.flatMap { (ip) -> IndexPath? in
+            return indexPath(for: ip)
+        })
         
         // Update the supplementary views
         for (id, view) in self.contentDocumentView.preparedSupplementaryViewIndex {
@@ -1428,15 +1499,29 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
         }
         
-//        if let cell = self.cellForItem(at: d) {
-//            _updateContext.updates.append(ItemUpdate(cell: cell, attrs: cell.attributes!, type: .remove))
-//            _ = contentDocumentView.preparedCellIndex.removeValue(for: d)
-//        }
+        
+        for (currentIP, cell) in self.contentDocumentView.preparedCellIndex {
+            
+            guard let ip = indexPath(for: currentIP) else {
+                _updateContext.updates.append(ItemUpdate(cell: cell, attrs: cell.attributes!, type: .remove))
+                continue
+            }
+            
+            let view = _updateContext.reloadedItems.contains(currentIP)
+                ? _prepareReplacementCell(for: cell, at: ip)
+                : cell
+            
+            updatedCellIndex[ip] = cell
+            
+            if ip != currentIP {
+                _updateContext.updates.append(ItemUpdate(cell: view, indexPath: ip, type: .update))
+            }
+        }
         
         
         self._selectedIndexPaths = selections
         self.contentDocumentView.pendingUpdates = _updateContext.updates
-//        self.contentDocumentView.preparedCellIndex = updatedCellIndex
+        self.contentDocumentView.preparedCellIndex = updatedCellIndex
         self.contentDocumentView.preparedSupplementaryViewIndex = updateViewIndex
         self._reloadLayout(animated, scrollPosition: .none, completion: completion, needsRecalculation: false)
         

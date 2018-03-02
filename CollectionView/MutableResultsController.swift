@@ -502,9 +502,8 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     private var _editingContext = EditingContext()
     private var _editing = 0
     
-    
-    
     func logContents(prefix: String) {
+        return
         print("")
         print("\(prefix) -----------")
         for section in _sections.enumerated() {
@@ -548,7 +547,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                     continue;
                 }
                 processedSections[idx] = changeSet
-                print(changeSet.edits)
             }
         }
         
@@ -591,7 +589,8 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                     return
             }
             
-            guard let proposedInsert = processedSections[targetIP._section]?.edit(for: object) else {
+            guard let targetEdits = processedSections[targetIP._section]?.operationIndex.edits(for: object), !targetEdits.isEmpty else {
+                print("Couldn't find insert for cross section souce: \(sourceIP) target \(targetIP)")
                 return
             }
             
@@ -599,14 +598,36 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             let newEdit = Edit(.move(origin: sourceIP._item), value: object, index: targetIP._item)
             processedSections[targetIP._section]?.operationIndex.moves.insert(newEdit, for: targetIP._item)
             
+            
+            
+            // Remove the original edits
+            // With Heckel multiple edits can be made on the same object (Move and Update)
+            var targetReplaced : (Element, Int)? = nil
+            var targetMoved : (Element, Int)? = nil
+            for e in targetEdits {
+                switch e.operation {
+                case .substitution: targetReplaced = (e.value, e.index)
+                case let .move(origin: _): targetMoved = (e.value, e.index)
+                default: break
+                }
+                processedSections[targetIP._section]!.operationIndex.remove(edit: e)
+            }
+            if let m = targetMoved {
+                processedSections[targetIP._section]!.operationIndex.insert(m.0, index: m.1)
+            }
+            else if let r = targetReplaced {
+                processedSections[targetIP._section]!.operationIndex.replace(r.0, index: r.1)
+            }
+            
             // Remove the old insert operation
             processedSections[targetIP._section]?.remove(edit: proposedInsert)
             
             
             // If we were going to substitute the item at the target, remove it
             if case .substitution = proposedInsert.operation, let obj = self._editingContext.objectChanges.object(for: targetIP) {
-                let insert = Edit(.deletion, value: obj, index: proposedInsert.index)
-                processedSections[targetIP._section]?.operationIndex.deletes.insert(insert, for: targetIP._item)
+//                print("Replacing substitution with delete, original: \(proposedInsert)")
+                let delete = Edit(.deletion, value: obj, index: proposedInsert.index)
+                processedSections[targetIP._section]?.operationIndex.deletes.insert(delete, for: targetIP._item)
             }
             
             // Get the new index for the section this object came from (more work to do if sections have changed)
@@ -620,13 +641,15 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             }
             
             // There should always be a source edit (delete or replace)
-            guard let sourceEdit = processedSections[sourceSectionIndex]?.edit(for: object) else { return }
+            guard let sourceEdit = processedSections[sourceSectionIndex]?.edit(withSource: sourceIP._item) else { return }
             
             // Go ahead and drop that edit
+//            print("Removing source edit: \(sourceEdit)")
             processedSections[sourceSectionIndex]?.remove(edit: sourceEdit)
             
             // If it was a substitution, replace it with an insert
             if case .substitution = sourceEdit.operation {
+//                print("Replacing source edit, original: \(sourceEdit)")
                 let insert = Edit(.insertion, value: sourceEdit.value, index: sourceEdit.index)
                 processedSections[sourceSectionIndex]?.operationIndex.inserts.insert(insert, for: insert.index)
             }
@@ -645,7 +668,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             // but there is no apparent reason why order is important.
             
             for edit in changes {
-                print(edit)
+//                print(edit)
                 switch edit.operation {
                     
                 case .move(origin: _):
@@ -715,7 +738,7 @@ extension MutableResultsController where Section:AnyObject {
     public func insert(section: Section) {
         self.beginEditing()
         defer { self.endEditing() }
-        
+        _sections.needsSort = true
         _ = self.getOrCreateSectionInfo(for: section)
     }
     

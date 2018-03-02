@@ -335,6 +335,65 @@ class OrderedSetTests: XCTestCase {
             }
         }
     }
+    
+    let performanceInsertCount = 100_000
+    
+    func testAppendPerformance_arrayControl() {
+        self.measure {
+            var arr = [Int]()
+            for n in 0..<performanceInsertCount {
+                arr.append(n)
+            }
+        }
+    }
+    
+    func testAppendPerformance_basic() {
+        self.measure {
+            var set = OrderedSet<Int>()
+            for n in 0..<performanceInsertCount {
+                set.append(n)
+            }
+        }
+    }
+    func testAppendPerformance_unsafeBasic() {
+        self.measure {
+            var set = OrderedSet<Int>()
+            for n in 0..<performanceInsertCount {
+                set.unsafeAppend(n)
+            }
+        }
+    }
+    func testAppendPerformance_provider() {
+        self.measure {
+            var set = OrderedSet<Int>()
+            set.append(performanceInsertCount, provider: {
+                return $0
+            })
+        }
+    }
+    func testAppendPerformance_unsafeProvider() {
+        self.measure {
+            var set = OrderedSet<Int>()
+            set.unsafeAppend(performanceInsertCount, provider: {
+                return $0
+            })
+        }
+    }
+    
+    func testInitPerformance_unsafeArray() {
+        let source = Array(0..<performanceInsertCount)
+        self.measure {
+            _ = OrderedSet<Int>(unsafe: source)
+        }
+    }
+    
+    func testInitPerformance_provider() {
+        self.measure {
+            _ = OrderedSet<Int>(count: performanceInsertCount, provider: {
+                return $0
+            })
+        }
+    }
 
     
     // MARK: - Sorting

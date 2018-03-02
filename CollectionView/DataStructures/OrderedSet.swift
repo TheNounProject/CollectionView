@@ -34,6 +34,25 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         }
     }
     
+    public init(unsafe array: [Element]) {
+        self._data = array
+        let c = array.count
+        for n in 0..<c {
+            _map[array[n]] = n
+        }
+    }
+    
+    public init(count insertCount: Int, provider: (Int)->Element) {
+        _data.reserveCapacity(insertCount)
+        _map.reserveCapacity(insertCount)
+        for n in 0..<insertCount {
+            let e = provider(n)
+            guard !self.contains(e) else { continue }
+            self._map[e] = n
+            self._data.append(e)
+        }
+    }
+    
     public init(arrayLiteral elements: Element...) {
         for (idx, e) in elements.enumerated() {
             guard _map[e] == nil else {
@@ -107,15 +126,39 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
 
     @discardableResult public mutating func append(_ object: Element) -> Bool {
         guard !self.contains(object) else { return false }
-        self.needsSort = true
+        self.unsafeAppend(object)
+        return true
+    }
+    
+    public mutating func unsafeAppend(_ object: Element) {
         _data.append(object)
         _map[object] = _data.count - 1
-        return true
     }
     
     public mutating func append<C : Collection>(contentsOf newElements: C) where C.Iterator.Element == Element {
         for e in newElements {
             self.append(e)
+        }
+    }
+    
+    mutating public func append(_ insertCount: Int, provider: (Int)->Element) {
+        let start = self.count
+        var idx = _data.count
+        for n in start..<(start + insertCount) {
+            let e = provider(n)
+            guard !self.contains(e) else { continue }
+            self._map[e] = idx
+            self._data.append(e)
+            idx += 1
+        }
+        _remap(startingAt: start)
+    }
+    mutating public func unsafeAppend(_ insertCount: Int, provider: (Int)->Element) {
+        let start = self.count
+        for n in start..<(start + insertCount) {
+            let e = provider(n)
+            self._map[e] = n
+            self._data.append(e)
         }
     }
 
@@ -143,6 +186,9 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         }
         return inserted
     }
+    
+
+    
     
     
     // MARK: - Removing

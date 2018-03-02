@@ -320,8 +320,6 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
         
         mrc.beginEditing()
         
-        
-        
         var objects = c0
         objects.append(contentsOf: c1)
         objects.append(contentsOf: c2)

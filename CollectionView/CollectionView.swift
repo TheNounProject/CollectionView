@@ -406,7 +406,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     /*-------------------------------------------------------------------------------*/
     
     private var sections = [Int]()
-    
+//    private var storage = [[Item]]()
     
     /**
      Returns the number of sections displayed by the collection view.
@@ -430,9 +430,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     
-    
-    
-    
     /**
      Reloads all the data and views in the collection view
      */
@@ -452,11 +449,16 @@ open class CollectionView : ScrollView, NSDraggingSource {
 
     
     private func _reloadDataCounts() {
-        self.sections = []
+        self.sections = fetchDataCounts()
+    }
+    
+    private func fetchDataCounts() -> [Int] {
         let sCount = self.dataSource?.numberOfSections(in: self) ?? 0
+        var res = [Int]()
         for sIndex in 0..<sCount {
-            self.sections.append(self.dataSource?.collectionView(self, numberOfItemsInSection: sIndex) ?? 0)
+            res.append(self.dataSource?.collectionView(self, numberOfItemsInSection: sIndex) ?? 0)
         }
+        return res
     }
     
     
@@ -1259,7 +1261,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var removed = IndexSet()
         var movedOut = IndexSet()
         var movedIn = IndexSet()
-        var deltas = [Int:Int]()
+        var moves = IndexedSet<Int, Int>()
         
         init(source: Int?, target: Int?, count: Int) {
             self.source = source
@@ -1276,51 +1278,76 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
     }
     
-    struct Section {
-        var removed : IndexSet
-        let deltas : [Int:Int]
-        let count : Int
+    private struct Section {
+//        var removed : IndexSet
+//        let deltas : [Int:Int]
+//        let count : Int
         
-        private var storage = [Int?]()
-        private var idx : Int = 0
-        private var next : Int = 0
-        private var adjust : Int = 0
+//        private var storage = [Int?]()
+//        private var idx : Int = 0
+//        private var next : Int = 0
+//        private var adjust : Int = 0
+//
+//        var transferred : IndexSet
+        var isInserted : Bool
+        var final : [Int?]
         
-        init(newCount: Int, deltas: [Int:Int], inserted: Int, removed: IndexSet) {
-            self.count = newCount
-            self.storage.reserveCapacity(count)
-            self.deltas = deltas
-            self.removed = removed
+        init(validator: SectionValidator) {
+            // Inserted
+            if validator.source == nil {
+                self.isInserted = true
+                self.final = []
+            }
+            else {
+                self.isInserted = false
+                
+                let oldCount = validator.count
+                let newCount = validator.estimatedCount
+                let inserted = validator.inserted.union(validator.movedIn)
+                var transferred = validator.removed.union(validator.movedOut)
+                
+                var temp = [Int?](repeatElement(nil, count: newCount))
+                
+                for i in inserted {
+                    temp[i] = -1
+                }
+                for m in validator.moves {
+                    transferred.insert(m.index)
+                    temp[m.value] = m.index
+                }
+                
+                var idx = 0
+                func incrementInsert() {
+                    while idx < temp.count - 1 && temp[idx] != nil {
+                        idx += 1
+                    }
+                }
+                for i in 0..<oldCount where !transferred.contains(i) {
+                    incrementInsert()
+                    temp[idx] = i
+                }
+                
+                // Temp now has the source for each target index (inserted are -1)
+                var destinations = [Int?](repeatElement(nil, count: oldCount))
+                for (target, source) in temp.enumerated() {
+                    if source! >= 0 {
+                        destinations[source!] = target
+                    }
+                }
+                self.final = destinations
+            }
         }
         
         mutating func index(of previousIndex: Int) -> Int? {
-            if removed.contains(previousIndex) { return nil }
-            populate(to: previousIndex)
-            return storage[previousIndex]
-        }
-        
-        mutating func populate(to: Int) {
-            while storage.count <= to {
-                if removed.contains(idx) {
-                    storage.append(nil)
-                }
-                else {
-                    let delta = deltas[idx] ?? 0
-                    if next == idx  {
-                        adjust -= delta
-                    }
-                    else {
-                        adjust += delta
-                    }
-                    storage.append(next + adjust)
-                    next += 1
-                }
-                idx += 1
-            }
+//            if removed.contains(previousIndex) { return nil }
+            return final[previousIndex]
         }
     }
     
-    
+    struct Item {
+        var source : Int?
+        var target : Int?
+    }
     
     private struct UpdateContext {
         var sections = SectionTracker()
@@ -1335,7 +1362,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             updates.removeAll()
             reloadedItems.removeAll()
         }
-   
     }
     
     
@@ -1419,21 +1445,20 @@ open class CollectionView : ScrollView, NSDraggingSource {
         // target or source are used depending on the type of action and if it is refferring to a new index path or an old one
         for d in _updateContext.items.deleted {
             source[d._section].removed.insert(d._item)
-            source[d._section].deltas[d._item] = -1
         }
         for i in _updateContext.items.inserted {
             target[i._section]!.inserted.insert(i._item)
-            target[i._section]!.deltas[i._item] = +1
         }
         for m in _updateContext.items.moved {
             let s = source[m.0._section]
             let t = target[m.1._section]!
-            if s != t {
+            if s == t {
+                s.moves[m.0._item] = m.1._item
+            }
+            else {
                 s.movedOut.insert(m.0._item)
                 t.movedIn.insert(m.1._item)
             }
-            s.deltas[m.0._item] = -1
-            s.deltas[m.1._item] = 1
         }
  
         // Validate the final sections
@@ -1441,15 +1466,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
             guard let s = section else {
                 preconditionFailure("CollectionView: missing section after updates")
             }
-            print(source)
-            print(target)
-            print(self._updateContext)
+//            print(source)
+//            print(target)
+//            print(self._updateContext)
             precondition(s.target != nil, "Invalid target index for section \(s)")
             precondition(s.estimatedCount == newData[s.target!], "Invalid update: invalid number of items in section \(s.target!). The number of items contained in an existing section after the update \(s.estimatedCount) must be equal to the number of items contained in that section before the update \(s.count), plus or minus the number of items inserted or deleted from that section (\(s.inserted.count) inserted, \(s.removed.count) deleted) and plus or minus the number of items moved into or out of that section (\(s.movedIn.count) moved in, \(s.movedOut.count) moved out). Data source reported \(newData[s.target!]) items.")
-            return Section(newCount: newData[s.target!],
-                           deltas: s.deltas,
-                           inserted: s.inserted.union(s.movedIn).count,
-                           removed: s.removed.union(s.movedOut))
+            return Section(validator: s)
         }
         
         
@@ -1462,7 +1484,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
                 return ip
             }
             guard let s = section(for: previous._section) else { return nil }
-            guard let i = final[s].index(of: previous._item) else { return nil }
+            guard let i = final[s] .index(of: previous._item) else { return nil }
             return IndexPath.for(item: i, section: s)
         }
         

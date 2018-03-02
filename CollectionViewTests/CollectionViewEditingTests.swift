@@ -141,7 +141,7 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
     
     func testBroken() {
         
-        self.data = [7, 7, 6]
+        self.data = [8, 8, 7]
         self.collectionView.reloadData()
         
         let exp = self.expectation(description: "Done")
@@ -150,32 +150,30 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
             self.collectionView.moveSection(1, to: 0, animated: true)
             self.collectionView.moveSection(0, to: 1, animated: true)
             self.collectionView.insertItems(at: [
-                [0, 0],
-//                [1, 7]
+                [0, 0]
                 ], animated: true)
             self.collectionView.deleteItems(at: [
-                [2, 5],
-//                [1, 2]
+                [1, 5],
+                [0, 4]
                 ], animated: true)
             self.collectionView.moveItems([
-                ([1, 5], [1, 4]),
-                ([2, 0], [0, 2]),
-                ([1, 2], [1, 0]),
-                ([0, 1], [2, 4]),
-                ([1, 1], [1, 1]),
-                ([0, 4], [0, 5]),
-                ([1, 7], [2, 2]),
-                ([0, 3], [1, 5]),
-                ([2, 3], [0, 4]),
-                ([1, 0], [2, 5]),
-                ([2, 2], [1, 6]),
-                ([0, 0], [0, 1]),
-                ([0, 7], [2, 1]),
-                ([1, 6], [1, 2]),
-                ([0, 2], [2, 3]),
-                ([1, 3], [0, 6]),
-                ([2, 1], [0, 7]),
-                ([1, 4], [0, 3]),
+                ([2, 0], [1, 2]),
+                ([0, 6], [1, 4]),
+                ([0, 5], [1, 5]),
+                ([2, 5], [2, 3]),
+                ([0, 1], [0, 1]),
+                ([1, 1], [2, 2]),
+                ([2, 4], [2, 5]),
+                ([0, 4], [1, 1]),
+                ([2, 6], [1, 0]),
+                ([1, 7], [0, 4]),
+                ([2, 3], [2, 6]),
+                ([1, 0], [0, 7]),
+                ([0, 0], [0, 3]),
+                ([0, 7], [0, 6]),
+                ([1, 6], [2, 1]),
+                ([1, 3], [0, 5]),
+                ([2, 1], [1, 6])
                 ], animated: true)
         }) { (_) in
             exp.fulfill()
@@ -349,6 +347,50 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
                     next += 1
                 }
                 idx += 1
+            }
+        }
+    }
+    
+    private struct Item : Hashable {
+
+        var section : Int
+        var item : Int
+        
+        var hashValue: Int {
+            return section + item
+        }
+        
+        static func ==(lhs: Item, rhs: Item) -> Bool {
+            return lhs.section == rhs.section && lhs.item == rhs.item
+        }
+    }
+    
+    func testStorage() {
+        
+        let sections = 20
+        let items = 5000
+        
+        self.measure {
+            var storage = [[Item]]()
+            for s in 0..<sections {
+                
+                var arr = [Item]()
+                for i in 0..<items {
+//                    storage[s].append(Item(section: s, item: i))
+                    arr.append(Item(section: s, item: i))
+                }
+//                var sI = OrderedSet<Item>()
+//                sI.append(items, provider: {
+//                    return Item(section: s, item: $0)
+//                })
+//                for i in 0..<items {
+//                    sI.append(Item(section: s, item: i))
+//                }
+                
+//                let _ = OrderedSet<Item>(count: items, provider: {
+//                    return Item(section: s, item: $0)
+//                })
+//                storage.append(arr)
             }
         }
     }

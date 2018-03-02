@@ -69,6 +69,9 @@ public final class Heckel: DiffAware {
         // Each line works as the key in the table look-up, i.e. as table[line].
         var table: [Int: TableEntry] = [:]
         
+        print("Source: \(old)")
+        print("Target: \(new)")
+        
         // The arrays OA and NA have one entry for each line in their respective files, O and N
         var oldArray = [ArrayEntry]()
         var newArray = [ArrayEntry]()
@@ -253,6 +256,8 @@ public final class Heckel: DiffAware {
                     runningOffset += 1
                     changes.append(Edit.insert(new[newTuple.offset], index: newTuple.offset))
                 case .indexInOther(let oldIndex):
+                    
+                    // note that an entry can be updated /and/ moved
                     if old[oldIndex] != new[newTuple.offset] {
                         changes.append(Edit.replace(new[newTuple.offset], index: newTuple.offset))
                     }
@@ -265,10 +270,33 @@ public final class Heckel: DiffAware {
                             to: newTuple.offset
                         ))
                     }
+ /*
+                    
+                    let deleteOffset = deleteOffsets[oldIndex]
+                    let needsMove = (oldIndex - deleteOffset + runningOffset) != newTuple.offset
+                    
+                    if old[oldIndex] != new[newTuple.offset] {
+                        changes.append(Edit.delete(old[newTuple.offset], index: newTuple.offset))
+//                        if needsMove {
+                            changes.append(Edit.insert(new[newTuple.offset], index: newTuple.offset))
+//                        }
+                        //                        changes.append(Edit.replace(new[newTuple.offset], index: newTuple.offset))
+                        //                        return
+                    }
+                        // The object is not at the expected position, so move it.
+                    else if needsMove {
+                        //                        changes.append(Edit.insert(new[newTuple.offset], index: newTuple.offset))
+                        changes.append(Edit.move(new[newTuple.offset],
+                                                 from: oldIndex,
+                                                 to: newTuple.offset
+                        ))
+                    }
+/*
+                    
                 }
             }
         }
-        
+        print(changes)
         return changes
     }
 }

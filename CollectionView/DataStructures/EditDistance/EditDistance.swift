@@ -135,6 +135,43 @@ public struct EditOperationIndex<T:Hashable> {
         edits.append(contentsOf: substitutions.values)
         return edits
     }
+    
+    public func edits(for value: T) -> [Edit<T>] {
+        let mock = Edit(.insertion, value: value, index: 0)
+        var edits = [Edit<T>]()
+        if let i = self.inserts.index(of: mock),
+            let e = self.inserts.value(for: i) {
+            edits.append(e)
+        }
+        if let i = self.deletes.index(of: mock),
+            let e = self.deletes.value(for: i) {
+            edits.append(e)
+        }
+        if let i = self.substitutions.index(of: mock),
+            let e = self.substitutions.value(for: i) {
+            edits.append(e)
+        }
+        if let i = self.moves.index(of: mock),
+            let e = self.moves.value(for: i) {
+            edits.append(e)
+        }
+        return edits
+    }
+    
+    public mutating func remove(edit: Edit<T>) {
+        switch edit.operation {
+        case .deletion: self.deletes.remove(edit)
+        case .insertion: self.inserts.remove(edit)
+        case .substitution: self.substitutions.remove(edit)
+        case .move(origin: _): self.moves.remove(edit)
+        }
+    }
+    
+    public mutating func edit(withSource index: Int) -> Edit<T>? {
+        return self.operationIndex.deletes.value(for: index)
+            ?? self.operationIndex.substitutions.value(for: index)
+            ?? self.operationIndex.moves.value(for: index)
+    }
 }
 
 
@@ -150,43 +187,13 @@ public struct EditDistance<T: Collection> where T.Iterator.Element: Hashable, T.
     /// The ending-point collection.
     public let destination: T
 
-    public lazy var operationIndex : EditOperationIndex<Element> = {
+    var operationIndex : EditOperationIndex<Element> = {
         return EditOperationIndex<Element>(edits: self.edits)
     }()
     
     public var edits: [Edit<Element>]
     
-    public mutating func edit(for value: Element) -> Edit<Element>? {
-        let e = Edit(.insertion, value: value, index: 0)
-        if let i = self.operationIndex.inserts.index(of: e) {
-            return self.operationIndex.inserts.value(for: i)
-        }
-        if let i = self.operationIndex.deletes.index(of: e) {
-            return self.operationIndex.deletes.value(for: i)
-        }
-        if let i = self.operationIndex.substitutions.index(of: e) {
-            return self.operationIndex.substitutions.value(for: i)
-        }
-        if let i = self.operationIndex.moves.index(of: e) {
-            return self.operationIndex.moves.value(for: i)
-        }
-        return nil
-    }
     
-    public mutating func remove(edit: Edit<Element>) {
-        switch edit.operation {
-        case .deletion: self.operationIndex.deletes.remove(edit)
-        case .insertion: self.operationIndex.inserts.remove(edit)
-        case .substitution: self.operationIndex.substitutions.remove(edit)
-        case .move(origin: _): self.operationIndex.moves.remove(edit)
-        }
-    }
-    
-    public mutating func edit(withSource index: Int) -> Edit<Element>? {
-        return self.operationIndex.deletes.value(for: index)
-            ?? self.operationIndex.substitutions.value(for: index)
-            ?? self.operationIndex.moves.value(for: index)
-    }
     
     public init(source s: T, target t: T, forceUpdates: Set<Element>? = nil, algorithm: DiffAware = Heckel()) {
         self.origin = s

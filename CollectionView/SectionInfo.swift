@@ -111,3 +111,13 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
         return changes
     }
 }
+
+extension SectionInfo: CustomStringConvertible {
+    
+    public var description: String {
+        if let o = self.representedObject {
+            return "SectionInfo representing \(o)"
+        }
+        return "SectionInfo representing nil"
+    }
+}

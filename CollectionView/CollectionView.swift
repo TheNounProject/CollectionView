@@ -1405,7 +1405,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         var source = [SectionValidator]()
         var target = [SectionValidator?](repeatElement(nil, count: newData.count))
-        var selections = Set<IndexPath>()
         
         // Populate source with existing data
         for s in oldData.enumerated() {
@@ -1466,11 +1465,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
             guard let s = section else {
                 preconditionFailure("CollectionView: missing section after updates")
             }
-//            print(source)
-//            print(target)
-//            print(self._updateContext)
             precondition(s.target != nil, "Invalid target index for section \(s)")
-            precondition(s.estimatedCount == newData[s.target!], "Invalid update: invalid number of items in section \(s.target!). The number of items contained in an existing section after the update \(s.estimatedCount) must be equal to the number of items contained in that section before the update \(s.count), plus or minus the number of items inserted or deleted from that section (\(s.inserted.count) inserted, \(s.removed.count) deleted) and plus or minus the number of items moved into or out of that section (\(s.movedIn.count) moved in, \(s.movedOut.count) moved out). Data source reported \(newData[s.target!]) items.")
+            precondition(s.estimatedCount == newData[s.target!], "Invalid update: invalid number of items in section \(s.target!). The number of items contained in an existing section after the update \(s.estimatedCount) must be equal to the number of items contained in that section before the update \(s.count), plus or minus the number of items inserted or deleted from that section (\(s.inserted.count) inserted, \(s.removed.count) deleted) and plus or minus the number of items moved into or out of that section (\(s.movedIn.count) moved in, \(s.movedOut.count) moved out).")
             return Section(validator: s)
         }
         
@@ -1490,14 +1486,15 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         // Do the layout prep
         doLayoutPrep()
-        
-        var updateViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
-        var updatedCellIndex = IndexedSet<IndexPath, CollectionViewCell>()
-        var updatedSelections = Set<IndexPath>()
-        
+
+        // Update selections
         self._selectedIndexPaths = Set(self._selectedIndexPaths.flatMap { (ip) -> IndexPath? in
             return indexPath(for: ip)
         })
+        
+        
+        var updateViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
+        var updatedCellIndex = IndexedSet<IndexPath, CollectionViewCell>()
         
         // Update the supplementary views
         for (id, view) in self.contentDocumentView.preparedSupplementaryViewIndex {
@@ -1544,8 +1541,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             }
         }
         
-        
-        self._selectedIndexPaths = selections
         self.contentDocumentView.pendingUpdates = _updateContext.updates
         self.contentDocumentView.preparedCellIndex = updatedCellIndex
         self.contentDocumentView.preparedSupplementaryViewIndex = updateViewIndex

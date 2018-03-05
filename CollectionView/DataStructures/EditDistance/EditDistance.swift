@@ -168,9 +168,9 @@ public struct EditOperationIndex<T:Hashable> {
     }
     
     public mutating func edit(withSource index: Int) -> Edit<T>? {
-        return self.operationIndex.deletes.value(for: index)
-            ?? self.operationIndex.substitutions.value(for: index)
-            ?? self.operationIndex.moves.value(for: index)
+        return self.deletes.value(for: index)
+            ?? self.substitutions.value(for: index)
+            ?? self.moves.value(for: index)
     }
 }
 
@@ -187,7 +187,7 @@ public struct EditDistance<T: Collection> where T.Iterator.Element: Hashable, T.
     /// The ending-point collection.
     public let destination: T
 
-    var operationIndex : EditOperationIndex<Element> = {
+    lazy var operationIndex : EditOperationIndex<Element> = {
         return EditOperationIndex<Element>(edits: self.edits)
     }()
     

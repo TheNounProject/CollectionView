@@ -389,6 +389,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         }
         self.sortSections()
         self.sortObjects()
+        self.delegate?.controllerDidLoadContent(controller: self)
     }
     
     
@@ -419,6 +420,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         }
         self.sortSections()
         self.sortObjects()
+        self.delegate?.controllerDidLoadContent(controller: self)
     }
     
     /// Clears all data and stops monitoring for changes in the context.
@@ -426,6 +428,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         self._sections.removeAll()
         self._sectionsCopy = nil
         self._objectSectionMap.removeAll()
+        self.delegate?.controllerDidLoadContent(controller: self)
     }
     
     
@@ -503,7 +506,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     private var _editing = 0
     
     func logContents(prefix: String) {
-        return
         print("")
         print("\(prefix) -----------")
         for section in _sections.enumerated() {
@@ -599,30 +601,48 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             processedSections[targetIP._section]?.operationIndex.moves.insert(newEdit, for: targetIP._item)
             
             
-            
+
             // Remove the original edits
             // With Heckel multiple edits can be made on the same object (Move and Update)
-            var targetReplaced : (Element, Int)? = nil
-            var targetMoved : (Element, Int)? = nil
+//            var targetReplaced : (Element, Int)? = nil
+            var affected : (Element, Int)? = nil
             for e in targetEdits {
                 switch e.operation {
-                case .substitution: targetReplaced = (e.value, e.index)
-                case let .move(origin: _): targetMoved = (e.value, e.index)
+                case .substitution: affected = affected ?? (e.value, e.index)
+                case let .move(origin: from): affected = (e.value, from)
                 default: break
                 }
                 processedSections[targetIP._section]!.operationIndex.remove(edit: e)
             }
-            if let m = targetMoved {
-                processedSections[targetIP._section]!.operationIndex.insert(m.0, index: m.1)
-            }
-            else if let r = targetReplaced {
-                processedSections[targetIP._section]!.operationIndex.replace(r.0, index: r.1)
+            if let m = affected {
+                processedSections[targetIP._section]!.operationIndex.delete(m.0, index: m.1)
             }
             
-            // Remove the old insert operation
-            processedSections[targetIP._section]?.remove(edit: proposedInsert)
+            // Get the new index for the section this object came from (more work to do if sections have changed)
+            var sourceSectionIndex = sourceIP._section
+            if let originalSections = self._sectionsCopy {
+                // If the original section has been removed, nothing to do
+                guard let s = self._sections.index(of: originalSections.object(at: sourceSectionIndex)) else { return }
+                sourceSectionIndex = s
+            }
             
+            // There should always be a source edit (delete or replace)
+            guard let sourceEdits = processedSections[sourceSectionIndex]?.operationIndex.edits(for: object), !sourceEdits.isEmpty else { return }
             
+            // Remove the old edits and replace them with an insert if it was going to remain
+            var _affected : (Element, Int)? = nil
+            for e in sourceEdits {
+                switch e.operation {
+                case .substitution: _affected = _affected ?? (e.value, e.index)
+                case let .move(origin: _): _affected = (e.value, e.index)
+                default: break
+                }
+                processedSections[sourceSectionIndex]!.operationIndex.remove(edit: e)
+            }
+            if let m = _affected {
+                processedSections[sourceSectionIndex]!.operationIndex.insert(m.0, index: m.1)
+            }
+            /*
             // If we were going to substitute the item at the target, remove it
             if case .substitution = proposedInsert.operation, let obj = self._editingContext.objectChanges.object(for: targetIP) {
 //                print("Replacing substitution with delete, original: \(proposedInsert)")
@@ -630,18 +650,8 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                 processedSections[targetIP._section]?.operationIndex.deletes.insert(delete, for: targetIP._item)
             }
             
-            // Get the new index for the section this object came from (more work to do if sections have changed)
-            var sourceSectionIndex = sourceIP._section
-            if let originalSections = self._sectionsCopy {
-                // If the original has been removed, nothing to do
-                guard let s = self._sections.index(of: originalSections.object(at: sourceSectionIndex)) else {
-                    return
-                }
-                sourceSectionIndex = s
-            }
+       
             
-            // There should always be a source edit (delete or replace)
-            guard let sourceEdit = processedSections[sourceSectionIndex]?.edit(withSource: sourceIP._item) else { return }
             
             // Go ahead and drop that edit
 //            print("Removing source edit: \(sourceEdit)")
@@ -653,6 +663,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                 let insert = Edit(.insertion, value: sourceEdit.value, index: sourceEdit.index)
                 processedSections[sourceSectionIndex]?.operationIndex.inserts.insert(insert, for: insert.index)
             }
+ */
         }
         
         while let obj = self._editingContext.itemsWithSectionChange.removeOne() {

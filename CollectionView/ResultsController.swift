@@ -171,6 +171,12 @@ extension NSNumber : Comparable {
 */
 public protocol ResultsControllerDelegate: class {
     
+    
+    /// Tells the delegate that the controller did load its initial content
+    ///
+    /// - Parameter controller: The controller that loaded
+    func controllerDidLoadContent(controller: ResultsController)
+    
     /// Tells the delegate that the controller will change
     ///
     /// - Parameter controller: The controller that will change
@@ -209,7 +215,9 @@ public protocol ResultsControllerDelegate: class {
     func controllerDidChangeContent(controller: ResultsController)
 }
 
-
+extension ResultsControllerDelegate {
+    func controllerDidLoadContent(controller: ResultsController) { }
+}
 
 
 /**

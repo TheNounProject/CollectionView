@@ -291,12 +291,13 @@ public final class Heckel: DiffAware {
                                                  to: newTuple.offset
                         ))
                     }
-/*
+*/
                     
                 }
             }
         }
         print(changes)
+        print("")
         return changes
     }
 }

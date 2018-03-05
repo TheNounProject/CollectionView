@@ -17,7 +17,7 @@ public struct ResultsChangeSet { }
 
 
 /// A Helper to 
-public class CollectionViewResultsProxy : CustomDebugStringConvertible  {
+public class CollectionViewResultsProxy   {
     var items = ItemChangeSet()
     var sections = SectionChangeSet()
     
@@ -78,20 +78,6 @@ public class CollectionViewResultsProxy : CustomDebugStringConvertible  {
         self.sections.inserted.formUnion(other.sections.inserted)
         self.sections.deleted.formUnion(other.sections.deleted)
         self.sections.updated.formUnion(other.sections.updated)
-    }
-    public var debugDescription: String {
-        var str = ""
-        str += "\nDeleted Sections: \(Array(sections.deleted))"
-        str += "\nInserted Sections: \(Array(sections.inserted))"
-        str += "\nUpdated Sections: \(Array(sections.updated))"
-        str += "\nMoved Sections: \(Array(sections.moved))"
-        str += "\n"
-        str += "\nDeleted Items: \(items.deleted)"
-        str += "\nInserted Items: \(items.inserted)"
-        str += "\nUpdated Items: \(items.updated)"
-        str += "\nMoved Items: \(items.moved)"
-        str += ""
-        return str
     }
 }
 
@@ -182,6 +168,10 @@ extension CollectionViewProvider {
 // MARK: - Results Controller Delegate
 /*-------------------------------------------------------------------------------*/
 extension CollectionViewProvider : ResultsControllerDelegate {
+    
+    public func controllerDidLoadContent(controller: ResultsController) {
+        self.sectionCount = controller.numberOfSections
+    }
     
     public func controllerWillChangeContent(controller: ResultsController) {
         self.prepareForUpdates()

@@ -19,8 +19,11 @@ class GridCell : CollectionViewPreviewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         self.useMask = false
+        self.badgeLabel.isHidden = true
+        self.titleLabel.isHidden = true
+        self.detailLabel.isHidden = true
     }
-    
+    override var wantsUpdateLayer: Bool { return true }
     override func prepareForReuse() {
         super.prepareForReuse()
         self.badgeLabel.unbind(NSBindingName(rawValue: "value"))

@@ -33,16 +33,35 @@ class WindowController : NSWindowController {
         let parents = (try! moc.fetch(Parent.fetchRequest()) as! [Parent]).shuffled()
         var children = (try! moc.fetch(Child.fetchRequest()) as! [Child]).shuffled()
         
+        print("BEGIN SHUFFLING ---------------- ")
+        
+        func printContents() {
+            for p in parents.sorted(using: SortDescriptor(\Parent.displayOrder)).enumerated() {
+                p.element.displayOrder = NSNumber(value: p.offset)
+                
+                print("Parent [\(p.element.displayOrder)] - \(p.element.name)")
+                for c in p.element.children.sorted(using: SortDescriptor(\Child.displayOrder)) {
+                    print("[\(c.displayOrder)] \(c.name) - \(c.parent?.name.description ?? "nil")")
+                }
+            }
+            print("Ungrouped")
+            for c in children.sorted(using: SortDescriptor(\Child.displayOrder)) where c.parent == nil {
+                print("[\(c.displayOrder)] \(c.name)")
+            }
+        }
+        
+        printContents()
+        
         if children.count > 0 {
             let removed = children.sample(0.2)
             for del in removed {
                 moc.delete(del)
-                print("Adding child \(del)")
+                print("Deleted child \(del)")
             }
             for _ in 0..<removed.count {
                 let c = Child.create()
                 children.append(c)
-                print("Adding child \(c)")
+                print("Added child \(c)")
             }
         }
         
@@ -58,9 +77,11 @@ class WindowController : NSWindowController {
             }
         }
         
-        for p in parents.enumerated() {
-            p.element.displayOrder = NSNumber(value: p.offset)
-        }
+        
+        print("POST SHUFFLING ---------------- ")
+        printContents()
+        
+        print("END SHUFFLING ---------------- ")
         
         AppDelegate.current.saveAction(nil)
     }
@@ -399,9 +420,25 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     func collectionViewPreview(_ controller: CollectionViewPreviewController, didMoveToItemAt indexPath: IndexPath) {
         
     }
-    
-    
 
+    
+}
+
+
+extension BaseController : CollectionViewDragDelegate {
+    
+    
+    func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, with event: NSEvent) -> Bool {
+        return true
+    }
+    
+    func collectionView(_ collectionView: CollectionView, pasteboardWriterForItemAt indexPath: IndexPath) -> NSPasteboardWriting? {
+        return NSPasteboardItem()
+    }
+    
+    func collectionView(_ collectionView: CollectionView, performDragOperation dragInfo: NSDraggingInfo) -> Bool {
+        return false
+    }
     
 }
 

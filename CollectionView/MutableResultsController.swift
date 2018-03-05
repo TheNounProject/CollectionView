@@ -794,6 +794,7 @@ extension MutableResultsController where Element:AnyObject {
     public func delete(object: Element) {
         self.beginEditing()
         defer { self.endEditing() }
+        print("Delete \(object)")
         guard let ip = self.indexPath(of: object),
             let section = self._objectSectionMap.removeValue(forKey: object) else { return }
         self._editingContext.objectChanges.deleted(object, at: ip)
@@ -821,6 +822,7 @@ extension MutableResultsController where Element:AnyObject {
     /// - Parameter object: An object
     public func insert(object: Element) {
         guard self.contains(object: object) == false else { return }
+        print("Insert \(object)")
         self.beginEditing()
         defer { self.endEditing() }
         if let sectionAccessor = self.sectionGetter {
@@ -866,9 +868,10 @@ extension MutableResultsController where Element:AnyObject {
         
         guard let tempIP = self.indexPath(of: object),
             let currentSection = self.sectionInfo(at: tempIP) else {
-                print("Skipping object update")
+                print("Skipping object update \(object)")
                 return
         }
+        print("Did update \(object)")
         self.beginEditing()
         defer { self.endEditing() }
         currentSection.ensureEditing()

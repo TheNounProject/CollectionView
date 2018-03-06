@@ -236,16 +236,12 @@ struct ItemChangeSet {
     mutating func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         switch changeType {
         case .delete:
-            print("Delete item at \(source!)")
             deleted.insert(source!)
         case .update:
-            print("Update item at \(source!)")
             updated.insert(source!)
         case let .move(newIndexPath):
-            print("Move item at \(source!) to \(newIndexPath)")
             moved.append((source!, newIndexPath))
         case let .insert(newIndexPath):
-            print("Insert item at \(newIndexPath)")
             inserted.insert(newIndexPath)
         }
     }
@@ -275,17 +271,13 @@ struct SectionChangeSet {
      mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         switch changeType {
         case .delete:
-            print("Delete section at \(source!)")
             deleted.insert(source!._section)
         case .update:
-            print("Update section at \(source!)")
             updated.insert(source!._section)
             break;
         case let .move(newIndexPath):
-            print("Move section \(source!) to \(newIndexPath)")
             moved.append((source!._section, newIndexPath._section))
         case let .insert(newIndexPath):
-            print("Insert section at \(newIndexPath)")
             inserted.insert(newIndexPath._section)
         }
     }
@@ -315,7 +307,7 @@ public extension CollectionView {
             completion?(true)
             return
         }
-//        debugPrint(changeSet)
+
         self.performBatchUpdates({
             _applyChanges(changeSet.items)
             _applyChanges(changeSet.sections)

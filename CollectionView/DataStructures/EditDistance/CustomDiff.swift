@@ -60,8 +60,6 @@ public final class CVDiff : DiffAware {
         var res = [Edit<T>]()
         var edits = edits
         
-        print("inserts: \(edits.inserts.count)")
-        print("deletes: \(edits.deletes.count)")
         for target in edits.inserts {
             guard edits.deletes.contains(target.value), let source = edits.deletes.remove(target.value) else {
                 res.append(target.value)

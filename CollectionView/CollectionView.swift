@@ -353,22 +353,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._reusableSupplementaryView[newID]?.insert(view)
     }
     
-    final func _loadCell(at indexPath: IndexPath) -> CollectionViewCell? {
-        guard let cell = self.cellForItem(at: indexPath) ?? self.dataSource?.collectionView(self, cellForItemAt: indexPath) else {
-            debugPrint("For some reason collection view tried to load cells without a data source")
-            return nil
-        }
-        assert(cell.collectionView != nil, "Attemp to load cell without using deque")
-        return cell
+    final func _loadCell(at indexPath: IndexPath) -> CollectionViewCell {
+        let cell = self.cellForItem(at: indexPath) ?? self.dataSource?.collectionView(self, cellForItemAt: indexPath)
+        precondition(cell != nil, "Unable to load cell for item at \(indexPath)")
+        assert(cell!.collectionView != nil, "Attemp to load cell without using deque")
+        return cell!
     }
     
-    final func _loadSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionReusableView? {
-        guard let view = self.supplementaryView(forElementKind: elementKind, at: indexPath) ?? self.dataSource?.collectionView?(self, viewForSupplementaryElementOfKind: elementKind, at: indexPath) else {
-            debugPrint("For some reason collection view tried to load views without a data source")
-            return nil
-        }
-        assert(view.collectionView != nil, "Attemp to load cell without using deque")
-        return view
+    final func _loadSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionReusableView {
+        let view = self.supplementaryView(forElementKind: elementKind, at: indexPath) ?? self.dataSource?.collectionView?(self, viewForSupplementaryElementOfKind: elementKind, at: indexPath)
+        precondition(view != nil, "Failed to load supplementary view of kind \(elementKind) at index path \(indexPath)")
+        assert(view!.collectionView != nil, "Attemp to load cell without using deque")
+        return view!
     }
     
     

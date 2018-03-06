@@ -88,7 +88,6 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     }
     
     func endEditing(sorting: [SortDescriptor<Element>], forceUpdates: Set<Element>) -> EditDistance<OrderedSet<Element>>? {
-//        assert(, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
         defer {
             isEditing = false
         }
@@ -96,13 +95,9 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
             return nil
         }
         let source = self._storage
-//        print("Updated: \(self._updated)")
-//        print("Removed: \(self._removed)")
         
         self._storage.remove(contentsOf: _removed)
         self._storage.insert(contentsOf: _updated, using: sorting)
-//        print("Source: \(source)")
-//        print("Target: \(self._storage)")
        
         let changes = EditDistance(source: source, target: _storage)
         self._storageCopy.removeAll()

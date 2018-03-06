@@ -506,20 +506,17 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     private var _editing = 0
     
     func logContents(prefix: String) {
-        print("")
         print("\(prefix) -----------")
         for section in _sections.enumerated() {
             print("  Section \(section.offset) - \(section.element)")
             debugPrint(section.element._storage)
         }
-        print("")
     }
     
     
     /// Begin an esiting session to group multiple changes (see `endEditing()`)
     public func beginEditing() {
         if _editing == 0 {
-            self.logContents(prefix: "BEGIN EDITING")
             delegate?.controllerWillChangeContent(controller: self)
             _sectionsCopy = nil
             self._editingContext.reset()
@@ -552,8 +549,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             }
         }
         
-        self.logContents(prefix: "END EDITING")
-        
         var insertedSections = IndexSet()
         var deletedSections = IndexSet()
         
@@ -561,7 +556,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             var sectionChanges = EditDistance(source: oldSections, target: _sections)
             
             for change in sectionChanges.edits {
-                print(change)
                 switch change.operation {
                 case .insertion:
                     insertedSections.insert(change.index)
@@ -634,7 +628,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             for e in sourceEdits {
                 switch e.operation {
                 case .substitution: _affected = _affected ?? (e.value, e.index)
-                case let .move(origin: _): _affected = (e.value, e.index)
+                case .move(origin: _): _affected = (e.value, e.index)
                 default: break
                 }
                 processedSections[sourceSectionIndex]!.operationIndex.remove(edit: e)
@@ -642,28 +636,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             if let m = _affected {
                 processedSections[sourceSectionIndex]!.operationIndex.insert(m.0, index: m.1)
             }
-            /*
-            // If we were going to substitute the item at the target, remove it
-            if case .substitution = proposedInsert.operation, let obj = self._editingContext.objectChanges.object(for: targetIP) {
-//                print("Replacing substitution with delete, original: \(proposedInsert)")
-                let delete = Edit(.deletion, value: obj, index: proposedInsert.index)
-                processedSections[targetIP._section]?.operationIndex.deletes.insert(delete, for: targetIP._item)
-            }
-            
-       
-            
-            
-            // Go ahead and drop that edit
-//            print("Removing source edit: \(sourceEdit)")
-            processedSections[sourceSectionIndex]?.remove(edit: sourceEdit)
-            
-            // If it was a substitution, replace it with an insert
-            if case .substitution = sourceEdit.operation {
-//                print("Replacing source edit, original: \(sourceEdit)")
-                let insert = Edit(.insertion, value: sourceEdit.value, index: sourceEdit.index)
-                processedSections[sourceSectionIndex]?.operationIndex.inserts.insert(insert, for: insert.index)
-            }
- */
         }
         
         while let obj = self._editingContext.itemsWithSectionChange.removeOne() {
@@ -679,7 +651,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             // but there is no apparent reason why order is important.
             
             for edit in changes {
-//                print(edit)
                 switch edit.operation {
                     
                 case .move(origin: _):
@@ -733,7 +704,6 @@ extension MutableResultsController where Section:AnyObject {
         guard let info = self.sectionInfo(representing: section) else { return }
         self.beginEditing()
         defer { self.endEditing() }
-        print("Delete \(section)")
         for obj in info._storage {
             _objectSectionMap[obj] = nil
         }
@@ -749,7 +719,6 @@ extension MutableResultsController where Section:AnyObject {
     public func insert(section: Section) {
         self.beginEditing()
         defer { self.endEditing() }
-        print("Insert \(section)")
         _sections.needsSort = true
         _ = self.getOrCreateSectionInfo(for: section)
     }
@@ -766,7 +735,6 @@ extension MutableResultsController where Section:AnyObject {
     public func didUpdate(section: Section) {
         self.beginEditing()
         defer { self.endEditing() }
-        print("Did update \(section)")
         _sections.needsSort = true
     }
 }
@@ -796,7 +764,6 @@ extension MutableResultsController where Element:AnyObject {
     public func delete(object: Element) {
         self.beginEditing()
         defer { self.endEditing() }
-        print("Delete \(object)")
         guard let ip = self.indexPath(of: object),
             let section = self._objectSectionMap.removeValue(forKey: object) else { return }
         self._editingContext.objectChanges.deleted(object, at: ip)
@@ -823,7 +790,6 @@ extension MutableResultsController where Element:AnyObject {
     /// - Parameter object: An object
     public func insert(object: Element) {
         guard self.contains(object: object) == false else { return }
-        print("Insert \(object)")
         self.beginEditing()
         defer { self.endEditing() }
         if let sectionAccessor = self.sectionGetter {
@@ -872,7 +838,6 @@ extension MutableResultsController where Element:AnyObject {
                 print("Skipping object update \(object)")
                 return
         }
-        print("Did update \(object)")
         self.beginEditing()
         defer { self.endEditing() }
         currentSection.ensureEditing()

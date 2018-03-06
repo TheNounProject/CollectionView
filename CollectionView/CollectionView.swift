@@ -1275,16 +1275,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     }
     
     private struct Section {
-//        var removed : IndexSet
-//        let deltas : [Int:Int]
-//        let count : Int
-        
-//        private var storage = [Int?]()
-//        private var idx : Int = 0
-//        private var next : Int = 0
-//        private var adjust : Int = 0
-//
-//        var transferred : IndexSet
+
         var isInserted : Bool
         var final : [Int?]
         
@@ -1335,7 +1326,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         
         mutating func index(of previousIndex: Int) -> Int? {
-//            if removed.contains(previousIndex) { return nil }
             return final[previousIndex]
         }
     }
@@ -1367,13 +1357,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     private func beginEditing() {
         if _editing == 0 {
-            
-            
-//            log.debug("BEGIN EDITING: *************************************")
-            
-//            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex)")
-//            log.debug("Cell Index: \(self.contentDocumentView.preparedCellIndex.orderedLog())")
-            
             self._extendingStart = nil
             self._updateContext.reset()
         }
@@ -1541,246 +1524,12 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self.contentDocumentView.preparedCellIndex = updatedCellIndex
         self.contentDocumentView.preparedSupplementaryViewIndex = updateViewIndex
         self._reloadLayout(animated, scrollPosition: .none, completion: completion, needsRecalculation: false)
-        
-
-        return;
-        
-        
-        /*
-        var sectionShift = ShiftSet(count: 0)
-        var itemShifts = [Int:ShiftSet]()
-        
-        sectionShift = ShiftSet(count: self.numberOfSections)
-        
-//        let oldDataCounts = self.sections
-//        self._reloadDataCounts()
-        
-        // Validate the section changes
-        
-        
-        doLayoutPrep()
-        
-        // Section shifting
-        
-        // Need to check for empty. Crashes
-        if _updateContext.insertedSections.count > 0 {
-            for i in _updateContext.insertedSections {
-                sectionShift.insert(at: i)
-            }
-        }
-        if _updateContext.deletedSections.count > 0 {
-            for d in _updateContext.deletedSections {
-                sectionShift.remove(at: d)
-            }
-        }
-        if _updateContext.movedSections.count > 0 {
-            for m in _updateContext.movedSections {
-                sectionShift.move(m.index, to: m.value)
-            }
-        }
-        
-        var sectionMap = sectionShift.populateMap(count: self.numberOfSections)
-        
-        
-        func countIn(section: Int) -> Int {
-            return max(oldData[section], self.numberOfItems(in: section))
-        }
-        
-        // Item shifting
-        for ip in _updateContext.deletedItems {
-            let s = sectionMap[ip._section] ?? ip._section
-            if itemShifts[s] == nil {
-                itemShifts[s] = ShiftSet(count: countIn(section: s), remove: ip._item)
-            }
-            else {
-                itemShifts[s]?.remove(at: ip._item)
-            }
-            
-            self._selectedIndexPaths.remove(ip)
-            if let cell = self.cellForItem(at: ip) {
-                _updateContext.updates.append(ItemUpdate(cell: cell, attrs: cell.attributes!, type: .remove))
-                _ = contentDocumentView.preparedCellIndex.removeValue(for: ip)
-            }
-        }
-        for ip in _updateContext.insertedItems {
-            if itemShifts[ip._section] == nil {
-                itemShifts[ip._section] = ShiftSet(count: countIn(section: ip._section), insert: ip._item)
-            }
-            else {
-                itemShifts[ip._section]?.insert(at: ip._item)
-            }
-        }
-        for ip in _updateContext.movedItems {
-            let from = ip.index
-            let to = ip.value
-            
-            let aFrom = sectionMap[from._section] ?? -1
-            if to._section == aFrom {
-                if itemShifts[to._section] == nil {
-                    itemShifts[to._section] = ShiftSet(count:  countIn(section: to._section), move: from._item, to: to._item)
-                }
-                else {
-                    itemShifts[to._section]?.move(from._item, to: to._item)
-                }
-            }
-            else {
-                if itemShifts[aFrom] == nil {
-                    itemShifts[aFrom] = ShiftSet(count: countIn(section: aFrom), remove: from._item)
-                }
-                else {
-                    itemShifts[aFrom]?.remove(at: from._item)
-                }
-                if itemShifts[to._section] == nil {
-                    itemShifts[to._section] = ShiftSet(count: countIn(section: to._section), insert: to._item)
-                }
-                else {
-                    itemShifts[to._section]?.insert(at: to._item)
-                }
-            }
-            
-            if itemAtIndexPathIsSelected(from) {
-                _selectedIndexPaths.remove(from)
-                _updateSelections?.insert(to)
-            }
-            if let cell = self.cellForItem(at: from) {
-                _updateContext.updates.append(ItemUpdate(cell: cell, indexPath: to, type: .update))
-                contentDocumentView.preparedCellIndex.removeValue(for: from)
-                _finalizedCellMap.insert(cell, for: to)
-            }
-        }
-        
-        var newCellIndex = _finalizedCellMap
-        var newViewIndex = _finalizedViewMap
-        
-        var checked = Set<Int>()
-        
-        var viewsNeedingAdjustment = IndexedSet<SupplementaryViewIdentifier, CollectionReusableView>(self.contentDocumentView.preparedSupplementaryViewIndex).ordered()
-        
-        let preps = self.contentDocumentView.preparedCellIndex.ordered()
-
-        for stale in viewsNeedingAdjustment {
-            guard let ip = stale.index.indexPath else {
-                log.error("Collection View Error: A supplemenary view identifier has a nil indexPath when trying to adjust views")
-                continue
-            }
-            
-            let adjusted = sectionMap[ip._section] ?? ip._section
-            if adjusted < 0 {
-                //Deleted section
-                if let attrs = stale.value.attributes {
-                    _updateContext.updates.append(ItemUpdate(view: stale.value, attrs: attrs, type: .remove, identifier: stale.index))
-                }
-                continue
-            }
-            
-            let adjustedIP = IndexPath.for(section: adjusted)
-            
-            if adjustedIP._section > self.numberOfSections {
-                log.error("⚠️ Invalid section adjustment from \(ip._section) to \(adjusted)")
-            }
-            
-            let newID = stale.index.copy(with: adjustedIP)
-            
-            // TODO: Not sure if this actually needs to happen, it will just be reset below
-            let view = stale.value
-            self.contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: stale.index)
-            newViewIndex[newID] = view
-            
-            if adjustedIP != ip {
-                _updateContext.updates.append(ItemUpdate(view: view, indexPath: adjustedIP, type: .update, identifier: newID))
-            }
-        }
-        
-        
-        func adjustCells(in indexedSet: [IndexedSet<IndexPath, CollectionViewCell>.Iterator.Element], checkSections: Bool) {
-            
-            for stale in indexedSet {
-                
-                var adjusted = stale.index
-
-                let s = { () -> Int in
-                    if let v = sectionMap[adjusted._section] { return v }
-                    let n = sectionMap.count
-                    sectionMap[n] = n
-                    return n
-                }()
-                
-                // The section was deleted
-                if s < 0 {
-                    if let attrs = stale.value.attributes {
-                        _updateContext.updates.append(ItemUpdate(cell: stale.value, attrs: attrs, type: .remove))
-                    }
-                    continue
-                }
-                
-                if let i = itemShifts[s]?.populateMap(count: self.numberOfItems(in: s))[adjusted._item] {
-                    adjusted = IndexPath.for(item: i, section: s)
-                }
-                else {
-                    adjusted = adjusted.with(section: s)
-                }
-                
-                
-                let numSections = self.numberOfSections
-                if adjusted._section > numSections - 1 {
-                    log.error("⚠️ Invalid indexpath adjustment from \(stale.index)  -- \(adjusted). Section \(adjusted._section) is greater than or equal the number of sections in the collection view (\(numSections))")
-                }
-                let numItems = self.numberOfItems(in: adjusted._section) - 1
-                if adjusted._item > numItems {
-                    log.error("⚠️ Invalid indexpath adjustment from \(stale.index)  -- \(adjusted). Item (\(adjusted._item)) is greater than or equal the number of items in the section \((numItems))")
-                }
-                
-                if self._selectedIndexPaths.remove(stale.index) != nil {
-                    _updateSelections?.insert(adjusted)
-                }
-                
-                let view = _updateContext.reloadedItems.contains(stale.index)
-                    ? _prepareReplacementCell(for: stale.value, at: adjusted)
-                    : stale.value
-                
-                // TODO: Not sure if this actually needs to happen, it will just be reset below
-                _ = self.contentDocumentView.preparedCellIndex.remove(view)
-                newCellIndex[adjusted] = view
-                
-                if adjusted != stale.index {
-                    _updateContext.updates.append(ItemUpdate(cell: view, indexPath: adjusted, type: .update))
-                }
-            }
-        }
-
-        
-        adjustCells(in: preps , checkSections: viewsNeedingAdjustment.count > 0)
-        adjustCells(in: _pendingCellMap.ordered(), checkSections: false)
-        
-        for selection in self._selectedIndexPaths {
-            guard let s = sectionMap[selection._section], s >= 0 else { continue }
-            if let item = itemShifts[s]?._map[selection._item] {
-                if item >= 0 {
-                    _updateSelections?.insert(IndexPath.for(item: item, section: s))
-                }
-            }
-            else {
-                _updateSelections?.insert(selection.with(section: s))
-            }
-        }
-        
-        self._selectedIndexPaths = _updateSelections!
-        self.contentDocumentView.pendingUpdates = _updateContext.updates
-        self.contentDocumentView.preparedCellIndex = newCellIndex
-        self.contentDocumentView.preparedSupplementaryViewIndex = newViewIndex.dictionary
-        self._reloadLayout(animated, scrollPosition: .none, completion: completion, needsRecalculation: false)
-     */
+       
     }
     
     
     
     private func _prepareReplacementCell(for currentCell: CollectionViewCell, at indexPath: IndexPath) -> CollectionViewCell {
-        
-//        log.debug("Preparing replacment cell for item at: \(indexPath)")
-        
-        // Update the cell index so the same cell be returned via deuque(_:)
-        //        currentCell.attributes = currentCell.attributes?.copyWithIndexPath(indexPath)
-        //        self.contentDocumentView.preparedCellIndex[indexPath] = currentCell
         defer {
             _ = self.contentDocumentView.preparedCellIndex.remove(currentCell)
             _ = self.contentDocumentView.preparedCellIndex.removeValue(for: indexPath)
@@ -1808,7 +1557,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         newCell.selected = self._selectedIndexPaths.contains(indexPath)
         newCell.viewDidDisplay()
         return newCell
-        
         
     }
     

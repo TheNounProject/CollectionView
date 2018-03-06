@@ -295,7 +295,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     
     func evaluate(section: Section) -> Bool {
-        guard let p = self.fetchRequest.predicate else { return true }
+        guard let p = self.sectionFetchRequest.predicate else { return true }
         return p.evaluate(with: section)
     }
     

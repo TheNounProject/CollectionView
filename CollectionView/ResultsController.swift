@@ -215,7 +215,7 @@ public protocol ResultsControllerDelegate: class {
     func controllerDidChangeContent(controller: ResultsController)
 }
 
-extension ResultsControllerDelegate {
+ public extension ResultsControllerDelegate {
     func controllerDidLoadContent(controller: ResultsController) { }
 }
 

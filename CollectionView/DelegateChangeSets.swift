@@ -82,12 +82,19 @@ public class CollectionViewResultsProxy   {
 }
 
 
-//protocol CollectionViewProviderDelegate: class {
-//    func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
-//    func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
-//    func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
-//    
-//}
+public protocol CollectionViewProviderDelegate: class {
+    func providerWillChangeContent(_ provider: CollectionViewProvider)
+    func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion?
+}
+
+public extension CollectionViewProviderDelegate {
+    func providerWillChangeContent(_ provider: CollectionViewProvider) { }
+    func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) { }
+    func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) { }
+    func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion? { return nil }
+}
 
 
 /**
@@ -96,8 +103,9 @@ public class CollectionViewResultsProxy   {
 public class CollectionViewProvider : CollectionViewResultsProxy {
     
     /// When set as the delegate
-    unowned let collectionView : CollectionView
-    unowned let resultsController : ResultsController
+    public unowned let collectionView : CollectionView
+    public unowned let resultsController : ResultsController
+    public weak var delegate: CollectionViewProviderDelegate?
     
     /// The last known section count of real data
     private var sectionCount = 0
@@ -183,13 +191,16 @@ extension CollectionViewProvider : ResultsControllerDelegate {
     
     public func controllerWillChangeContent(controller: ResultsController) {
         self.prepareForUpdates()
+        self.delegate?.providerWillChangeContent(self)
     }
     
     public func controller(_ controller: ResultsController, didChangeObject object: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+        self.delegate?.provider(self, didUpdateItem: object, at: indexPath, for: changeType)
         self.addChange(forItemAt: indexPath, with: changeType)
     }
     
     public func controller(_ controller: ResultsController, didChangeSection section: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) {
+        self.delegate?.provider(self, didUpdateSection: section, at: indexPath, for: changeType)
         self.addChange(forSectionAt: indexPath, with: changeType)
     }
     
@@ -212,7 +223,8 @@ extension CollectionViewProvider : ResultsControllerDelegate {
         else if self.populateEmptySections && controller.numberOfSections > 0 {
             
         }
-        self.collectionView.applyChanges(from: self)
+        let completion = self.delegate?.providerDidChangeContent(self)
+        self.collectionView.applyChanges(from: self, completion: completion)
     }
     
 }

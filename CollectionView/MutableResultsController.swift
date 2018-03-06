@@ -90,11 +90,11 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
     
-    init() {
+    public init() {
         
     }
     
-    init(sectionKeyPath: KeyPath<Element,Section>? = nil,
+    public init(sectionKeyPath: KeyPath<Element,Section>? = nil,
          sortDescriptors: [SortDescriptor<Element>] = [],
          sectionSortDescriptors: [SortDescriptor<Section>] = []) {
         self.setSectionKeyPath(sectionKeyPath)

@@ -32,21 +32,16 @@ class WindowController : NSWindowController {
         let moc = AppDelegate.current.managedObjectContext
         let parents = (try! moc.fetch(Parent.fetchRequest()) as! [Parent]).shuffled()
         var children = (try! moc.fetch(Child.fetchRequest()) as! [Child]).shuffled()
-        
+        let _children = children
         print("BEGIN SHUFFLING ---------------- ")
         
         func printContents() {
             for p in parents.sorted(using: SortDescriptor(\Parent.displayOrder)).enumerated() {
-                p.element.displayOrder = NSNumber(value: p.offset)
                 
-                print("Parent [\(p.element.displayOrder)] - \(p.element.name)")
-                for c in p.element.children.sorted(using: SortDescriptor(\Child.displayOrder)) {
-                    print("[\(c.displayOrder)] \(c.name) - \(c.parent?.name.description ?? "nil")")
-                }
-            }
-            print("Ungrouped")
-            for c in children.sorted(using: SortDescriptor(\Child.displayOrder)) where c.parent == nil {
-                print("[\(c.displayOrder)] \(c.name)")
+                let names = p.element.children.sorted(using: SortDescriptor(\Child.displayOrder)).map({ (c) -> String in
+                    return "\"\(c.name)\""
+                })
+                print("(\"\(p.element.name)\", [\(names.joined(separator: ","))])")
             }
         }
         
@@ -56,12 +51,12 @@ class WindowController : NSWindowController {
             let removed = children.sample(0.2)
             for del in removed {
                 moc.delete(del)
-                print("Deleted child \(del)")
+                print("Delete child \(del)")
             }
             for _ in 0..<removed.count {
                 let c = Child.create()
                 children.append(c)
-                print("Added child \(c)")
+                print("Insert child \(c)")
             }
         }
         
@@ -77,9 +72,17 @@ class WindowController : NSWindowController {
             }
         }
         
+        for p in parents.enumerated() {
+            p.element.displayOrder = NSNumber(value: p.offset)
+        }
+        let res = _children.reduce(into: [String]()) { (res, c) in
+            if !c.isDeleted {
+                res.append("(\"\(c.name)\", \"\(c.parent!.name)\", \(c.displayOrder))")
+            }
+        }
         
-        print("POST SHUFFLING ---------------- ")
-        printContents()
+        print("CHANGES")
+        print("[\(res.joined(separator: ",\n"))]")
         
         print("END SHUFFLING ---------------- ")
         

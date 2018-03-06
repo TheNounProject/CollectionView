@@ -63,11 +63,10 @@ public final class Heckel: DiffAware {
     
     public init() {}
     
-    
     public func diff<T>(old: T, new: T) -> [Edit<T.Element>] where T : Collection, T.Element : Hashable, T.Index == Int, T.IndexDistance == Int {
         // The Symbol Table
         // Each line works as the key in the table look-up, i.e. as table[line].
-        var table: [Int: TableEntry] = [:]
+        var table: [T.Element: TableEntry] = [:]
         
         print("Source: \(old)")
         print("Target: \(new)")
@@ -85,14 +84,14 @@ public final class Heckel: DiffAware {
     
     private func perform1stPass<T>(
         new: T,
-        table: inout [Int: TableEntry],
-        newArray: inout [ArrayEntry]) where T : Collection, T.Element : Hashable, T.Index == Int, T.IndexDistance == Int {
+        table: inout [T.Element: TableEntry],
+        newArray: inout [ArrayEntry]) where T : Collection, T.Index == Int, T.IndexDistance == Int {
         
         // 1st pass
         // a. Each line i of file N is read in sequence
         new.forEach { item in
             // b. An entry for each line i is created in the table, if it doesn't already exist
-            let entry = table[item.hashValue] ?? TableEntry()
+            let entry = table[item] ?? TableEntry()
             
             // c. NC for the line's table entry is incremented
             entry.newCounter = entry.newCounter.increment()
@@ -101,21 +100,21 @@ public final class Heckel: DiffAware {
             newArray.append(.tableEntry(entry))
             
             //
-            table[item.hashValue] = entry
+            table[item] = entry
         }
     }
     
     private func perform2ndPass<T>(
         old: T,
-        table: inout [Int: TableEntry],
-        oldArray: inout [ArrayEntry]) where T : Collection, T.Element : Hashable, T.Index == Int, T.IndexDistance == Int {
+        table: inout [T.Element: TableEntry],
+        oldArray: inout [ArrayEntry]) where T : Collection, T.Index == Int, T.IndexDistance == Int {
         
         // 2nd pass
         // Similar to first pass, except it acts on files
         
         old.enumerated().forEach { tuple in
             // old
-            let entry = table[tuple.element.hashValue] ?? TableEntry()
+            let entry = table[tuple.element] ?? TableEntry()
             
             // oldCounter
             entry.oldCounter = entry.oldCounter.increment()
@@ -127,7 +126,7 @@ public final class Heckel: DiffAware {
             oldArray.append(.tableEntry(entry))
             
             //
-            table[tuple.element.hashValue] = entry
+            table[tuple.element] = entry
         }
     }
     

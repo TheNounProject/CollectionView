@@ -59,63 +59,79 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         
-        let parents = [
-            "AJfZltmZml" : Parent(rank: 0, name: "AJfZltmZml"),
-            "rseRiOCBuq" : Parent(rank: 1, name: "rseRiOCBuq"),
-            "powslfCxjt" : Parent(rank: 2, name: "powslfCxjt")
+        let _data : [(String,[String])] = [
+            ("ZSnKWisBqE", ["ueHNbNmzJE","BLDDODjZeP","eObJUPufpv","dOwXZZpyif","RIZOqeMoWM","hGLYuDzKQi","ZOAwicSMDE"]),
+            ("WqoQBTNEaY", ["rsubjBxbVb","zgxqrwEMEP","RFMVhYUOBt","TPtWHpAfhO","vGNjxxuxds","EEQzPOqFLm","WqWAgYBpdk"]),
+            ("KjqnrhLzeE", ["jmKARnCZQJ","GkVzEtvFEp","VWbpXXYeZH","iiRlRTkGKi","UOGPKdyFLd","hRPjsirdxZ"])
         ]
         
+        let parentOrder = ["KjqnrhLzeE", "ZSnKWisBqE", "WqoQBTNEaY"]
         
-        let children = [
-            // AJfZltmZml
-            "CrukASfzSp" : Child(rank: 0, name: "CrukASfzSp", parent: parents["AJfZltmZml"]!),
-            "etbJeVVRcR" : Child(rank: 1, name: "etbJeVVRcR", parent: parents["AJfZltmZml"]!),
-            "XowOgYrcee" : Child(rank: 2, name: "XowOgYrcee", parent: parents["AJfZltmZml"]!),
-            // rseRiOCBuq
-            "pajgRSevdB" : Child(rank: 0, name: "pajgRSevdB", parent: parents["rseRiOCBuq"]!),
-            "ZEfIuIDkBm" : Child(rank: 1, name: "ZEfIuIDkBm", parent: parents["rseRiOCBuq"]!),
-            "EQyMBBwakO" : Child(rank: 2, name: "EQyMBBwakO", parent: parents["rseRiOCBuq"]!),
-            "nomOPsCLae" : Child(rank: 3, name: "nomOPsCLae", parent: parents["rseRiOCBuq"]!),
-            "zvBozntvAe" : Child(rank: 4, name: "zvBozntvAe", parent: parents["rseRiOCBuq"]!),
-            // powslfCxjt
-            "JFcjwqDOIt" : Child(rank: 0, name: "JFcjwqDOIt", parent: parents["powslfCxjt"]!),
-            "pRllJqXDvU" : Child(rank: 1, name: "pRllJqXDvU", parent: parents["powslfCxjt"]!),
-            "pPtbKKZdEp" : Child(rank: 2, name: "pPtbKKZdEp", parent: parents["powslfCxjt"]!),
-            "IScGOquZMC" : Child(rank: 3, name: "IScGOquZMC", parent: parents["powslfCxjt"]!),
-            "OGlwqtXHeE" : Child(rank: 4, name: "OGlwqtXHeE", parent: parents["powslfCxjt"]!),
-            ]
+        let deleted = ["zgxqrwEMEP"]
+        let inserted = [("nCcfswhOXr", "KjqnrhLzeE", 0)]
+        
+        var children = [String:Child]()
+        var parents = [String:Parent]()
+        for p in _data.enumerated() {
+            let id = p.element.0
+            let parent = Parent(rank: p.offset, name: id)
+            for c in p.element.1.enumerated() {
+                children[c.element] = Child(rank: c.offset, name: c.element, parent: parent)
+            }
+            parents[id] = parent
+        }
         
         let changes = [
-        ("OGlwqtXHeE", "AJfZltmZml", 0),
-        ("pajgRSevdB", "AJfZltmZml", 1),
-        ("etbJeVVRcR", "AJfZltmZml", 2),
-        ("nomOPsCLae", "AJfZltmZml", 3),
-        ("XowOgYrcee", "AJfZltmZml", 4),
-        ("IScGOquZMC", "rseRiOCBuq", 1),
-        ("pPtbKKZdEp", "rseRiOCBuq", 2),
-        ("zvBozntvAe", "rseRiOCBuq", 3),
-        ("ZEfIuIDkBm", "rseRiOCBuq", 4),
-        ("JFcjwqDOIt", "powslfCxjt", 0),
+            ("RIZOqeMoWM", "KjqnrhLzeE", 6),
+            ("eObJUPufpv", "KjqnrhLzeE", 1),
+            ("GkVzEtvFEp", "ZSnKWisBqE", 2),
+            ("dOwXZZpyif", "WqoQBTNEaY", 4),
+            ("ueHNbNmzJE", "KjqnrhLzeE", 5),
+            ("UOGPKdyFLd", "KjqnrhLzeE", 4),
+            ("RFMVhYUOBt", "WqoQBTNEaY", 0),
+            ("iiRlRTkGKi", "WqoQBTNEaY", 5),
+            ("TPtWHpAfhO", "ZSnKWisBqE", 5),
+            ("VWbpXXYeZH", "WqoQBTNEaY", 3),
+            ("WqWAgYBpdk", "ZSnKWisBqE", 3),
+            ("hRPjsirdxZ", "WqoQBTNEaY", 1),
+            ("rsubjBxbVb", "ZSnKWisBqE", 6),
+            ("hGLYuDzKQi", "WqoQBTNEaY", 2),
+            ("ZOAwicSMDE", "ZSnKWisBqE", 0),
+            ("EEQzPOqFLm", "KjqnrhLzeE", 3),
+            ("jmKARnCZQJ", "ZSnKWisBqE", 1),
+            ("BLDDODjZeP", "ZSnKWisBqE", 4),
+            ("vGNjxxuxds", "KjqnrhLzeE", 2),
+            ]
+
         
-        ("EQyMBBwakO", "powslfCxjt", 1),
-        ("CrukASfzSp", "powslfCxjt", 2)
-        ]
         
         resultsController.setContent(objects: Array(children.values))
         collectionView.reloadData()
         
-        resultsController.beginEditing()
-        
-        for s in parents.values {
-            resultsController.didUpdate(section: s)
-        }
-        
-        resultsController.delete(object: children["pRllJqXDvU"]!)
-        resultsController.insert(object: Child(rank: 0, name: "TGKRgzkojw", parent: parents["rseRiOCBuq"]!))
-        
         for change in changes {
             children[change.0]?.parent = parents[change.1]
             children[change.0]?.rank = change.2
+        }
+        for p in parentOrder.enumerated() {
+            let parent = parents[p.element]!
+            parent.rank = p.offset
+        }
+        
+        resultsController.beginEditing()
+        
+        for p in parentOrder.enumerated() {
+            let parent = parents[p.element]!
+            resultsController.didUpdate(section: parent)
+        }
+        
+        for d in deleted {
+            resultsController.delete(object: children[d]!)
+        }
+        for i in inserted {
+            resultsController.insert(object: Child(rank: i.2, name: i.0, parent: parents[i.1]!))
+        }
+        
+        for change in changes {
             resultsController.didUpdate(object: children[change.0]!)
         }
         
@@ -151,7 +167,7 @@ fileprivate class Child : ResultType, CustomStringConvertible {
         return id.hashValue
     }
     static func ==(lhs: Child, rhs: Child) -> Bool {
-        return lhs.id == rhs.id
+        return lhs === rhs
     }
     var description: String {
         return "Child \(self.name) - [\(self.parent?.rank), \(self.rank)]"
@@ -169,7 +185,7 @@ fileprivate class Parent : SectionType, CustomStringConvertible {
         self.name = name ?? "Parent \(rank)"
     }
     static func ==(lhs: Parent, rhs: Parent) -> Bool {
-        return lhs.id == rhs.id
+        return lhs === rhs
     }
     
     func createChildren(_ n: Int) -> [Child] {
@@ -180,6 +196,6 @@ fileprivate class Parent : SectionType, CustomStringConvertible {
         return _children
     }
     var description: String {
-        return "Parent \(self.id) - \(self.rank)"
+        return "Parent \(self.name) - \(self.rank)"
     }
 }

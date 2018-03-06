@@ -529,12 +529,9 @@ CA
                                             </segments>
                                         </segmentedCell>
                                         <connections>
-                                            <action selector="layoutSelectorChanged:" target="Oky-zY-oP4" id="6vh-EJ-xZo"/>
+                                            <action selector="layoutSelectorChanged:" target="Oky-zY-oP4" id="nzA-9U-2RW"/>
                                         </connections>
                                     </segmentedControl>
-                                    <connections>
-                                        <action selector="groupSelectorChanged:" target="Oky-zY-oP4" id="QqG-GY-PCP"/>
-                                    </connections>
                                 </toolbarItem>
                                 <toolbarItem implicitItemIdentifier="7FE72B4A-CF4A-441A-9EE0-15AC4B421977" label="Group By" paletteLabel="Group By" id="bce-Cx-PvD">
                                     <nil key="toolTip"/>

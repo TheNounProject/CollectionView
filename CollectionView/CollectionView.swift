@@ -445,8 +445,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         self._selectedIndexPaths.formIntersection(self.allIndexPaths)
         self.contentDocumentView.prepareRect(_preperationRect, animated: false)
-        
-        
     }
 
     
@@ -461,8 +459,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     // MARK: - Layout
     /*-------------------------------------------------------------------------------*/
-    
-    
     
     /**
         The layout used to organize the collected view’s items.
@@ -2792,8 +2788,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
             invalidateAutoscroll()
         }
     }
-    
-    
-    
+}
+
+
+extension CollectionView {
+    public var fillSize : CGSize {
+        let w = self.bounds.size.width - self.contentInsets.width
+        var h = self.bounds.size.height - self.contentInsets.height
+        if let l = self.leadingView?.bounds.size.height {
+            h -= l
+        }
+        return CGSize(width: w, height: h)
+    }
 }
 

@@ -267,11 +267,11 @@ final public class CollectionViewDocumentView : NSView {
             if !removedRect.isEmpty {
                 if self.collectionView.collectionViewLayout.scrollDirection == .vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.minYEdge : CGRectEdge.maxYEdge
-                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                    self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
                 else {
                     let edge = self.visibleRect.origin.x > removedRect.origin.x ? CGRectEdge.minXEdge : CGRectEdge.maxXEdge
-                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                    self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
             }
         }
@@ -364,11 +364,11 @@ final public class CollectionViewDocumentView : NSView {
             if !removedRect.isEmpty {
                 if self.collectionView.collectionViewLayout.scrollDirection == .vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.minYEdge : CGRectEdge.maxYEdge
-                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                    self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
                 else {
                     let edge = self.visibleRect.origin.x > removedRect.origin.x ? CGRectEdge.minXEdge : CGRectEdge.maxXEdge
-                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                    self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
             }
         }

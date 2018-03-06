@@ -9,6 +9,63 @@
 import XCTest
 import CollectionView
 
+
+
+struct Person : Hashable {
+    let name : String
+    let age : Int
+    var hashValue: Int {
+        return name.hashValue^age
+    }
+    static func ==(lhs: Person, rhs: Person) -> Bool {
+        return lhs.age == rhs.age && lhs.name == rhs.name
+    }
+    
+    static func set(with n: Int = 5000, randomAge: Bool = true) -> OrderedSet<Person> {
+        var set = OrderedSet<Person>()
+        for n in 0..<n {
+            let age = randomAge ? Int(arc4random_uniform(50) + 10) : n
+            set.append(Person(name: randomName(length: 8), age: age))
+        }
+        return set
+    }
+}
+
+class NSPerson : NSObject {
+    @objc var name : String
+    @objc var age : Int
+    init(name: String, age: Int) {
+        self.name = name
+        self.age = age
+        super.init()
+    }
+    class func array() -> [NSPerson] {
+        var arr = [NSPerson]()
+        for _ in 0..<5000 {
+            let age = Int(arc4random_uniform(50) + 10)
+            arr.append(NSPerson(name: randomName(length: 8), age: age))
+        }
+        return arr
+    }
+}
+
+func randomName(length: Int) -> String {
+    let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    let len = UInt32(letters.length)
+    
+    var randomString = ""
+    
+    for _ in 0 ..< length {
+        let rand = arc4random_uniform(len)
+        var nextChar = letters.character(at: Int(rand))
+        randomString += NSString(characters: &nextChar, length: 1) as String
+    }
+    return randomString
+}
+
+
+
+
 class OrderedSetTests: XCTestCase {
 
     override func setUp() {
@@ -93,7 +150,7 @@ class OrderedSetTests: XCTestCase {
     }
     func testContains_afterAdd() {
         var set = OrderedSet<String>()
-        set.add("one")
+        set.append("one")
         XCTAssertTrue(set.contains("one"))
     }
     func testContains_afterRemove_false() {
@@ -108,22 +165,22 @@ class OrderedSetTests: XCTestCase {
     
     func testAddFirstObject() {
         var set = OrderedSet<String>()
-        set.add("some")
+        set.append("some")
         XCTAssertEqual(set.count, 1)
         XCTAssertEqual(set[0], "some")
     }
     
     func testAddObject_duplicate() {
         var set = OrderedSet<String>()
-        set.add("some")
+        set.append("some")
         XCTAssertEqual(set.count, 1)
-        set.add("some")
+        set.append("some")
         XCTAssertEqual(set.count, 1)
     }
     
     func testAddCollection() {
         var set = OrderedSet<String>()
-        set.add(contentsOf: ["one", "two"])
+        set.append(contentsOf: ["one", "two"])
         XCTAssertEqual(set.count, 2)
         XCTAssertEqual(set[0], "one")
         XCTAssertEqual(set[1], "two")
@@ -131,7 +188,7 @@ class OrderedSetTests: XCTestCase {
     
     func testAddCollection_withDuplicates() {
         var set : OrderedSet<String> = ["one", "two"]
-        set.add(contentsOf: ["one", "three"])
+        set.append(contentsOf: ["one", "three"])
         XCTAssertEqual(set.count, 3)
         XCTAssertEqual(set[0], "one")
         XCTAssertEqual(set[1], "two")
@@ -195,7 +252,7 @@ class OrderedSetTests: XCTestCase {
     
     func testInsertMultiple() {
         var set : OrderedSet<String> = ["one", "four"]
-        set.insert(contentsOf: ["two", "three"], at: 1)
+        _ = set.insert(contentsOf: ["two", "three"], at: 1)
         XCTAssertEqual(set.count, 4)
         XCTAssertEqual(set[1], "two")
         XCTAssertEqual(set[2], "three")
@@ -221,7 +278,7 @@ class OrderedSetTests: XCTestCase {
         self.measure {
             var set : OrderedSet<String> = ["one", "four"]
             for n in 0..<10000 {
-                set.add("Object_\(n)")
+                set.append("Object_\(n)")
             }
         }
     }
@@ -232,32 +289,140 @@ class OrderedSetTests: XCTestCase {
         for n in 0..<10000 {
             list.append("Object_\(n)")
         }
-        var set = OrderedSet<String>()
-        self.measure {
-            set.add(contentsOf: list)
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = OrderedSet<String>()
+            self.startMeasuring()
+            set.append(contentsOf: list)
         }
     }
     
     func setWithObjects(_ n: Int) -> OrderedSet<String>{
         var set = OrderedSet<String>()
         for n in 0..<10000 {
-            set.add("Object_\(n)")
+            set.append("Object_\(n)")
         }
         return set
     }
     
     func testRemoveFromMiddlePerformance() {
         // This is an example of a performance test case.
-        var set = self.setWithObjects(5000)
-        self.measure {
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = self.setWithObjects(10000)
+            self.startMeasuring()
             set.remove(at: 5000)
         }
     }
     func testRemoveFromEndPerformance() {
         // This is an example of a performance test case.
-        var set = self.setWithObjects(10000)
-        self.measure {
+        
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = self.setWithObjects(10000)
+            self.startMeasuring()
             set.remove(at: set.count - 1)
+        }
+    }
+    
+    
+    // MARK: - Iteration Performance
+    /*-------------------------------------------------------------------------------*/
+
+    func testIterate() {
+        let set = Person.set()
+        self.measure {
+            for e in set {
+                _ = e[keyPath: \Person.name]
+            }
+        }
+    }
+
+    
+    // MARK: - Sorting
+    /*-------------------------------------------------------------------------------*/
+    
+    func testSort() {
+        var set = Person.set(with: 10)
+        let ages = set.map { return $0.age }.sorted()
+        
+        let sort = SortDescriptor(\Person.age)
+        set.sort(using: [sort])
+        
+        for (idx, person) in set.enumerated() {
+            XCTAssertEqual(person.age, ages[idx])
+        }
+    }
+
+    func testArraySort() {
+        let sort = SortDescriptor(\Person.age)
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var arr = Person.set().objects
+            self.startMeasuring()
+            arr.sort(using: sort)
+        }
+    }
+    
+    // NSSortDescriptor
+    func testSortPerformance_withNSSortDescriptors() {
+        let sort = NSSortDescriptor(key: "age", ascending: true)
+        
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            let arr = NSMutableArray(array: NSPerson.array())
+            self.startMeasuring()
+            arr.sort(using: [sort])
+        }
+    }
+    // Direct
+    func testSortPerformance_withComparator() {
+        
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = Person.set()
+            self.startMeasuring()
+            set.sort(by: { (a, b) -> Bool in
+                return a.age < b.age
+            })
+        }
+    }
+    // Key Paths
+    func testSortPerformance_withKeyPaths() {
+        
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = Person.set()
+            self.startMeasuring()
+            set.sort(by: { (a, b) -> Bool in
+                return a[keyPath: \Person.age] < b[keyPath: \Person.age]
+            })
+        }
+    }
+    func testSortPerformance_sortDescriptors_uniquePreordered() {
+        let sort = SortDescriptor(\Person.age)
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = Person.set(randomAge: false)
+            self.startMeasuring()
+            set.sort(using: sort)
+        }
+    }
+    func testSortPerformance_sortDescriptors() {
+        let sort = SortDescriptor(\Person.age)
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            var set = Person.set()
+            self.startMeasuring()
+            set.sort(using: sort)
+        }
+    }
+    func testSortedPerformance_sortDescriptors() {
+        let sort = SortDescriptor(\Person.age)
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            let set = Person.set()
+            self.startMeasuring()
+            _ = set.sorted(using: sort)
+        }
+    }
+    func testSortedPerformance_multipleSortDescriptors() {
+        
+        let sort = [SortDescriptor(\Person.age), SortDescriptor(\Person.name)]
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            let set = Person.set()
+            self.startMeasuring()
+            _ = set.sorted(using: sort)
         }
     }
 

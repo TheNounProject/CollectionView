@@ -3,63 +3,78 @@
    version = "3.0">
    <TimelineItems>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=11&amp;CharacterRangeLoc=3631&amp;EndingColumnNumber=20&amp;EndingLineNumber=175&amp;StartingColumnNumber=1&amp;StartingLineNumber=175&amp;Timestamp=508800149.696969"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.90846"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=0&amp;CharacterRangeLoc=3743&amp;EndingColumnNumber=16&amp;EndingLineNumber=177&amp;StartingColumnNumber=1&amp;StartingLineNumber=177&amp;Timestamp=508800149.697152"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.908627"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=13&amp;CharacterRangeLoc=3629&amp;EndingColumnNumber=14&amp;EndingLineNumber=175&amp;StartingColumnNumber=1&amp;StartingLineNumber=175&amp;Timestamp=508800149.697317"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.9087681"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=0&amp;CharacterRangeLoc=3743&amp;EndingColumnNumber=14&amp;EndingLineNumber=177&amp;StartingColumnNumber=1&amp;StartingLineNumber=177&amp;Timestamp=508800149.697462"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.908906"
          lockedSize = "{184, 112}"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=23&amp;CharacterRangeLoc=3670&amp;EndingColumnNumber=24&amp;EndingLineNumber=177&amp;StartingColumnNumber=1&amp;StartingLineNumber=177&amp;Timestamp=508800149.697612"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.909057"
          lockedSize = "{309, 153}"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=0&amp;CharacterRangeLoc=3743&amp;EndingColumnNumber=24&amp;EndingLineNumber=177&amp;StartingColumnNumber=1&amp;StartingLineNumber=177&amp;Timestamp=508800149.697758"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.9092"
          lockedSize = "{393, 98}"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=23&amp;CharacterRangeLoc=3715&amp;EndingColumnNumber=24&amp;EndingLineNumber=184&amp;StartingColumnNumber=1&amp;StartingLineNumber=184&amp;Timestamp=508800149.697903"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.909339"
          lockedSize = "{311, 122}"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=0&amp;CharacterRangeLoc=3668&amp;EndingColumnNumber=14&amp;EndingLineNumber=177&amp;StartingColumnNumber=1&amp;StartingLineNumber=177&amp;Timestamp=508800149.698048"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.909483"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=13&amp;CharacterRangeLoc=3750&amp;EndingColumnNumber=14&amp;EndingLineNumber=188&amp;StartingColumnNumber=1&amp;StartingLineNumber=188&amp;Timestamp=508800149.698186"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.909616"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=23&amp;CharacterRangeLoc=3766&amp;EndingColumnNumber=24&amp;EndingLineNumber=189&amp;StartingColumnNumber=1&amp;StartingLineNumber=189&amp;Timestamp=508800149.698323"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.90976"
          lockedSize = "{294, 126}"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>
       <LoggerValueHistoryTimelineItem
-         documentLocation = "#CharacterRangeLen=23&amp;CharacterRangeLoc=3812&amp;EndingColumnNumber=24&amp;EndingLineNumber=191&amp;StartingColumnNumber=1&amp;StartingLineNumber=191&amp;Timestamp=508800149.698464"
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=4140&amp;EndingColumnNumber=8&amp;EndingLineNumber=170&amp;StartingColumnNumber=8&amp;StartingLineNumber=170&amp;Timestamp=540504720.909907"
          lockedSize = "{303, 84}"
+         selectedRepresentationIndex = "0"
+         shouldTrackSuperviewWidth = "NO">
+      </LoggerValueHistoryTimelineItem>
+      <LoggerValueHistoryTimelineItem
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=7&amp;CharacterRangeLoc=2863&amp;EndingColumnNumber=73&amp;EndingLineNumber=101&amp;StartingColumnNumber=66&amp;StartingLineNumber=101&amp;Timestamp=540504720.9100519"
+         selectedRepresentationIndex = "0"
+         shouldTrackSuperviewWidth = "NO">
+      </LoggerValueHistoryTimelineItem>
+      <LoggerValueHistoryTimelineItem
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=0&amp;CharacterRangeLoc=2084&amp;EndingColumnNumber=0&amp;EndingLineNumber=83&amp;StartingColumnNumber=0&amp;StartingLineNumber=83&amp;Timestamp=540504720.910188"
+         selectedRepresentationIndex = "0"
+         shouldTrackSuperviewWidth = "NO">
+      </LoggerValueHistoryTimelineItem>
+      <LoggerValueHistoryTimelineItem
+         documentLocation = "file:///Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/Example/Example/MyPlayground.playground#CharacterRangeLen=7&amp;CharacterRangeLoc=2880&amp;EndingColumnNumber=12&amp;EndingLineNumber=102&amp;StartingColumnNumber=5&amp;StartingLineNumber=102&amp;Timestamp=540504720.910321"
          selectedRepresentationIndex = "0"
          shouldTrackSuperviewWidth = "NO">
       </LoggerValueHistoryTimelineItem>

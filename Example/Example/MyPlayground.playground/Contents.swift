@@ -7,55 +7,102 @@ import Cocoa
 //
 //
 
-extension Int {
-    
-    static func random(in range: ClosedRange<Int>) -> Int {
-        let min = range.lowerBound
-        let max = range.upperBound
-        return Int(arc4random_uniform(UInt32(1 + max - min))) + min
-    }
-}
 
-func randomString(length: Int) -> String {
-    
-    let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    let len = UInt32(letters.length)
-    
-    var randomString = ""
-    
-    for _ in 0 ..< length {
-        let rand = arc4random_uniform(len)
-        var nextChar = letters.character(at: Int(rand))
-        randomString += NSString(characters: &nextChar, length: 1) as String
-    }
-    
-    return randomString
+
+struct Person {
+    let name : String
+    let age : Int
 }
 
 
-extension MutableCollection where Indices.Iterator.Element == Index {
-    /// Shuffles the contents of this collection.
-    mutating func shuffle() {
-        let c = count
-        guard c > 1 else { return }
-        
-        for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
-            let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
-            guard d != 0 else { continue }
-            let i = index(firstUnshuffled, offsetBy: d)
-            swap(&self[firstUnshuffled], &self[i])
+
+struct SortDescriptor<T> {
+    
+    enum Result {
+        case same
+        case ascending
+        case descending
+    }
+    
+    let ascending : Bool
+    private let comparator : (T, T) -> Result
+    
+    init<V:Comparable>(_ keyPath: KeyPath<T,V>, ascending:Bool = true) {
+        self.comparator = {
+            let v1 = $0[keyPath: keyPath]
+            let v2 = $1[keyPath: keyPath]
+            if v1 == v2 { return .same }
+            if v1 > v2 { return .descending }
+            return .ascending
+        }
+        self.ascending = ascending
+    }
+    func compare(_ a:T, to b:T) -> Result {
+        return comparator(a, b)
+    }
+}
+
+extension Array {
+    mutating func sort(using sortDescriptor: SortDescriptor<Element>) {
+        self.sort(using: [sortDescriptor])
+    }
+    
+    mutating func sort(using sortDescriptors: [SortDescriptor<Element>]) {
+        self.sort { (a, b) -> Bool in
+            for sortDescriptor in sortDescriptors {
+                switch sortDescriptor.compare(a, to: b) {
+                case .same: break
+                case .descending: return !sortDescriptor.ascending
+                case .ascending: return sortDescriptor.ascending
+                }
+            }
+            return false
+        }
+    }
+    
+    mutating func sorted(using sortDescriptors: [SortDescriptor<Element>]) -> [Element] {
+        return self.sorted { (a, b) -> Bool in
+            for sortDescriptor in sortDescriptors {
+                switch sortDescriptor.compare(a, to: b) {
+                case .same: break
+                case .descending: return !sortDescriptor.ascending
+                case .ascending: return sortDescriptor.ascending
+                }
+            }
+            return false
         }
     }
 }
 
-extension Sequence {
-    /// Returns an array with the contents of this sequence, shuffled.
-    func shuffled() -> [Iterator.Element] {
-        var result = Array(self)
-        result.shuffle()
-        return result
+
+
+let jim = Person(name: "Jim", age: 30)
+let bob = Person(name: "Bob", age: 35)
+let alex = Person(name: "Alex", age: 30)
+let steve = Person(name: "Steve", age: 35)
+
+
+
+func theAgeGame(with a: Person, and b: Person) -> String {
+    switch SortDescriptor(\Person.age).compare(a, to: b) {
+    case .same:
+        return ("\(a.name) and \(b.name) are both \(a.age)")
+    case .ascending:
+        return ("\(b.name)(\(b.age)) is \(b.age - a.age) years older than \(a.name)(\(a.age))")
+    case .descending:
+        return ("\(a.name)(\(a.age)) is \(a.age - b.age) years older than \(b.name)(\(b.age))")
     }
 }
+
+theAgeGame(with: jim, and: alex) // "Jim and Alex are both 30"
+theAgeGame(with: jim, and: bob)  // "Bob(35) is 5 years older than Jim(30)"
+
+var dudes = [steve, jim, bob, alex] // [{name "Steve", age 35}, {name "Jim", age 30}, {name "Bob", age 35}, {name "Alex", age 30}]
+
+let ageThenName = [SortDescriptor(\Person.age), SortDescriptor(\Person.name)]
+let ordered = dudes.sorted(using: ageThenName) // [{name "Alex", age 30}, {name "Jim", age 30}, {name "Bob", age 35}, {name "Steve", age 35}]
+
+
 
 
 
@@ -122,74 +169,6 @@ extension Sequence {
 //Person(name: "John").groupValue()
 //Shoe(size: 6).groupValue()
 //Shoe(size: 8).groupValue()
-
-
-
-
-//var indexSet = IndexSet()
-//indexSet.insert(1)
-//indexSet.insert(5)
-//indexSet.insert(8)
-//debugPrint(indexSet)
-//
-//for idx in indexSet {
-//    print(idx)
-//}
-
-
-
-func runTime(_ block: ()->Void) -> TimeInterval {
-    let start = CFAbsoluteTimeGetCurrent()
-    block()
-    let dur = CFAbsoluteTimeGetCurrent() - start
-    return dur
-}
-
-
-
-import CollectionView
-
-
-var source = // ["H", "F", "A", "G", "E", "C", "D"]
-    [
-    "H","C","D","A","E","F", "G"
-].shuffled()
-
-var target = source.sorted()
-target.removeFirst()
-_ = target
-
-target.insert("B", at: 0)
-
-
-func describeEdits(for changeSet: ChangeSet<[String]>) -> String {
-    var str = ""
-    for e in changeSet.edits {
-        str += "\(e.description)\n"
-    }
-    return str
-    
-}
-
-var cs1 = ChangeSet(source: source, target: target, options: .minimumOperations)
-//var cs2 = ChangeSet(source: source, target: target)
-//cs1.matrixLog
-//
-
-_ = source
-_ = target
-
-describeEdits(for: cs1)
-//
-cs1.reduceEdits()
-describeEdits(for: cs1)
-//
-//
-//
-//cs2.matrixLog
-//describeEdits(for: cs2)
-//cs2.reduceEdits()
-//describeEdits(for: cs2)
 
 
 

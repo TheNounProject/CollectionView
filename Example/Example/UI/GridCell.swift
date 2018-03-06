@@ -9,9 +9,8 @@
 import Foundation
 import CollectionView
 
+
 class GridCell : CollectionViewPreviewCell {
-    
-    
     
     @IBOutlet weak var badgeLabel : NSTextField!
     @IBOutlet weak var titleLabel : NSTextField!
@@ -24,7 +23,7 @@ class GridCell : CollectionViewPreviewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-//        self.badgeLabel.unbind("value")
+        self.badgeLabel.unbind(NSBindingName(rawValue: "value"))
     }
     
     var child: Child?
@@ -42,9 +41,13 @@ class GridCell : CollectionViewPreviewCell {
         self.titleLabel.stringValue = "Child \(child.idString)"
         self.detailLabel.stringValue = child.dateString
         
-//        self.badgeLabel.bind("value", to: child, withKeyPath: "displayOrder", options: nil)
+        self.badgeLabel.bind(NSBindingName(rawValue: "value"), to: child, withKeyPath: "displayOrder", options: nil)
     }
 
+    
+    override class var defaultReuseIdentifier : String {
+        return "GridCell"
+    }
     
     override class func register(in collectionView: CollectionView) {
         collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!, forCellWithReuseIdentifier: self.defaultReuseIdentifier)
@@ -52,7 +55,7 @@ class GridCell : CollectionViewPreviewCell {
     
     
     override var description: String {
-        return "GridCell: \(child?.description ?? nil)"
+        return "GridCell: \(child?.description ?? "nil")"
     }
     
     static let rBG = NSColor(white: 0.98, alpha: 1)
@@ -95,30 +98,6 @@ class GridCell : CollectionViewPreviewCell {
             : bgColor
         self.needsDisplay = true
     }
-    
-    
-    
-    // MARK: - Apply Layout Attributes
-    /*-------------------------------------------------------------------------------*/
-    
-    override func apply(_ layoutAttributes: CollectionViewLayoutAttributes, animated: Bool) {
-        super.apply(layoutAttributes, animated: animated)
-        
-        let ip = layoutAttributes.indexPath
-        
-        if self.child?.isDeleted != false || self.child?.displayOrder.intValue != ip._item {
-            self.bgColor = NSColor.orange
-        }
-        else {
-            self.bgColor = NSColor(white: 0.98, alpha: 1)
-        }
-        self.backgroundColor = bgColor
-        self.needsDisplay = true
-        
-    }
-
-
-    
 }
 
 

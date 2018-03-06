@@ -84,7 +84,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return _data[index]
     }
     
-    fileprivate mutating func _remap(startingAt index: Int) {
+    fileprivate mutating func _remap(startingAt index: Int = 0) {
         guard index < _data.count else { return }
         for idx in index..<_data.count {
             self._map[_data[idx]] = idx
@@ -104,7 +104,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
     // MARK: - Appending
     /*-------------------------------------------------------------------------------*/
 
-    @discardableResult public mutating func add(_ object: Element) -> Bool {
+    @discardableResult public mutating func append(_ object: Element) -> Bool {
         guard !self.contains(object) else { return false }
         self.needsSort = true
         _data.append(object)
@@ -112,9 +112,9 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return true
     }
     
-    public mutating func add<C : Collection>(contentsOf newElements: C) where C.Iterator.Element == Element {
+    public mutating func append<C : Collection>(contentsOf newElements: C) where C.Iterator.Element == Element {
         for e in newElements {
-            self.add(e)
+            self.append(e)
         }
     }
 
@@ -122,7 +122,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
     // MARK: - Inserting
     /*-------------------------------------------------------------------------------*/
     
-    mutating public func insert(_ object: Element, at index: Int) -> Bool {
+    @discardableResult mutating public func insert(_ object: Element, at index: Int) -> Bool {
         guard !self.contains(object) else { return false }
         self._data.insert(object, at: index)
         _remap(startingAt: index)
@@ -157,6 +157,22 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         guard let index = self.index(of: object) else { return nil }
         remove(at: index)
         return index
+    }
+    
+    public mutating func remove<C : Collection>(contentsOf removeElements: C) where C.Iterator.Element == Element {
+        var removeIndex = [Int]()
+        for e in removeElements {
+            if let e = self._map.removeValue(forKey: e) {
+                removeIndex.append(e)
+            }
+        }
+        guard removeIndex.count > 0 else { return }
+        // Remove in descending index
+        let sorted = removeIndex.sorted()
+        for idx in sorted.reversed() {
+            self._data.remove(at: idx)
+        }
+        self._remap(startingAt: sorted[0])
     }
     
     var needsSort : Bool = false
@@ -195,38 +211,29 @@ extension OrderedSet where Element:Comparable {
         new.needsSort = false
         new._remap(startingAt: 0)
     }
-    
-    
-    
-    
+
 }
 
-extension OrderedSet where Element: AnyObject {
+extension OrderedSet {
     
-    public mutating func insert(_ object: Element, using sortDescriptors: [NSSortDescriptor]) -> Int {
-        
+    public mutating func insert(_ object: Element, using sortDescriptors: [SortDescriptor<Element>]) -> Int {
         _ = self.remove(object)
-        
-        if sortDescriptors.count > 0 {
-            for (idx, element) in self.enumerated() {
-                if sortDescriptors.compare(object, to: element) == .orderedAscending {
-                    _ = self.insert(object, at: idx)
-                    return idx
-                }
-            }
-        }
-        self.add(object)
-        return self.count - 1
+        let idx = self._data.insert(object, using: sortDescriptors)
+        _remap(startingAt: idx)
+        return idx
     }
     
-    public mutating func insert<C : Collection>(contentsOf newElements: C, using sortDescriptors: [NSSortDescriptor]) where C.Iterator.Element == Element {
+    public mutating func insert<C : Collection>(contentsOf newElements: C, using sortDescriptors: [SortDescriptor<Element>]) where C.Iterator.Element == Element {
         
+        // TODO:
+//        for e in newElements {
+//            _ = self.insert(e, using: sortDescriptors)
+//        }
         
         var new = newElements.sorted(using: sortDescriptors)
         var fMatch = self._data.count
         
         var remove = IndexSet()
-        
         for obj in new.reversed() {
             if let index = self.index(of: obj) {
                 remove.insert(index)
@@ -241,7 +248,7 @@ extension OrderedSet where Element: AnyObject {
         var checkIdx = 0
         while new.count > 0, checkIdx < _data.count {
             let check = _data[checkIdx]
-            if sortDescriptors.compare(new[0], to: check) == .orderedAscending {
+            if sortDescriptors.compare(new[0], check) == SortDescriptorResult.ascending {
                 if checkIdx < fMatch { fMatch = checkIdx }
                 _data.insert(new[0], at: checkIdx)
                 new.removeFirst()
@@ -255,19 +262,21 @@ extension OrderedSet where Element: AnyObject {
         self._remap(startingAt: fMatch)
     }
     
-    public mutating func sort(using sortDescriptors: [NSSortDescriptor]) {
-        guard sortDescriptors.count > 0 else { return }
-        
-        self._data.sort(using: sortDescriptors)
+    public mutating func sort(using sortDescriptor: SortDescriptor<Element>) {
+        self._data.sort(using: sortDescriptor)
         self._map.removeAll(keepingCapacity: true)
-        for (idx, obj) in self._data.enumerated() {
-            self._map[obj] = idx
-        }
+        self._remap()
     }
     
-    public func sorting(by sortDescriptors: [NSSortDescriptor]) -> OrderedSet<Element> {
+    public mutating func sort(using sortDescriptors: [SortDescriptor<Element>]) {
+        guard sortDescriptors.count > 0 else { return }
+        self._data.sort(using: sortDescriptors)
+        self._map.removeAll(keepingCapacity: true)
+        self._remap()
+    }
+    
+    public func sorted(using sortDescriptors: [SortDescriptor<Element>]) -> OrderedSet<Element> {
         var new = self
-        guard sortDescriptors.count > 0 else { return new }
         new.sort(using: sortDescriptors)
         return new
     }
@@ -275,23 +284,19 @@ extension OrderedSet where Element: AnyObject {
     public mutating func sort(by sort: ((Element, Element)-> Bool)) {
         self._data = self._data.sorted(by: sort)
         self._map.removeAll(keepingCapacity: true)
-        for (idx, obj) in self._data.enumerated() {
-            self._map[obj] = idx
-        }
+        self._remap()
     }
     
     public func sorted(by sort: ((Element, Element)-> Bool)) -> OrderedSet<Element> {
         let data = self._data.sorted(by: sort)
         return OrderedSet(elements: data)
     }
-    
-    
 }
 
-extension Collection where Iterator.Element:AnyObject & Hashable {
-    public func orderedSet(using sortDescriptors: [NSSortDescriptor]) -> OrderedSet<Iterator.Element> {
+extension Collection where Iterator.Element:Hashable {
+    public func orderedSet(using sortDescriptors: [SortDescriptor<Iterator.Element>]) -> OrderedSet<Iterator.Element> {
         let s = OrderedSet<Iterator.Element>(elements: self)
-        return s.sorting(by: sortDescriptors)
+        return s.sorted(using: sortDescriptors)
     }
 }
 

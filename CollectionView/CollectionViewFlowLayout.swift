@@ -419,7 +419,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 var forceBreak: Bool = false
                 for item in 0..<numItems {
-                    allIndexPaths.add(IndexPath.for(item: item, section: sec))
+                    allIndexPaths.append(IndexPath.for(item: item, section: sec))
                     let ip = IndexPath.for(item: item, section: sec)
                     let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
                     var attrs = CollectionViewLayoutAttributes(forCellWith: ip)
@@ -564,7 +564,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
                 
-                let lead = cv.leadingView?.bounds.size.height ?? 0
+//                let lead = cv.leadingView?.bounds.size.height ?? 0
 //                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
 //                    currentAttrs.frame.origin.y = lead
 //                    currentAttrs.floating = false

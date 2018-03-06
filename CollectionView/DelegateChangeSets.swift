@@ -82,6 +82,14 @@ public class CollectionViewResultsProxy   {
 }
 
 
+//protocol CollectionViewProviderDelegate: class {
+//    func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+//    func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+//    func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+//    
+//}
+
+
 /**
  A helper object to easily track changes reported by a ResultsController and apply them to a CollectionView
 */

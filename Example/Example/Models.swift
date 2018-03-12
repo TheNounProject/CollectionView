@@ -25,24 +25,17 @@ let dateGroupFormatter : DateFormatter = {
 
 
 
-
-
-
-
-
 class Parent : NSManagedObject, CustomDisplayStringConvertible {
     
-
     @NSManaged var children : Set<Child>
     @NSManaged var created: Date
-    
-	
 	
     @NSManaged var displayOrder : NSNumber
+    @NSManaged var name : String
+    
     
     
     static func create(in moc : NSManagedObjectContext? = nil, withChild child: Bool = true) -> Parent {
-        
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let req = NSFetchRequest<Parent>(entityName: "Parent")
         req.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
@@ -52,6 +45,7 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         let new = NSEntityDescription.insertNewObject(forEntityName: "Parent", into: moc) as! Parent
         new.displayOrder = NSNumber(value: _order + 1)
         new.created = Date()
+        new.name = String.random(10)
         
         if child {
             _ = new.createChild()
@@ -61,16 +55,38 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     
 	
     func createChild() -> Child {
-        let child = Child.createOrphan(in: self.managedObjectContext)
+        return createChildren(1).first!
+    }
+    
+    func createChildren(_ count: Int = 1) -> [Child] {
+        let start = NSFetchRequest<Child>(entityName: "Child")
+        start.predicate = NSPredicate(format: "parent = %@", self)
+        start.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
+        start.fetchLimit = 1
+        var order = 0
+        do {
+            if let first = try self.managedObjectContext?.fetch(start).first?.displayOrder.intValue {
+                order = first
+            }
+        }
+        catch { }
         
-        let order = self.children.sorted(using: [NSSortDescriptor(key: "displayOrder", ascending: true)]).last?.displayOrder.intValue ?? -1
-        child.displayOrder = NSNumber(value: order + 1)
-        child.parent = self
-        return child
+        var res = [Child]()
+        for n in 0..<count {
+            let child = Child.create(in: self.managedObjectContext)
+            child.displayOrder = NSNumber(value: order + n)
+            child.parent = self
+            res.append(child)
+        }
+        return res
     }
     
     var displayDescription: String {
-        return "Parent \(displayOrder) - \(formatter.string(from: created))"
+        return self.name
+    }
+    
+    override var description: String {
+        return "Parent \(name) - [\(self.displayOrder)]"
     }
 }
 
@@ -81,13 +97,15 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
     @NSManaged var created: Date
     @NSManaged var group: String
     @NSManaged var second: NSNumber
+    @NSManaged var name : String
+    @NSManaged var variable: NSNumber
     @NSManaged var displayOrder : NSNumber
     
     var displayDescription: String {
         guard self.isValid else {
-            return "Child \(idString) -- Deleted"
+            return "Child \(name) -- Deleted"
         }
-        return "Child \(self.idString) - [\(self.parent?.displayOrder.description ?? "?"), \(displayOrder)]"
+        return "Child \(name) - [\(self.parent?.displayOrder.description ?? "?"), \(displayOrder)]"
     }
     
     override var description: String {
@@ -98,8 +116,7 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         return formatter.string(from: created)
     }
     
-    static func createOrphan(in moc : NSManagedObjectContext? = nil) -> Child {
-        
+    static func create(in moc : NSManagedObjectContext? = nil) -> Child {
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: moc) as! Child
         
@@ -111,7 +128,8 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         let s = Calendar.current.component(.second, from: d)
         child.second = NSNumber(value: Int(s/6))
         child.group = dateGroupFormatter.string(from: Date())
-        
+        child.name = String.random(10)
+        child.variable = NSNumber(value: Int.random(in: 0...20))
         
         return child
     }
@@ -120,7 +138,6 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
 
 
 extension NSManagedObject {
-    
     var isValid : Bool {
         return self.managedObjectContext != nil && self.isDeleted == false
     }

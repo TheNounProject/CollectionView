@@ -344,7 +344,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             for idx in 0..<itemCount {
                 let indexPath = IndexPath.for(item:idx, section: section)
                 sIndexPaths.insert(indexPath)
-                allIndexPaths.add(indexPath)
+                allIndexPaths.append(indexPath)
                 
                 let columnIndex = self.nextColumnIndexForItem(indexPath)
                 let xOffset = sectionInsets.left + round((itemWidth + colSpacing) * CGFloat(columnIndex))
@@ -487,7 +487,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     
     open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
-        var inset = (self.collectionView?.contentInsets.top ?? 0)
+        let inset = (self.collectionView?.contentInsets.top ?? 0)
         
 //        if let fAttr = sectionItemAttributes[indexPath._section].first, let hAttr = headersAttributes[indexPath._section] {
 //           inset -= (fAttr.frame.minY - hAttr.frame.maxY)

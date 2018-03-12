@@ -86,8 +86,6 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
         return byIndex[index] != nil
     }
     
-    
-    
     /**
      Set the value-index pair removing any existing entries for either
 
@@ -96,12 +94,8 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
 
     */
     public mutating func set(_ value: Value, for index: Index) {
-        if self.removeValue(for: index) != nil {
-            log.debug("⚠️ Removing duplicate value on set")
-        }
-        if self.remove(value) != nil {
-            log.debug("⚠️ Removing duplicate index on set")
-        }
+        self.removeValue(for: index)
+        self.remove(value)
         byValue[value] = index
         byIndex[index] = value
     }

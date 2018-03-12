@@ -9,6 +9,10 @@
 import CoreData
 
 
+
+
+
+
 /**
  A ResultsController manages data in a way that is usable by a collection view.
  
@@ -16,8 +20,8 @@ import CoreData
  - RelationalResultsController
  
 */
-public protocol ResultsController {
-
+public protocol ResultsController : class {
+    
     // MARK: - Delegate
     /*-------------------------------------------------------------------------------*/
     /// The delegate to notify about data changes
@@ -41,16 +45,6 @@ public protocol ResultsController {
     func numberOfObjects(in section: Int) -> Int
     
     
-    /// Returns the section info for all sections in the controller
-    var sections : [ResultsControllerSectionInfo] { get }
-    
-    /**
-     Returns all objects in the controller
-     
-     **Warning:**   This is not fully implemented yet...
-    */
-    var allObjects : [Any] { get }
-    
     // MARK: - Getting Items
     /*-------------------------------------------------------------------------------*/
     /**
@@ -61,7 +55,7 @@ public protocol ResultsController {
      - Returns: The section info
 
     */
-    func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo?
+//    func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo?
 
     
     /**
@@ -72,7 +66,9 @@ public protocol ResultsController {
      - Returns: An object at the specfied index path
 
     */
-    func object(at indexPath: IndexPath) -> Any?
+//    func object(at indexPath: IndexPath) -> Element? {
+//        return nil
+//    }
     
     
     /**
@@ -85,15 +81,30 @@ public protocol ResultsController {
     */
     func sectionName(forSectionAt indexPath :IndexPath) -> String
     
-    
-    /// Execute a fetch to populate the controller
-    func performFetch() throws
-    
     /// Clear all storage for the controller and stop all observing
     func reset()
 }
 
+public extension ResultsController {
+    var isEmpty : Bool {
+        return self.numberOfSections == 0
+    }
+}
 
+
+public protocol SectionType : Hashable { }
+
+struct NoSectionType : SectionType {
+    var hashValue: Int { return 0 }
+    static func ==(lhs: NoSectionType, rhs: NoSectionType) -> Bool { return true }
+}
+extension String : SectionType { }
+extension NSNumber : SectionType { }
+extension Int : SectionType { }
+
+public protocol ResultType : Hashable { }
+extension NSManagedObject : ResultType { }
+extension NSManagedObject : SectionType { }
 
 
 public extension Array where Element:Any {
@@ -142,7 +153,6 @@ extension NSNumber : Comparable {
     public static func ==(lhs: NSNumber, rhs: NSNumber) -> Bool {
         return lhs.compare(rhs) == .orderedSame
     }
-    
     public static func <(lhs: NSNumber, rhs: NSNumber) -> Bool {
         return lhs.compare(rhs) == .orderedAscending
     }
@@ -152,26 +162,6 @@ extension NSNumber : Comparable {
 
 
 
-/**
- Information about the sections of a results controller
-*/
-public protocol ResultsControllerSectionInfo {
-    /**
-     The object represented by the section
-    */
-    var object : Any? { get }
-    /**
-     The number of objects in the section
-    */
-    var numberOfObjects : Int { get }
-    /**
-     The objects in the section
-     
-     - Note: Calling this method incurs large overhead and should be avoided. Use getter methods on the ResultsController instead.
-    */
-    var objects : [Any] { get }
-}
-
 
 
 /**
@@ -180,6 +170,12 @@ public protocol ResultsControllerSectionInfo {
  Use ResultChangeSet to easily track changes and apply them to a CollectionView
 */
 public protocol ResultsControllerDelegate: class {
+    
+    
+    /// Tells the delegate that the controller did load its initial content
+    ///
+    /// - Parameter controller: The controller that loaded
+    func controllerDidLoadContent(controller: ResultsController)
     
     /// Tells the delegate that the controller will change
     ///
@@ -207,7 +203,7 @@ public protocol ResultsControllerDelegate: class {
      - Parameter changeType: The type of change
 
     */
-    func controller(_ controller: ResultsController, didChangeSection section: ResultsControllerSectionInfo, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    func controller(_ controller: ResultsController, didChangeSection section: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
     
     
     /**
@@ -219,7 +215,9 @@ public protocol ResultsControllerDelegate: class {
     func controllerDidChangeContent(controller: ResultsController)
 }
 
-
+ public extension ResultsControllerDelegate {
+    func controllerDidLoadContent(controller: ResultsController) { }
+}
 
 
 /**
@@ -267,53 +265,6 @@ public enum ResultsControllerChangeType  {
 
 
 
-/// A set of changes for an entity with with mappings to original Indexes
-internal struct ObjectChangeSet<Index: Hashable, Object:NSManagedObject>: CustomStringConvertible {
-    
-    var inserted = Set<Object>()
-    var updated = IndexedSet<Index, Object>()
-    var deleted = IndexedSet<Index, Object>()
-    
-    var count : Int {
-        return inserted.count + updated.count + deleted.count
-    }
-    
-    var description: String {
-        let str = "Change Set \(Object.className()):"
-        + " \(updated.count) Updated, "
-        + " \(inserted.count) Inserted, "
-        + " \(deleted.count) Deleted"
-        return str
-    }
-    
-    init() { }
-    
-    mutating func add(inserted object: Object) {
-        inserted.insert(object)
-    }
-    
-    mutating func add(updated object: Object, for index: Index) {
-        self.updated.insert(object, for: index)
-    }
-    
-    mutating func add(deleted object: Object, for index: Index) {
-        self.deleted.insert(object, for: index)
-    }
-    
-    func object(for index: Index) -> Object? {
-        return updated[index] ?? deleted[index]
-    }
-    
-    func index(for object: Object) -> Index? {
-        return updated.index(of: object) ?? deleted.index(of: object)
-    }
-    
-    mutating func reset() {
-        self.inserted.removeAll()
-        self.deleted.removeAll()
-        self.updated.removeAll()
-    }
-}
 
 
 

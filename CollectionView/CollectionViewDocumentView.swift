@@ -120,19 +120,10 @@ final public class CollectionViewDocumentView : NSView {
 //        var rect = newVisible
 //        rect.origin.x = 5 * rect.origin.x.truncatingRemainder(dividingBy: 5)
 //        rect.origin.y = 5 * rect.origin.y.truncatingRemainder(dividingBy: 5)
-        
-//        Swift.print("Adjust scroll: \(rect)")
         return newVisible
     }
     
     var preparedRect = CGRect.zero
-    
-    
-//    var _cellMap = [CollectionViewCell:SectionInfo]()
-//    var _cellMap : [CollectionViewCell:Int]
-//    var _sectionMap : [SectionInfo:Int]
-//    var _sections = [SectionInfo]()
-    
     
     var preparedCellIndex = IndexedSet<IndexPath,CollectionViewCell>()
     var preparedSupplementaryViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
@@ -267,24 +258,18 @@ final public class CollectionViewDocumentView : NSView {
             if !removedRect.isEmpty {
                 if self.collectionView.collectionViewLayout.scrollDirection == .vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.minYEdge : CGRectEdge.maxYEdge
-                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                    self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
                 else {
                     let edge = self.visibleRect.origin.x > removedRect.origin.x ? CGRectEdge.minXEdge : CGRectEdge.maxXEdge
-                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                    self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
             }
         }
         
         for ip in inserted {
             guard let attrs = self.collectionView.collectionViewLayout.layoutAttributesForItem(at: ip) else { continue }
-            guard let cell =  preparedCellIndex[ip] ?? self.collectionView.dataSource?.collectionView(self.collectionView, cellForItemAt: ip) else {
-                debugPrint("For some reason collection view tried to load cells without a data source")
-                continue
-            }
-            assert(cell.collectionView != nil, "Attemp to load cell without using deque")
-            
-//            cell.indexPath = ip
+            let cell = self.collectionView._loadCell(at: ip)
             
             cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(ip), animated: false)
             _rect = _rect.union(attrs.frame.insetBy(dx: -1, dy: -1) )
@@ -364,11 +349,11 @@ final public class CollectionViewDocumentView : NSView {
             if !removedRect.isEmpty {
                 if self.collectionView.collectionViewLayout.scrollDirection == .vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.minYEdge : CGRectEdge.maxYEdge
-                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                    self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
                 else {
                     let edge = self.visibleRect.origin.x > removedRect.origin.x ? CGRectEdge.minXEdge : CGRectEdge.maxXEdge
-                    self.preparedRect = CGRectSubtract(self.preparedRect, rect2: removedRect, edge: edge)
+                    self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
             }
         }

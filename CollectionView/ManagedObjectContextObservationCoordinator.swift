@@ -74,14 +74,12 @@ fileprivate struct RefKeyTable<Key:Hashable & AnyObject, Value:Any> : Sequence, 
 
 
 
-class ResultsControllerCDManager {
+class ManagedObjectContextObservationCoordinator {
     
-    
-    struct Dispatch {
+    struct Notification {
         static let name = Foundation.Notification.Name(rawValue: "CDResultsControllerNotification")
         static let changeSetKey : String = "EntityChangeSet"
     }
-    
     
     struct EntityChangeSet : CustomStringConvertible {
         var entity: NSEntityDescription
@@ -121,24 +119,20 @@ class ResultsControllerCDManager {
         }
     }
 
-    
     private var contexts = RefKeyTable<NSManagedObjectContext,Int>()
-    
-    class var shared : ResultsControllerCDManager {
-        struct Static { static let instance = ResultsControllerCDManager() }
+    class var shared : ManagedObjectContextObservationCoordinator {
+        struct Static { static let instance = ManagedObjectContextObservationCoordinator() }
         return Static.instance
     }
-    
     
     init() {
         
     }
     
-    
     func add(context: NSManagedObjectContext) {
         let count = contexts[context] ?? 0
         if count == 0 {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
+            NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: Foundation.Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
         }
         contexts[context] = count + 1
     }
@@ -147,7 +141,7 @@ class ResultsControllerCDManager {
     func remove(context: NSManagedObjectContext) {
         let count = contexts[context] ?? 0
         if count <= 1 {
-            NotificationCenter.default.removeObserver(self, name: Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
+            NotificationCenter.default.removeObserver(self, name: Foundation.Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
             _ = contexts.removeValue(forKey: context)
         }
         else {
@@ -156,7 +150,7 @@ class ResultsControllerCDManager {
     }
     
     
-    @objc func handleChangeNotification(_ notification: Notification) {
+    @objc func handleChangeNotification(_ notification: Foundation.Notification) {
         var changeSets = [NSEntityDescription:EntityChangeSet]()
         guard let info = notification.userInfo else {
             return
@@ -187,7 +181,6 @@ class ResultsControllerCDManager {
             }
         }
         
-        
         var updated = info[NSUpdatedObjectsKey] as? Set<NSManagedObject> ?? Set<NSManagedObject>()
         if let invalidated = info[NSRefreshedObjectsKey] as? Set<NSManagedObject> {
             updated = updated.union(invalidated)
@@ -198,25 +191,8 @@ class ResultsControllerCDManager {
             }
         }
         
-        NotificationCenter.default.post(name: Dispatch.name, object: notification.object, userInfo: [
-            ResultsControllerCDManager.Dispatch.changeSetKey : changeSets
+        NotificationCenter.default.post(name: Notification.name, object: notification.object, userInfo: [
+            ManagedObjectContextObservationCoordinator.Notification.changeSetKey : changeSets
             ])
-    }
-    
-    
-    
-    
-    
-}
-
-
-
-
-
-class FetchedResultsObserver {
-    
-    
-    
-    
-    
+    }   
 }

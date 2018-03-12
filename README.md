@@ -6,6 +6,8 @@ An easy to use, highly customizable replacement for NSCollectionView.
 
 Prior to macOS 10.11, NSCollectionView had little in common with it's younger cousin on iOS (UICollectionView). Since then it has recieved some improvements but with no support on 10.10, we needed another solution.
 
+> If you aren't supporting macOS 10.10, NSCollectionView can likely satisfy your needs. That said, CollectionView does provide some additional flexibility and features that may still make it a viable option for your project.
+
 
 ## How
 
@@ -32,7 +34,7 @@ Clone or donwload the repo and add it to your project by dragging the Collection
 
 Which looks like:
 
-```
+```swift
 class MyController : NSViewController, CollectionViewDataSource, CollectionViewDelegate {
 
 	func viewDidLoad() {
@@ -77,8 +79,8 @@ Events such as selection, scrolling, and even dragging from the collection view 
 
 See the [delegate documentation](https://thenounproject.github.io/CollectionView/Protocols/CollectionViewDelegate.html) for more 
 
-```
-Somewhere in MyController
+```swift
+// Somewhere in MyController
 
 func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath) {
     var myObject = myData[indexPath._item]
@@ -94,26 +96,33 @@ func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexP
 ### So Much More
 Check out the documentation for more on what you can do with CollectionView including:
 
-* Insert, delete, and move cells
-* Create custom layouts
-* Add section headers and footers
+* Content editing (insert, delete, & move)
+* Custom layouts
+* Section headers and footers
 * Drag and drop
-* Also includes a CoreData ResultsController
+* ResultsController for consistent data sourcing (including CoreData implementations)
 
 
 ## Examples
 
-An example project is included in the repo and CollectionView is also used to power:
+An example project is included in the repo. If you use it, let us know! 
 
-* [Lingo](https://lingoapp.com)
+CollectionView is used to power:
+
+* [Lingo for macOS](https://lingoapp.com)
 * [Noun Project for macOS](https://thenounproject.com/for-mac/)
 
 ## Contributing
-No specific process in place yet for contributing but feel free to start a conversation in issues or reach out on twitter [@NounProjectDev](https://twitter.com/NounProjectDev)
+Feel free to start a discussion in Issues for bugs, questions, or feature requests.
+
+Or, reach out on twitter: [@NounProjectDev](https://twitter.com/NounProjectDev)
 
 ### To do
-* Write tests (especially for results controllers and cell manupulation)
 * Add some common use cell subclasses classes
+* Improve performance (it's good, but could always be better 😁)
+
+## Credits
+* Thanks to [DeepDiff](https://github.com/onmyway133/DeepDiff) for some diffing logic used in ResultsController
 
 ## Licence
 This project is released under the [MIT license](https://github.com/TheNounProject/CollectionView/blob/master/LICENSE).

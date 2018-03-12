@@ -101,7 +101,11 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
     
 //    open override var wantsUpdateLayer: Bool { return true }
     
-    open override func scrollWheel(with event: NSEvent) { }
+//    open override func scrollWheel(with event: NSEvent) {
+//        if !(self.collectionView?.collectionViewLayout is CollectionViewPreviewLayout) {
+//            super.scrollWheel(with: event)
+//        }
+//    }
     
     open override func prepareForReuse() {
         super.prepareForReuse()

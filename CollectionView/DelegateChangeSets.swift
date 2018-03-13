@@ -56,8 +56,15 @@ public class CollectionViewResultsProxy   {
     
     /// The count of changes in the set
     public var count : Int {
-        return items.count + sections.count
+        return itemChangeCount + sectionChangeCount
     }
+    public var itemChangeCount : Int {
+        return items.count
+    }
+    public var sectionChangeCount : Int {
+        return sections.count
+    }
+    
     
     public func prepareForUpdates() {
         items.reset()

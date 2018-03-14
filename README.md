@@ -23,9 +23,9 @@ CollectionView provides a ton of functionality, flexibility, and high performanc
 
 Get collection view up and running in just a few minutes. Checkout the guides & documentation.
 
-- [Introduction]("https://thenounproject.github.io/CollectionView/introduction.html")
-- [Basic Setup]("https://thenounproject.github.io/CollectionView/basic-setup.html")
-- [Documentation]("https://thenounproject.github.io/CollectionView/index.html")
+- [Introduction](https://thenounproject.github.io/CollectionView/introduction.html)
+- [Basic Setup](https://thenounproject.github.io/CollectionView/basic-setup.html)
+- [Documentation](https://thenounproject.github.io/CollectionView/index.html)
 
 
 ### Adding to your project

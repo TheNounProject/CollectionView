@@ -14,7 +14,12 @@ import Foundation
  
  # Overview
  
- At a minimum, all data source objects must implement the numberOfSections(in:), collectionView(_:numberOfItemsInSection:) and collectionView(_:cellForItemAt:) methods. These methods are responsible for returning the number of items in the collection view along with the items themselves.
+ At a minimum, all data source objects must implement:
+ - `numberOfSections(in:)`
+ - `collectionView(_:numberOfItemsInSection:)`
+ - `collectionView(_:cellForItemAt:)`.
+ 
+ These methods are responsible for returning the number of items in the collection view along with the items themselves.
 */
 @objc public protocol CollectionViewDataSource {
     
@@ -62,7 +67,7 @@ import Foundation
      - Returns: A configured cell object. You must not return nil from this method.
      
      # Discussion
-     Your implementation of this method is responsible for creating, configuring, and returning the appropriate cell for the given item. You do this by calling the dequeueReusableCell(withReuseIdentifier:for:) method of the collection view and passing the reuse identifier that corresponds to the cell type you want. That method always returns a valid cell object. Upon receiving the cell, you should set any properties that correspond to the data of the corresponding item, perform any additional needed configuration, and return the cell.
+     Your implementation of this method is responsible for creating, configuring, and returning the appropriate cell for the given item. You do this by calling the `dequeueReusableCell(withReuseIdentifier:for:)` method of the collection view and passing the reuse identifier that corresponds to the cell type you want. That method always returns a valid cell object. Upon receiving the cell, you should set any properties that correspond to the data of the corresponding item, perform any additional needed configuration, and return the cell.
      You do not need to set the location of the cell inside the collection view’s bounds. The collection view sets the location of each cell automatically using the layout attributes provided by its layout object.
 
     */
@@ -79,7 +84,7 @@ import Foundation
      - Returns: A configured supplementary view object. You must not return nil from this method.
      
      # Discussion
-     Your implementation of this method is responsible for creating, configuring, and returning the appropriate supplementary view that is being requested. You do this by calling the dequeueReusableSupplementaryView(ofKind:withReuseIdentifier:for:) method of the collection view and passing the information that corresponds to the view you want. That method always returns a valid view object. Upon receiving the view, you should set any properties that correspond to the data you want to display, perform any additional needed configuration, and return the view.
+     Your implementation of this method is responsible for creating, configuring, and returning the appropriate supplementary view that is being requested. You do this by calling the `dequeueReusableSupplementaryView(ofKind:withReuseIdentifier:for:)` method of the collection view and passing the information that corresponds to the view you want. That method always returns a valid view object. Upon receiving the view, you should set any properties that correspond to the data you want to display, perform any additional needed configuration, and return the view.
      You do not need to set the location of the supplementary view inside the collection view’s bounds. The collection view sets the location of each view using the layout attributes provided by its layout object.
 
     */
@@ -449,9 +454,10 @@ import Foundation
      Notifies the delegate that the collection view will begin scrolling
      
      - Parameter collectionView: The collection view that will begin scrolling
+     - Parameter aniated: If the scroll is triggered by user input, this will be false
 
     */
-    @objc optional func collectionViewWillBeginScrolling(_ collectionView: CollectionView)
+    @objc optional func collectionViewWillBeginScrolling(_ collectionView: CollectionView, animated: Bool)
     
     
     /**

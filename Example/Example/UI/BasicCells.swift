@@ -85,10 +85,10 @@ final class BasicHeaderView : CollectionReusableView {
         super.draw(dirtyRect)
         
         NSColor(white: 1, alpha: 0.95).setFill()
-        NSRectFill(dirtyRect)
+        dirtyRect.fill()
         
         if drawBorder {
-            let context = NSGraphicsContext.current()!.cgContext
+            let context = NSGraphicsContext.current!.cgContext
             context.setLineWidth(1)
             context.setStrokeColor(NSColor(white: 0, alpha: 0.08).cgColor)
             

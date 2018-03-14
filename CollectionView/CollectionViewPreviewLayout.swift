@@ -20,7 +20,7 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
     // MARK: - Default layout values
     
     /// The vertical spacing between items in the same column
-    public final var interItemSpacing : CGFloat = 8 { didSet{ invalidate() }}
+    public var interItemSpacing : CGFloat = 8 { didSet{ invalidate() }}
     
     public override var scrollDirection: CollectionViewScrollDirection { return .horizontal }
     
@@ -85,13 +85,13 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
                 for idx in 0..<itemCount {
                     
                     let ip = IndexPath.for(item:idx, section: sectionIdx)
-                    allIndexPaths.add(ip)
+                    allIndexPaths.append(ip)
                     
                     guard self.delegate?.previewLayout(self, canPreviewItemAt: ip) != false else {
                         section.itemAttributes.append(nil)
                         continue
                     }
-                    self.usableIndexPaths.add(ip)
+                    self.usableIndexPaths.append(ip)
                     
                     let attrs = CollectionViewLayoutAttributes(forCellWith: ip)
                     attrs.frame = NSRect(x: left, y: yPos, width: itemSize.width, height: itemSize.height)

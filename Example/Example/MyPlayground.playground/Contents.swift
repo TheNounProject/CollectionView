@@ -1,195 +1,91 @@
-////: Playground - noun: a place where people can play
-//
+/*:
+ 
+# Collection View
+ 
+This playground includes some of the utilities in the CollectionView library
+*/
+
 import Cocoa
-//
-//var str = "Hello, playground"
-//
-//
-//
-
-extension Int {
-    
-    static func random(in range: ClosedRange<Int>) -> Int {
-        let min = range.lowerBound
-        let max = range.upperBound
-        return Int(arc4random_uniform(UInt32(1 + max - min))) + min
-    }
-}
-
-func randomString(length: Int) -> String {
-    
-    let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-    let len = UInt32(letters.length)
-    
-    var randomString = ""
-    
-    for _ in 0 ..< length {
-        let rand = arc4random_uniform(len)
-        var nextChar = letters.character(at: Int(rand))
-        randomString += NSString(characters: &nextChar, length: 1) as String
-    }
-    
-    return randomString
-}
-
-
-extension MutableCollection where Indices.Iterator.Element == Index {
-    /// Shuffles the contents of this collection.
-    mutating func shuffle() {
-        let c = count
-        guard c > 1 else { return }
-        
-        for (firstUnshuffled , unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
-            let d: IndexDistance = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
-            guard d != 0 else { continue }
-            let i = index(firstUnshuffled, offsetBy: d)
-            swap(&self[firstUnshuffled], &self[i])
-        }
-    }
-}
-
-extension Sequence {
-    /// Returns an array with the contents of this sequence, shuffled.
-    func shuffled() -> [Iterator.Element] {
-        var result = Array(self)
-        result.shuffle()
-        return result
-    }
-}
-
-
-
-
-//
-//protocol Section {
-//    var displayName : String { get }
-//}
-//
-//
-//class Root : Section {
-//    var displayName: String { return "Root" }
-//}
-//
-//class Another : Root {
-//    override var displayName: String { return "Another" }
-//}
-//
-//Root().displayName
-//Another().displayName
-//
-//
-//protocol Groupable {
-//    associatedtype Measurment
-//    func groupValue() -> Measurment
-////    func groupValue2() -> Measurment
-//}
-//
-//extension Groupable {
-//    
-//    func groupValue() -> Int {
-//        return 0
-//    }
-//}
-//
-//extension Groupable {
-//    func groupValue() -> String {
-//        return "None"
-//    }
-//}
-//
-//struct Group<Parent, Element> {
-//    var object: Parent
-//    var items : [Element]
-//}
-//
-//struct Primitive<String>: Groupable {
-//    var name : String
-//    func groupValue() -> String {
-//        return name
-//    }
-//}
-//
-//
-//struct Relative<Section, Element>  {
-//    var size : Int
-////    func groupValue() -> Int {
-////        return size
-////    }
-//}
-//
-//
-//Person(name: "Sarah").groupValue()
-//Person(name: "John").groupValue()
-//Shoe(size: 6).groupValue()
-//Shoe(size: 8).groupValue()
-
-
-
-
-//var indexSet = IndexSet()
-//indexSet.insert(1)
-//indexSet.insert(5)
-//indexSet.insert(8)
-//debugPrint(indexSet)
-//
-//for idx in indexSet {
-//    print(idx)
-//}
-
-
-
-func runTime(_ block: ()->Void) -> TimeInterval {
-    let start = CFAbsoluteTimeGetCurrent()
-    block()
-    let dur = CFAbsoluteTimeGetCurrent() - start
-    return dur
-}
-
-
-
 import CollectionView
 
 
-var source = // ["H", "F", "A", "G", "E", "C", "D"]
-    [
-    "H","C","D","A","E","F", "G"
-].shuffled()
-
-var target = source.sorted()
-target.removeFirst()
-_ = target
-
-target.insert("B", at: 0)
-
-
-func describeEdits(for changeSet: ChangeSet<[String]>) -> String {
-    var str = ""
-    for e in changeSet.edits {
-        str += "\(e.description)\n"
-    }
-    return str
-    
+//: ## Sort Descriptors
+struct Person {
+    let name : String
+    let age : Int
 }
 
-var cs1 = ChangeSet(source: source, target: target, options: .minimumOperations)
-//var cs2 = ChangeSet(source: source, target: target)
-//cs1.matrixLog
-//
+let jim = Person(name: "Jim", age: 30)
+let bob = Person(name: "Bob", age: 35)
+let alex = Person(name: "Alex", age: 30)
+let steve = Person(name: "Steve", age: 35)
 
-_ = source
-_ = target
+func theAgeGame(with a: Person, and b: Person) -> String {
+    switch SortDescriptor(\Person.age).compare(a, to: b) {
+    case .same:
+        return ("\(a.name) and \(b.name) are both \(a.age)")
+    case .ascending:
+        return ("\(b.name)(\(b.age)) is \(b.age - a.age) years older than \(a.name)(\(a.age))")
+    case .descending:
+        return ("\(a.name)(\(a.age)) is \(a.age - b.age) years older than \(b.name)(\(b.age))")
+    }
+}
 
-describeEdits(for: cs1)
-//
-cs1.reduceEdits()
-describeEdits(for: cs1)
-//
-//
-//
-//cs2.matrixLog
-//describeEdits(for: cs2)
-//cs2.reduceEdits()
-//describeEdits(for: cs2)
+theAgeGame(with: jim, and: alex) // "Jim and Alex are both 30"
+theAgeGame(with: jim, and: bob)  // "Bob(35) is 5 years older than Jim(30)"
+
+var dudes = [steve, jim, bob, alex]
+
+let ageThenName = [SortDescriptor(\Person.age), SortDescriptor(\Person.name)]
+let ordered = dudes.sorted(using: ageThenName)
+
+
+
+
+//: ## CollectionView editing
+
+
+class Section {
+    enum State {
+        case updated(index: Int, count: Int)
+        case inserted(index: Int)
+        case deleted(index: Int)
+    }
+    var target: Int?
+    var state : State
+    var expected : Int {
+        if case let .updated(_, count) = self.state {
+            return count + inserted.count - removed.count
+        }
+        return 0
+    }
+    var inserted = Set<IndexPath>()
+    var removed = Set<IndexPath>()
+
+    init(index: Int, count: Int) {
+        self.state = .updated(index: index, count: count)
+    }
+}
+
+var data = [5, 5, 5, 5]
+//var insert : [IndexPath] = [[0,2], [2,0]]
+//var remove : [IndexPath] = [[0,2], [2,0]]
+
+//var sections = [Section]()
+//for s in data.enumerated() {
+//    sections.append(Section(index: s.offset, count: s.element))
+//}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

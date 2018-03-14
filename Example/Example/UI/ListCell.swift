@@ -46,7 +46,7 @@ class ListCell : CollectionViewCell {
         label.isEditable = false
         label.isSelectable = false
         label.isBordered = false
-        label.lineBreakMode = NSLineBreakMode.byTruncatingTail
+        label.lineBreakMode = NSParagraphStyle.LineBreakMode.byTruncatingTail
         return label
     }()
     
@@ -82,7 +82,7 @@ class ListCell : CollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        self.titleLabel.unbind("stringValue")
+        self.titleLabel.unbind(NSBindingName(rawValue: "stringValue"))
     }
     
     var highlightedBackgroundColor : NSColor?
@@ -94,21 +94,10 @@ class ListCell : CollectionViewCell {
             }
         }
     }
-    
-//    override func mouseDown(with event: NSEvent) {
-//        self.alphaValue = 0.1
-//    }
-//    override func mouseUp(with event: NSEvent) {
-//        self.alphaValue = 0.8
-//    }
+
     
     /// If true, highlighting the cell does not change it's appearance
      var disableHighlight : Bool = false
-    
-    class func register(_ collectionView: CollectionView) {
-        collectionView.register(class: ListCell.self, forCellWithReuseIdentifier: "ListCell")
-    }
-    
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
@@ -148,7 +137,7 @@ class ListCell : CollectionViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.drawsBackground = false
         titleLabel.backgroundColor = NSColor.clear
-        titleLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
+        titleLabel.lineBreakMode = NSParagraphStyle.LineBreakMode.byTruncatingTail
         titleLabel.isEditable = false
         titleLabel.isBordered = false
         titleLabel.isSelectable = false
@@ -269,8 +258,8 @@ class ListCell : CollectionViewCell {
             
             self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .greaterThanOrEqual, toItem: detailLabel, attribute: .left, multiplier: 1, constant: -2))
             
-            self.titleLabel.setContentCompressionResistancePriority(400, for: .horizontal)
-            self.detailLabel.setContentCompressionResistancePriority(350, for: .horizontal)
+            self.titleLabel.setContentCompressionResistancePriority(NSLayoutConstraint.Priority(rawValue: 400), for: .horizontal)
+            self.detailLabel.setContentCompressionResistancePriority(NSLayoutConstraint.Priority(rawValue: 350), for: .horizontal)
             
             
         case .titleDetail:
@@ -295,8 +284,8 @@ class ListCell : CollectionViewCell {
             
             self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal, toItem: detailLabel, attribute: .left, multiplier: 1, constant: -4))
             
-            self.titleLabel.setContentCompressionResistancePriority(400, for: .horizontal)
-            self.detailLabel.setContentCompressionResistancePriority(400, for: .horizontal)
+            self.titleLabel.setContentCompressionResistancePriority(NSLayoutConstraint.Priority(rawValue: 400), for: .horizontal)
+            self.detailLabel.setContentCompressionResistancePriority(NSLayoutConstraint.Priority(rawValue: 400), for: .horizontal)
             
         }
     }
@@ -308,7 +297,7 @@ class ListCell : CollectionViewCell {
             return
         }
         
-        let ctx = NSGraphicsContext.current()?.cgContext
+        let ctx = NSGraphicsContext.current?.cgContext
         switch seperatorStyle {
             
         case .full:

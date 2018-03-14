@@ -47,15 +47,11 @@ struct Logger {
 typealias log = Logger
 
 
-
-
-
 /**
  Provides support for OSX < 10.11 and provides some helpful additions
 */
 public extension IndexPath {
 
-    
     /**
      Create an index path with a given item and section
      
@@ -146,8 +142,6 @@ extension Comparable {
 
 
 extension Dictionary {
-    
-    
     func union(_ other: Dictionary<Key, Value>, overwrite: Bool = true) -> Dictionary<Key, Value> {
         var new = self
         for element in other {
@@ -157,18 +151,15 @@ extension Dictionary {
         }
         return new
     }
-    
 }
 
 
 extension Set {
     
-    
     mutating func removeOne() -> Element? {
         guard self.count > 0 else { return nil }
         return self.removeFirst()
     }
-    
     
     /**
      Remove elements shared by both sets, returning the removed items
@@ -186,37 +177,19 @@ extension Set {
         return removed
     }
     
-    func removing<C : Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
-        var copy = self
-        copy.remove(set)
-        return copy
-    }
-    
     /**
-     Remove elements shared by both sets, returning the removed items
+     Create a new set by removing the elements shared by both sets
      
      - parameter set: The set of elements to remove from the receiver
-     - returns: A new set of removed elements
+     - returns: A new set with the shared elements removed
      */
-//    mutating func removeSet(_ set: Set) -> Set {
-//        var removed = Set(minimumCapacity: self.count)
-//        for item in set {
-//            if let r = self.remove(item) {
-//                removed.insert(r)
-//            }
-//        }
-//        return removed
-//    }
-//    
-//    func removingSet(_ set: Set) -> Set {
-//        var newSet = Set(minimumCapacity: self.count)
-//        for item in self {
-//            if !set.contains(item) {
-//                newSet.insert(item)
-//            }
-//        }
-//        return newSet
-//    }
+    func removing<C : Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
+        var copy = self
+        for item in set {
+            copy.remove(item)
+        }
+        return copy
+    }
 }
 
 extension CGPoint {
@@ -235,7 +208,7 @@ extension CGPoint {
         return CGPoint(x: _x, y: _y)
     }
     
-    func maxXY(_ other: CGPoint) -> CGPoint {
+    func unionMax(_ other: CGPoint) -> CGPoint {
         return CGPoint(x: max(self.x, other.x), y: max(self.y, other.y))
     }
     func maxX(_ other: CGPoint) -> CGPoint {
@@ -245,11 +218,11 @@ extension CGPoint {
         return CGPoint(x: self.x, y: max(self.y, other.y))
     }
     
-        func distance(to other: CGPoint) -> CGFloat {
-            let xDist = self.x - other.x
-            let yDist = self.y - other.y
-            return CGFloat(sqrt((xDist * xDist) + (yDist * yDist)))
-        }
+    func distance(to other: CGPoint) -> CGFloat {
+        let xDist = self.x - other.x
+        let yDist = self.y - other.y
+        return CGFloat(sqrt((xDist * xDist) + (yDist * yDist)))
+    }
 }
 
 extension CGRect {
@@ -260,7 +233,6 @@ extension CGRect {
             self.origin.y = newValue.y - (self.size.height/2)
         }
     }
-    
     
     func sharedArea(with other: CGRect) -> CGFloat {
         let intersect = self.intersection(other)
@@ -276,59 +248,72 @@ extension CGRect {
         rect.size.height = self.size.height * scale
         return rect
     }
-}
-
-
-
-
-/*
-    Subtract r2 from r1 along
-    -------------
-   |\\\\ r1 \\\\\|
-   |\\\\\\\\\\\\\|
-   |-------------|
-   !   overlap   !
-   !_____________!
-   I/////////////I
-   I//// r2 /////I
-   I-------------I
-*/
-
-func CGRectSubtract(_ rect1: CGRect, rect2: CGRect, edge: CGRectEdge) -> CGRect {
     
-    if rect2.contains(rect1) { return CGRect.zero }
-    if rect2.isEmpty { return rect1 }
-    if !rect1.intersects(rect2) { return rect1 }
+    /**
+     Subtract r2 from r1 along
+     
+     ## Discussion:
+     
+     ```
+     |-------------|
+     |---- r1 -----|
+     |-------------|
+     |             |
+     |   overlap   |
+     |_____________| v MaxYEdge
+     |*************|
+     |**** r2 *****|
+     |*************|
+     ```
+     
+     - Parameters:
+        - other: The rect to subtract from the target
+        - edge: The edge to subtract along
+      - Returns: The rect remaining from the target after subtracting the given rect
+     */
     
-    switch edge {
-    case .minXEdge:
-        let origin = CGPoint(x: rect2.maxX, y: rect1.origin.y)
-        let size = CGSize(width: rect1.maxX - origin.x , height: rect1.size.height)
-        return CGRect(origin: origin, size: size)
+    func subtracting(_ other: CGRect, edge: CGRectEdge) -> CGRect {
+        if other.contains(self) { return CGRect.zero }
+        if other.isEmpty { return self }
+        if !self.intersects(other) { return self }
         
-    case .maxXEdge:
-        return CGRect(origin: rect1.origin, size: CGSize(width: rect2.origin.x - rect1.origin.x, height: rect1.size.height))
-        
-    case .minYEdge:
-        let origin = CGPoint(x: rect1.origin.x, y: rect2.maxY)
-        let size = CGSize(width: rect1.size.width, height: rect1.maxY - origin.y)
-        return CGRect(origin: origin, size: size)
-        
-    case .maxYEdge:
-        return CGRect(origin: rect1.origin, size: CGSize(width: rect1.size.width, height: rect2.origin.y - rect1.origin.y))
+        switch edge {
+        case .minXEdge:
+            let origin = CGPoint(x: other.maxX, y: self.origin.y)
+            let size = CGSize(width: self.maxX - origin.x , height: self.size.height)
+            return CGRect(origin: origin, size: size)
+            
+        case .maxXEdge:
+            return CGRect(origin: self.origin, size: CGSize(width: other.origin.x - self.origin.x, height: self.size.height))
+            
+        case .minYEdge:
+            let origin = CGPoint(x: self.origin.x, y: other.maxY)
+            let size = CGSize(width: self.size.width, height: self.maxY - origin.y)
+            return CGRect(origin: origin, size: size)
+            
+        case .maxYEdge:
+            return CGRect(origin: self.origin, size: CGSize(width: self.size.width, height: other.origin.y - self.origin.y))
+        }
     }
 }
 
 
 
+extension NSEdgeInsets {
+    static var zero : NSEdgeInsets { return NSEdgeInsetsZero }
+    init(_ all: CGFloat) {
+        self.init(top: all, left: all, bottom: all, right: all)
+    }
+    var height: CGFloat {
+        return self.top + self.bottom
+    }
+    var width: CGFloat {
+        return self.left + self.right
+    }
+}
+
+
 public extension NSView {
-    
-    /**
-     Add NSLayoutContraints to the reciever to match it'parent optionally provided insets for each side. If the view does not have a superview, no constraints are added.
-     
-     - parameter insets: Insets to apply to the constraints for Top, Right, Bottom, and Left.
-     - returns: The Top, Right, Bottom, and Top constraint added to the view.
-     */
     @discardableResult func addConstraintsToMatchParent(_ insets: NSEdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
         if let sv = self.superview {
             let top = NSLayoutConstraint(item: self, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal, toItem: sv, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: insets == nil ? 0 : insets!.top)
@@ -345,204 +330,6 @@ public extension NSView {
         return nil
     }
 }
-
-
-
-
-/*
- struct IOSet : CustomStringConvertible {
- var _open = IndexSet()
- var _locked = IndexSet()
- 
- var _union : IndexSet {
- return _open.union(_locked)
- }
- var _lastIndex : Int? { return _locked.last }
- var _firstIndex : Int? {
- if let o = _open.first, let l = _locked.first {
- return min(o, l)
- }
- if let o = _open.first { return o }
- return _locked.first
- }
- var _deleteCount = 0
- var _insertCount = 0
- 
- init() { }
- init(d index: Int) { self.deleted(at: index) }
- init(i index: Int) { self.inserted(at: index) }
- 
- mutating func moved(_ source: Int, to destination: Int) {
- self.deleted(at: source)
- self.inserted(at: destination)
- }
- 
- mutating func lock(upTo index: Int) {
- guard index > 0 else { return }
- var idx = index - 1
- guard let start = self._firstIndex else {
- _locked.insert(integersIn: 0...idx)
- return
- }
- guard start < idx else {
- return
- }
- var idxSet = IndexSet(integersIn: start...idx)
- idxSet.subtract(_open)
- self._locked = _locked.union(idxSet)
- }
- 
- 
- mutating func nextOpening(for index: Int) -> Int {
- var all = self._union
- var idx = all.startIndex
- var last = self._open[idx]
- var proposed = index
- 
- if proposed >= last {
- proposed = last
- 
- if self._locked.contains(last) {
- 
- while idx < all.endIndex {
- let check = all[idx]
- var prop = last + 1
- let isGap = prop < check
- if isGap || (self._open.contains(prop) && !self._locked.contains(prop)) {
- proposed = prop
- break;
- }
- proposed = check + 1
- idx = all.index(after: idx)
- last = check
- }
- }
- }
- self.inserted(at: proposed, auto: true)
- return proposed
- }
- 
- // Auto is set to true when inserting  as the result of an adjustment
- // This keeps it from being counted when adjusting IP out of the edit area
- mutating func deleted(at index: Int, auto: Bool = false) -> IOSet {
- if !auto {
- _deleteCount += 1
- }
- if _locked.contains(index) {
- return self
- }
- _open.insert(index)
- return self
- }
- 
- // Auto is set to true when inserting  as the result of an adjustment
- // This keeps it from being counted when adjusting IP out of the edit area
- mutating func inserted(at index: Int, auto: Bool = false) -> IOSet {
- _locked.insert(index)
- if !auto {
- _insertCount += 1
- }
- return self
- }
- 
- var description: String {
- var str = "Section Ops\n"
- 
- var open = [Int]()
- var locked = [Int]()
- 
- let union = _open.union(_locked)
- 
- str += "Union \(union.indices)\n"
- if union.count > 0 {
- for idx in union {
- open.append(_open.contains(idx) ? 1 : 0)
- locked.append(_locked.contains(idx) ? 1 : 0)
- }
- }
- str += "Open: \(open)\n"
- str += "Lock: \(locked)"
- return str
- }
- }
- 
- 
- mutating func lockSections(upTo index: Int) {
- _sectionOperations.lock(upTo: index)
- }
- 
- mutating func lock(upTo indexPath: IndexPath) {
- _operations[indexPath._section]?.lock(upTo: indexPath._item)
- }
- 
- 
- mutating func deletedSections(at indexSet: IndexSet) {
- _sectionDeletions.formUnion(indexSet)
- for idx in indexSet {
- _sectionOperations.deleted(at: idx)
- }
- }
- mutating func insertedSections(at indexSet: IndexSet) {
- _sectionInsertions.formUnion(indexSet)
- //            for idx in indexSet {
- //                _sectionOperations.inserted(at: idx)
- //            }
- }
- mutating func movedSection(from source: Int, to destination: Int) {
- //            _sectionDeletions.insert(source)
- //            _sectionInsertions.insert(destination)
- _sectionMoves[source] = destination
- //            _sectionOperations.inserted(at: destination)
- //            _sectionOperations.deleted(at: source)
- }
- 
- mutating func deletedItem(at indexPath: IndexPath) {
- //            let s = indexPath._section, i = indexPath._item
- //            if _operations[s]?.deleted(at: i) == nil {
- //                _operations[s] = IOSet(d: i)
- //            }
- }
- mutating func insertedItem(at indexPath: IndexPath) {
- let s = indexPath._section, i = indexPath._item
- if _operations[s]?.inserted(at: i) == nil {
- _operations[s] = IOSet(i: i)
- }
- }
- 
- mutating func movedItem(from source: IndexPath, to destination: IndexPath) {
- deletedItem(at: source)
- insertedItem(at: destination)
- }
- 
- 
- var _itemSectionCopy : IOSet?
- 
- mutating func adjust(_ indexPath: IndexPath) -> IndexPath {
- 
- if _itemSectionCopy == nil {
- _itemSectionCopy = _sectionOperations
- }
- guard let prop = _operations[indexPath._section]?.nextOpening(for: indexPath._item) else {
- return indexPath
- }
- // Open up this space to be filled by another item
- // If it has already been locked, this does nothing
- _operations[indexPath._section]?.deleted(at: indexPath._item, auto: true)
- 
- let new = indexPath.with(item: prop)
- //            log.debug("Adjusted \(indexPath)  to: \(new)")
- return new
- }
- 
- mutating func adjust(section index: Int) -> Int {
- return _sectionOperations.nextOpening(for: index)
- }
- 
- var description: String {
- return  ""// "Insertions : \(_insertions)  \n Deletions: \(_deletions)
- }
- */
-
 
 
 

@@ -29,7 +29,7 @@ fileprivate struct ChangeContext<Element:NSManagedObject> : CustomStringConverti
 
 
 
-fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: NSManagedObject>: NSObject, Comparable, ResultsControllerSectionInfo {
+fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: NSManagedObject>: NSObject, Comparable, SectionInfo {
     
     public var object : Any? { return self._value }
     public var objects: [Any] { return _storage.objects }
@@ -301,12 +301,12 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     
     public var allObjects: [Any] { return Array(fetchedObjects) }
     
-    public var sections: [ResultsControllerSectionInfo] { return _sections.objects }
+    public var sections: [SectionInfo] { return _sections.objects }
     
     
     // MARK: - Querying Sections & Objects
     /*-------------------------------------------------------------------------------*/
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> ResultsControllerSectionInfo? {
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo? {
         return self._sectionInfo(at: sectionIndexPath)
     }
     
@@ -345,7 +345,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     // MARK: - Getting IndexPaths
     /*-------------------------------------------------------------------------------*/
     
-    public func indexPath(of sectionInfo: ResultsControllerSectionInfo) -> IndexPath? {
+    public func indexPath(of sectionInfo: SectionInfo) -> IndexPath? {
         guard let info = sectionInfo as? SectionInfo else { return nil }
         if let idx = _sections.index(of: info) {
             return IndexPath.for(section: idx)
@@ -547,7 +547,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             }
             
             let newEdit = Edit(.move(origin: source._item), value: object, index: targetIP._item)
-            processedSections[targetSection]?.operationIndex.moves.insert(newEdit, with: targetIP._item)
+            processedSections[targetSection]?.operationIndex.moves.insert(newEdit, for: targetIP._item)
             
             processedSections[targetSection]?.remove(edit: proposedEdit)
             
@@ -557,7 +557,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             }
             else if case .substitution = proposedEdit.operation, let obj = self.context.objectChanges.object(for: targetIP) {
                 let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
-                processedSections[targetSection]?.operationIndex.deletes.insert(insert, with: targetIP._item)
+                processedSections[targetSection]?.operationIndex.deletes.insert(insert, for: targetIP._item)
             }
             return true
         }

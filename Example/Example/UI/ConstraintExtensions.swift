@@ -18,12 +18,12 @@ public extension NSView {
      - parameter insets: Insets to apply to the constraints for Top, Right, Bottom, and Left.
      - returns: The Top, Right, Bottom, and Top constraint added to the view.
      */
-    @discardableResult func addConstraintsToMatchParent(_ insets: EdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
+    @discardableResult func addConstraintsToMatchParent(_ insets: NSEdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
         if let sv = self.superview {
-            let top = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.top, multiplier: 1, constant: insets == nil ? 0 : -insets!.top)
-            let right = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.right, multiplier: 1, constant: insets?.right ?? 0)
-            let bottom = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: insets?.bottom ?? 0)
-            let left = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.left, multiplier: 1, constant: insets == nil ? 0 : -insets!.left)
+            let top = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: insets == nil ? 0 : -insets!.top)
+            let right = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.right, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.right, multiplier: 1, constant: insets?.right ?? 0)
+            let bottom = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.bottom, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.bottom, multiplier: 1, constant: insets?.bottom ?? 0)
+            let left = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.left, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.left, multiplier: 1, constant: insets == nil ? 0 : -insets!.left)
             sv.addConstraints([top, bottom, right, left])
             self.translatesAutoresizingMaskIntoConstraints = false
             return (top, right, bottom, left)
@@ -48,22 +48,22 @@ public extension NSView {
         
         
         if let t = top {
-            let c = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.top, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.top, multiplier: 1, constant: -t)
+            let c = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: -t)
             sv.addConstraint(c)
             response.top = c
         }
         if let b = bottom {
-            let c = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.bottom, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.bottom, multiplier: 1, constant: b)
+            let c = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.bottom, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.bottom, multiplier: 1, constant: b)
             sv.addConstraint(c)
             response.bottom = c
         }
         if let r = right {
-            let c = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.right, multiplier: 1, constant: r)
+            let c = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.right, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.right, multiplier: 1, constant: r)
             sv.addConstraint(c)
             response.right = c
         }
         if let l = left {
-            let c = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.left, multiplier: 1, constant: -l)
+            let c = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.left, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.left, multiplier: 1, constant: -l)
             sv.addConstraint(c)
             response.left = c
         }
@@ -73,15 +73,15 @@ public extension NSView {
     
     func addConstraintsToVerticalCenter(_ offset: CGFloat, left: CGFloat? = nil, right: CGFloat? = nil) {
         if let sv = self.superview {
-            let centerY = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: offset)
+            let centerY = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: offset)
             sv.addConstraint(centerY)
             
             if let r = right {
-                let rightConstraint = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.right, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.right, multiplier: 1, constant: r)
+                let rightConstraint = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.right, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.right, multiplier: 1, constant: r)
                 sv.addConstraint(rightConstraint)
             }
             if let l = left {
-                let leftConstraint = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.left, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.left, multiplier: 1, constant: -l)
+                let leftConstraint = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.left, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.left, multiplier: 1, constant: -l)
                 sv.addConstraint(leftConstraint)
             }
             self.translatesAutoresizingMaskIntoConstraints = false
@@ -96,8 +96,8 @@ public extension NSView {
     
     @discardableResult func addCenterConstraints(_ horizontalOffset: CGFloat = 0, verticalOffset: CGFloat = 0) -> (horizontal: NSLayoutConstraint, vertical: NSLayoutConstraint)? {
         if let sv = self.superview {
-            let centerY = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.centerY, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.centerY, multiplier: 1, constant: verticalOffset)
-            let centerX = NSLayoutConstraint(item: sv, attribute: NSLayoutAttribute.centerX, relatedBy: NSLayoutRelation.equal, toItem: self, attribute: NSLayoutAttribute.centerX, multiplier: 1, constant: horizontalOffset)
+            let centerY = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.centerY, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.centerY, multiplier: 1, constant: verticalOffset)
+            let centerX = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.centerX, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.centerX, multiplier: 1, constant: horizontalOffset)
             
             sv.addConstraints([centerY, centerX])
             self.translatesAutoresizingMaskIntoConstraints = false

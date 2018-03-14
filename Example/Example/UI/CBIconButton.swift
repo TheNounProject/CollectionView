@@ -458,7 +458,7 @@ open class IconLayer : CALayer {
         }
         path.move(to: pt1)
         path.line(to: pt2)
-        path.lineCapStyle = NSLineCapStyle.roundLineCapStyle
+        path.lineCapStyle = NSBezierPath.LineCapStyle.roundLineCapStyle
         return path.toCGPath()!
     }
     
@@ -526,7 +526,7 @@ extension NSImage {
         copy.isTemplate = false
         copy.lockFocus()
         tintColor?.set()
-        NSRectFillUsingOperation(bounds, NSCompositingOperation.sourceAtop)
+        bounds.fill(using: NSCompositingOperation.sourceAtop)
         copy.unlockFocus()
         NSGraphicsContext.restoreGraphicsState()
         return copy
@@ -593,10 +593,6 @@ class ButtonCell : NSButtonCell {
     
     @IBInspectable var clickScale : CGFloat = 0
     
-    override open class func cellClass() -> AnyClass? {
-        return ButtonCell.self
-    }
-    
     override open var isEnabled: Bool { didSet {
         self.needsDisplay = true
         self.updateColors()
@@ -633,9 +629,9 @@ class ButtonCell : NSButtonCell {
     
     func setup() {
         self.isBordered = false
-        (self.cell as? NSButtonCell)?.highlightsBy = NSCellStyleMask()
+        (self.cell as? NSButtonCell)?.highlightsBy = NSCell.StyleMask()
         (self.cell as? NSButtonCell)?.imageDimsWhenDisabled = false
-        self.bezelStyle = NSBezelStyle.rounded
+        self.bezelStyle = NSButton.BezelStyle.rounded
         self.wantsLayer = useLayer
         self.enableTracking()
         self.image = self.image?.tintedImageWithColor(self.imageTint)
@@ -662,8 +658,8 @@ class ButtonCell : NSButtonCell {
         
         let t = NSMutableAttributedString(attributedString: self.attributedTitle)
         let range = NSMakeRange(0, t.length)
-        t.removeAttribute(NSForegroundColorAttributeName, range: range)
-        t.addAttribute(NSForegroundColorAttributeName, value: tColor!, range: range)
+        t.removeAttribute(NSAttributedStringKey.foregroundColor, range: range)
+        t.addAttribute(NSAttributedStringKey.foregroundColor, value: tColor!, range: range)
         self.attributedTitle = t
     }
     
@@ -755,9 +751,9 @@ class ButtonCell : NSButtonCell {
             self._trackingArea = nil
         }
         if trackingEnabled {
-            self._trackingArea = NSTrackingArea(rect: self.bounds, options: [NSTrackingAreaOptions.mouseEnteredAndExited, NSTrackingAreaOptions.activeInActiveApp], owner: self, userInfo: nil)
+            self._trackingArea = NSTrackingArea(rect: self.bounds, options: [NSTrackingArea.Options.mouseEnteredAndExited, NSTrackingArea.Options.activeInActiveApp], owner: self, userInfo: nil)
             self.addTrackingArea(self._trackingArea!)
-            if hovered, let wPoint = self.window?.convertFromScreen(CGRect(origin: NSEvent.mouseLocation(), size: CGSize.zero)).origin {
+            if hovered, let wPoint = self.window?.convertFromScreen(CGRect(origin: NSEvent.mouseLocation, size: CGSize.zero)).origin {
                 let point = self.convert(wPoint, from: nil)
                 if !self.bounds.contains(point) {
                     self.hovered = false

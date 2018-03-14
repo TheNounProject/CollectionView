@@ -175,7 +175,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
             let rowSpacing : CGFloat = self.delegate?.collectionView?(cv, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
             
             let contentWidth = cv.bounds.size.width - (contentInsets.left + contentInsets.right)
-            let itemWidth = cv.bounds.size.width - (insets.left + insets.right)
+            let itemWidth = contentWidth - (insets.left + insets.right)
             var sectionFrame: CGRect = CGRect(x: contentInsets.left, y: top, width: contentWidth, height: 0)
             
             /*
@@ -216,7 +216,7 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
                 for idx in 0..<itemCount {
                     
                     let ip = IndexPath.for(item:idx, section: section)
-                    allIndexPaths.add(ip)
+                    allIndexPaths.append(ip)
                     
                     let attrs = CollectionViewLayoutAttributes(forCellWith: ip)
                     let rowHeight : CGFloat = self.delegate?.collectionView?(cv, layout: self, heightForItemAt: ip) ?? self.itemHeight
@@ -253,10 +253,11 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     
     override open var collectionViewContentSize : CGSize {
         guard let cv = collectionView else { return CGSize.zero }
-        let numberOfSections = self.numSections
-        if numberOfSections == 0 { return CGSize.zero }
+        var size = cv.contentDocumentView.frame.size
         
-        var size = CGSize()
+        let numberOfSections = self.numSections
+        if numberOfSections == 0 { return size }
+        
         size.width = cv.bounds.size.width - (cv.contentInsets.left + cv.contentInsets.right)
         size.height = cv.bounds.height
         if let f = self.sectionFrames.last {

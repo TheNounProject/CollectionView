@@ -358,10 +358,10 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     // MARK: - Layout Overrides
     /*-------------------------------------------------------------------------------*/
     
-    private var _cvWidth : CGFloat = 0
+    private var _lastSize = CGSize.zero
     open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        defer { self._cvWidth = newBounds.size.width }
-        return _cvWidth != newBounds.size.width
+        defer { self._lastSize = newBounds.size }
+        return _lastSize != newBounds.size
     }
     
     override open func prepare() {
@@ -380,8 +380,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         for sec in 0..<numSections {
            
             var insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
-            insets.left += contentInsets.left
-            insets.right += contentInsets.right
+//            insets.left += contentInsets.left
+//            insets.right += contentInsets.right
             let transform = self.delegate?.collectionView(cv, flowLayout: self, rowTransformForSectionAt: sec) ?? self.defaultRowTransform
             
             var sectionAttrs = SectionAttributes(insets: insets, transform: transform)
@@ -390,7 +390,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             sectionAttrs.frame.origin.y = top
             sectionAttrs.contentFrame.origin.y = top
             
-            let contentWidth = cv.contentVisibleRect.size.width - insets.left - insets.right
+            let contentWidth = cv.contentVisibleRect.size.width - (insets.left + insets.right + contentInsets.left + contentInsets.right)
             
             let heightHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? self.defaultHeaderHeight
             if heightHeader > 0 {
@@ -398,7 +398,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 attrs.frame = insetSupplementaryViews
                     ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - contentInsets.left - contentInsets.right, height: heightHeader)
+                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - (contentInsets.left + contentInsets.right), height: heightHeader)
                 sectionAttrs.header = attrs
                 sectionAttrs.frame = attrs.frame
                 top = attrs.frame.maxY
@@ -419,7 +419,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 var forceBreak: Bool = false
                 for item in 0..<numItems {
-                    allIndexPaths.add(IndexPath.for(item: item, section: sec))
+                    allIndexPaths.append(IndexPath.for(item: item, section: sec))
                     let ip = IndexPath.for(item: item, section: sec)
                     let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
                     var attrs = CollectionViewLayoutAttributes(forCellWith: ip)
@@ -450,7 +450,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                         // Check if the last row (if any) matches this items height
                         if !forceBreak, let prev = sectionAttrs.rows.last?.items.last, prev.frame.size.height == size.height {
                             // If there is enough space remaining, add it to the current row
-                            let rem = cv.frame.size.width - prev.frame.maxX - interitemSpacing - insets.right
+                            let rem = contentWidth - (prev.frame.maxX - contentInsets.left - insets.left) - interitemSpacing
                             if rem >= size.width {
                                 attrs.frame = CGRect(x: prev.frame.maxX + interitemSpacing, y: prev.frame.origin.y, width: size.width, height: size.height)
                                 sectionAttrs.rows[sectionAttrs.rows.count - 1].add(attributes: attrs)
@@ -564,12 +564,12 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
                 
-                let lead = cv.leadingView?.bounds.size.height ?? 0
-                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
-                    currentAttrs.frame.origin.y = lead
-                    currentAttrs.floating = false
-                }
-                else {
+//                let lead = cv.leadingView?.bounds.size.height ?? 0
+//                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
+//                    currentAttrs.frame.origin.y = lead
+//                    currentAttrs.floating = false
+//                }
+//                else {
                     var nextHeaderOrigin = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude)
                     if let nextHeader = self.sectionAttributes.object(at: indexPath._section + 1)?.header {
                         nextHeaderOrigin = nextHeader.frame.origin
@@ -577,7 +577,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     let topInset = cv.contentInsets.top
                     currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
                     currentAttrs.floating = indexPath._section == 0 || currentAttrs.frame.origin.y > frame.origin.y
-                }
+//                }
             }
             return attrs
         }

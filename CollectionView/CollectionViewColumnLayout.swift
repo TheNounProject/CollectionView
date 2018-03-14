@@ -202,6 +202,9 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
 
     /// If supplementary views should respect section insets or fill the CollectionView width
     open var insetSupplementaryViews : Bool = false { didSet{ invalidate() }}
+    
+    /// If set to true, the layout will invalidate on all bounds changes, if false only on width changes
+    open var invalidateOnBoundsChange : Bool = false { didSet{ invalidate() }}
 
     /// Default insets for all sections
     open var sectionInset : NSEdgeInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8) { didSet{ invalidate() }}
@@ -266,10 +269,13 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     }
     
     
-    private var _cvWidth : CGFloat = 0
+    private var _lastSize = CGSize.zero
     override open func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
-        defer { self._cvWidth = newBounds.size.width }
-        return _cvWidth != newBounds.size.width
+        defer { self._lastSize = newBounds.size }
+//        if invalidateOnBoundsChange {
+        return _lastSize != newBounds.size
+//        }
+//        return _lastSize.width != newBounds.size.width
     }
     
     override open func prepare(){
@@ -284,10 +290,11 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         self.sectionColumnAttributes.removeAll()
         self.allIndexPaths.removeAll()
         
-        guard let _collectionView = self.collectionView, _collectionView.numberOfSections > 0 else {
+        guard let cv = self.collectionView, cv.numberOfSections > 0 else {
             return
         }
-        let numberOfSections = _collectionView.numberOfSections
+        let numberOfSections = cv.numberOfSections
+        let contentInsets = cv.contentInsets
         
         var top : CGFloat = self.collectionView?.leadingView?.bounds.size.height ?? 0
         for section in 0..<numberOfSections {
@@ -297,11 +304,11 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
             */
 //            let colCount = self.columnsInSection(section)
-            let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(_collectionView, layout: self, insetForSectionAt: section) ?? self.sectionInset
-            let itemSpacing : CGFloat = self.delegate?.collectionView?(_collectionView, layout: self, interitemSpacingForSectionAt: section) ?? self.interitemSpacing
-            let colSpacing = self.delegate?.collectionview?(_collectionView, layout: self, columnSpacingForSectionAt: section) ?? self.columnSpacing
+            let sectionInsets :  NSEdgeInsets =  self.delegate?.collectionView?(cv, layout: self, insetForSectionAt: section) ?? self.sectionInset
+            let itemSpacing : CGFloat = self.delegate?.collectionView?(cv, layout: self, interitemSpacingForSectionAt: section) ?? self.interitemSpacing
+            let colSpacing = self.delegate?.collectionview?(cv, layout: self, columnSpacingForSectionAt: section) ?? self.columnSpacing
             
-            let contentWidth = _collectionView.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right
+            let contentWidth = cv.contentVisibleRect.size.width - (sectionInsets.left + sectionInsets.right + contentInsets.left + contentInsets.right)
             let spaceColumCount = CGFloat(colCount-1)
             let itemWidth = round((contentWidth - (spaceColumCount*colSpacing)) / CGFloat(colCount))
             _itemWidth = itemWidth
@@ -310,13 +317,13 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             /*
             * 2. Section header
             */
-            let heightHeader : CGFloat = self.delegate?.collectionView?(_collectionView, layout: self, heightForHeaderInSection: section) ?? self.headerHeight
+            let heightHeader : CGFloat = self.delegate?.collectionView?(cv, layout: self, heightForHeaderInSection: section) ?? self.headerHeight
             if heightHeader > 0 {
                 let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, with: IndexPath.for(section:section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                     CGRect(x: sectionInsets.left, y: top, width: _collectionView.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, height: heightHeader)
-                    : CGRect(x: 0, y: top, width: _collectionView.contentVisibleRect.size.width, height: heightHeader)
+                     CGRect(x: sectionInsets.left, y: top, width: cv.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, height: heightHeader)
+                    : CGRect(x: 0, y: top, width: cv.contentVisibleRect.size.width, height: heightHeader)
                 self.headersAttributes[section] = attributes
                 self.allItemAttributes.append(attributes)
                 top = attributes.frame.maxY
@@ -329,7 +336,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             /*
             * 3. Section items
             */
-            let itemCount = _collectionView.numberOfItems(in: section)
+            let itemCount = cv.numberOfItems(in: section)
             var itemAttributes :[CollectionViewLayoutAttributes] = []
             sectionColumnAttributes[section] = [Array](repeating: [], count: colCount)
             
@@ -337,23 +344,23 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             for idx in 0..<itemCount {
                 let indexPath = IndexPath.for(item:idx, section: section)
                 sIndexPaths.insert(indexPath)
-                allIndexPaths.add(indexPath)
+                allIndexPaths.append(indexPath)
                 
                 let columnIndex = self.nextColumnIndexForItem(indexPath)
                 let xOffset = sectionInsets.left + round((itemWidth + colSpacing) * CGFloat(columnIndex))
                 let yOffset = self.columnHeights[section][columnIndex]
                 var itemHeight : CGFloat = 0
-                let aSize = self.delegate?.collectionView?(_collectionView, layout: self, aspectRatioForItemAt: indexPath)
+                let aSize = self.delegate?.collectionView?(cv, layout: self, aspectRatioForItemAt: indexPath)
                 if aSize != nil && aSize!.width != 0 && aSize!.height != 0 {
                     let h = aSize!.height * (itemWidth/aSize!.width)
                     itemHeight = floor(h)
                     
-                    if let addHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForItemAt: indexPath) {
+                    if let addHeight = self.delegate?.collectionView?(cv, layout: self, heightForItemAt: indexPath) {
                         itemHeight += addHeight
                     }
                 }
                 else {
-                    itemHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForItemAt: indexPath) ?? self.itemHeight
+                    itemHeight = self.delegate?.collectionView?(cv, layout: self, heightForItemAt: indexPath) ?? self.itemHeight
                 }
                 
                 let attributes = CollectionViewLayoutAttributes(forCellWith: indexPath)
@@ -373,12 +380,12 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
             let columnIndex  = self.longestColumnIndexInSection(section)
             top = self.columnHeights[section][columnIndex] - itemSpacing
             
-            let footerHeight = self.delegate?.collectionView?(_collectionView, layout: self, heightForFooterInSection: section) ?? self.footerHeight
+            let footerHeight = self.delegate?.collectionView?(cv, layout: self, heightForFooterInSection: section) ?? self.footerHeight
             if footerHeight > 0 {
                 let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(item:0, section: section))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
-                    CGRect(x: sectionInsets.left, y: top, width: _collectionView.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, height: footerHeight)
+                    CGRect(x: sectionInsets.left, y: top, width: cv.contentVisibleRect.size.width - sectionInsets.left - sectionInsets.right, height: footerHeight)
                     : CGRect(x: 0, y: top, width: self.collectionView!.contentVisibleRect.size.width, height: footerHeight)
                 self.footersAttributes[section] = attributes
                 self.allItemAttributes.append(attributes)
@@ -398,6 +405,8 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
         if numberOfSections == 0{ return CGSize.zero }
         
         var contentSize = cv.contentVisibleRect.size as CGSize
+        contentSize.width = contentSize.width - (cv.contentInsets.left + cv.contentInsets.right)
+        
         let height = self.sectionFrames[cv.numberOfSections - 1]?.maxY ?? 0
         if height == 0 { return CGSize.zero }
         contentSize.height = height
@@ -478,14 +487,14 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
     
     open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
-        var inset = (self.collectionView?.contentInsets.top ?? 0)
+        let inset = (self.collectionView?.contentInsets.top ?? 0)
         
-        if let fAttr = sectionItemAttributes[indexPath._section].first, let hAttr = headersAttributes[indexPath._section] {
-           inset -= (fAttr.frame.minY - hAttr.frame.maxY)
-        }
+//        if let fAttr = sectionItemAttributes[indexPath._section].first, let hAttr = headersAttributes[indexPath._section] {
+//           inset -= (fAttr.frame.minY - hAttr.frame.maxY)
+//        }
         
-        if self.pinHeadersToTop && atPosition == .leading, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, at: IndexPath.for(item:0, section: indexPath._section)) {
-            let y = (frame.origin.y - attrs.frame.size.height) + inset
+        if self.pinHeadersToTop, let attrs = self.layoutAttributesForSupplementaryView(ofKind: CollectionViewLayoutElementKind.SectionHeader, at: IndexPath.for(item:0, section: indexPath._section)) {
+            let y = (frame.origin.y - attrs.frame.size.height) // + inset
             
             let height = frame.size.height + attrs.frame.size.height
             frame.size.height = height

@@ -4,16 +4,16 @@ An easy to use, highly customizable replacement for NSCollectionView.
 
 ## Why
 
-Prior to macOS 10.11, NSCollectionView had little in common with it's younger cousin on iOS (UICollectionView). Since then it has recieved some improvements but with no support on 10.10, we needed another solution.
+Prior to macOS 10.11, NSCollectionView had little in common with its younger cousin on iOS (UICollectionView). Since then it has recieved some improvements but with no support on 10.10, we needed another solution.
 
-CollectionView provides a ton of functionality and flexibility while maintaining high performance. Some of it's features include:
+CollectionView provides a ton of functionality, flexibility, and high performance. Some of it's features include:
 
-* Highliy customizable out of the box
+* Highly customizable out of the box
 * Custom layouts for even more customizations
 * Content editing inluding animations (insert, delete, & move)
 * Section headers and footers
 * Drag and drop
-* Photos like preview transitions
+* Photos-like preview transitions
 * ResultsController for consistent data sourcing (including CoreData implementations)
 
 > If you aren't supporting macOS 10.10, NSCollectionView can likely satisfy your needs. That said, CollectionView does provide some additional flexibility and features that may still make it a viable option for your project.
@@ -23,9 +23,9 @@ CollectionView provides a ton of functionality and flexibility while maintaining
 
 Get collection view up and running in just a few minutes. Checkout the guides & documentation.
 
-- [Introduction]("")
-- [Basic Setup]("")
-- [Documentation]("")
+- [Introduction]("https://thenounproject.github.io/CollectionView/introduction.html")
+- [Basic Setup]("https://thenounproject.github.io/CollectionView/basic-setup.html")
+- [Documentation]("https://thenounproject.github.io/CollectionView/index.html")
 
 
 ### Adding to your project
@@ -35,20 +35,21 @@ Clone or donwload the repo and add it to your project by dragging the Collection
 
 ## Examples
 
-An example project is included in the repo. If you use it, let us know!
-
 CollectionView is used to power:
 
+* Demo app (in this repo)
 * [Lingo for macOS](https://lingoapp.com)
 * [Noun Project for macOS](https://thenounproject.com/for-mac/)
 
+Let us know if you use it too.
+
 ## Contributing
-Feel free to start a discussion in Issues for bugs, questions, or feature requests.
+Feel free to create an Issue for bugs, questions, or feature requests.
 
 Or, reach out on twitter: [@NounProjectDev](https://twitter.com/NounProjectDev)
 
 ### To do
-* Add some common use cell subclasses classes
+* Add some common use cell subclasses
 * Improve performance (it's good, but could always be better 😁)
 * Some sort of layout context to avoid full reloads
 

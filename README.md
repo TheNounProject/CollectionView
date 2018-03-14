@@ -6,7 +6,7 @@ An easy to use, highly customizable replacement for NSCollectionView.
 
 Prior to macOS 10.11, NSCollectionView had little in common with its younger cousin on iOS (UICollectionView). Since then it has recieved some improvements but with no support on 10.10, we needed another solution.
 
-CollectionView provides a ton of functionality, flexibility, and high performance. Some of it's features include:
+CollectionView provides a ton of functionality, flexibility, and high performance. Some of its features include:
 
 * Highly customizable out of the box
 * Custom layouts for even more customizations

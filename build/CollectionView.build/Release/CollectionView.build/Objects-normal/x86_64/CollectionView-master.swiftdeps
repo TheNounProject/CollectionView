@@ -1,6 +1,6 @@
 version: "Apple Swift version 4.0.3 (swiftlang-900.0.74.1 clang-900.0.39.2)"
 options: "95cb90fda217a05a936ebb756f9f3f55"
-build_time: [1519781767, 221498000]
+build_time: [1521003856, 978859000]
 inputs:
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/EditDistance/WagnerFischer.swift": [9223372036, 854775807]
   "/Users/Wes/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/CoreDataResultsController.swift": [9223372036, 854775807]

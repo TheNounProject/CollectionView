@@ -134,10 +134,12 @@ public protocol CustomDisplayStringConvertible  {
     var displayDescription : String { get }
 }
 
+/// :nodoc:
 extension String : CustomDisplayStringConvertible {
     public var displayDescription: String { return self }
 }
 
+/// :nodoc:
 extension NSNumber : CustomDisplayStringConvertible {
     public var displayDescription: String { return "\(self)" }
 }
@@ -149,6 +151,7 @@ extension Int : CustomDisplayStringConvertible {
     }
 }
 
+/// :nodoc:
 extension NSNumber : Comparable {
     public static func ==(lhs: NSNumber, rhs: NSNumber) -> Bool {
         return lhs.compare(rhs) == .orderedSame

@@ -1,0 +1,80 @@
+{
+  "module": "CollectionView",
+  "skip_undocumented": true,
+  "clean": true,
+  "theme": "fullwidth",
+  "min_acl": "public",
+  "author": "Noun Project",
+  "readme": "./README.md",
+  "github_url": "https://github.com/TheNounProject/CollectionView",
+  "hide_documentation_coverage": false,
+  "documentation": "Guides/*.md",
+  "custom_categories" : [
+    {
+      "name": "Guides",
+      "children": [
+        "Installation",
+        "Basic Setup",
+        "Supplementary Views",
+        "Custom Layouts",
+        "Drag & Drop",
+        "Content Manipulation",
+        "Results Controller"
+      ]
+    },
+    {
+      "name": "Collection View",
+      "children": [
+        "CollectionView",
+        "CollectionViewDataSource",
+        "CollectionViewDelegate",
+        "CollectionViewDragDelegate",
+        "CollectionViewCell",
+        "CollectionReusableView",
+        "CollectionViewController",
+        "CollectionViewLayoutElementKind",
+        "CollectionElementCategory",
+        "CollectionViewDirection",
+        "CollectionViewScrollDirection",
+        "CollectionViewScrollPosition",
+        "CollectionViewPreviewCell",
+        "CollectionViewPreviewController",
+        "CollectionViewPreviewTransitionCell",
+        "CollectionViewPreviewControllerDelegate",
+        "AnimationCompletion"
+      ]
+    },
+    {
+      "name": "Collection View Layouts",
+      "children": [
+        "CollectionViewLayout",
+        "CollectionViewLayoutAttributes",
+        "CollectionViewListLayout",
+        "CollectionViewHorizontalListLayout",
+        "CollectionViewColumnLayout",
+        "CollectionViewFlowLayout",
+        "CollectionViewDelegateColumnLayout",
+        "CollectionViewDelegateFlowLayout",
+        "CollectionViewDelegateHorizontalListLayout",
+        "CollectionViewDelegateListLayout"
+      ]
+    },
+    {
+      "name": "Results Controller",
+      "children": [
+        "ResultsController",
+        "MutableResultsController",
+        "FetchedResultsController",
+        "RelationalResultsController",
+        "FetchedSetController",
+        "ResultsControllerChangeType",
+        "ResultsControllerError",
+        "ResultsControllerDelegate",
+        "CollectionViewProvider",
+        "CollectionViewResultsProxy"
+      ]
+    }
+
+
+  ]
+}

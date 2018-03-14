@@ -129,7 +129,7 @@ internal class EventMonitor {
  
  The controller is presented from a source collection view. The data source of the source collection view is used to load data for the preview collection view. The preview controller will act as a proxy between the preview collection view and your source colleciton views data source.
  
- - Important: The data source for the collection view you pass to present(in:) must conform to CollectionViewPreviewControllerDelegate
+ - Important: The data source for the collection view passed to present(in:) must conform to CollectionViewPreviewControllerDelegate
  
  
 ### Transitions
@@ -299,10 +299,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         self.delegate = sourceCollectionView.delegate as? CollectionViewPreviewControllerDelegate
             ?? controller as? CollectionViewPreviewControllerDelegate
         
-        guard self.delegate != nil else {
-            log.error("Serious Error: controller or sourceCollectionView's delegate must conform to CollectionViewPreviewController. Missing delegate when presenting")
-            return
-        }
+        assert(self.delegate != nil, "Developer Error: When presenting CollectionViewPreviewController, controller or sourceCollectionView's delegate must conform to CollectionViewPreviewController")
         
         self.sourceCollectionView = sourceCollectionView
         self.sourceIndexPath = indexPath

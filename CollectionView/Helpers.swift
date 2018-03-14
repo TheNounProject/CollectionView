@@ -313,15 +313,7 @@ extension NSEdgeInsets {
 }
 
 
-
 public extension NSView {
-    
-    /**
-     Add NSLayoutContraints to the reciever to match it'parent optionally provided insets for each side. If the view does not have a superview, no constraints are added.
-     
-     - parameter insets: Insets to apply to the constraints for Top, Right, Bottom, and Left.
-     - returns: The Top, Right, Bottom, and Top constraint added to the view.
-     */
     @discardableResult func addConstraintsToMatchParent(_ insets: NSEdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
         if let sv = self.superview {
             let top = NSLayoutConstraint(item: self, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal, toItem: sv, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: insets == nil ? 0 : insets!.top)

@@ -539,7 +539,19 @@ SWIFT_PROTOCOL("_TtP14CollectionView22CollectionViewDelegate_")
 
 /// The CollectionViewDataSource is responsible for providing the data and views required by a collection view
 /// <h1>Overview</h1>
-/// At a minimum, all data source objects must implement the numberOfSections(in:), collectionView(<em>:numberOfItemsInSection:) and collectionView(</em>:cellForItemAt:) methods. These methods are responsible for returning the number of items in the collection view along with the items themselves.
+/// At a minimum, all data source objects must implement:
+/// <ul>
+///   <li>
+///     <code>numberOfSections(in:)</code>
+///   </li>
+///   <li>
+///     <code>collectionView(_:numberOfItemsInSection:)</code>
+///   </li>
+///   <li>
+///     <code>collectionView(_:cellForItemAt:)</code>.
+///   </li>
+/// </ul>
+/// These methods are responsible for returning the number of items in the collection view along with the items themselves.
 SWIFT_PROTOCOL("_TtP14CollectionView24CollectionViewDataSource_")
 @protocol CollectionViewDataSource
 /// Asks your data source for the number of sections in the collectin view
@@ -560,7 +572,7 @@ SWIFT_PROTOCOL("_TtP14CollectionView24CollectionViewDataSource_")
 - (NSInteger)collectionView:(CollectionView * _Nonnull)collectionView numberOfItemsInSection:(NSInteger)section SWIFT_WARN_UNUSED_RESULT;
 /// Asks your data source object for the cell that corresponds to the specified item in the collection view.
 /// <h1>Discussion</h1>
-/// Your implementation of this method is responsible for creating, configuring, and returning the appropriate cell for the given item. You do this by calling the dequeueReusableCell(withReuseIdentifier:for:) method of the collection view and passing the reuse identifier that corresponds to the cell type you want. That method always returns a valid cell object. Upon receiving the cell, you should set any properties that correspond to the data of the corresponding item, perform any additional needed configuration, and return the cell.
+/// Your implementation of this method is responsible for creating, configuring, and returning the appropriate cell for the given item. You do this by calling the <code>dequeueReusableCell(withReuseIdentifier:for:)</code> method of the collection view and passing the reuse identifier that corresponds to the cell type you want. That method always returns a valid cell object. Upon receiving the cell, you should set any properties that correspond to the data of the corresponding item, perform any additional needed configuration, and return the cell.
 /// You do not need to set the location of the cell inside the collection view’s bounds. The collection view sets the location of each cell automatically using the layout attributes provided by its layout object.
 /// \param collectionView The collection view requesting this information.
 ///
@@ -573,7 +585,7 @@ SWIFT_PROTOCOL("_TtP14CollectionView24CollectionViewDataSource_")
 @optional
 /// Asks your data source object to provide a supplementary view to display in the collection view.
 /// <h1>Discussion</h1>
-/// Your implementation of this method is responsible for creating, configuring, and returning the appropriate supplementary view that is being requested. You do this by calling the dequeueReusableSupplementaryView(ofKind:withReuseIdentifier:for:) method of the collection view and passing the information that corresponds to the view you want. That method always returns a valid view object. Upon receiving the view, you should set any properties that correspond to the data you want to display, perform any additional needed configuration, and return the view.
+/// Your implementation of this method is responsible for creating, configuring, and returning the appropriate supplementary view that is being requested. You do this by calling the <code>dequeueReusableSupplementaryView(ofKind:withReuseIdentifier:for:)</code> method of the collection view and passing the information that corresponds to the view you want. That method always returns a valid view object. Upon receiving the view, you should set any properties that correspond to the data you want to display, perform any additional needed configuration, and return the view.
 /// You do not need to set the location of the supplementary view inside the collection view’s bounds. The collection view sets the location of each view using the layout attributes provided by its layout object.
 /// \param collectionView The collection view requesting this information.
 ///
@@ -974,7 +986,7 @@ SWIFT_CLASS("_TtC14CollectionView25CollectionViewPreviewCell")
 /// <h3>Presentation & Data</h3>
 /// The controller is presented from a source collection view. The data source of the source collection view is used to load data for the preview collection view. The preview controller will act as a proxy between the preview collection view and your source colleciton views data source.
 /// important:
-/// The data source for the collection view you pass to present(in:) must conform to CollectionViewPreviewControllerDelegate
+/// The data source for the collection view passed to present(in:) must conform to CollectionViewPreviewControllerDelegate
 /// <h3>Transitions</h3>
 /// The preview controller manages the transitions to and from the source and allows the preview cell to customize the transition.
 /// Although the The preview controller will accept any cell class, supporting transitions requires a small amount of additional setup.

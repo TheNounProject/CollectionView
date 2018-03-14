@@ -11,9 +11,6 @@ import Foundation
 
 
 
-
-
-
 /**
  A FetchedResultsController provides the same data store and change reporting as a MutableResultsController but sources it's contents from a CoreData context.
  
@@ -270,6 +267,14 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         validateRequests()
     }
     
+    
+    /// Intialize a controller
+    ///
+    /// - Parameters:
+    ///   - context: A managed object context
+    ///   - request: A request for fetching objects
+    ///   - sectionRequest: A request for fetching sections (if fetchSections is true)
+    ///   - keyPath: The key path on the controllers objects that references the sections
     public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionRequest: NSFetchRequest<Section>, sectionKeyPath keyPath: KeyPath<Element, Section?>) {
         
         self.sectionFetchRequest = sectionRequest
@@ -282,21 +287,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     deinit {
         self.sectionFetchRequest.predicate = nil
-    }
-    
-    
-    override func validateRequests() {
-        super.validateRequests()
-        assert(sectionFetchRequest.entityName != nil, "sectionRequest is missing entity name")
-        let sectionEntity = NSEntityDescription.entity(forEntityName: sectionFetchRequest.entityName!, in: self.managedObjectContext)
-        assert(sectionEntity != nil, "Unable to load entity description for section \(sectionFetchRequest.entityName!)")
-        sectionFetchRequest.entity = sectionEntity
-    }
-    
-    
-    func evaluate(section: Section) -> Bool {
-        guard let p = self.sectionFetchRequest.predicate else { return true }
-        return p.evaluate(with: section)
     }
     
     /// Executes a fetch to populate the controller
@@ -321,6 +311,21 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         _fetched = true
     }
 
+    
+    override func validateRequests() {
+        super.validateRequests()
+        assert(sectionFetchRequest.entityName != nil, "sectionRequest is missing entity name")
+        let sectionEntity = NSEntityDescription.entity(forEntityName: sectionFetchRequest.entityName!, in: self.managedObjectContext)
+        assert(sectionEntity != nil, "Unable to load entity description for section \(sectionFetchRequest.entityName!)")
+        sectionFetchRequest.entity = sectionEntity
+    }
+    
+    
+    func evaluate(section: Section) -> Bool {
+        guard let p = self.sectionFetchRequest.predicate else { return true }
+        return p.evaluate(with: section)
+    }
+    
     
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
@@ -355,24 +360,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return !self.evaluate(section: s)
     }
     
-    
-    // MARK: - Controller Contents
-    /*-------------------------------------------------------------------------------*/
-    
-    /**
-     An array of all sections
-     
-     - Note: accessing the sections here incurs fairly large overhead, avoid if possible. Use `numberOfSections` and sectionInfo(forSectionAt:) when possible.
-     */
-//    public var sections: [SectionInfo] { return _sections.objects }
-    
-    
-//    private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
-//    private var _sections = OrderedSet<SectionInfo>()
-    
-
-    
-    
     // MARK: - Section Names
     /*-------------------------------------------------------------------------------*/
     
@@ -387,51 +374,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return (obj as? CustomDisplayStringConvertible)?.displayDescription ?? ""
     }
     
-
-    
-    // MARK: - Empty Sections
-    /*-------------------------------------------------------------------------------*/
-    
-    
-    /**
-     If the controller should assume that sections with zero objects have a placholder.
-     
-     # Discussion
-     When displaying sections within a CollectionView, it can be helpful to fill empty sections with a placholder cell. This causes an issue when responding to updates from a results controller. For example, when an object is inserted into an empty section, the results controller will report a single insert change. The CollectionView though would need to remove the exisitng cell AND insert the new one.
-     
-     Setting hasEmptySectionPlaceholders to true, will report changes as such, making it easy to propagate the reported changes to a CollectionView.
-     */
-//    public var hasEmptySectionPlaceholders : Bool = false
-    
-    
-    
-    /// A special set of changes if empty sections are enabled that can be passed along to a Collection View
-//    public private(set) var emptySectionChanges : ResultsChangeSet?
-    
-    
-    
     
     // MARK: - Handling Changes
     /*-------------------------------------------------------------------------------*/
-    
-//    fileprivate var context = UpdateContext<Section, Element>()
-//    fileprivate var _sectionsCopy : OrderedSet<SectionInfo>?
-    
-    
-    /// Returns the number of item & section changes processed during an update. Only valid during controllDidChangeContent(_)
-//    public var pendingChangeCount : Int {
-//        return pendingItemChangeCount + pendingSectionChangeCount
-//    }
-//    /// Returns the number of item changes processed during an update. Only valid during controllDidChangeContent(_)
-//    public var pendingItemChangeCount : Int {
-//        return context.objectChangeSet.count
-//    }
-    
-    /// Returns the number of section changes processed during an update. Only valid during controllDidChangeContent(_)
-//    public var pendingSectionChangeCount : Int {
-//        return context.sectionChangeSet.count
-//    }
-    
     
     override func processChanges(_ changes: [NSEntityDescription : ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
         guard let delegate = self.delegate, self._fetched else {

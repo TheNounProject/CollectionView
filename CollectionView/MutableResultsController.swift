@@ -218,31 +218,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     
     
     /**
-     The info for a given section
-
-     - Parameter sectionIndexPath: An index path with the desired section
-     - Returns: The info for the given section (or nil if indexPath.section is out of range)
-
-    */
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo<Section,Element>? {
-        return self._sections._object(at: sectionIndexPath._section)
-    }
-    
-    
-    /**
-     The object represented by the given section (if sectionKeyPath is not nil)
-
-     - Parameter sectionIndexPath: An index path for the desired section
-     
-     - Returns: The value for `sectionKeyPath` of each object in the section (or nil)
-
-    */
-    public func object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
-        return self.sectionInfo(forSectionAt: sectionIndexPath)?.representedObject
-    }
-    
-    
-    /**
      The object at a given index path
 
      - Parameter indexPath: An index path
@@ -255,80 +230,17 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
 
     
-    
-    // MARK: - Getting IndexPaths
-    /*-------------------------------------------------------------------------------*/
-    
-    
-    /**
-     The index path of the section represented by section info
-     
-     - Parameter sectionInfo: Info for the section
-     
-     - Returns: The index path of the section matching the given info (or nil)
-     
-     */
-    public func indexPath(of sectionInfo: SectionInfo<Section,Element>) -> IndexPath? {
-        if let idx = _sections.index(of: sectionInfo) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    
-    
-    /**
-     The index path of a given object contained in the controller
-     
-     - Parameter object: An object contained in the controller
-     
-     - Returns: The index path for the given object
-     */
-    public func indexPath(of object: Element) -> IndexPath? {
-        if self.sectionGetter != nil {
-            guard let section = self._objectSectionMap[object],
-                let sIndex = self._sections.index(of: section),
-                let idx = section.index(of: object) else { return nil }
-            return IndexPath.for(item: idx, section: sIndex)
-        }
-        else if let idx = _sections.first?.index(of: object) {
-            return IndexPath.for(item: idx, section: 0)
-        }
-        return nil
-    }
-    
-    
-    /**
-     The index path of the section that represents a value
-     
-     - Parameter sectionValue: The value that the desired section represents
-     
-     - Returns: The index path of the section (or nil)
-     
-     Section value refers the the value of `sectionKeyPath` for all objects in a section.
-     
-     */
-    public func indexPathOfSection(representing sectionValue: Section?) -> IndexPath? {
-        let _wrap = WrappedSectionInfo(object: sectionValue)
-        if let idx = _sections.index(of: _wrap) {
-            return IndexPath.for(section: idx)
-        }
-        return nil
-    }
-    
-    
-    
-    
-    // MARK: - Private Helpers
-    /*-------------------------------------------------------------------------------*/
-    
-    
     /// Section info for a given index path
     ///
     /// - Parameter sectionIndexPath: A index path (item is not used)
     /// - Returns: The section info if available
     public func sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo<Section,Element>? {
         return self.sectionInfo(at: sectionIndexPath._section)
+    }
+    
+    @available(*, deprecated, renamed: "sectionInfo(at:)")
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo<Section,Element>? {
+        return self.sectionInfo(at: sectionIndexPath)
     }
     
     
@@ -339,6 +251,18 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     public func sectionInfo(at sectionIndex: Int) -> SectionInfo<Section,Element>? {
         guard sectionIndex < self.numberOfSections else { return nil }
         return self._sections.object(at: sectionIndex)
+    }
+    
+    /**
+     The object represented by the given section (if sectionKeyPath is not nil)
+     
+     - Parameter sectionIndexPath: An index path for the desired section
+     
+     - Returns: The value for `sectionKeyPath` of each object in the section (or nil)
+     
+     */
+    public func object(forSectionAt sectionIndexPath: IndexPath) -> Section? {
+        return self.sectionInfo(at: sectionIndexPath)?.representedObject
     }
     
     
@@ -367,6 +291,69 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         let _wrap = WrappedSectionInfo(object: sectionObject, objects: [])
         return _sections.contains(_wrap)
     }
+    
+    
+    
+    // MARK: - Getting IndexPaths
+    /*-------------------------------------------------------------------------------*/
+    
+    
+    /**
+     The index path of a given object contained in the controller
+     
+     - Parameter object: An object contained in the controller
+     
+     - Returns: The index path for the given object
+     */
+    public func indexPath(of object: Element) -> IndexPath? {
+        if self.sectionGetter != nil {
+            guard let section = self._objectSectionMap[object],
+                let sIndex = self._sections.index(of: section),
+                let idx = section.index(of: object) else { return nil }
+            return IndexPath.for(item: idx, section: sIndex)
+        }
+        else if let idx = _sections.first?.index(of: object) {
+            return IndexPath.for(item: idx, section: 0)
+        }
+        return nil
+    }
+    
+    
+    /**
+     The index path of the section represented by section info
+     
+     - Parameter sectionInfo: Info for the section
+     
+     - Returns: The index path of the section matching the given info (or nil)
+     
+     */
+    public func indexPath(of sectionInfo: SectionInfo<Section,Element>) -> IndexPath? {
+        if let idx = _sections.index(of: sectionInfo) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
+    
+    
+    /**
+     The index path of the section that represents a value
+     
+     - Parameter sectionValue: The value that the desired section represents
+     
+     - Returns: The index path of the section (or nil)
+     
+     Section value refers the the value of `sectionKeyPath` for all objects in a section.
+     
+     */
+    public func indexPathOfSection(representing sectionValue: Section?) -> IndexPath? {
+        let _wrap = WrappedSectionInfo(object: sectionValue)
+        if let idx = _sections.index(of: _wrap) {
+            return IndexPath.for(section: idx)
+        }
+        return nil
+    }
+    
     
     
     // MARK: - Storage Manipulation
@@ -453,7 +440,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
     
     
-    func getOrCreateSectionInfo(for section: Section?) -> WrappedSectionInfo {
+    internal func getOrCreateSectionInfo(for section: Section?) -> WrappedSectionInfo {
         if let s = self.sectionInfo(representing: section) { return s }
         self.ensureSectionCopy()
         let s = WrappedSectionInfo(object: section, objects: [])
@@ -477,7 +464,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
     
     
-    // MARK: - Handling Changes
+    // MARK: - Making Updates
     /*-------------------------------------------------------------------------------*/
     
     /// Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)

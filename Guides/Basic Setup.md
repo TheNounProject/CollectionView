@@ -1,69 +1,175 @@
 # Basic Setup
-![CollectionView](https://github.com/TheNounProject/CollectionView/raw/master/img/demo_setup.gif "Collection View")
 
-* Add a NSScrollView to your interface, set the class and make an outlet
-* Create a collection view layout and apply it to the collection view.
-* Register reusable views
-* Set the data source and delegate
-* Implement the required data source functions
+Even the most basic collection view needs a data source. The data source object provides the content that is to be displayed in the collection view such as how many items and the views that represent those items on screen.
 
-Which looks like:
+The delegate is an optional object that allows customizing display and interactions with your content. The most common use is responding to selection of cells.
+
+
+## Creating a Collection View
+
+Collection views can be created programatically or in interface builder.
+
+In a storyboard or xib, add an NSScrollView to your view and set the class in the inspector to CollectionView. Then create an outlet.
+
+Without IB simply initialize a collection view and add it to your view. Adding layout constraints is recommended.
+
+With your collection view in place there are a few more steps to display your content:
+
+- Set a data source
+- Prepare a cell class
+- Choose a layout
+
+
+
+## Setting up a Data Source
+
+It is important to understand the structure of data expected by a collection view. Sections and items are used to represent your data. A collection view typically has at least 1 section. Each section then contains zero or more items.
+
+The contept of a section may not be necessarily represented in your data but the collection view will still need 1 section to represent your list of items.
+
+> Each element in a collection view is referred to using IndexPaths. To support macOS 10.10 which predates the addition of `item` and `section` properties on IndexPath, and extension provides _item, _section and for().
+
+The only required of your data source are:
+```swift
+func numberOfSections(in collectionView: CollectionView) -> Int
+func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int
+func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell
+```
+
+These tell your collection view about your data and provide the cells used to display each item. If youa are representing a simple array, you will still need to report 1 section to contain that data. More complex data that is grouped into sections should report as such.
+
+
+## Preparing a cell
+
+A critical task of the data source is to provide views to display your content in the collection view. The collection view is only responsible for applying layout attributes to the view, everying displayed in the cell is your responsibilty.
+
+Cells can be loaded from a xib or programatically from a class.
+
+First, create a subclass of CollectionViewCell that will be used to configure each cell.
+
+If you are using a xib, set the root view class in the inspector to your new cell subclass. You can then add subviews and create outlets to your class to be used later when setting up the cell to display an item from your data.
+
+Without a xib, you will need to create the subviews manually in `init(frame frameRect: NSRect)`.
+
+#### Registering Cells
+
+Becuase views are reused by a collection view it is never your responsibilty to load/initialize them. Each class or xib you intent to you must be registered before loading any data.
+
+Use the following depending on your setup:
+```
+func register(class cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String)
+func register(nib: NSNib, forCellWithReuseIdentifier identifier: String)
+```
+
+Each cell should only be registered once when your collection view is setup. Typically this can be done in viewDidLoad in the controller containing your collection view.
+
+
+#### Dequeing Cells
+
+With your cells registered they can now be used to satisfy one of the requirements of your data source, providing the cells.
+
+Use the reuse identifier you registered each cell with, call `dequeueReusableCell(withReuseIdentifier identifier:for:)`. The collection view will load the cell, either from the xib or class and return it to be configured as needed. Your data source can setup any UI elements (labels, images, etc) in the cell according to the object that cell is representing then return it to the collection view to be presented.
+
+
+## Setting a layout
+
+The collection view layout object manages the visual representation of each item, most importantly its location and size.
+
+Custom layouts can be created but a few are provided to be used as is:
+
+- CollectionViewListLayout
+- CollectionViewColumnLayout
+- CollectionViewFlowLayout
+
+Each layout works differently to provide different appearances and flexibility. The provided layouts often allow static values to be set OR accept values provided by a delegate.
+
+For example, the list layout has an itemHeight property that will be used, but, if the collection views delegate also conforms to `CollectionViewDelegateListLayout` and implements `collectionView(_:layout:heightForItemAt:)->CGFloat`, a dynamic height can be provided for each item.
+
+The layouts provide a great deal of flexibility out of the box and one again, custom layouts can be created to do even more.
+
+Simply initialite the layout you want, set and properties and set `collection.collectionViewLayout`.
+
+See [Advanced Layouts]() for more.
+
+
+## Example
 
 ```swift
+
+// The cell used to list characters
+class CharacterCell : CollectionViewCell {
+	let nameLabel = NSTextField()
+
+	override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+		// add the subviews
+	}
+
+}
+
+
 class MyController : NSViewController, CollectionViewDataSource, CollectionViewDelegate {
+
+	var charcters : [[String]] = [
+		["Willy", "Charlie", "Mike", "Augustus"],
+		["Violet", "Veruca"]
+	]
 
 	func viewDidLoad() {
 		super.viewDidLoad()
 
-		var layout = CollectionViewFlowLayout()
+		var layout = CollectionViewListLayout()
+		layout.itemHeight = 40
 		collectionView.collectionViewLayout = listLayout
 
 		collectionView.dataSource = self
 	   	collectionView.delegate = self
 
-	   	// Using a nib
-	   	let nib = NSNib(nibNamed: "UserCell", bundle: nil)!
-	   	collectionView.register(nib: nib, forCellWithReuseIdentifier: "UserCell")
+	   	// Register the class
+	   	collectionView.register(class: CharacterCell.self, forCellWithReuseIdentifier: "CharacterCell")
 
-	   	//OR
-	   	collectionView.register(class: UserCell.self, forCellWithReuseIdentifier: "UserCell")
+		// If using a nib...
+	   	// let nib = NSNib(nibNamed: "CharacterCell", bundle: nil)!
+	   	// collectionView.register(nib: nib, forCellWithReuseIdentifier: "CharacterCell")
 
 	   	collectionView.reloadDate()
 	}
+
+	func numberOfSections(in collectionView: CollectionView) -> Int {
+		return characters.count
+	}
+
+	func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
+		return characters[section].count
+	}
+
+	func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
+
+		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CharacterCell", for: indexPath) as! CharacterCell
+		let name = characters[indexPath._section][indexPath._item]
+		cell.nameLabel.stringValue = name
+		return cell
+	}
 }
-
-func numberOfSections(in collectionView: CollectionView) -> Int {
-    return 5
-}
-
-func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
-	return 3
-}
-
-func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
-
-	let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UserCell", for: indexPath) as! UserCell
-	... setup the cell as needed
-	return cell
-}
-
 ```
 
-### Implementing the Delegate
-Events such as selection, scrolling, and even dragging from the collection view are delievered to the collection views's delegate.
+![CollectionView](https://github.com/TheNounProject/CollectionView/raw/master/img/demo_setup.gif "Collection View")
 
-See the [delegate documentation](https://thenounproject.github.io/CollectionView/Protocols/CollectionViewDelegate.html) for more
+
+## Implementing the Delegate
+Collection views can be used for a variety of use cases. In some cases they may be purely visual but in most cases they are intended to support some level of interaction. The delegate allows you to control and respond to these interactions.
+
+Selection state is the most common interaction that needs to be handled by an app. The following are useufl for managing selection state:
+
 
 ```swift
-// Somewhere in MyController
+@objc optional func collectionView(_ collectionView: CollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool
 
-func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath) {
-    var myObject = myData[indexPath._item]
-    Do something ...
-}
+@objc optional func collectionView(_ collectionView: CollectionView, shouldSelectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath>
+@objc optional func collectionView(_ collectionView: CollectionView, didSelectItemsAt indexPaths: Set<IndexPath>)
 
-
-func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath, with event: NSEvent) {
-	// Same as selection but right click\
-}
+@objc optional func collectionView(_ collectionView: CollectionView, shouldDeselectItemsAt indexPaths: Set<IndexPath>) -> Set<IndexPath>
+@objc optional func collectionView(_ collectionView: CollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>)
 ```
+
+See the [delegate documentation](https://thenounproject.github.io/CollectionView/Protocols/CollectionViewDelegate.html) for more

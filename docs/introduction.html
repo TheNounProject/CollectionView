@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Custom Layouts  Reference</title>
+    <title>Introduction  Reference</title>
     <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <meta charset="utf-8">
@@ -15,7 +15,7 @@
   <body>
 
 
-    <a title="Custom Layouts  Reference"></a>
+    <a title="Introduction  Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -43,7 +43,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="index.html">CollectionView Reference</a>
       <img class="carat" src="img/carat.png" />
-      Custom Layouts  Reference
+      Introduction  Reference
     </p>
 
     <div class="content-wrapper">
@@ -53,7 +53,7 @@
             <a class="nav-group-name-link" href="Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="installation.html">Installation</a>
+                <a class="nav-group-task-link" href="introduction.html">Introduction</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="basic-setup.html">Basic Setup</a>
@@ -62,7 +62,7 @@
                 <a class="nav-group-task-link" href="supplementary-views.html">Supplementary Views</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="custom-layouts.html">Custom Layouts</a>
+                <a class="nav-group-task-link" href="advanced-layouts.html">Advanced Layouts</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="drag--drop.html">Drag &amp; Drop</a>
@@ -147,13 +147,16 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC19ItemRenderDirectionO">– ItemRenderDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
@@ -165,16 +168,13 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
+                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
             </ul>
           </li>
@@ -183,6 +183,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/ResultsController.html">ResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/MutableResultsController.html">MutableResultsController</a>
@@ -201,9 +204,6 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewProvider.html">CollectionViewProvider</a>
@@ -236,9 +236,33 @@
         <section class="section">
           <div class="section-content">
             
-            <h1 id='custom-layouts' class='heading'>Custom Layouts</h1>
+            <h1 id='collection-view-basics' class='heading'>Collection View Basics</h1>
 
-<p>Coming soon&hellip;</p>
+<p>A collection view coordinatess many different objects to display content. For basic usage most of these can be used as is leaving your app to provide only a few pieces of information. Each component can then be highly customized to meet your specific needs.</p>
+
+<p>Let&rsquo;s start with an overview of these components, then the other guides will go into more detail about how to use and customize each of them.</p>
+<h2 id='the-collectionview' class='heading'>The CollectionView</h2>
+
+<p>The collection view itself is the container and coordinator that brings all the information together to preset something on the screen. It&rsquo;s primary resources are the data source and layout object.</p>
+
+<p>A <code><a href="Classes/CollectionViewController.html">CollectionViewController</a></code> provides a controller preconfiguerd with a collection view.</p>
+<h2 id='datasource-and-delegate' class='heading'>DataSource and Delegate</h2>
+
+<p>The data source is the key input <strong>required</strong> by your app to display a collection view. The data source manages the content to be displayed and provides the cells that represent each member of that content on screen.</p>
+
+<p>While the data source provides for the collection view, the delegate lets you optionally react to messages and customize behavior. Selection, highlight and scroll events for example are reported to the delegate. All delegate methods are optional.</p>
+
+<p>The <code><a href="Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a></code> is an extension of the standard delegate protocol that allows forwarding dragging events to the delegate.</p>
+<h2 id='presentation' class='heading'>Presentation</h2>
+
+<p><code><a href="Classes/CollectionReusableView.html">CollectionReusableView</a></code> are used to represent the content of your collection view on screen. This class provides the mechanisms for layout and reusability of views to maintain adequate performance.</p>
+
+<p>The <code><a href="Classes/CollectionViewCell.html">CollectionViewCell</a></code> is a special type of reusable view used to display The main elements of your data.</p>
+<h2 id='layout' class='heading'>Layout</h2>
+
+<p>Subclasses of <code><a href="Classes/CollectionViewLayout.html">CollectionViewLayout</a></code> are used to manage the location, size, and visual attributes of each reusable view (and cell) in the collection view.</p>
+
+<p>The layout creates layout attributes (CollectionViewLayoutAttributes) for each cell and resuable view which are then used by the collection view.</p>
 
           </div>
         </section>
@@ -247,8 +271,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-13)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-14)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

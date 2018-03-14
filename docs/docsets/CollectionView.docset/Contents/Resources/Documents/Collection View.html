@@ -53,7 +53,7 @@
             <a class="nav-group-name-link" href="Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="installation.html">Installation</a>
+                <a class="nav-group-task-link" href="introduction.html">Introduction</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="basic-setup.html">Basic Setup</a>
@@ -62,7 +62,7 @@
                 <a class="nav-group-task-link" href="supplementary-views.html">Supplementary Views</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="custom-layouts.html">Custom Layouts</a>
+                <a class="nav-group-task-link" href="advanced-layouts.html">Advanced Layouts</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="drag--drop.html">Drag &amp; Drop</a>
@@ -147,13 +147,16 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC19ItemRenderDirectionO">– ItemRenderDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
@@ -165,16 +168,13 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
+                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
             </ul>
           </li>
@@ -183,6 +183,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/ResultsController.html">ResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/MutableResultsController.html">MutableResultsController</a>
@@ -201,9 +204,6 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewProvider.html">CollectionViewProvider</a>
@@ -286,7 +286,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionView</span> <span class="p">:</span> <span class="kt">ScrollView</span><span class="p">,</span> <span class="kt">NSDraggingSource</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">CollectionView</span> <span class="p">:</span> <span class="kt">ScrollView</span><span class="p">,</span> <span class="kt">NSDraggingSource</span></code></pre>
 
                         </div>
                       </div>
@@ -329,7 +329,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewDataSource</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewDataSource</span></code></pre>
 
                         </div>
                       </div>
@@ -357,7 +357,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewDelegate</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewDelegate</span></code></pre>
 
                         </div>
                       </div>
@@ -385,7 +385,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewDragDelegate</span> <span class="p">:</span> <span class="kt"><a href="Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewDragDelegate</span> <span class="p">:</span> <span class="kt"><a href="Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a></span></code></pre>
 
                         </div>
                       </div>
@@ -417,7 +417,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionViewCell</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionReusableView.html">CollectionReusableView</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">CollectionViewCell</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionReusableView.html">CollectionReusableView</a></span></code></pre>
 
                         </div>
                       </div>
@@ -445,7 +445,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionReusableView</span> <span class="p">:</span> <span class="kt">NSView</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">CollectionReusableView</span> <span class="p">:</span> <span class="kt">NSView</span></code></pre>
 
                         </div>
                       </div>
@@ -477,7 +477,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionViewController</span> <span class="p">:</span> <span class="kt">NSViewController</span><span class="p">,</span> <span class="kt"><a href="Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">CollectionViewController</span> <span class="p">:</span> <span class="kt">NSViewController</span><span class="p">,</span> <span class="kt"><a href="Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a></span></code></pre>
 
                         </div>
                       </div>
@@ -508,7 +508,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">CollectionViewLayoutElementKind</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">CollectionViewLayoutElementKind</span></code></pre>
 
                         </div>
                       </div>
@@ -544,7 +544,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">CollectionElementCategory</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">CollectionElementCategory</span></code></pre>
 
                         </div>
                       </div>
@@ -578,7 +578,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">CollectionViewDirection</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">CollectionViewDirection</span></code></pre>
 
                         </div>
                       </div>
@@ -610,7 +610,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">CollectionViewScrollDirection</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">CollectionViewScrollDirection</span></code></pre>
 
                         </div>
                       </div>
@@ -645,7 +645,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">CollectionViewScrollPosition</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">CollectionViewScrollPosition</span></code></pre>
 
                         </div>
                       </div>
@@ -672,7 +672,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">AnimationCompletion</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">finished</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">Void</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">AnimationCompletion</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">finished</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt">Void</span></code></pre>
 
                         </div>
                       </div>
@@ -704,7 +704,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionViewPreviewCell</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionViewCell.html">CollectionViewCell</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">CollectionViewPreviewCell</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionViewCell.html">CollectionViewCell</a></span><span class="p">,</span> <span class="kt"><a href="Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a></span></code></pre>
 
                         </div>
                       </div>
@@ -734,7 +734,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewPreviewTransitionCell</span> <span class="p">:</span> <span class="kd">class</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewPreviewTransitionCell</span> <span class="p">:</span> <span class="kd">class</span></code></pre>
 
                         </div>
                       </div>
@@ -783,7 +783,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionViewPreviewController</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionViewController.html">CollectionViewController</a></span><span class="p">,</span> <span class="kt">CollectionViewDelegatePreviewLayout</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">CollectionViewPreviewController</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionViewController.html">CollectionViewController</a></span><span class="p">,</span> <span class="kt">CollectionViewDelegatePreviewLayout</span></code></pre>
 
                         </div>
                       </div>
@@ -811,7 +811,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewPreviewControllerDelegate</span><span class="p">:</span> <span class="kd">class</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">CollectionViewPreviewControllerDelegate</span><span class="p">:</span> <span class="kd">class</span></code></pre>
 
                         </div>
                       </div>
@@ -826,8 +826,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-13)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-14)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

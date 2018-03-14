@@ -53,7 +53,7 @@
             <a class="nav-group-name-link" href="Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="installation.html">Installation</a>
+                <a class="nav-group-task-link" href="introduction.html">Introduction</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="basic-setup.html">Basic Setup</a>
@@ -62,7 +62,7 @@
                 <a class="nav-group-task-link" href="supplementary-views.html">Supplementary Views</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="custom-layouts.html">Custom Layouts</a>
+                <a class="nav-group-task-link" href="advanced-layouts.html">Advanced Layouts</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="drag--drop.html">Drag &amp; Drop</a>
@@ -147,13 +147,16 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC19ItemRenderDirectionO">– ItemRenderDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
@@ -165,16 +168,13 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
+                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
             </ul>
           </li>
@@ -183,6 +183,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/ResultsController.html">ResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/MutableResultsController.html">MutableResultsController</a>
@@ -201,9 +204,6 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewProvider.html">CollectionViewProvider</a>
@@ -270,7 +270,37 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">ResultsController</span> <span class="p">:</span> <span class="kd">class</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">ResultsController</span> <span class="p">:</span> <span class="kd">class</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:14CollectionView25ResultsControllerDelegateP"></a>
+                    <a name="//apple_ref/swift/Protocol/ResultsControllerDelegate" class="dashAnchor"></a>
+                    <a class="token" href="#/s:14CollectionView25ResultsControllerDelegateP">ResultsControllerDelegate</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The ResultsControllerDelegate defines methods that allow you to respond to changes in the results controller.</p>
+
+<p>Use ResultChangeSet to easily track changes and apply them to a CollectionView</p>
+
+                        <a href="Protocols/ResultsControllerDelegate.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">ResultsControllerDelegate</span><span class="p">:</span> <span class="kd">class</span></code></pre>
 
                         </div>
                       </div>
@@ -304,7 +334,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">ResultsControllerChangeType</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">ResultsControllerChangeType</span></code></pre>
 
                         </div>
                       </div>
@@ -335,37 +365,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">ResultsControllerError</span><span class="p">:</span> <span class="kt">Error</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView25ResultsControllerDelegateP"></a>
-                    <a name="//apple_ref/swift/Protocol/ResultsControllerDelegate" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView25ResultsControllerDelegateP">ResultsControllerDelegate</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The ResultsControllerDelegate defines methods that allow you to respond to changes in the results controller.</p>
-
-<p>Use ResultChangeSet to easily track changes and apply them to a CollectionView</p>
-
-                        <a href="Protocols/ResultsControllerDelegate.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">protocol</span> <span class="kt">ResultsControllerDelegate</span><span class="p">:</span> <span class="kd">class</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">ResultsControllerError</span><span class="p">:</span> <span class="kt">Error</span></code></pre>
 
                         </div>
                       </div>
@@ -397,7 +397,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">MutableResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">SectionType</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">ResultType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ResultsController.html">ResultsController</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">MutableResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">SectionType</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">ResultType</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Protocols/ResultsController.html">ResultsController</a></span></code></pre>
 
                         </div>
                       </div>
@@ -433,7 +433,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">FetchedResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">SectionType</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Classes/MutableResultsController.html">MutableResultsController</a></span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">FetchedResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">SectionType</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Classes/MutableResultsController.html">MutableResultsController</a></span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -456,27 +456,27 @@
                         <p>Extending on FetchedResultsController and it&rsquo;s section grouping, this controller allows for sections to be created from a parent ententy.- </p>
 
 <p>In a FetchedResultsController (and NSFetchedResultsController) you would use sectionKeyPath to achieve the following:</p>
-<pre class="highlight plaintext"><code>Things
-   { sectionKeyPath : "Things" }
-   { sectionKeyPath : "Things" }
+<pre class="highlight swift"><code><span class="kt">Things</span>
+   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Things"</span> <span class="p">}</span>
+   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Things"</span> <span class="p">}</span>
 
-Not Things
-   { sectionKeyPath : "Not Things" }
-   { sectionKeyPath : "Not Things" }
+<span class="kt">Not</span> <span class="kt">Things</span>
+   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Not Things"</span> <span class="p">}</span>
+   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Not Things"</span> <span class="p">}</span>
 </code></pre>
 
 <p>While this is great, it does not work well for the common Parent-Child data model. In a Department - Employee model for example we woul want:</p>
-<pre class="highlight plaintext"><code>Sales {}
-   Jim {}
-   Samantha {}
+<pre class="highlight swift"><code><span class="kt">Sales</span> <span class="p">{}</span>
+   <span class="kt">Jim</span> <span class="p">{}</span>
+   <span class="kt">Samantha</span> <span class="p">{}</span>
 
-Managment {}
-   Sarah {}
-   Howard {}
+<span class="kt">Managment</span> <span class="p">{}</span>
+   <span class="kt">Sarah</span> <span class="p">{}</span>
+   <span class="kt">Howard</span> <span class="p">{}</span>
 
 
-Delivery {}
-   &lt;No employees&gt;
+<span class="kt">Delivery</span> <span class="p">{}</span>
+   <span class="o">&lt;</span><span class="kt">No</span> <span class="n">employees</span><span class="o">&gt;</span>
 </code></pre>
 
 <p>In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController where sections consist of the available values in the fetched objects, the <q>Delivery</q> would not be included. With a RelationalResultsController though you can opt to fetch both the sections and object independently (see <code>fetchSections</code>).</p>
@@ -487,7 +487,7 @@ Delivery {}
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">RelationalResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Classes/FetchedResultsController.html">FetchedResultsController</a></span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">RelationalResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="Classes/FetchedResultsController.html">FetchedResultsController</a></span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -519,7 +519,7 @@ Delivery {}
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">FetchedSetController</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">FetchedSetController</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
 
                         </div>
                       </div>
@@ -551,7 +551,7 @@ Delivery {}
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">CollectionViewProvider</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionViewResultsProxy.html">CollectionViewResultsProxy</a></span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">CollectionViewProvider</span> <span class="p">:</span> <span class="kt"><a href="Classes/CollectionViewResultsProxy.html">CollectionViewResultsProxy</a></span></code></pre>
 
                         </div>
                       </div>
@@ -579,7 +579,7 @@ Delivery {}
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">CollectionViewResultsProxy</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">CollectionViewResultsProxy</span></code></pre>
 
                         </div>
                       </div>
@@ -594,8 +594,8 @@ Delivery {}
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-13)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-14)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

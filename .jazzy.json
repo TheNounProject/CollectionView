@@ -13,10 +13,10 @@
     {
       "name": "Guides",
       "children": [
-        "Installation",
+        "Introduction",
         "Basic Setup",
         "Supplementary Views",
-        "Custom Layouts",
+        "Advanced Layouts",
         "Drag & Drop",
         "Content Manipulation",
         "Results Controller"
@@ -50,26 +50,26 @@
         "CollectionViewLayout",
         "CollectionViewLayoutAttributes",
         "CollectionViewListLayout",
-        "CollectionViewHorizontalListLayout",
+        "CollectionViewDelegateListLayout",
         "CollectionViewColumnLayout",
-        "CollectionViewFlowLayout",
         "CollectionViewDelegateColumnLayout",
+        "CollectionViewFlowLayout",
         "CollectionViewDelegateFlowLayout",
-        "CollectionViewDelegateHorizontalListLayout",
-        "CollectionViewDelegateListLayout"
+        "CollectionViewHorizontalListLayout",
+        "CollectionViewDelegateHorizontalListLayout"
       ]
     },
     {
       "name": "Results Controller",
       "children": [
         "ResultsController",
+        "ResultsControllerDelegate",
         "MutableResultsController",
         "FetchedResultsController",
         "RelationalResultsController",
         "FetchedSetController",
         "ResultsControllerChangeType",
         "ResultsControllerError",
-        "ResultsControllerDelegate",
         "CollectionViewProvider",
         "CollectionViewResultsProxy"
       ]

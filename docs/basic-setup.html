@@ -53,7 +53,7 @@
             <a class="nav-group-name-link" href="Guides.html">Guides</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="installation.html">Installation</a>
+                <a class="nav-group-task-link" href="introduction.html">Introduction</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="basic-setup.html">Basic Setup</a>
@@ -62,7 +62,7 @@
                 <a class="nav-group-task-link" href="supplementary-views.html">Supplementary Views</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="custom-layouts.html">Custom Layouts</a>
+                <a class="nav-group-task-link" href="advanced-layouts.html">Advanced Layouts</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="drag--drop.html">Drag &amp; Drop</a>
@@ -147,13 +147,16 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC19ItemRenderDirectionO">– ItemRenderDirection</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
@@ -165,16 +168,13 @@
                 <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
+                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
               </li>
             </ul>
           </li>
@@ -183,6 +183,9 @@
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Protocols/ResultsController.html">ResultsController</a>
+              </li>
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/MutableResultsController.html">MutableResultsController</a>
@@ -201,9 +204,6 @@
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="Classes/CollectionViewProvider.html">CollectionViewProvider</a>
@@ -238,72 +238,163 @@
             
             <h1 id='basic-setup' class='heading'>Basic Setup</h1>
 
-<p><img src="https://github.com/TheNounProject/CollectionView/raw/master/img/demo_setup.gif" alt="CollectionView" title="Collection View"></p>
+<p>Even the most basic collection view needs a data source. The data source object provides the content that is to be displayed in the collection view such as how many items and the views that represent those items on screen.</p>
+
+<p>The delegate is an optional object that allows customizing display and interactions with your content. The most common use is responding to selection of cells.</p>
+<h2 id='creating-a-collection-view' class='heading'>Creating a Collection View</h2>
+
+<p>Collection views can be created programatically or in interface builder.</p>
+
+<p>In a storyboard or xib, add an NSScrollView to your view and set the class in the inspector to CollectionView. Then create an outlet.</p>
+
+<p>Without IB simply initialize a collection view and add it to your view. Adding layout constraints is recommended.</p>
+
+<p>With your collection view in place there are a few more steps to display your content:</p>
 
 <ul>
-<li>Add a NSScrollView to your interface, set the class and make an outlet</li>
-<li>Create a collection view layout and apply it to the collection view.</li>
-<li>Register reusable views</li>
-<li>Set the data source and delegate</li>
-<li>Implement the required data source functions</li>
+<li>Set a data source</li>
+<li>Prepare a cell class</li>
+<li>Choose a layout</li>
+</ul>
+<h2 id='setting-up-a-data-source' class='heading'>Setting up a Data Source</h2>
+
+<p>It is important to understand the structure of data expected by a collection view. Sections and items are used to represent your data. A collection view typically has at least 1 section. Each section then contains zero or more items.</p>
+
+<p>The contept of a section may not be necessarily represented in your data but the collection view will still need 1 section to represent your list of items.</p>
+
+<blockquote>
+<p>Each element in a collection view is referred to using IndexPaths. To support macOS 10.10 which predates the addition of <code>item</code> and <code>section</code> properties on IndexPath, and extension provides _item, _section and for().</p>
+</blockquote>
+
+<p>The only required of your data source are:</p>
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span>
+<span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">numberOfItemsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span>
+<span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">cellForItemAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CollectionViewCell</span>
+</code></pre>
+
+<p>These tell your collection view about your data and provide the cells used to display each item. If youa are representing a simple array, you will still need to report 1 section to contain that data. More complex data that is grouped into sections should report as such.</p>
+<h2 id='preparing-a-cell' class='heading'>Preparing a cell</h2>
+
+<p>A critical task of the data source is to provide views to display your content in the collection view. The collection view is only responsible for applying layout attributes to the view, everying displayed in the cell is your responsibilty.</p>
+
+<p>Cells can be loaded from a xib or programatically from a class.</p>
+
+<p>First, create a subclass of CollectionViewCell that will be used to configure each cell.</p>
+
+<p>If you are using a xib, set the root view class in the inspector to your new cell subclass. You can then add subviews and create outlets to your class to be used later when setting up the cell to display an item from your data.</p>
+
+<p>Without a xib, you will need to create the subviews manually in <code>init(frame frameRect: NSRect)</code>.</p>
+<h4 id='registering-cells' class='heading'>Registering Cells</h4>
+
+<p>Becuase views are reused by a collection view it is never your responsibilty to load/initialize them. Each class or xib you intent to you must be registered before loading any data.</p>
+
+<p>Use the following depending on your setup:</p>
+<pre class="highlight plaintext"><code>func register(class cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String)
+func register(nib: NSNib, forCellWithReuseIdentifier identifier: String)
+</code></pre>
+
+<p>Each cell should only be registered once when your collection view is setup. Typically this can be done in viewDidLoad in the controller containing your collection view.</p>
+<h4 id='dequeing-cells' class='heading'>Dequeing Cells</h4>
+
+<p>With your cells registered they can now be used to satisfy one of the requirements of your data source, providing the cells.</p>
+
+<p>Use the reuse identifier you registered each cell with, call <code>dequeueReusableCell(withReuseIdentifier identifier:for:)</code>. The collection view will load the cell, either from the xib or class and return it to be configured as needed. Your data source can setup any UI elements (labels, images, etc) in the cell according to the object that cell is representing then return it to the collection view to be presented.</p>
+<h2 id='setting-a-layout' class='heading'>Setting a layout</h2>
+
+<p>The collection view layout object manages the visual representation of each item, most importantly its location and size.</p>
+
+<p>Custom layouts can be created but a few are provided to be used as is:</p>
+
+<ul>
+<li>CollectionViewListLayout</li>
+<li>CollectionViewColumnLayout</li>
+<li>CollectionViewFlowLayout</li>
 </ul>
 
-<p>Which looks like:</p>
-<pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">MyController</span> <span class="p">:</span> <span class="kt">NSViewController</span><span class="p">,</span> <span class="kt">CollectionViewDataSource</span><span class="p">,</span> <span class="kt">CollectionViewDelegate</span> <span class="p">{</span>
+<p>Each layout works differently to provide different appearances and flexibility. The provided layouts often allow static values to be set OR accept values provided by a delegate.</p>
+
+<p>For example, the list layout has an itemHeight property that will be used, but, if the collection views delegate also conforms to <code><a href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a></code> and implements <code>collectionView(_:layout:heightForItemAt:)-&gt;CGFloat</code>, a dynamic height can be provided for each item.</p>
+
+<p>The layouts provide a great deal of flexibility out of the box and one again, custom layouts can be created to do even more.</p>
+
+<p>Simply initialite the layout you want, set and properties and set <code>collection.collectionViewLayout</code>.</p>
+
+<p>See <a href="">Advanced Layouts</a> for more.</p>
+<h2 id='example' class='heading'>Example</h2>
+<pre class="highlight swift"><code>
+<span class="c1">// The cell used to list characters</span>
+<span class="kd">class</span> <span class="kt">CharacterCell</span> <span class="p">:</span> <span class="kt">CollectionViewCell</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">nameLabel</span> <span class="o">=</span> <span class="kt">NSTextField</span><span class="p">()</span>
+
+    <span class="k">override</span> <span class="nf">init</span><span class="p">(</span><span class="n">frame</span> <span class="nv">frameRect</span><span class="p">:</span> <span class="kt">NSRect</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="n">frameRect</span><span class="p">)</span>
+        <span class="c1">// add the subviews</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+
+
+<span class="kd">class</span> <span class="kt">MyController</span> <span class="p">:</span> <span class="kt">NSViewController</span><span class="p">,</span> <span class="kt">CollectionViewDataSource</span><span class="p">,</span> <span class="kt">CollectionViewDelegate</span> <span class="p">{</span>
+
+    <span class="k">var</span> <span class="nv">charcters</span> <span class="p">:</span> <span class="p">[[</span><span class="kt">String</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">[</span><span class="s">"Willy"</span><span class="p">,</span> <span class="s">"Charlie"</span><span class="p">,</span> <span class="s">"Mike"</span><span class="p">,</span> <span class="s">"Augustus"</span><span class="p">],</span>
+        <span class="p">[</span><span class="s">"Violet"</span><span class="p">,</span> <span class="s">"Veruca"</span><span class="p">]</span>
+    <span class="p">]</span>
 
     <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span> <span class="p">{</span>
         <span class="k">super</span><span class="o">.</span><span class="nf">viewDidLoad</span><span class="p">()</span>
 
-        <span class="k">var</span> <span class="nv">layout</span> <span class="o">=</span> <span class="kt">CollectionViewFlowLayout</span><span class="p">()</span>
+        <span class="k">var</span> <span class="nv">layout</span> <span class="o">=</span> <span class="kt">CollectionViewListLayout</span><span class="p">()</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">itemHeight</span> <span class="o">=</span> <span class="mi">40</span>
         <span class="n">collectionView</span><span class="o">.</span><span class="n">collectionViewLayout</span> <span class="o">=</span> <span class="n">listLayout</span>
 
         <span class="n">collectionView</span><span class="o">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="k">self</span>
         <span class="n">collectionView</span><span class="o">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="k">self</span>
 
-        <span class="c1">// Using a nib</span>
-        <span class="k">let</span> <span class="nv">nib</span> <span class="o">=</span> <span class="kt">NSNib</span><span class="p">(</span><span class="nv">nibNamed</span><span class="p">:</span> <span class="s">"UserCell"</span><span class="p">,</span> <span class="nv">bundle</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span><span class="o">!</span>
-        <span class="n">collectionView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="nv">nib</span><span class="p">:</span> <span class="n">nib</span><span class="p">,</span> <span class="nv">forCellWithReuseIdentifier</span><span class="p">:</span> <span class="s">"UserCell"</span><span class="p">)</span>
+        <span class="c1">// Register the class</span>
+        <span class="n">collectionView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="nv">class</span><span class="p">:</span> <span class="kt">CharacterCell</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">forCellWithReuseIdentifier</span><span class="p">:</span> <span class="s">"CharacterCell"</span><span class="p">)</span>
 
-        <span class="c1">//OR</span>
-        <span class="n">collectionView</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="nv">class</span><span class="p">:</span> <span class="kt">UserCell</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">forCellWithReuseIdentifier</span><span class="p">:</span> <span class="s">"UserCell"</span><span class="p">)</span>
+        <span class="c1">// If using a nib...</span>
+        <span class="c1">// let nib = NSNib(nibNamed: "CharacterCell", bundle: nil)!</span>
+        <span class="c1">// collectionView.register(nib: nib, forCellWithReuseIdentifier: "CharacterCell")</span>
 
         <span class="n">collectionView</span><span class="o">.</span><span class="nf">reloadDate</span><span class="p">()</span>
     <span class="p">}</span>
+
+    <span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">characters</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+
+    <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">numberOfItemsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">characters</span><span class="p">[</span><span class="n">section</span><span class="p">]</span><span class="o">.</span><span class="n">count</span>
+    <span class="p">}</span>
+
+    <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">cellForItemAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CollectionViewCell</span> <span class="p">{</span>
+
+        <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">collectionView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withReuseIdentifier</span><span class="p">:</span> <span class="s">"CharacterCell"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as!</span> <span class="kt">CharacterCell</span>
+        <span class="k">let</span> <span class="nv">name</span> <span class="o">=</span> <span class="n">characters</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">_section</span><span class="p">][</span><span class="n">indexPath</span><span class="o">.</span><span class="n">_item</span><span class="p">]</span>
+        <span class="n">cell</span><span class="o">.</span><span class="n">nameLabel</span><span class="o">.</span><span class="n">stringValue</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="k">return</span> <span class="n">cell</span>
+    <span class="p">}</span>
 <span class="p">}</span>
-
-<span class="kd">func</span> <span class="nf">numberOfSections</span><span class="p">(</span><span class="k">in</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="mi">5</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">numberOfItemsInSection</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="mi">3</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">cellForItemAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CollectionViewCell</span> <span class="p">{</span>
-
-    <span class="k">let</span> <span class="nv">cell</span> <span class="o">=</span> <span class="n">collectionView</span><span class="o">.</span><span class="nf">dequeueReusableCell</span><span class="p">(</span><span class="nv">withReuseIdentifier</span><span class="p">:</span> <span class="s">"UserCell"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span> <span class="k">as!</span> <span class="kt">UserCell</span>
-    <span class="o">...</span> <span class="n">setup</span> <span class="n">the</span> <span class="n">cell</span> <span class="k">as</span> <span class="n">needed</span>
-    <span class="k">return</span> <span class="n">cell</span>
-<span class="p">}</span>
-
 </code></pre>
-<h3 id='implementing-the-delegate' class='heading'>Implementing the Delegate</h3>
 
-<p>Events such as selection, scrolling, and even dragging from the collection view are delievered to the collection views&rsquo;s delegate.</p>
+<p><img src="https://github.com/TheNounProject/CollectionView/raw/master/img/demo_setup.gif" alt="CollectionView" title="Collection View"></p>
+<h2 id='implementing-the-delegate' class='heading'>Implementing the Delegate</h2>
+
+<p>Collection views can be used for a variety of use cases. In some cases they may be purely visual but in most cases they are intended to support some level of interaction. The delegate allows you to control and respond to these interactions.</p>
+
+<p>Selection state is the most common interaction that needs to be handled by an app. The following are useufl for managing selection state:</p>
+<pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">shouldHighlightItemAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span>
+
+<span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">shouldSelectItemsAt</span> <span class="nv">indexPaths</span><span class="p">:</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">IndexPath</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">IndexPath</span><span class="o">&gt;</span>
+<span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">didSelectItemsAt</span> <span class="nv">indexPaths</span><span class="p">:</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">IndexPath</span><span class="o">&gt;</span><span class="p">)</span>
+
+<span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">shouldDeselectItemsAt</span> <span class="nv">indexPaths</span><span class="p">:</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">IndexPath</span><span class="o">&gt;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">IndexPath</span><span class="o">&gt;</span>
+<span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">didDeselectItemsAt</span> <span class="nv">indexPaths</span><span class="p">:</span> <span class="kt">Set</span><span class="o">&lt;</span><span class="kt">IndexPath</span><span class="o">&gt;</span><span class="p">)</span>
+</code></pre>
 
 <p>See the <a href="https://thenounproject.github.io/CollectionView/Protocols/CollectionViewDelegate.html">delegate documentation</a> for more</p>
-<pre class="highlight swift"><code><span class="c1">// Somewhere in MyController</span>
-
-<span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">didSelectItemAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">var</span> <span class="nv">myObject</span> <span class="o">=</span> <span class="n">myData</span><span class="p">[</span><span class="n">indexPath</span><span class="o">.</span><span class="n">_item</span><span class="p">]</span>
-    <span class="kt">Do</span> <span class="n">something</span> <span class="o">...</span>
-<span class="p">}</span>
-
-
-<span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">didRightClickItemAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="n">with</span> <span class="nv">event</span><span class="p">:</span> <span class="kt">NSEvent</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Same as selection but right click\</span>
-<span class="p">}</span>
-</code></pre>
 
           </div>
         </section>
@@ -312,8 +403,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-13)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-14)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

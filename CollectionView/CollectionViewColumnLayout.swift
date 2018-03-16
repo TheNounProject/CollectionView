@@ -163,7 +163,7 @@ public struct CollectionViewLayoutElementKind {
  
  The delegate method aspectRatioForItemAtIndexPath scales the size of the cell to maintain that ratio while fitting within the caclulated column width.
  
- Mixed use of ratios and heights is also supported. Returning CGSize.zero for a ratio will fall back to the hight. If a valid ratio and height are provided, the height will be appended to the height to respect the ratio. For example, if the column width comes out to 100, a ratio of 1:2 will determine a height of 200. If a height is also provided by the delegate for the same item, say 20 it will be added, totalling 220.
+ Mixed use of ratios and heights is also supported. Returning CGSize.zero for a ratio will fall back to the hight. If a valid ratio and height are provided, the height will be appended to the height to respect the ratio. For example, if the column width comes out to 100, a ratio of 2 will determine a height of 200. If a height is also provided by the delegate for the same item, say 20 it will be added, totalling 220.
  
 */
 open class CollectionViewColumnLayout : CollectionViewLayout {

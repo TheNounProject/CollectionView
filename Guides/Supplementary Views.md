@@ -15,7 +15,7 @@ If you are using a xib, set the root view class in the inspector to your new reu
 
 Without a xib, you will need to create the subviews manually in `init(frame frameRect: NSRect)`.
 
-> If you view is not dynamic or does not need outlsets you can also create a nib with a view of type CollectionReusableView and avoid creating a subclass.
+> If you view is not dynamic or does not need outlets you can also create a nib with a view of type CollectionReusableView and avoid creating a subclass.
 
 #### Registering Cells
 

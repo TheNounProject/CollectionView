@@ -1,8 +1,8 @@
 # Basic Setup
 
-Even the most basic collection view needs a data source.
+`CollectionView` is a highly flexible component with many options and features. A basic collection view though can be setup with just a few lines of code. From there you can adjust and refine your implementation as needed.
 
-The delegate is an optional object that allows customizing display and interactions with your content. The most common use is responding to selection of cells.
+This guide walks you through the most basic collection view including steps that will be required for any implementation.
 
 ---
 

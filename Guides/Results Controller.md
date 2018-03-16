@@ -2,7 +2,7 @@
 
 Collection views are a data driven UI element. Managing data is hard enough, making sure changes to that data are relfected in your app can add a lot of complexity quickly; Especially with highly dynamic data.
 
-`Resultscontroller` is designed to bridge the gap between data and a collection view. While it's inspiration, NSFetchedResultsController only works with CoreData and it's NSManagedObject, this implementation uses native Swift KeyPaths and a generic SortDescriptor type making usable any object type.
+`Resultscontroller` is designed to bridge the gap between data and a collection view. While its inspiration, NSFetchedResultsController only works with CoreData and its NSManagedObject, this implementation uses native Swift KeyPaths and a generic SortDescriptor type making usable any object type.
 
 ---
 
@@ -64,12 +64,12 @@ Using results controller now provides a bit more usfullness. Setting the content
 
 Of course as a "mutable" results controller, data can be mutated when working with elements of a reference type.
 
-To insert or delete items just call `insert(object:)` or `delete(object:)`. To update objects that already exist, make the changes to your object then call `didUpdate(object:`. For a controller with a sectionKeyPath and/or sort descriptors, notifying it of the change will alert the controller to process that change and update it's internal storage.
+To insert or delete items just call `insert(object:)` or `delete(object:)`. To update objects that already exist, make the changes to your object then call `didUpdate(object:`. For a controller with a sectionKeyPath and/or sort descriptors, notifying it of the change will alert the controller to process that change and update its internal storage.
 
 
 ### Delegate
 
-So far results controller has provided a simple consistent interface and helpful sorting and grouping, why is this in a collection view library you ask? Typically when you insert, remove, or update data in your data set you first need to determine _how_ that updates our data set. Then you need to translate that into terms the collection view understands to reflect those changes on the screen. By letting results controller manage your data, it will make those translations and provide them to it's delegate which conforms to `ResultsControllerDelegate`.
+So far results controller has provided a simple consistent interface and helpful sorting and grouping, why is this in a collection view library you ask? Typically when you insert, remove, or update data in your data set you first need to determine _how_ that updates our data set. Then you need to translate that into terms the collection view understands to reflect those changes on the screen. By letting results controller manage your data, it will make those translations and provide them to its delegate which conforms to `ResultsControllerDelegate`.
 
 The delegate will recieve every change that needs to occur in your collection view to keep it up to date with your data set.
 

@@ -57,6 +57,6 @@ Section A
 [H] [Y] [J] [K]
 ```
 
-Notice that the second move at [1, 1] moves [Y] from it's starting index path [1, 1] to it's final index path after changes [1, 1].
+Notice that the second move at [1, 1] moves [Y] from its starting index path [1, 1] to its final index path after changes [1, 1].
 
 Managing these changes can be tricky to understand especially when making many changes together. This is why we create ResultsController to help connect your collection view to your data.

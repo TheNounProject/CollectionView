@@ -67,7 +67,7 @@ When heights are consistent for each item, the items will display in a grif form
 
  **Span** items are always placed an their own row and fill the width of the Collection View.
 
- Here you can see an example of how the firt two rows are created by grouping items with the same height. If the third item in the first row had a height of 80, it would have been moved to it's own row. New rows will be created when either there is no room left for the next item, the item has a different height than the preceeding ite, or the item is a span.
+ Here you can see an example of how the firt two rows are created by grouping items with the same height. If the third item in the first row had a height of 80, it would have been moved to its own row. New rows will be created when either there is no room left for the next item, the item has a different height than the preceeding ite, or the item is a span.
 
  ![Flow Layout](https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/flow_layout.png "Flow Layout")
 

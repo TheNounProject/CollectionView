@@ -8,7 +8,7 @@ Let's start with an overview of these components, then the other guides will go 
 
 ## The CollectionView
 
-The collection view itself is the container and coordinator that brings all the information together to preset something on the screen. It's primary resources are the data source and layout object.
+The collection view itself is the container and coordinator that brings all the information together to preset something on the screen. Its primary resources are the data source and layout object.
 
 A `CollectionViewController` provides a controller preconfiguerd with a collection view.
 

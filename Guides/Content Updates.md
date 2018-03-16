@@ -1,7 +1,8 @@
-# Insert, Delete, and Move
+# Insert, Delete, Move and Reload
 
 As data changes a collection view displaying that data will need to update as well. New content could be pulled from a remote service or the user could take an action. Collection view supports inserting, deleting, moving, and reloading sections and items.
 
+---
 
 ## Single Updates
 

@@ -4,6 +4,7 @@ Collection views are a data driven UI element. Managing data is hard enough, mak
 
 Resultscontroller is designed to bridge the gap between data and a collection view. While it's inspiration, NSFetchedResultsController only works with CoreData and it's NSManagedObject, this implementation uses native Swift KeyPaths and a generic SortDescriptor type making usable any object type.
 
+---
 
 ## A Mutable Results Controller?
 

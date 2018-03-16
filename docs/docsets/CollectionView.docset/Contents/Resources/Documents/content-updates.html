@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Content Manipulation  Reference</title>
+    <title>Content Updates  Reference</title>
     <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <meta charset="utf-8">
@@ -15,7 +15,7 @@
   <body>
 
 
-    <a title="Content Manipulation  Reference"></a>
+    <a title="Content Updates  Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -43,7 +43,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="index.html">CollectionView Reference</a>
       <img class="carat" src="img/carat.png" />
-      Content Manipulation  Reference
+      Content Updates  Reference
     </p>
 
     <div class="content-wrapper">
@@ -62,13 +62,13 @@
                 <a class="nav-group-task-link" href="supplementary-views.html">Supplementary Views</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="advanced-layouts.html">Advanced Layouts</a>
+                <a class="nav-group-task-link" href="layouts.html">Layouts</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="drag--drop.html">Drag &amp; Drop</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="content-manipulation.html">Content Manipulation</a>
+                <a class="nav-group-task-link" href="content-updates.html">Content Updates</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="results-controller.html">Results Controller</a>
@@ -214,6 +214,14 @@
             </ul>
           </li>
           <li class="nav-group-name">
+            <a class="nav-group-name-link" href="Other Enums.html">Other Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Other Enums.html#/s:14CollectionView20SortDescriptorResultO">SortDescriptorResult</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
             <a class="nav-group-name-link" href="Other Extensions.html">Other Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
@@ -229,6 +237,14 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="Other Structs.html">Other Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Structs/SortDescriptor.html">SortDescriptor</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -236,9 +252,11 @@
         <section class="section">
           <div class="section-content">
             
-            <h1 id='insert-delete-and-move' class='heading'>Insert, Delete, and Move</h1>
+            <h1 id='insert-delete-move-and-reload' class='heading'>Insert, Delete, Move and Reload</h1>
 
 <p>As data changes a collection view displaying that data will need to update as well. New content could be pulled from a remote service or the user could take an action. Collection view supports inserting, deleting, moving, and reloading sections and items.</p>
+
+<hr>
 <h2 id='single-updates' class='heading'>Single Updates</h2>
 
 <p>To perform a single update operation you can use any of the update functions directly.</p>

@@ -10,17 +10,28 @@
 import Foundation
 
 
+/// Sort Descriptor Result
+///
+/// - same: The two objects are equally compared
+/// - ascending: The first object is before the second (ordered)
+/// - descending: The second object precedes the first (reversed)
 public enum SortDescriptorResult {
     case same
     case ascending
     case descending
 }
 
+
+/// a comparator used to compare two objects
 public struct SortDescriptor<T> {
     
     public let ascending : Bool
     private let comparator : (T, T) -> SortDescriptorResult
     
+    /// Initialize a sort descriptor with a custom comparator
+    ///
+    /// - Parameter keyPath: A keypath for the type being sorted
+    /// - Parameter ascending: If the comparison should order ascending
     public init<V:Comparable>(_ keyPath: KeyPath<T,V>, ascending:Bool = true) {
         self.comparator = {
             let v1 = $0[keyPath: keyPath]
@@ -31,10 +42,21 @@ public struct SortDescriptor<T> {
         }
         self.ascending = ascending
     }
+    
+    /// Initialize a sort descriptor with a custom comparator
+    ///
+    /// - Parameter comparator: A comparator returning a comparison result
     public init(_ comparator: @escaping ((T,T)->SortDescriptorResult)) {
         self.comparator = comparator
         self.ascending = true
     }
+    
+    /// Compare two objects
+    ///
+    /// - Parameters:
+    ///   - a: The first object
+    ///   - b: The second object
+    /// - Returns: A SortDescriptorResult for the two objects.
     public func compare(_ a:T, to b:T) -> SortDescriptorResult {
         return comparator(a, b)
     }

@@ -1122,56 +1122,77 @@
     },
     {
       "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
-      "line": null,
-      "symbol": "SortDescriptor",
-      "symbol_kind": "source.lang.swift.decl.extension",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
-      "line": 13,
-      "symbol": "SortDescriptorResult",
-      "symbol_kind": "source.lang.swift.decl.enum",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
       "line": 19,
-      "symbol": "SortDescriptor",
-      "symbol_kind": "source.lang.swift.decl.struct",
+      "symbol": "SortDescriptorResult.same",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
-      "line": 85,
+      "line": 20,
+      "symbol": "SortDescriptorResult.ascending",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
+      "line": 21,
+      "symbol": "SortDescriptorResult.descending",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
+      "line": 28,
+      "symbol": "SortDescriptor.ascending",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
+      "line": 66,
+      "symbol": "SortDescriptor.ascending",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
+      "line": 73,
+      "symbol": "SortDescriptor.descending",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
+      "line": 107,
       "symbol": "Array.sort(using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
-      "line": 91,
+      "line": 113,
       "symbol": "Array.sort(using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
-      "line": 108,
+      "line": 130,
       "symbol": "Array.insert(_:using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
-      "line": 123,
+      "line": 145,
       "symbol": "Sequence.sorted(using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/mbyrne/Documents/NounProject/macOS/Lingo/CollectionView/CollectionView/DataStructures/SortDescriptor.swift",
-      "line": 129,
+      "line": 151,
       "symbol": "Sequence.sorted(using:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"

@@ -4,6 +4,7 @@ A collection view coordinatess many different objects to display content. For ba
 
 Let's start with an overview of these components, then the other guides will go into more detail about how to use and customize each of them.
 
+---
 
 ## The CollectionView
 

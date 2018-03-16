@@ -62,13 +62,13 @@
                 <a class="nav-group-task-link" href="supplementary-views.html">Supplementary Views</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="advanced-layouts.html">Advanced Layouts</a>
+                <a class="nav-group-task-link" href="layouts.html">Layouts</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="drag--drop.html">Drag &amp; Drop</a>
               </li>
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="content-manipulation.html">Content Manipulation</a>
+                <a class="nav-group-task-link" href="content-updates.html">Content Updates</a>
               </li>
               <li class="nav-group-task">
                 <a class="nav-group-task-link" href="results-controller.html">Results Controller</a>
@@ -214,6 +214,14 @@
             </ul>
           </li>
           <li class="nav-group-name">
+            <a class="nav-group-name-link" href="Other Enums.html">Other Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Other Enums.html#/s:14CollectionView20SortDescriptorResultO">SortDescriptorResult</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
             <a class="nav-group-name-link" href="Other Extensions.html">Other Extensions</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
@@ -229,6 +237,14 @@
               </li>
             </ul>
           </li>
+          <li class="nav-group-name">
+            <a class="nav-group-name-link" href="Other Structs.html">Other Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a class="nav-group-task-link" href="Structs/SortDescriptor.html">SortDescriptor</a>
+              </li>
+            </ul>
+          </li>
         </ul>
       </nav>
       <article class="main-content">
@@ -241,11 +257,12 @@
 <p>Drag and drop is a common interaction when using collection views. Items in the view may need to be dragged to another application or rearranged internally. If you are familiar with Pasteboard APIs, the collection view dragging API should be an easy transition.</p>
 
 <p>For the most part, a collection view simply forwards the system drag protocols to the collection view&rsquo;s delegate if it conforms to CollectionViewDragDelegate. This protocol contains functions similar to those in the native dragging APIs and allows you to customize both dragging target and dragging source interactions and behavior. If you are unfamiliar you should be able to coorelate the native APIs to the functions provided by the drag delegate.</p>
+
+<hr>
 <h2 id='implementing-your-drag-delegate' class='heading'>Implementing Your Drag Delegate</h2>
 
 <p>The drag delegate has a number of functions that give you full control over a dragging event. Different ones must be implemented to become a drag target or a drag source.</p>
-
-<p><strong>Dragging Source</strong></p>
+<h4 id='dragging-source' class='heading'>Dragging Source</h4>
 
 <p>The first method shouldBeginDragging must be implemented to allow a drag session to begin. The others allow you to customize the contents and respond to stages of the drag.</p>
 <pre class="highlight plaintext"><code>@objc optional func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, with event: NSEvent) -&gt;Bool
@@ -254,8 +271,7 @@
 @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, didEndAt screenPoint: NSPoint, with operation: NSDragOperation, draggedIndexPaths: [IndexPath])
 @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, didMoveTo point: NSPoint)
 </code></pre>
-
-<p><strong>Dragging Target</strong></p>
+<h4 id='dragging-target' class='heading'>Dragging Target</h4>
 
 <p>When accepting drag events in the collection view you must register the view for drag types as you would any view. This will allow the default dragging APIs to be triggered which will then be delivered to you via the drag delegate to respond to changes and finally handle the drag.</p>
 

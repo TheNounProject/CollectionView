@@ -4,6 +4,7 @@ Every collection view relys on a CollectionViewLayout object to provide the info
 
 A few layouts are provided and allow for customization. We'll go through each of these layouts and some of the tips and tricks of each then discuss building your own layout.
 
+---
 
 ## CollectionViewListLayout
 
@@ -12,11 +13,13 @@ CollectionViewListLayout is a simple vertical list similar to an NSTableView/UIT
 Some of the key customization tips for this layout are the `interitemSpacing` and `sectionInsets`. Also available via CollectionViewDelegateListLayout methods for per section values, these properties can turn an ordinary list into a card style list with minimal effort.
 
 
+
 ## CollectionViewColumnLayout
 
 CollectionViewColumnLayout organizes items in each section into columns creating a grid or a pintrest style waterfall depending on your setup.
 
-**Coumns and Width**
+#### Coumns and Width
+
 Your first choice is how many columns should be used in a given section. This number in conjunction with column spacing and section insets will determin the width of each item. In the example below our collection view is 800pt wide, with insets of 10 and column spacing of 10 wit 5 columns. This leaves 88pts for each cell, remember at this stage we are only worried about width.
 
 ![ColumnLayoutSpacing](https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/column_layout.png "Column layout spacing")
@@ -24,7 +27,7 @@ Your first choice is how many columns should be used in a given section. This nu
 Columns are always equal width and adjusting the spacing, insets, or number of columns will affect the width of each column equally.
 
 
-**Item Height**
+#### Item Height
 
  With the itemWidth set by the column, you have 3 options to set the height of each item. The first option to return a value is used meaning if aspectRatioForItemAtIndexPath is implemented it is used, otherwise, it checks the next one.
 
@@ -51,11 +54,12 @@ itemHeight = 64
 When heights are consistent for each item, the items will display in a grif formation. When items vay in height they will take on a waterfall appearance, each item pinning to the previous item in the column. By default items are placed in columns from left to right. This is controlled by the `itemRenderDirection` and can be set to `rightToLeft` or `shortestFirst`.
 
 
+
 ## CollectionViewFlowLayout
 
  A variation of UICollectionViewFlowLayout. This layout is primarily row based, but uses ItemStyles to group similar items together.
 
- **Styles**
+ #### Styles
 
  Flow layout uses styles to group items. The layout's delegate, CollectionViewDelegateFlowLayout, is responsible for providing a style for each item in the collection view. The styles are similar but can be used to create or break groupings based on size.
 
@@ -68,22 +72,22 @@ When heights are consistent for each item, the items will display in a grif form
  ![Flow Layout](https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/flow_layout.png "Flow Layout")
 
 
- ### Transformations
+#### Transformations
 
 By default items are presented at the given size and left aligned. Transformations allow you to adjust the content of each row before moving on to the next row.
 
- The `center` transformation will shift the contents in a row to be center aligned without changing the size of any items.
+The `center` transformation will shift the contents in a row to be center aligned without changing the size of any items.
 
- The `fill` tranformation will enlarge the items in a row proportionally to fill the row. If the items have already filled the row, no tranformation occurs. Note that this change the size of the items from the size provide by the items style and will affect the height of the entire row.
+The `fill` tranformation will enlarge the items in a row proportionally to fill the row. If the items have already filled the row, no tranformation occurs. Note that this change the size of the items from the size provide by the items style and will affect the height of the entire row.
 
 
- ### Spacing
+#### Spacing
 
- Spacing options such as interspanSpacing and spanGroupSpacingBefore allow you to customize the space around different types of style groups.
+Spacing options such as interspanSpacing and spanGroupSpacingBefore allow you to customize the space around different types of style groups.
 
- The spanGroupSpacingBefore/After options will apply a set amount of space before or after a group of span items (one or more spans).
+The spanGroupSpacingBefore/After options will apply a set amount of space before or after a group of span items (one or more spans).
 
- ![Flow Layout Spacing](https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/flow_layout.png "Flow Layout Spacing")
+![Flow Layout Spacing](https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/flow_layout_spacing.png "Flow Layout Spacing")
 
 
 

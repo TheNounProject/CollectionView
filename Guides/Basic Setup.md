@@ -4,6 +4,13 @@ Even the most basic collection view needs a data source. The data source object 
 
 The delegate is an optional object that allows customizing display and interactions with your content. The most common use is responding to selection of cells.
 
+---
+
+## Installation & Import
+CollectionView isn't currently provided through any package managers. Clone or donwload the repo and add it to your project by dragging the CollectionView xCode project to your project.
+
+Import `CollectionView` to start building. When referencing classes in interface builder you will need to set the module to CollectionView as well.
+
 
 ## Creating a Collection View
 

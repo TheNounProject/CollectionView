@@ -2,6 +2,8 @@
 
 An easy to use, highly customizable replacement for NSCollectionView.
 
+---
+
 ## Why
 
 Prior to macOS 10.11, NSCollectionView had little in common with its younger cousin on iOS (UICollectionView). Since then it has recieved some improvements but with no support on 10.10, we needed another solution.

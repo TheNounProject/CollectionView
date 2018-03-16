@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>CollectionViewResultsProxy Class Reference</title>
+    <title>SortDescriptor Structure Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset="utf-8">
@@ -14,9 +14,9 @@
   </head>
   <body>
 
-    <a name="//apple_ref/swift/Class/CollectionViewResultsProxy" class="dashAnchor"></a>
+    <a name="//apple_ref/swift/Struct/SortDescriptor" class="dashAnchor"></a>
 
-    <a title="CollectionViewResultsProxy Class Reference"></a>
+    <a title="SortDescriptor Structure Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -44,7 +44,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="../index.html">CollectionView Reference</a>
       <img class="carat" src="../img/carat.png" />
-      CollectionViewResultsProxy Class Reference
+      SortDescriptor Structure Reference
     </p>
 
     <div class="content-wrapper">
@@ -252,14 +252,14 @@
 
         <section class="section">
           <div class="section-content">
-            <h1>CollectionViewResultsProxy</h1>
+            <h1>SortDescriptor</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">CollectionViewResultsProxy</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">struct</span> <span class="kt">SortDescriptor</span><span class="o">&lt;</span><span class="kt">T</span><span class="o">&gt;</span></code></pre>
 
                 </div>
               </div>
-            <p>A Helper to</p>
+            <p>a comparator used to compare two objects</p>
 
           </div>
         </section>
@@ -271,9 +271,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView0aB12ResultsProxyC9addChangey10Foundation9IndexPathVSg9forItemAt_AA0c10ControllerF4TypeO4withtF"></a>
-                    <a name="//apple_ref/swift/Method/addChange(forItemAt:with:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB12ResultsProxyC9addChangey10Foundation9IndexPathVSg9forItemAt_AA0c10ControllerF4TypeO4withtF">addChange(forItemAt:with:)</a>
+                    <a name="/s:14CollectionView14SortDescriptorVACyxGs7KeyPathCyxqd__G_Sb9ascendingtcs10ComparableRd__lufc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:ascending:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:14CollectionView14SortDescriptorVACyxGs7KeyPathCyxqd__G_Sb9ascendingtcs10ComparableRd__lufc">init(_:ascending:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -281,14 +281,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Add an item change</p>
+                        <p>Initialize a sort descriptor with a custom comparator</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">addChange</span><span class="p">(</span><span class="n">forItemAt</span> <span class="nv">source</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">?,</span> <span class="n">with</span> <span class="nv">changeType</span><span class="p">:</span> <span class="kt"><a href="../Results Controller.html#/s:14CollectionView27ResultsControllerChangeTypeO">ResultsControllerChangeType</a></span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">init</span><span class="o">&lt;</span><span class="kt">V</span><span class="p">:</span><span class="kt">Comparable</span><span class="o">&gt;</span><span class="p">(</span><span class="n">_</span> <span class="nv">keyPath</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">T</span><span class="p">,</span><span class="kt">V</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">ascending</span><span class="p">:</span><span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -299,24 +299,24 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>source</em>
+                                <em>keyPath</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The source index path of the section</p>
+                                  <p>A keypath for the type being sorted</p>
                                 </div>
                               </td>
                             </tr>
                             <tr>
                               <td>
                                 <code>
-                                <em>changeType</em>
+                                <em>ascending</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The change type</p>
+                                  <p>If the comparison should order ascending</p>
                                 </div>
                               </td>
                             </tr>
@@ -329,9 +329,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView0aB12ResultsProxyC9addChangey10Foundation9IndexPathVSg12forSectionAt_AA0c10ControllerF4TypeO4withtF"></a>
-                    <a name="//apple_ref/swift/Method/addChange(forSectionAt:with:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB12ResultsProxyC9addChangey10Foundation9IndexPathVSg12forSectionAt_AA0c10ControllerF4TypeO4withtF">addChange(forSectionAt:with:)</a>
+                    <a name="/s:14CollectionView14SortDescriptorVACyxGAA0cD6ResultOx_xtccfc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:14CollectionView14SortDescriptorVACyxGAA0cD6ResultOx_xtccfc">init(_:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -339,14 +339,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Add a section change</p>
+                        <p>Initialize a sort descriptor with a custom comparator</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">addChange</span><span class="p">(</span><span class="n">forSectionAt</span> <span class="nv">source</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">?,</span> <span class="n">with</span> <span class="nv">changeType</span><span class="p">:</span> <span class="kt"><a href="../Results Controller.html#/s:14CollectionView27ResultsControllerChangeTypeO">ResultsControllerChangeType</a></span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">comparator</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">((</span><span class="kt">T</span><span class="p">,</span><span class="kt">T</span><span class="p">)</span><span class="o">-&gt;</span><span class="kt"><a href="../Other Enums.html#/s:14CollectionView20SortDescriptorResultO">SortDescriptorResult</a></span><span class="p">))</span></code></pre>
 
                         </div>
                       </div>
@@ -357,24 +357,12 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>source</em>
+                                <em>comparator</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>The source index path of the section</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>changeType</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The change type</p>
+                                  <p>A comparator returning a comparison result</p>
                                 </div>
                               </td>
                             </tr>
@@ -387,9 +375,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView0aB12ResultsProxyC5countSiv"></a>
-                    <a name="//apple_ref/swift/Property/count" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB12ResultsProxyC5countSiv">count</a>
+                    <a name="/s:14CollectionView14SortDescriptorV7compareAA0cD6ResultOx_x2totF"></a>
+                    <a name="//apple_ref/swift/Method/compare(_:to:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:14CollectionView14SortDescriptorV7compareAA0cD6ResultOx_x2totF">compare(_:to:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -397,41 +385,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The count of changes in the set</p>
+                        <p>Compare two objects</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">count</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB12ResultsProxyC5unionyAC4with_tF"></a>
-                    <a name="//apple_ref/swift/Method/union(with:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB12ResultsProxyC5unionyAC4with_tF">union(with:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Merge this set with another</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">union</span><span class="p">(</span><span class="n">with</span> <span class="nv">other</span><span class="p">:</span> <span class="kt">CollectionViewResultsProxy</span><span class="p">)</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">compare</span><span class="p">(</span><span class="n">_</span> <span class="nv">a</span><span class="p">:</span><span class="kt">T</span><span class="p">,</span> <span class="n">to</span> <span class="nv">b</span><span class="p">:</span><span class="kt">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Other Enums.html#/s:14CollectionView20SortDescriptorResultO">SortDescriptorResult</a></span></code></pre>
 
                         </div>
                       </div>
@@ -442,17 +403,33 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>other</em>
+                                <em>a</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>Another change set</p>
+                                  <p>The first object</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>b</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The second object</p>
                                 </div>
                               </td>
                             </tr>
                           </tbody>
                         </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>A SortDescriptorResult for the two objects.</p>
                       </div>
                     </section>
                   </div>

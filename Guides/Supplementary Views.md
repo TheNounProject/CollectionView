@@ -4,6 +4,7 @@ Collection views rely heavily on the concept of sections and items. When multipl
 
 Using supplementary views is very similar to cells so this should seem familiar if you have read the Basic Setup guide.
 
+---
 
 ## Preparing a View
 

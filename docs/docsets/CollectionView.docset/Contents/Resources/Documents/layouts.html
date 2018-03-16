@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Guides  Reference</title>
+    <title>Layouts  Reference</title>
     <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="css/highlight.css" />
     <meta charset="utf-8">
@@ -15,7 +15,7 @@
   <body>
 
 
-    <a title="Guides  Reference"></a>
+    <a title="Layouts  Reference"></a>
 
     <header class="header">
       <p class="header-col header-col--primary">
@@ -43,7 +43,7 @@
     <p class="breadcrumbs">
       <a class="breadcrumb" href="index.html">CollectionView Reference</a>
       <img class="carat" src="img/carat.png" />
-      Guides  Reference
+      Layouts  Reference
     </p>
 
     <div class="content-wrapper">
@@ -251,15 +251,96 @@
 
         <section class="section">
           <div class="section-content">
-            <h1>Guides</h1>
             
+            <h1 id='advanced-layouts' class='heading'>Advanced Layouts</h1>
+
+<p>Every collection view relys on a CollectionViewLayout object to provide the information. This allows a layout object to reason about the desired layout in whatever way is most appropriate for its goal. Every layout is a subclass of CollectionViewLayout, an abstract class that provides the framework for collection view to access information it needs to display each item correctly.</p>
+
+<p>A few layouts are provided and allow for customization. We&rsquo;ll go through each of these layouts and some of the tips and tricks of each then discuss building your own layout.</p>
+
+<hr>
+<h2 id='collectionviewlistlayout' class='heading'>CollectionViewListLayout</h2>
+
+<p>CollectionViewListLayout is a simple vertical list similar to an NSTableView/UITableView.</p>
+
+<p>Some of the key customization tips for this layout are the <code>interitemSpacing</code> and <code>sectionInsets</code>. Also available via CollectionViewDelegateListLayout methods for per section values, these properties can turn an ordinary list into a card style list with minimal effort.</p>
+<h2 id='collectionviewcolumnlayout' class='heading'>CollectionViewColumnLayout</h2>
+
+<p>CollectionViewColumnLayout organizes items in each section into columns creating a grid or a pintrest style waterfall depending on your setup.</p>
+<h4 id='coumns-and-width' class='heading'>Coumns and Width</h4>
+
+<p>Your first choice is how many columns should be used in a given section. This number in conjunction with column spacing and section insets will determin the width of each item. In the example below our collection view is 800pt wide, with insets of 10 and column spacing of 10 wit 5 columns. This leaves 88pts for each cell, remember at this stage we are only worried about width.</p>
+
+<p><img src="https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/column_layout.png" alt="ColumnLayoutSpacing" title="Column layout spacing"></p>
+
+<p>Columns are always equal width and adjusting the spacing, insets, or number of columns will affect the width of each column equally.</p>
+<h4 id='item-height' class='heading'>Item Height</h4>
+
+<p>With the itemWidth set by the column, you have 3 options to set the height of each item. The first option to return a value is used meaning if aspectRatioForItemAtIndexPath is implemented it is used, otherwise, it checks the next one.</p>
+
+<ol>
+<li><code>aspectRatioForItemAtIndexPath</code> (delegate): Set the height as a ration of the width. For example height = 1:2 * calculatedWidth. value of 0 is ignored</li>
+<li><code>heightForItemAtIndexPath</code> (delegate): Set the height to an exact value.</li>
+<li><code>layout.defaultItemHeight</code>: A default height to use if the delegate does not supply a value</li>
+</ol>
+
+<p>A special case also exists if both a ratio and a height are returned by the delegate. in this case a height will be calculated by the ratio and added to the static height from heightForItemAtIndexPath. Considering the example above with a item width of 88 the following examples are valid where ratio and height represent the values returned by the associated delegate method:</p>
+<pre class="highlight plaintext"><code>ratio = 1:2 (44)
+height = 0
+itemHeight =  44
+
+ratio = 0:0 (0)
+height = 50
+itemHeight = 50
+
+ratio = 1:2 (44)
+height = 20
+itemHeight = 64
+</code></pre>
+
+<p>When heights are consistent for each item, the items will display in a grif formation. When items vay in height they will take on a waterfall appearance, each item pinning to the previous item in the column. By default items are placed in columns from left to right. This is controlled by the <code>itemRenderDirection</code> and can be set to <code>rightToLeft</code> or <code>shortestFirst</code>.</p>
+<h2 id='collectionviewflowlayout' class='heading'>CollectionViewFlowLayout</h2>
+
+<p>A variation of UICollectionViewFlowLayout. This layout is primarily row based, but uses ItemStyles to group similar items together.</p>
+
+<p>#### Styles</p>
+
+<p>Flow layout uses styles to group items. The layout&rsquo;s delegate, CollectionViewDelegateFlowLayout, is responsible for providing a style for each item in the collection view. The styles are similar but can be used to create or break groupings based on size.</p>
+
+<p><strong>Flow</strong> items are grouped together, always placing as many same height items in each row as possible. If the row becomes full or an flow item of a different height is provided, the layout will just to the next row and continue.</p>
+
+<p><strong>Span</strong> items are always placed an their own row and fill the width of the Collection View.</p>
+
+<p>Here you can see an example of how the firt two rows are created by grouping items with the same height. If the third item in the first row had a height of 80, it would have been moved to it&rsquo;s own row. New rows will be created when either there is no room left for the next item, the item has a different height than the preceeding ite, or the item is a span.</p>
+
+<p><img src="https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/flow_layout.png" alt="Flow Layout" title="Flow Layout"></p>
+<h4 id='transformations' class='heading'>Transformations</h4>
+
+<p>By default items are presented at the given size and left aligned. Transformations allow you to adjust the content of each row before moving on to the next row.</p>
+
+<p>The <code>center</code> transformation will shift the contents in a row to be center aligned without changing the size of any items.</p>
+
+<p>The <code>fill</code> tranformation will enlarge the items in a row proportionally to fill the row. If the items have already filled the row, no tranformation occurs. Note that this change the size of the items from the size provide by the items style and will affect the height of the entire row.</p>
+<h4 id='spacing' class='heading'>Spacing</h4>
+
+<p>Spacing options such as interspanSpacing and spanGroupSpacingBefore allow you to customize the space around different types of style groups.</p>
+
+<p>The spanGroupSpacingBefore/After options will apply a set amount of space before or after a group of span items (one or more spans).</p>
+
+<p><img src="https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/flow_layout_spacing.png" alt="Flow Layout Spacing" title="Flow Layout Spacing"></p>
+<h2 id='custom-layouts' class='heading'>Custom Layouts</h2>
+
+<p>Layouts are designed to make just about arrangment of a collection views contents possible. Creating a new layout requires subclassing CollectionViewLayout and overriding its methods to be able to return the necessary data to the collection view when requested.</p>
+
+<p>That said, it is important to prepare and deliver this data as efficiently as possible. The collection view relies on the layout to determine the location of items and what items exist at particular locations and requests this data often. Doing too much work to detmine this data can lead to slow performance while interacting with the collection view, including scrolling.</p>
+
+<p>The first step in avoiding redundant calculations in a layout is to prepare as much as possible up front. The <code>prepare</code> method should be overriden to do this work. Typically this involved calculation item attributes and caching them for quick reference when requested by the collection view.</p>
+
+<p>For more in depth details about creating a collection see the CollectionViewLayout documentation and refer to the provided layouts.</p>
+
           </div>
         </section>
 
-        <section class="section">
-          <div class="section-content">
-          </div>
-        </section>
 
       </article>
     </div>

@@ -254,7 +254,7 @@
             
             <h1 id='advanced-layouts' class='heading'>Advanced Layouts</h1>
 
-<p>Every collection view relys on a CollectionViewLayout object to provide the information. This allows a layout object to reason about the desired layout in whatever way is most appropriate for its goal. Every layout is a subclass of CollectionViewLayout, an abstract class that provides the framework for collection view to access information it needs to display each item correctly.</p>
+<p>Every collection view relys on a <code><a href="Classes/CollectionViewLayout.html">CollectionViewLayout</a></code> object to provide the information. This allows a layout object to reason about the desired layout in whatever way is most appropriate for its goal. Every layout is a subclass of <code><a href="Classes/CollectionViewLayout.html">CollectionViewLayout</a></code>, an abstract class that provides the framework for collection view to access information it needs to display each item correctly.</p>
 
 <p>A few layouts are provided and allow for customization. We&rsquo;ll go through each of these layouts and some of the tips and tricks of each then discuss building your own layout.</p>
 
@@ -276,7 +276,7 @@
 <p>Columns are always equal width and adjusting the spacing, insets, or number of columns will affect the width of each column equally.</p>
 <h4 id='item-height' class='heading'>Item Height</h4>
 
-<p>With the itemWidth set by the column, you have 3 options to set the height of each item. The first option to return a value is used meaning if aspectRatioForItemAtIndexPath is implemented it is used, otherwise, it checks the next one.</p>
+<p>With the itemWidth set by the column, you have 3 options to set the height of each item. The first option to return a value is used meaning if <code>aspectRatioForItemAtIndexPath</code> is implemented it is used, otherwise, it checks the next one.</p>
 
 <ol>
 <li><code>aspectRatioForItemAtIndexPath</code> (delegate): Set the height as a ration of the width. For example height = 1:2 * calculatedWidth. value of 0 is ignored</li>
@@ -284,7 +284,7 @@
 <li><code>layout.defaultItemHeight</code>: A default height to use if the delegate does not supply a value</li>
 </ol>
 
-<p>A special case also exists if both a ratio and a height are returned by the delegate. in this case a height will be calculated by the ratio and added to the static height from heightForItemAtIndexPath. Considering the example above with a item width of 88 the following examples are valid where ratio and height represent the values returned by the associated delegate method:</p>
+<p>A special case also exists if both a ratio and a height are returned by the delegate. in this case a height will be calculated by the ratio and added to the static height from <code>heightForItemAtIndexPath</code>. Considering the example above with a item width of 88 the following examples are valid where ratio and height represent the values returned by the associated delegate method:</p>
 <pre class="highlight plaintext"><code>ratio = 1:2 (44)
 height = 0
 itemHeight =  44
@@ -305,7 +305,7 @@ itemHeight = 64
 
 <p>#### Styles</p>
 
-<p>Flow layout uses styles to group items. The layout&rsquo;s delegate, CollectionViewDelegateFlowLayout, is responsible for providing a style for each item in the collection view. The styles are similar but can be used to create or break groupings based on size.</p>
+<p>Flow layout uses styles to group items. The layout&rsquo;s delegate, <code><a href="Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a></code>, is responsible for providing a style for each item in the collection view. The styles are similar but can be used to create or break groupings based on size.</p>
 
 <p><strong>Flow</strong> items are grouped together, always placing as many same height items in each row as possible. If the row becomes full or an flow item of a different height is provided, the layout will just to the next row and continue.</p>
 
@@ -323,20 +323,20 @@ itemHeight = 64
 <p>The <code>fill</code> tranformation will enlarge the items in a row proportionally to fill the row. If the items have already filled the row, no tranformation occurs. Note that this change the size of the items from the size provide by the items style and will affect the height of the entire row.</p>
 <h4 id='spacing' class='heading'>Spacing</h4>
 
-<p>Spacing options such as interspanSpacing and spanGroupSpacingBefore allow you to customize the space around different types of style groups.</p>
+<p>Spacing options such as <code>interspanSpacing</code> and <code>spanGroupSpacingBefore</code> allow you to customize the space around different types of style groups.</p>
 
 <p>The spanGroupSpacingBefore/After options will apply a set amount of space before or after a group of span items (one or more spans).</p>
 
 <p><img src="https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/flow_layout_spacing.png" alt="Flow Layout Spacing" title="Flow Layout Spacing"></p>
 <h2 id='custom-layouts' class='heading'>Custom Layouts</h2>
 
-<p>Layouts are designed to make just about arrangment of a collection views contents possible. Creating a new layout requires subclassing CollectionViewLayout and overriding its methods to be able to return the necessary data to the collection view when requested.</p>
+<p>Layouts are designed to make just about arrangment of a collection views contents possible. Creating a new layout requires subclassing <code><a href="Classes/CollectionViewLayout.html">CollectionViewLayout</a></code> and overriding its methods to be able to return the necessary data to the collection view when requested.</p>
 
 <p>That said, it is important to prepare and deliver this data as efficiently as possible. The collection view relies on the layout to determine the location of items and what items exist at particular locations and requests this data often. Doing too much work to detmine this data can lead to slow performance while interacting with the collection view, including scrolling.</p>
 
 <p>The first step in avoiding redundant calculations in a layout is to prepare as much as possible up front. The <code>prepare</code> method should be overriden to do this work. Typically this involved calculation item attributes and caching them for quick reference when requested by the collection view.</p>
 
-<p>For more in depth details about creating a collection see the CollectionViewLayout documentation and refer to the provided layouts.</p>
+<p>For more in depth details about creating a collection see the <code><a href="Classes/CollectionViewLayout.html">CollectionViewLayout</a></code> documentation and refer to the provided layouts.</p>
 
           </div>
         </section>

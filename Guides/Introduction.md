@@ -32,4 +32,4 @@ The `CollectionViewCell` is a special type of reusable view used to display The 
 
 Subclasses of `CollectionViewLayout` are used to manage the location, size, and visual attributes of each reusable view (and cell) in the collection view.
 
-The layout creates layout attributes (CollectionViewLayoutAttributes) for each cell and resuable view which are then used by the collection view.
+The layout creates layout attributes (`CollectionViewLayoutAttributes`) for each cell and resuable view which are then used by the collection view.

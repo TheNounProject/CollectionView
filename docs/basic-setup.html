@@ -254,7 +254,7 @@
             
             <h1 id='basic-setup' class='heading'>Basic Setup</h1>
 
-<p>Even the most basic collection view needs a data source. The data source object provides the content that is to be displayed in the collection view such as how many items and the views that represent those items on screen.</p>
+<p>Even the most basic collection view needs a data source.</p>
 
 <p>The delegate is an optional object that allows customizing display and interactions with your content. The most common use is responding to selection of cells.</p>
 
@@ -281,9 +281,9 @@
 </ul>
 <h2 id='setting-up-a-data-source' class='heading'>Setting up a Data Source</h2>
 
-<p>It is important to understand the structure of data expected by a collection view. Sections and items are used to represent your data. A collection view typically has at least 1 section. Each section then contains zero or more items.</p>
+<p>Every collection view needs a data source that conforms to <code><a href="Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a></code>. The data source object provides the content that is to be displayed in the collection view such as how many items and the views that represent those items on screen.</p>
 
-<p>The contept of a section may not be necessarily represented in your data but the collection view will still need 1 section to represent your list of items.</p>
+<p>It is important to understand that the collection view organizes data as sections and items. Each section contains zero or more items. The contept of a section may not be necessarily represented in your data but the collection view will still need 1 section to represent your list of items.</p>
 
 <blockquote>
 <p>Each element in a collection view is referred to using IndexPaths. To support macOS 10.10 which predates the addition of <code>item</code> and <code>section</code> properties on IndexPath, and extension provides _item, _section and for().</p>
@@ -302,7 +302,7 @@
 
 <p>Cells can be loaded from a xib or programatically from a class.</p>
 
-<p>First, create a subclass of CollectionViewCell that will be used to configure each cell.</p>
+<p>First, create a subclass of <code><a href="Classes/CollectionViewCell.html">CollectionViewCell</a></code> that will be used to configure each cell.</p>
 
 <p>If you are using a xib, set the root view class in the inspector to your new cell subclass. You can then add subviews and create outlets to your class to be used later when setting up the cell to display an item from your data.</p>
 
@@ -329,9 +329,9 @@ func register(nib: NSNib, forCellWithReuseIdentifier identifier: String)
 <p>Custom layouts can be created but a few are provided to be used as is:</p>
 
 <ul>
-<li>CollectionViewListLayout</li>
-<li>CollectionViewColumnLayout</li>
-<li>CollectionViewFlowLayout</li>
+<li><code><a href="Classes/CollectionViewListLayout.html">CollectionViewListLayout</a></code></li>
+<li><code><a href="Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a></code></li>
+<li><code><a href="Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a></code></li>
 </ul>
 
 <p>Each layout works differently to provide different appearances and flexibility. The provided layouts often allow static values to be set OR accept values provided by a delegate.</p>
@@ -342,7 +342,7 @@ func register(nib: NSNib, forCellWithReuseIdentifier identifier: String)
 
 <p>Simply initialite the layout you want, set and properties and set <code>collection.collectionViewLayout</code>.</p>
 
-<p>See <a href="">Advanced Layouts</a> for more.</p>
+<p>See the <a href="https://thenounproject.github.io/CollectionView/layouts.html">Layouts</a> guide for more.</p>
 <h2 id='example' class='heading'>Example</h2>
 <pre class="highlight swift"><code>
 <span class="c1">// The cell used to list characters</span>
@@ -405,7 +405,7 @@ func register(nib: NSNib, forCellWithReuseIdentifier identifier: String)
 <p><img src="https://github.com/TheNounProject/CollectionView/raw/master/img/demo_setup.gif" alt="CollectionView" title="Collection View"></p>
 <h2 id='implementing-the-delegate' class='heading'>Implementing the Delegate</h2>
 
-<p>Collection views can be used for a variety of use cases. In some cases they may be purely visual but in most cases they are intended to support some level of interaction. The delegate allows you to control and respond to these interactions.</p>
+<p>Collection views can be used for a variety of use cases. Some may be purely for display but in most cases they are intended to support some level of interaction. These interactions are handled by the collection views delegate (<code><a href="Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a></code>).</p>
 
 <p>Selection state is the most common interaction that needs to be handled by an app. The following are useufl for managing selection state:</p>
 <pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">shouldHighlightItemAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span>

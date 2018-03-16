@@ -1,6 +1,6 @@
 # Basic Setup
 
-Even the most basic collection view needs a data source. The data source object provides the content that is to be displayed in the collection view such as how many items and the views that represent those items on screen.
+Even the most basic collection view needs a data source.
 
 The delegate is an optional object that allows customizing display and interactions with your content. The most common use is responding to selection of cells.
 
@@ -30,9 +30,9 @@ With your collection view in place there are a few more steps to display your co
 
 ## Setting up a Data Source
 
-It is important to understand the structure of data expected by a collection view. Sections and items are used to represent your data. A collection view typically has at least 1 section. Each section then contains zero or more items.
+Every collection view needs a data source that conforms to `CollectionViewDataSource`. The data source object provides the content that is to be displayed in the collection view such as how many items and the views that represent those items on screen.
 
-The contept of a section may not be necessarily represented in your data but the collection view will still need 1 section to represent your list of items.
+It is important to understand that the collection view organizes data as sections and items. Each section contains zero or more items. The contept of a section may not be necessarily represented in your data but the collection view will still need 1 section to represent your list of items.
 
 > Each element in a collection view is referred to using IndexPaths. To support macOS 10.10 which predates the addition of `item` and `section` properties on IndexPath, and extension provides _item, _section and for().
 
@@ -52,7 +52,7 @@ A critical task of the data source is to provide views to display your content i
 
 Cells can be loaded from a xib or programatically from a class.
 
-First, create a subclass of CollectionViewCell that will be used to configure each cell.
+First, create a subclass of `CollectionViewCell` that will be used to configure each cell.
 
 If you are using a xib, set the root view class in the inspector to your new cell subclass. You can then add subviews and create outlets to your class to be used later when setting up the cell to display an item from your data.
 
@@ -84,9 +84,9 @@ The collection view layout object manages the visual representation of each item
 
 Custom layouts can be created but a few are provided to be used as is:
 
-- CollectionViewListLayout
-- CollectionViewColumnLayout
-- CollectionViewFlowLayout
+- `CollectionViewListLayout`
+- `CollectionViewColumnLayout`
+- `CollectionViewFlowLayout`
 
 Each layout works differently to provide different appearances and flexibility. The provided layouts often allow static values to be set OR accept values provided by a delegate.
 
@@ -96,7 +96,7 @@ The layouts provide a great deal of flexibility out of the box and one again, cu
 
 Simply initialite the layout you want, set and properties and set `collection.collectionViewLayout`.
 
-See [Advanced Layouts]() for more.
+See the [Layouts](https://thenounproject.github.io/CollectionView/layouts.html) guide for more.
 
 
 ## Example
@@ -164,7 +164,9 @@ class MyController : NSViewController, CollectionViewDataSource, CollectionViewD
 
 
 ## Implementing the Delegate
-Collection views can be used for a variety of use cases. In some cases they may be purely visual but in most cases they are intended to support some level of interaction. The delegate allows you to control and respond to these interactions.
+
+
+Collection views can be used for a variety of use cases. Some may be purely for display but in most cases they are intended to support some level of interaction. These interactions are handled by the collection views delegate (`CollectionViewDelegate`).
 
 Selection state is the most common interaction that needs to be handled by an app. The following are useufl for managing selection state:
 

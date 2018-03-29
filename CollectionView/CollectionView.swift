@@ -1583,7 +1583,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
     
     open override func keyDown(with theEvent: NSEvent) {
         repeatKey = theEvent.isARepeat
-        if Set([123,124,125,126]).contains(theEvent.keyCode) {
+        if Set([123,124,125,126]).contains(Int(theEvent.keyCode)) {
             
             if theEvent.isARepeat && keySelectInterval > 0 {
                 if let t = lastEventTime , (CACurrentMediaTime() - t) < keySelectInterval {

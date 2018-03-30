@@ -56,7 +56,9 @@ Or, reach out on twitter: [@NounProjectDev](https://twitter.com/NounProjectDev)
 * Some sort of layout context to avoid full reloads
 
 ## Credits
-* Thanks to [DeepDiff](https://github.com/onmyway133/DeepDiff) for some diffing logic used in ResultsController
+* [DeepDiff](https://github.com/onmyway133/DeepDiff) for some diffing logic used in ResultsController
+* [JNWCollectionView](https://github.com/jwilling/JNWCollectionView) for early inspiration
+
 
 ## Licence
 This project is released under the [MIT license](https://github.com/TheNounProject/CollectionView/blob/master/LICENSE).

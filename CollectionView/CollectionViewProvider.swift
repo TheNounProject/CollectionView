@@ -148,8 +148,20 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
      */
     public var populateWhenEmpty = false
     
-
-
+    
+    var collapsedSections = Set<Int>()
+    
+    func collapseSection(_ section: Int, animated: Bool) {
+        guard !collapsedSections.contains(section) else { return }
+        let ips = (0..<self.numberOfItems(in: section)).map { return IndexPath.for(item: $0, section: section) }
+        self.collectionView.deleteItems(at: ips, animated: animated)
+    }
+    
+    func expandSection(_ section: Int, animated: Bool) {
+        guard collapsedSections.contains(section) else { return }
+        let ips = (0..<self.numberOfItems(in: section)).map { return IndexPath.for(item: $0, section: section) }
+        self.collectionView.insertItems(at: ips, animated: animated)
+    }
 }
 
 
@@ -168,6 +180,9 @@ extension CollectionViewProvider {
     public func numberOfItems(in section: Int) -> Int {
         guard resultsController.numberOfSections > 0 else {
             return 1 // Must be populated empty state
+        }
+        if self.collapsedSections.contains(section) {
+            return 0
         }
         let count = resultsController.numberOfObjects(in: section)
         if count == 0 && self.populateEmptySections {
@@ -233,7 +248,6 @@ extension CollectionViewProvider : ResultsControllerDelegate {
         let completion = self.delegate?.providerDidChangeContent(self)
         self.collectionView.applyChanges(from: self, completion: completion)
     }
-    
 }
 
 
@@ -244,6 +258,9 @@ extension CollectionViewResultsProxy {
         self.prepareForUpdates()
     }
 }
+
+
+
 
 
 struct ItemChangeSet {

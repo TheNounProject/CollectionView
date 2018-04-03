@@ -1054,7 +1054,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         guard indexPaths.count > 0 else { return }
         self.beginEditing()
         self._updateContext.items.inserted.formUnion(indexPaths)
-//        self._insertItems(at: indexPaths)
+
         self.endEditing(animated)
     }
     

@@ -336,11 +336,13 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
         
         mrc.endEditing()
         self.waitForExpectations(timeout: 0.5) { (err) in
-            XCTAssertEqual(self.changeSet.items.inserted.count, 1)
-            XCTAssertEqual(self.changeSet.items.deleted.count, 1)
+            XCTAssertEqual(self.changeSet.itemUpdates.inserted.count, 1)
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 1)
             print("Done")
         }
     }
+    
+    
     
     var changeSet = CollectionViewResultsProxy()
     var _expectation : XCTestExpectation?

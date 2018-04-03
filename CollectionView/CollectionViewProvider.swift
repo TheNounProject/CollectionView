@@ -18,8 +18,8 @@ public struct ResultsChangeSet { }
 
 /// A Helper to 
 public class CollectionViewResultsProxy   {
-    var items = ItemChangeSet()
-    var sections = SectionChangeSet()
+    var itemUpdates = ItemChangeSet()
+    var sectionUpdates = SectionChangeSet()
     
     
     /**
@@ -30,7 +30,7 @@ public class CollectionViewResultsProxy   {
      
      */
     public func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
-        items.addChange(forItemAt: source, with: changeType)
+        itemUpdates.addChange(forItemAt: source, with: changeType)
     }
     
     
@@ -43,15 +43,15 @@ public class CollectionViewResultsProxy   {
      
      */
     public func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
-        sections.addChange(forSectionAt: source, with: changeType)
+        sectionUpdates.addChange(forSectionAt: source, with: changeType)
     }
     
     public func didInsertSection(at indexPath: IndexPath) -> Bool {
-        return self.sections.inserted.contains(indexPath._section)
+        return self.sectionUpdates.inserted.contains(indexPath._section)
     }
     
     public func didInsertObject(at indexPath: IndexPath) -> Bool {
-        return self.items.inserted.contains(indexPath)
+        return self.itemUpdates.inserted.contains(indexPath)
     }
     
     /// The count of changes in the set
@@ -59,16 +59,16 @@ public class CollectionViewResultsProxy   {
         return itemChangeCount + sectionChangeCount
     }
     public var itemChangeCount : Int {
-        return items.count
+        return itemUpdates.count
     }
     public var sectionChangeCount : Int {
-        return sections.count
+        return sectionUpdates.count
     }
     
     
     public func prepareForUpdates() {
-        items.reset()
-        sections.reset()
+        itemUpdates.reset()
+        sectionUpdates.reset()
     }
     
     /**
@@ -78,13 +78,13 @@ public class CollectionViewResultsProxy   {
      
      */
     public func union(with other: CollectionViewResultsProxy) {
-        self.items.inserted.formUnion(other.items.inserted)
-        self.items.deleted.formUnion(other.items.deleted)
-        self.items.updated.formUnion(other.items.updated)
+        self.itemUpdates.inserted.formUnion(other.itemUpdates.inserted)
+        self.itemUpdates.deleted.formUnion(other.itemUpdates.deleted)
+        self.itemUpdates.updated.formUnion(other.itemUpdates.updated)
         
-        self.sections.inserted.formUnion(other.sections.inserted)
-        self.sections.deleted.formUnion(other.sections.deleted)
-        self.sections.updated.formUnion(other.sections.updated)
+        self.sectionUpdates.inserted.formUnion(other.sectionUpdates.inserted)
+        self.sectionUpdates.deleted.formUnion(other.sectionUpdates.deleted)
+        self.sectionUpdates.updated.formUnion(other.sectionUpdates.updated)
     }
 }
 
@@ -149,17 +149,57 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
     public var populateWhenEmpty = false
     
     
+    private class Section : Equatable, CustomStringConvertible {
+        var source : Int?
+        var target: Int?
+        var dataCount : Int = 0
+        var displayCount : Int = 0
+        
+        init(source: Int?, target: Int?, dataCount: Int, displayCount: Int) {
+            self.source = source
+            self.target = target
+            self.dataCount = dataCount
+            self.displayCount = displayCount
+        }
+        
+        static func ==(lhs: CollectionViewProvider.Section,
+                       rhs: CollectionViewProvider.Section) -> Bool {
+            return lhs.source == rhs.source && lhs.target == rhs.target
+        }
+        var description: String {
+            return "Source: \(source ?? -1) Target: \(self.target ?? -1) Count: \(self.dataCount)"
+        }
+    
+    }
+    
+    private var sections = [Section]()
+    
+    public override func prepareForUpdates() {
+        super.prepareForUpdates()
+        sections = (0..<resultsController.numberOfSections).map{
+            return Section(source: $0,
+                           target: nil,
+                           dataCount: resultsController.numberOfObjects(in: $0),
+                           displayCount: self.numberOfItems(in: $0))
+        }
+    }
+    
     var collapsedSections = Set<Int>()
     
-    func collapseSection(_ section: Int, animated: Bool) {
-        guard !collapsedSections.contains(section) else { return }
-        let ips = (0..<self.numberOfItems(in: section)).map { return IndexPath.for(item: $0, section: section) }
+    func isSectionCollapsed(at index: Int) -> Bool {
+        return collapsedSections.contains(index)
+    }
+    
+    func collapseSection(at sectionIndex: Int, animated: Bool) {
+        guard !collapsedSections.contains(sectionIndex) else { return }
+        let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
+        collapsedSections.insert(sectionIndex)
         self.collectionView.deleteItems(at: ips, animated: animated)
     }
     
-    func expandSection(_ section: Int, animated: Bool) {
-        guard collapsedSections.contains(section) else { return }
-        let ips = (0..<self.numberOfItems(in: section)).map { return IndexPath.for(item: $0, section: section) }
+    func expandSection(at sectionIndex: Int, animated: Bool) {
+        guard collapsedSections.remove(sectionIndex) != nil else { return }
+        let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         self.collectionView.insertItems(at: ips, animated: animated)
     }
 }
@@ -230,9 +270,55 @@ extension CollectionViewProvider : ResultsControllerDelegate {
         defer {
             self.sectionCount = controller.numberOfSections
         }
-        if self.populateWhenEmpty {
-            let isEmpty = controller.numberOfSections == 0
-            let wasEmpty = self.sectionCount == 0
+        
+        let target = processSections()
+        
+        // If any of the sections are collapsed we may need to adjust some of the edits
+        if !collapsedSections.isEmpty {
+            var _collapsed = Set<Int>()
+            for sec in target {
+                if let s = sec?.source, let t = sec?.target, self.collapsedSections.contains(s) {
+                    _collapsed.insert(t)
+                }
+            }
+            
+            // Ignore deletes for collapsed sections
+            self.itemUpdates.deleted = self.itemUpdates.deleted.filter {
+                return !self.collapsedSections.contains($0._section)
+            }
+            // Ignore inserts for collapsed sections
+            self.itemUpdates.inserted = self.itemUpdates.inserted.filter {
+                return !self.collapsedSections.contains($0._section)
+            }
+            
+            // Ignore inserts for collapsed sections
+            var _moves = [ItemChangeSet.Move]()
+            for m in self.itemUpdates.moved {
+                let sourceCollapsed = collapsedSections.contains(m.source._section)
+                let targetCollapsed = _collapsed.contains(m.destination._section)
+                
+                if sourceCollapsed && !targetCollapsed {
+                    self.itemUpdates.inserted.insert(m.destination)
+                }
+                else if !sourceCollapsed && targetCollapsed {
+                    self.itemUpdates.deleted.insert(m.source)
+                }
+                else if !sourceCollapsed && !targetCollapsed {
+                    _moves.append(m)
+                }
+                // If both are collapsed, drop the update
+            }
+            self.itemUpdates.moved = _moves
+            
+            // Set the new collapsed sections
+            self.collapsedSections = _collapsed
+        }
+        
+        let isEmpty = controller.numberOfSections == 0
+        let wasEmpty = self.sectionCount == 0
+        
+        if self.populateWhenEmpty && isEmpty != wasEmpty {
+            
             if !wasEmpty && isEmpty {
                 // populate
                 self.addChange(forSectionAt: nil, with: .insert(IndexPath.zero))
@@ -243,10 +329,61 @@ extension CollectionViewProvider : ResultsControllerDelegate {
             }
         }
         else if self.populateEmptySections && controller.numberOfSections > 0 {
-            
+            for sec in target {
+                if let s = sec, s.source != nil, let t = s.target, !collapsedSections.contains(t) {
+                    let _isEmpty = controller.numberOfObjects(in: t) == 0
+                    let _wasEmpty = s.dataCount == 0
+                    if !_wasEmpty && _isEmpty {
+                        // populate
+                        self.addChange(forItemAt: nil, with: .insert(IndexPath.for(section: t)))
+                    }
+                    else if _wasEmpty && !_isEmpty {
+                        // Remove placeholder
+                        self.addChange(forItemAt: IndexPath.for(section: t), with: .delete)
+                    }
+                }
+            }
         }
         let completion = self.delegate?.providerDidChangeContent(self)
         self.collectionView.applyChanges(from: self, completion: completion)
+    }
+    
+    private func processSections() -> [Section?] {
+        var source = self.sections
+        var target = [Section?](repeatElement(nil, count: resultsController.numberOfSections))
+        
+        // Populate target with inserted
+        for s in sectionUpdates.inserted {
+            target[s] = Section(source: nil,
+                                target: s,
+                                dataCount: resultsController.numberOfObjects(in: s),
+                                displayCount: 0)
+        }
+        
+        // The things in source that we want to ignore beow
+        var transferred = sectionUpdates.deleted
+        
+        // Populate target with moved
+        for m in sectionUpdates.moved {
+            transferred.insert(m.0)
+            source[m.0].target = m.1
+            target[m.1] = source[m.0]
+        }
+        
+        // Insert the remaining sections from source that are carrying over (not deleted)
+        // After this target should be fully populated
+        var idx = 0
+        func incrementInsert() {
+            while idx < target.count && target[idx] != nil {
+                idx += 1
+            }
+        }
+        for section in source where !transferred.contains(section.source!) {
+            incrementInsert()
+            section.target = idx
+            target[idx] = section
+        }
+        return target
     }
 }
 
@@ -353,8 +490,8 @@ public extension CollectionView {
         }
 
         self.performBatchUpdates({
-            _applyChanges(changeSet.items)
-            _applyChanges(changeSet.sections)
+            _applyChanges(changeSet.itemUpdates)
+            _applyChanges(changeSet.sectionUpdates)
         }, completion: completion)
     }
     

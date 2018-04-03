@@ -35,6 +35,7 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         provider.populateWhenEmpty = false
         provider.populateEmptySections = false
+        provider.defaultCollapse = false
         resultsController.reset()
         collectionView.reloadData()
     }
@@ -240,6 +241,48 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         
         provider.expandSection(at: 1, animated: false)
         self.assertCounts([4, 6])
+    }
+    
+    func testDefaultCollapsed() {
+        
+        var children = [Child]()
+        children.append(contentsOf: Parent(rank: 0).createChildren(5))
+        children.append(contentsOf: Parent(rank: 1).createChildren(5))
+        
+        provider.defaultCollapse = true
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+        
+        self.assertCounts([0, 0])
+        XCTAssertTrue(provider.isSectionCollapsed(at: 0))
+        XCTAssertTrue(provider.isSectionCollapsed(at: 1))
+        
+        let c = Parent(rank: 2).createChildren(1)
+        resultsController.insert(object: c[0])
+        self.assertCounts([0, 0, 0])
+        XCTAssertTrue(provider.isSectionCollapsed(at: 2))
+    }
+    
+    func testDefaultCollapsedOnInsert() {
+        
+        var children = [Child]()
+        children.append(contentsOf: Parent(rank: 0).createChildren(5))
+        children.append(contentsOf: Parent(rank: 1).createChildren(5))
+        
+        provider.defaultCollapse = true
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+        
+        provider.expandSection(at: 0, animated: false)
+        
+        self.assertCounts([5, 0])
+        XCTAssertFalse(provider.isSectionCollapsed(at: 0))
+        XCTAssertTrue(provider.isSectionCollapsed(at: 1))
+        
+        let c = Parent(rank: 2).createChildren(1)
+        resultsController.insert(object: c[0])
+        self.assertCounts([5, 0, 0])
+        XCTAssertTrue(provider.isSectionCollapsed(at: 2))
     }
     
     

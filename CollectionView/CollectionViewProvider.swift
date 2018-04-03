@@ -173,6 +173,8 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
     }
     
     private var sections = [Section]()
+    var collapsedSections = Set<Int>()
+    public var defaultCollapse : Bool = false
     
     public override func prepareForUpdates() {
         super.prepareForUpdates()
@@ -184,20 +186,35 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
         }
     }
     
-    var collapsedSections = Set<Int>()
+    func collapseAllSections() {
+        
+    }
     
-    func isSectionCollapsed(at index: Int) -> Bool {
+    func expandAllSections() {
+        
+    }
+    
+    func setSection(at sectionIndex: Int, expanded: Bool, animated: Bool) {
+        if expanded {
+            self.expandSection(at: sectionIndex, animated: animated)
+        }
+        else {
+            self.collapseSection(at: sectionIndex, animated: animated)
+        }
+    }
+    
+    public func isSectionCollapsed(at index: Int) -> Bool {
         return collapsedSections.contains(index)
     }
     
-    func collapseSection(at sectionIndex: Int, animated: Bool) {
+    public func collapseSection(at sectionIndex: Int, animated: Bool) {
         guard !collapsedSections.contains(sectionIndex) else { return }
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         collapsedSections.insert(sectionIndex)
         self.collectionView.deleteItems(at: ips, animated: animated)
     }
     
-    func expandSection(at sectionIndex: Int, animated: Bool) {
+    public func expandSection(at sectionIndex: Int, animated: Bool) {
         guard collapsedSections.remove(sectionIndex) != nil else { return }
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         self.collectionView.insertItems(at: ips, animated: animated)
@@ -249,6 +266,9 @@ extension CollectionViewProvider : ResultsControllerDelegate {
     
     public func controllerDidLoadContent(controller: ResultsController) {
         self.sectionCount = controller.numberOfSections
+        if defaultCollapse {
+            self.collapsedSections = Set(0..<self.numberOfSections)
+        }
     }
     
     public func controllerWillChangeContent(controller: ResultsController) {
@@ -274,10 +294,14 @@ extension CollectionViewProvider : ResultsControllerDelegate {
         let target = processSections()
         
         // If any of the sections are collapsed we may need to adjust some of the edits
-        if !collapsedSections.isEmpty {
+        if !collapsedSections.isEmpty || defaultCollapse {
             var _collapsed = Set<Int>()
             for sec in target {
-                if let s = sec?.source, let t = sec?.target, self.collapsedSections.contains(s) {
+                if let s = sec?.source, self.collapsedSections.contains(s),
+                    let t = sec?.target {
+                    _collapsed.insert(t)
+                }
+                else if defaultCollapse, sec?.source == nil, let t = sec?.target {
                     _collapsed.insert(t)
                 }
             }

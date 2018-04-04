@@ -208,14 +208,14 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
     }
     
     public func collapseSection(at sectionIndex: Int, animated: Bool) {
-        guard !collapsedSections.contains(sectionIndex), self.numberOfItems(in: sectionIndex) > 0 else { return }
+        guard !collapsedSections.contains(sectionIndex) else { return }
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         collapsedSections.insert(sectionIndex)
         self.collectionView.deleteItems(at: ips, animated: animated)
     }
     
     public func expandSection(at sectionIndex: Int, animated: Bool) {
-        guard collapsedSections.remove(sectionIndex) != nil, self.numberOfItems(in: sectionIndex) > 0 else { return }
+        guard collapsedSections.remove(sectionIndex) != nil else { return }
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         self.collectionView.insertItems(at: ips, animated: animated)
     }
@@ -294,7 +294,7 @@ extension CollectionViewProvider : ResultsControllerDelegate {
         let target = processSections()
         
         // If any of the sections are collapsed we may need to adjust some of the edits
-        if !collapsedSections.isEmpty || defaultCollapse {
+        if !self.collapsedSections.isEmpty || self.defaultCollapse {
             var _collapsed = Set<Int>()
             for sec in target {
                 if let s = sec?.source, self.collapsedSections.contains(s),
@@ -312,7 +312,7 @@ extension CollectionViewProvider : ResultsControllerDelegate {
             }
             // Ignore inserts for collapsed sections
             self.itemUpdates.inserted = self.itemUpdates.inserted.filter {
-                return !self.collapsedSections.contains($0._section)
+                return !_collapsed.contains($0._section)
             }
             
             // Ignore inserts for collapsed sections

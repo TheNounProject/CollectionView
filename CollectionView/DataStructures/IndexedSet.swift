@@ -39,6 +39,9 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
     public var count : Int {
         return byValue.count
     }
+    public var isEmpty : Bool {
+        return byValue.isEmpty
+    }
     
     public func value(for index: Index) -> Value? {
         return byIndex[index]

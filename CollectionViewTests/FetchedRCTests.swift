@@ -1,5 +1,5 @@
 //
-//  FRCTests.swift
+//  FetchedRCTests.swift
 //  CollectionViewTests
 //
 //  Created by Wesley Byrne on 2/14/18.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import CollectionView
 
-class FRCTests: XCTestCase, ResultsControllerDelegate {
+class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
     
     fileprivate lazy var context : NSManagedObjectContext = {
         let model = TestModel()
@@ -72,14 +72,14 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         _ = self.createItemsBySection(1, items: 10)
         let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
         // Check ascending TRUE
-        frc.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
+        frc.sortDescriptors = [SortDescriptor(\Child.displayOrder, ascending: true)]
         XCTAssertNoThrow(try frc.performFetch())
         for n in 0..<10 {
             XCTAssertEqual(frc.object(at: IndexPath.for(item: n, section: 0))!.displayOrder.intValue, n)
         }
         
         // Check ascending FALSE
-        frc.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
+        frc.sortDescriptors = [SortDescriptor(\Child.displayOrder, ascending: false)]
         XCTAssertNoThrow(try frc.performFetch())
         for n in 0..<10 {
             XCTAssertEqual(frc.object(at: IndexPath.for(item: n, section: 0))!.displayOrder.intValue, 9 - n)

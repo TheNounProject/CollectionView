@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2DC5161E329CA000EBC234 /* IndexedSet.swift */; };
 		1C6E50851E2D9C2A00C85946 /* ResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50821E2D9C2A00C85946 /* ResultsController.swift */; };
+		1CB3A3D02075651900A2AB9B /* ReaultionalRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */; };
 		1CC05C221FF6F564001E6936 /* MutableResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC05C211FF6F564001E6936 /* MutableResultsController.swift */; };
 		DE13C18B1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */; };
 		DE297DE01E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */; };
@@ -29,7 +30,7 @@
 		DE98600B1E6F956100B6A3EC /* FetchedSetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */; };
 		DE9A6220203782F100210035 /* MRCValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A621F203782F100210035 /* MRCValueTests.swift */; };
 		DE9A6222203CBE7200210035 /* SectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A6221203CBE7200210035 /* SectionInfo.swift */; };
-		DE9A6224203CE8CC00210035 /* FRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90669E2034E5F8007B73E7 /* FRCTests.swift */; };
+		DE9A6224203CE8CC00210035 /* FetchedRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90669E2034E5F8007B73E7 /* FetchedRCTests.swift */; };
 		DE9A6226203D1B9500210035 /* CoreDataResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */; };
 		DE9A6228203E6B8900210035 /* MRCObjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A6227203E6B8900210035 /* MRCObjectTests.swift */; };
 		DEA638B1200874950023F2BD /* SelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA638B0200874950023F2BD /* SelectionTests.swift */; };
@@ -67,6 +68,7 @@
 		1C2DC5161E329CA000EBC234 /* IndexedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedSet.swift; sourceTree = "<group>"; };
 		1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataResultsController.swift; sourceTree = "<group>"; };
 		1C6E50821E2D9C2A00C85946 /* ResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsController.swift; sourceTree = "<group>"; };
+		1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaultionalRCTests.swift; sourceTree = "<group>"; };
 		1CC05C211FF6F564001E6936 /* MutableResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableResultsController.swift; sourceTree = "<group>"; };
 		DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedObjectContextObservationCoordinator.swift; sourceTree = "<group>"; };
 		DE1EE9A42072B00B00B76FE2 /* CollapsableCollectionViewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableCollectionViewProvider.swift; sourceTree = "<group>"; };
@@ -84,7 +86,7 @@
 		DE82E95D1D78BFC900346B9E /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DE8B448920337DC100F16614 /* OrderedSetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedSetTests.swift; sourceTree = "<group>"; };
 		DE8B448B2033903500F16614 /* IndexedSetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexedSetTests.swift; sourceTree = "<group>"; };
-		DE90669E2034E5F8007B73E7 /* FRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FRCTests.swift; sourceTree = "<group>"; };
+		DE90669E2034E5F8007B73E7 /* FetchedRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchedRCTests.swift; sourceTree = "<group>"; };
 		DE9071E91CAC7FD800AD0E37 /* CollectionView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CollectionView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE9071EC1CAC7FD800AD0E37 /* CollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollectionView.h; sourceTree = "<group>"; };
 		DE9071EE1CAC7FD800AD0E37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -239,7 +241,8 @@
 				DEB3AC24204DB90A00E18358 /* CVProxyTests.swift */,
 				DE8B448920337DC100F16614 /* OrderedSetTests.swift */,
 				DE8B448B2033903500F16614 /* IndexedSetTests.swift */,
-				DE90669E2034E5F8007B73E7 /* FRCTests.swift */,
+				DE90669E2034E5F8007B73E7 /* FetchedRCTests.swift */,
+				1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */,
 				DE9A621F203782F100210035 /* MRCValueTests.swift */,
 				DE9A6227203E6B8900210035 /* MRCObjectTests.swift */,
 				DEA638B2200874950023F2BD /* Info.plist */,
@@ -408,7 +411,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE9A6224203CE8CC00210035 /* FRCTests.swift in Sources */,
+				DE9A6224203CE8CC00210035 /* FetchedRCTests.swift in Sources */,
+				1CB3A3D02075651900A2AB9B /* ReaultionalRCTests.swift in Sources */,
 				DE9A6228203E6B8900210035 /* MRCObjectTests.swift in Sources */,
 				DE8B448A20337DC100F16614 /* OrderedSetTests.swift in Sources */,
 				DEB3AC25204DB90A00E18358 /* CVProxyTests.swift in Sources */,

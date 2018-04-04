@@ -1123,11 +1123,18 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var inserted = Set<IndexPath>()
         var deleted = Set<IndexPath>()
         var moved = IndexedSet<IndexPath, IndexPath>()
+        var isEmpty : Bool {
+            return deleted.isEmpty && inserted.isEmpty && moved.isEmpty
+        }
     }
     private struct SectionTracker {
         var deleted   = IndexSet() // Original Indexes for deleted sections
         var inserted  = IndexSet() // Destination Indexes for inserted sections
         var moved = IndexedSet<Int, Int>() // Source and Destination indexes for moved sections
+        
+        var isEmpty : Bool {
+            return deleted.isEmpty && inserted.isEmpty && moved.isEmpty
+        }
     }
     
     private class SectionValidator : Equatable, CustomStringConvertible {
@@ -1259,6 +1266,10 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         _editing = 0
         
+        guard !self._updateContext.items.isEmpty || !self._updateContext.sections.isEmpty else {
+            completion?(true)
+            return
+        }
         
         let oldData = self.sections
         self._reloadDataCounts()
@@ -1354,40 +1365,43 @@ open class CollectionView : ScrollView, NSDraggingSource {
         doLayoutPrep()
 
         // Update selections
-        self._selectedIndexPaths = Set(self._selectedIndexPaths.flatMap { (ip) -> IndexPath? in
+        self._selectedIndexPaths = Set(self._selectedIndexPaths.compactMap { (ip) -> IndexPath? in
             return indexPath(for: ip)
         })
         
         
-        var updateViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
+        
         var updatedCellIndex = IndexedSet<IndexPath, CollectionViewCell>()
         
         // Update the supplementary views
-        for (id, view) in self.contentDocumentView.preparedSupplementaryViewIndex {
-            guard let ip = id.indexPath else {
-                log.error("Collection View Error: A supplemenary view identifier has a nil indexPath when trying to adjust views")
-                continue
-            }
-            
-            guard let newSection = section(for: ip._section) else {
-                // The section was deleted
-                if let attrs = view.attributes {
-                    _updateContext.updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: id))
+        if self._updateContext.sections.isEmpty == false {
+            var updateViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
+            for (id, view) in self.contentDocumentView.preparedSupplementaryViewIndex {
+                guard let ip = id.indexPath else {
+                    log.error("Collection View Error: A supplemenary view identifier has a nil indexPath when trying to adjust views")
+                    continue
                 }
-                continue
+                
+                guard let newSection = section(for: ip._section) else {
+                    // The section was deleted
+                    if let attrs = view.attributes {
+                        _updateContext.updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: id))
+                    }
+                    continue
+                }
+                if ip._section == newSection {
+                    // No changes
+                    updateViewIndex[id] = view
+                }
+                else {
+                    let newIP = IndexPath.for(section: newSection)
+                    let newID = id.copy(with: newIP)
+                    updateViewIndex[newID] = view
+                    _updateContext.updates.append(ItemUpdate(view: view, indexPath: newIP, type: .update, identifier: newID))
+                }
             }
-            if ip._section == newSection {
-                // No changes
-                updateViewIndex[id] = view
-            }
-            else {
-                let newIP = IndexPath.for(section: newSection)
-                let newID = id.copy(with: newIP)
-                updateViewIndex[newID] = view
-                _updateContext.updates.append(ItemUpdate(view: view, indexPath: newIP, type: .update, identifier: newID))
-            }
+            self.contentDocumentView.preparedSupplementaryViewIndex = updateViewIndex
         }
-        
         
         for (currentIP, cell) in self.contentDocumentView.preparedCellIndex {
             
@@ -1409,7 +1423,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         
         self.contentDocumentView.pendingUpdates = _updateContext.updates
         self.contentDocumentView.preparedCellIndex = updatedCellIndex
-        self.contentDocumentView.preparedSupplementaryViewIndex = updateViewIndex
         self._reloadLayout(animated, scrollPosition: .none, completion: completion, needsRecalculation: false)
        
     }

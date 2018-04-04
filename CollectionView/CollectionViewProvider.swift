@@ -208,14 +208,14 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
     }
     
     public func collapseSection(at sectionIndex: Int, animated: Bool) {
-        guard !collapsedSections.contains(sectionIndex) else { return }
+        guard !collapsedSections.contains(sectionIndex), self.numberOfItems(in: sectionIndex) > 0 else { return }
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         collapsedSections.insert(sectionIndex)
         self.collectionView.deleteItems(at: ips, animated: animated)
     }
     
     public func expandSection(at sectionIndex: Int, animated: Bool) {
-        guard collapsedSections.remove(sectionIndex) != nil else { return }
+        guard collapsedSections.remove(sectionIndex) != nil, self.numberOfItems(in: sectionIndex) > 0 else { return }
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         self.collectionView.insertItems(at: ips, animated: animated)
     }

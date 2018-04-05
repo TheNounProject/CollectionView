@@ -177,7 +177,7 @@ public struct EditOperationIndex<T:Hashable> {
 
 
 
-public struct EditDistance<T: Collection> where T.Iterator.Element: Hashable, T.IndexDistance == Int, T.Index == Int {
+public struct EditDistance<T: Collection> where T.Iterator.Element: Hashable, T.Index == Int {
     
     public typealias Element = T.Iterator.Element
     

@@ -290,11 +290,14 @@ extension CollectionViewProvider : ResultsControllerDelegate {
         defer {
             self.sectionCount = controller.numberOfSections
         }
+        guard itemChangeCount > 0 || sectionChangeCount > 0 else {
+            return
+        }
         
         let target = processSections()
         
         // If any of the sections are collapsed we may need to adjust some of the edits
-        if !self.collapsedSections.isEmpty || self.defaultCollapse {
+        if (!self.collapsedSections.isEmpty || self.defaultCollapse) {
             var _collapsed = Set<Int>()
             for sec in target {
                 if let s = sec?.source, self.collapsedSections.contains(s),

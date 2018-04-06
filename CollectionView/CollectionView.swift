@@ -1369,10 +1369,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
             return indexPath(for: ip)
         })
         
-        
-        
-        var updatedCellIndex = IndexedSet<IndexPath, CollectionViewCell>()
-        
         // Update the supplementary views
         if self._updateContext.sections.isEmpty == false {
             var updateViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
@@ -1403,6 +1399,8 @@ open class CollectionView : ScrollView, NSDraggingSource {
             self.contentDocumentView.preparedSupplementaryViewIndex = updateViewIndex
         }
         
+        
+        var updatedCellIndex = IndexedSet<IndexPath, CollectionViewCell>()
         for (currentIP, cell) in self.contentDocumentView.preparedCellIndex {
             
             guard let ip = indexPath(for: currentIP) else {

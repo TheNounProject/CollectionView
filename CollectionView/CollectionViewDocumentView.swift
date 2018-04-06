@@ -421,8 +421,7 @@ final public class CollectionViewDocumentView : NSView {
         if animated {
             let _animDuration = self.collectionView.animationDuration
 
-            // Dispatch to allow frame changes from reloadLayout() to apply before 
-            // beginning the animations
+            // Dispatch to allow frame changes from reloadLayout() to apply before beginning the animations
             DispatchQueue.main.async { [unowned self] in
                 var removals = [ItemUpdate]()
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in

@@ -33,6 +33,9 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
+        provider.populateWhenEmpty = false
+        provider.populateEmptySections = false
+        provider.defaultCollapse = false
         resultsController.reset()
         collectionView.reloadData()
     }
@@ -41,7 +44,6 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
     
     func numberOfSections(in collectionView: CollectionView) -> Int {
         return provider.numberOfSections
@@ -54,11 +56,239 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
     func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
         return CollectionViewCell.deque(for: indexPath, in: collectionView)
     }
-
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    
+    func assertCounts(_ counts: [Int]) {
+        XCTAssertEqual(provider.numberOfSections, counts.count)
+        XCTAssertEqual(collectionView.numberOfSections, counts.count)
+        for (s, count) in counts.enumerated() {
+            XCTAssertEqual(provider.numberOfItems(in: s), count)
+            XCTAssertEqual(collectionView.numberOfItems(in: s), count)
+        }
+    }
+    
+    // MARK: - Placeholders
+    /*-------------------------------------------------------------------------------*/
+    
+    func testEmptyPlaceholder() {
+        provider.populateWhenEmpty = true
+        collectionView.reloadData()
         
+        self.assertCounts([1])
+        XCTAssertTrue(provider.showEmptyState)
+    }
+    
+    func testEmptyPlaceholderReplaced() {
+        // Start with empty placeholder and insert a section
+        provider.populateWhenEmpty = true
+        collectionView.reloadData()
+        
+        self.assertCounts([1])
+        resultsController.insert(section: Parent(rank: 0))
+        self.assertCounts([0])
+        XCTAssertFalse(provider.showEmptyState)
+    }
+    
+    func testEmptySectionPlaceholder() {
+        // Empty sections
+        provider.populateEmptySections = true
+        let p = Parent(rank: 0)
+        resultsController.setContent([(p, [])])
+        collectionView.reloadData()
+        
+        self.assertCounts([1])
+        XCTAssertFalse(provider.showEmptyState)
+        XCTAssertTrue(provider.showEmptySection(at: IndexPath.zero))
+    }
+    
+    
+    func testReplaceEmptySectionPlaceholder() {
+        // Empty sections
+        provider.populateEmptySections = true
+        let p = Parent(rank: 0)
+        resultsController.setContent([(p, [])])
+        collectionView.reloadData()
+        
+        resultsController.beginEditing()
+        for c in p.createChildren(5) {
+            resultsController.insert(object: c)
+        }
+        resultsController.endEditing()
+        XCTAssertFalse(provider.showEmptySection(at: IndexPath.zero))
+        self.assertCounts([5])
+        
+    }
+    
+    
+    
+    
+    // MARK: - Section Expanding
+    /*-------------------------------------------------------------------------------*/
+    
+    func testCollapseSection() {
+        
+        var children = [Child]()
+        for n in 0..<3 {
+            children.append(contentsOf: Parent(rank: n).createChildren(5))
+        }
+        
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+        
+        self.assertCounts([5, 5, 5])
+        provider.collapseSection(at: 1, animated: false)
+        self.assertCounts([5, 0, 5])
+    }
+    
+    func testExpandSection() {
+        var children = [Child]()
+        for n in 0..<3 {
+            children.append(contentsOf: Parent(rank: n).createChildren(5))
+        }
+        
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+
+        provider.collapseSection(at: 1, animated: false)
+        self.assertCounts([5, 0, 5])
+        
+        provider.expandSection(at: 1, animated: false)
+        self.assertCounts([5, 5, 5])
+    }
+    
+    func testMoveCollapseSection() {
+        var children = [Child]()
+        var parents = [Parent]()
+        for n in 0..<3 {
+            let p = Parent(rank: n)
+            parents.append(p)
+            children.append(contentsOf: p.createChildren(5))
+        }
+        
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+        provider.collapseSection(at: 1, animated: false)
+        
+        self.assertCounts([5, 0 ,5])
+        
+        // Edit the data
+        parents[0].rank = 1
+        parents[1].rank = 0
+        self.resultsController.beginEditing()
+        self.resultsController.didUpdate(section: parents[0])
+        self.resultsController.didUpdate(section: parents[1])
+        self.resultsController.endEditing()
+        
+        XCTAssertTrue(provider.isSectionCollapsed(at: 0))
+        XCTAssertFalse(provider.isSectionCollapsed(at: 1))
+        self.assertCounts([0, 5 ,5])
+        
+        provider.expandSection(at: 0, animated: false)
+        XCTAssertFalse(provider.isSectionCollapsed(at: 1))
+        self.assertCounts([5, 5 ,5])
+    }
+    
+    func testMoveItemsFromCollapsedToExpanded() {
+        
+        let p0 = Parent(rank: 0)
+        let p1 = Parent(rank: 1)
+        let c0 = p0.createChildren(5)
+        let c1 = p1.createChildren(5)
+        
+        let children = [c0, c1].flatMap { return $0 }
+        
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+        provider.collapseSection(at: 0, animated: false)
+        
+        self.assertCounts([0, 5])
+        
+        // Edit the data
+        c0[0].parent = p1
+        
+        self.resultsController.beginEditing()
+        self.resultsController.didUpdate(object: c0[0])
+        self.resultsController.endEditing()
+        
+        self.assertCounts([0, 6])
+        
+        provider.expandSection(at: 0, animated: false)
+        self.assertCounts([4, 6])
+    }
+    
+    func testMoveItemsFromExpandedToCollapsed() {
+        
+        let p0 = Parent(rank: 0)
+        let p1 = Parent(rank: 1)
+        let c0 = p0.createChildren(5)
+        let c1 = p1.createChildren(5)
+        
+        let children = [c0, c1].flatMap { return $0 }
+        
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+        provider.collapseSection(at: 1, animated: false)
+        
+        self.assertCounts([5, 0])
+        
+        // Edit the data
+        c0[0].parent = p1
+        
+        self.resultsController.beginEditing()
+        self.resultsController.didUpdate(object: c0[0])
+        self.resultsController.endEditing()
+        
+        self.assertCounts([4, 0])
+        
+        provider.expandSection(at: 1, animated: false)
+        self.assertCounts([4, 6])
+    }
+    
+    func testDefaultCollapsed() {
+        
+        var children = [Child]()
+        children.append(contentsOf: Parent(rank: 0).createChildren(5))
+        children.append(contentsOf: Parent(rank: 1).createChildren(5))
+        
+        provider.defaultCollapse = true
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+        
+        self.assertCounts([0, 0])
+        XCTAssertTrue(provider.isSectionCollapsed(at: 0))
+        XCTAssertTrue(provider.isSectionCollapsed(at: 1))
+        
+        let c = Parent(rank: 2).createChildren(1)
+        resultsController.insert(object: c[0])
+        self.assertCounts([0, 0, 0])
+        XCTAssertTrue(provider.isSectionCollapsed(at: 2))
+    }
+    
+    func testDefaultCollapsedOnInsert() {
+        
+        var children = [Child]()
+        children.append(contentsOf: Parent(rank: 0).createChildren(5))
+        children.append(contentsOf: Parent(rank: 1).createChildren(5))
+        
+        provider.defaultCollapse = true
+        resultsController.setContent(objects: children)
+        collectionView.reloadData()
+        
+        provider.expandSection(at: 0, animated: false)
+        
+        self.assertCounts([5, 0])
+        XCTAssertFalse(provider.isSectionCollapsed(at: 0))
+        XCTAssertTrue(provider.isSectionCollapsed(at: 1))
+        
+        let c = Parent(rank: 2).createChildren(1)
+        resultsController.insert(object: c[0])
+        self.assertCounts([5, 0, 0])
+        XCTAssertTrue(provider.isSectionCollapsed(at: 2))
+    }
+    
+    
+
+    func testBreakingUseCase1() {
+        // A reproduction of a previously breaking case from the demo app
         let _data : [(String,[String])] = [
             ("ZSnKWisBqE", ["ueHNbNmzJE","BLDDODjZeP","eObJUPufpv","dOwXZZpyif","RIZOqeMoWM","hGLYuDzKQi","ZOAwicSMDE"]),
             ("WqoQBTNEaY", ["rsubjBxbVb","zgxqrwEMEP","RFMVhYUOBt","TPtWHpAfhO","vGNjxxuxds","EEQzPOqFLm","WqWAgYBpdk"]),
@@ -139,14 +369,8 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
        
         
     }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
+    
+    
 }
 
 

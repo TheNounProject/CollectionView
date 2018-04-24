@@ -43,7 +43,6 @@ class SelectionTests: XCTestCase, CollectionViewDataSource  {
     }
     
     func testDefaults() {
-        XCTFail("Test")
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
         let ip = IndexPath.for(item: 5, section: 0)

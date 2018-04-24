@@ -2,3 +2,5 @@
 language: swift
 osx_image: xcode9.3
 os: osx
+xcode_project: CollectionView.xcodeproj # path to your xcodeproj folder
+xcode_scheme: CollectionViewTests

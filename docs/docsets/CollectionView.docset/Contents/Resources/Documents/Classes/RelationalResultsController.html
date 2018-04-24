@@ -218,7 +218,7 @@
             <a class="nav-group-name-link" href="../Other Enums.html">Other Enumerations</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Other Enums.html#/s:14CollectionView20SortDescriptorResultO">SortDescriptorResult</a>
+                <a class="nav-group-task-link" href="../Enums/SortDescriptorResult.html">SortDescriptorResult</a>
               </li>
             </ul>
           </li>
@@ -255,34 +255,34 @@
             <h1>RelationalResultsController</h1>
               <div class="declaration">
                 <div class="language">
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">RelationalResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="../Classes/FetchedResultsController.html">FetchedResultsController</a></span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span></code></pre>
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">RelationalResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="../Classes/FetchedResultsController.html">FetchedResultsController</a></span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span></code></pre>
 
                 </div>
               </div>
             <p>Extending on FetchedResultsController and it&rsquo;s section grouping, this controller allows for sections to be created from a parent ententy.- </p>
 
 <p>In a FetchedResultsController (and NSFetchedResultsController) you would use sectionKeyPath to achieve the following:</p>
-<pre class="highlight swift"><code><span class="kt">Things</span>
-   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Things"</span> <span class="p">}</span>
-   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Things"</span> <span class="p">}</span>
+<pre class="highlight plaintext"><code>Things
+   { sectionKeyPath : "Things" }
+   { sectionKeyPath : "Things" }
 
-<span class="kt">Not</span> <span class="kt">Things</span>
-   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Not Things"</span> <span class="p">}</span>
-   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Not Things"</span> <span class="p">}</span>
+Not Things
+   { sectionKeyPath : "Not Things" }
+   { sectionKeyPath : "Not Things" }
 </code></pre>
 
 <p>While this is great, it does not work well for the common Parent-Child data model. In a Department - Employee model for example we woul want:</p>
-<pre class="highlight swift"><code><span class="kt">Sales</span> <span class="p">{}</span>
-   <span class="kt">Jim</span> <span class="p">{}</span>
-   <span class="kt">Samantha</span> <span class="p">{}</span>
+<pre class="highlight plaintext"><code>Sales {}
+   Jim {}
+   Samantha {}
 
-<span class="kt">Managment</span> <span class="p">{}</span>
-   <span class="kt">Sarah</span> <span class="p">{}</span>
-   <span class="kt">Howard</span> <span class="p">{}</span>
+Managment {}
+   Sarah {}
+   Howard {}
 
 
-<span class="kt">Delivery</span> <span class="p">{}</span>
-   <span class="o">&lt;</span><span class="kt">No</span> <span class="n">employees</span><span class="o">&gt;</span>
+Delivery {}
+   &lt;No employees&gt;
 </code></pre>
 
 <p>In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController where sections consist of the available values in the fetched objects, the <q>Delivery</q> would not be included. With a RelationalResultsController though you can opt to fetch both the sections and object independently (see <code>fetchSections</code>).</p>
@@ -321,7 +321,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span><span class="p">,</span> <span class="nv">request</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">sectionRequest</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Section</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">sectionKeyPath</span> <span class="nv">keyPath</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Section</span><span class="p">?</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span><span class="p">,</span> <span class="nv">request</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">sectionRequest</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Section</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">sectionKeyPath</span> <span class="nv">keyPath</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Section</span><span class="p">?</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -403,7 +403,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">public</span> <span class="kd">func</span> <span class="nf">performFetch</span><span class="p">()</span> <span class="k">throws</span></code></pre>
+                          <pre class="highlight"><code><span class="k">override</span> <span class="kd">public</span> <span class="kd">func</span> <span class="nf">performFetch</span><span class="p">()</span> <span class="k">throws</span></code></pre>
 
                         </div>
                       </div>
@@ -424,9 +424,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerC19sectionFetchRequestSo07NSFetchH0CyxGv"></a>
+                    <a name="/s:14CollectionView27RelationalResultsControllerC19sectionFetchRequestSo07NSFetchH0CyxGvp"></a>
                     <a name="//apple_ref/swift/Property/sectionFetchRequest" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC19sectionFetchRequestSo07NSFetchH0CyxGv">sectionFetchRequest</a>
+                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC19sectionFetchRequestSo07NSFetchH0CyxGvp">sectionFetchRequest</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -436,7 +436,7 @@
                       <div class="abstract">
                         <p>A fetch request used to fetch, filter, and sort the section results of the controller.</p>
 
-<p>This is used to validate the section objects. If <code><a href="../Classes/RelationalResultsController.html#/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbv">fetchSections</a></code> is true, section objects will be fetched independent of the child objects.</p>
+<p>This is used to validate the section objects. If <code><a href="../Classes/RelationalResultsController.html#/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbvp">fetchSections</a></code> is true, section objects will be fetched independent of the child objects.</p>
 
 <p>A parent object that does not match the request here, may still be visible if it has children that match the predicate of fetchRequest.</p>
 
@@ -445,7 +445,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">sectionFetchRequest</span> <span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Section</span><span class="o">&gt;</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">sectionFetchRequest</span> <span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Section</span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>
@@ -455,9 +455,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerC18sectionNameKeyPathSSSgv"></a>
+                    <a name="/s:14CollectionView27RelationalResultsControllerC18sectionNameKeyPaths0hI0CyxSSGSgvp"></a>
                     <a name="//apple_ref/swift/Property/sectionNameKeyPath" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC18sectionNameKeyPathSSSgv">sectionNameKeyPath</a>
+                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC18sectionNameKeyPaths0hI0CyxSSGSgvp">sectionNameKeyPath</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -474,7 +474,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sectionNameKeyPath</span> <span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sectionNameKeyPath</span> <span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -484,9 +484,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbv"></a>
+                    <a name="/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbvp"></a>
                     <a name="//apple_ref/swift/Property/fetchSections" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbv">fetchSections</a>
+                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbvp">fetchSections</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -503,7 +503,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">fetchSections</span> <span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">fetchSections</span> <span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span></code></pre>
 
                         </div>
                       </div>
@@ -540,7 +540,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">sectionName</span><span class="p">(</span><span class="n">forSectionAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">sectionName</span><span class="p">(</span><span class="n">forSectionAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -555,8 +555,8 @@
       </article>
     </div>
     <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-03-16)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.1</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-04-24)</p>
+      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
     </section>
   </body>
 </div>

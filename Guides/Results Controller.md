@@ -13,7 +13,7 @@ Traditionally, the beauty of NSFetchedResutls controller is that it listens to y
 MutableResultsController is designed manage your data, respond to changes in that data, and translate those changes into updates a collection view can understand. The only difference from a core data backed controller that recieves changes by monitoring the store is that you provide the changes. Let's take a look
 
 A very basic example of a mutable results controller setup:
-```
+```swift
 let mrc = MutableResultsController<NoSectionType, Child>()
 
 let child1 = Child()
@@ -27,7 +27,7 @@ In this simple example we it may not seem clear why using a controller is better
 
 Let's add a section key path and ordering. Defining a name and age property on our Child object we can then use those properties to group and sort a set of chilren. Let's group them by age and then sort by name within each group. And finally we also went each group to line up from youngest to oldes.
 
-```
+```swift
 struct Child {
     let name : String
     let age : String

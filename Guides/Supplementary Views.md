@@ -23,7 +23,7 @@ Without a xib, you will need to create the subviews manually in `init(frame fram
 Becuase views are reused by a collection view it is never your responsibilty to load/initialize them. Each class or xib you intent to you must be registered before loading any data.
 
 Use the following depending on if you are using a xib or a class alone:
-```
+```swift
 public func register(class viewClass: CollectionReusableView.Type, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String)
 public func register(nib: NSNib, forSupplementaryViewOfKind elementKind: String, withReuseIdentifier identifier: String)
 ```
@@ -40,14 +40,14 @@ With your views registered they can now be used used by your data source.
 Before your collection view will ask your data source for views, your layout must be setup to show them. Every layout is a different but the provided layouts typically have a headerHeight or footerHeight property or delegate calls to provide dynamic heights. If the layout does not make room for supplementary views the collection view will avoid asking for a view to display.
 
 If we are using CollectionViewListLayout, the following would add a 50pt header at the beginning of each section
-```
+```swift
 let layout = CollectionViewListLayout()
 layout.headerHeight = 40
 ```
 
 Now we can implement our data source method to provide the view for each section. If you ar using multiple kinds of supplementary views you should check the kind value and return the appropriate view.
 
-```
+```swift
 @objc optional func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView {
     let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "MyReuseIdentifier", for: indexPath)
     // setup the view as needed

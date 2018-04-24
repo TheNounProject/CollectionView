@@ -13,7 +13,7 @@ The drag delegate has a number of functions that give you full control over a dr
 #### Dragging Source
 
 The first method shouldBeginDragging must be implemented to allow a drag session to begin. The others allow you to customize the contents and respond to stages of the drag.
-```
+```swift
 @objc optional func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, with event: NSEvent) ->Bool
 @objc optional func collectionView(_ collectionView: CollectionView, validateIndexPathsForDrag indexPaths: [IndexPath]) -> [IndexPath]
 @objc optional func collectionView(_ collectionView: CollectionView, draggingSession session: NSDraggingSession, willBeginAt point: NSPoint)
@@ -28,7 +28,7 @@ When accepting drag events in the collection view you must register the view for
 
 `collectionView(_:performDragOperation:)` must be implemented to responsd to the end of a successful and accepted drag event.
 
-```
+```swift
 @objc optional func collectionView(_ collectionView: CollectionView, dragEntered dragInfo: NSDraggingInfo) -> NSDragOperation
 @objc optional func collectionView(_ collectionView: CollectionView, dragUpdated dragInfo: NSDraggingInfo) -> NSDragOperation
 @objc optional func collectionView(_ collectionView: CollectionView, dragExited dragInfo: NSDraggingInfo?)

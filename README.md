@@ -35,7 +35,7 @@ Get collection view up and running in just a few minutes. Checkout the guides & 
 ### Adding to your project
 CollectionView isn't currently provided through any package managers.
 
-Clone or donwload the repo and add it to your project by dragging the CollectionView xCode project to your project.
+Clone or donwload the repo and add it to your project by dragging the CollectionView Xcode project to your project.
 
 ## Examples
 

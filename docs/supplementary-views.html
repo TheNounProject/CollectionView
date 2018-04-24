@@ -277,8 +277,8 @@
 <p>Becuase views are reused by a collection view it is never your responsibilty to load/initialize them. Each class or xib you intent to you must be registered before loading any data.</p>
 
 <p>Use the following depending on if you are using a xib or a class alone:</p>
-<pre class="highlight plaintext"><code>public func register(class viewClass: CollectionReusableView.Type, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String)
-public func register(nib: NSNib, forSupplementaryViewOfKind elementKind: String, withReuseIdentifier identifier: String)
+<pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">register</span><span class="p">(</span><span class="kd">class</span> <span class="nv">viewClass</span><span class="p">:</span> <span class="kt">CollectionReusableView</span><span class="o">.</span><span class="k">Type</span><span class="p">,</span> <span class="n">forSupplementaryViewOfKind</span> <span class="nv">kind</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">withReuseIdentifier</span> <span class="nv">identifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">register</span><span class="p">(</span><span class="nv">nib</span><span class="p">:</span> <span class="kt">NSNib</span><span class="p">,</span> <span class="n">forSupplementaryViewOfKind</span> <span class="nv">elementKind</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">withReuseIdentifier</span> <span class="nv">identifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span>
 </code></pre>
 
 <p>The kind property is used to load multiple supplementary views per section. The common kinds that are provided in CollectionViewLayoutElementKind are header and footer.</p>
@@ -291,16 +291,16 @@ public func register(nib: NSNib, forSupplementaryViewOfKind elementKind: String,
 <p>Before your collection view will ask your data source for views, your layout must be setup to show them. Every layout is a different but the provided layouts typically have a headerHeight or footerHeight property or delegate calls to provide dynamic heights. If the layout does not make room for supplementary views the collection view will avoid asking for a view to display.</p>
 
 <p>If we are using CollectionViewListLayout, the following would add a 50pt header at the beginning of each section</p>
-<pre class="highlight plaintext"><code>let layout = CollectionViewListLayout()
-layout.headerHeight = 40
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">layout</span> <span class="o">=</span> <span class="kt">CollectionViewListLayout</span><span class="p">()</span>
+<span class="n">layout</span><span class="o">.</span><span class="n">headerHeight</span> <span class="o">=</span> <span class="mi">40</span>
 </code></pre>
 
 <p>Now we can implement our data source method to provide the view for each section. If you ar using multiple kinds of supplementary views you should check the kind value and return the appropriate view.</p>
-<pre class="highlight plaintext"><code>@objc optional func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -&gt; CollectionReusableView {
-    let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "MyReuseIdentifier", for: indexPath)
-    // setup the view as needed
-    return view
-}
+<pre class="highlight swift"><code><span class="kd">@objc</span> <span class="kd">optional</span> <span class="kd">func</span> <span class="nf">collectionView</span><span class="p">(</span><span class="n">_</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt">CollectionView</span><span class="p">,</span> <span class="n">viewForSupplementaryElementOfKind</span> <span class="nv">kind</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">at</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CollectionReusableView</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">view</span> <span class="o">=</span> <span class="n">collectionView</span><span class="o">.</span><span class="nf">dequeueReusableSupplementaryView</span><span class="p">(</span><span class="nv">ofKind</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span> <span class="nv">withReuseIdentifier</span><span class="p">:</span> <span class="s">"MyReuseIdentifier"</span><span class="p">,</span> <span class="nv">for</span><span class="p">:</span> <span class="n">indexPath</span><span class="p">)</span>
+    <span class="c1">// setup the view as needed</span>
+    <span class="k">return</span> <span class="n">view</span>
+<span class="p">}</span>
 </code></pre>
 
           </div>

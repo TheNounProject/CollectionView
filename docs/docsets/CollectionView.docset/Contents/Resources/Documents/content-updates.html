@@ -260,14 +260,14 @@
 <h2 id='single-updates' class='heading'>Single Updates</h2>
 
 <p>To perform a single update operation you can use any of the update functions directly.</p>
-<pre class="highlight plaintext"><code>public func insertSections(_ sections: IndexSet, animated: Bool)
-public func deleteSections(_ sections: IndexSet, animated: Bool)
-public func moveSection(_ section: Int, to newSection: Int, animated: Bool)
+<pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">insertSections</span><span class="p">(</span><span class="n">_</span> <span class="nv">sections</span><span class="p">:</span> <span class="kt">IndexSet</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">deleteSections</span><span class="p">(</span><span class="n">_</span> <span class="nv">sections</span><span class="p">:</span> <span class="kt">IndexSet</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">moveSection</span><span class="p">(</span><span class="n">_</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="n">to</span> <span class="nv">newSection</span><span class="p">:</span> <span class="kt">Int</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span>
 
-public func insertItems(at indexPaths: [IndexPath], animated: Bool)
-public func deleteItems(at indexPaths: [IndexPath], animated: Bool)
-public func reloadItems(at indexPaths: [IndexPath], animated: Bool)
-public func moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPath, animated: Bool)
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">insertItems</span><span class="p">(</span><span class="n">at</span> <span class="nv">indexPaths</span><span class="p">:</span> <span class="p">[</span><span class="kt">IndexPath</span><span class="p">],</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">deleteItems</span><span class="p">(</span><span class="n">at</span> <span class="nv">indexPaths</span><span class="p">:</span> <span class="p">[</span><span class="kt">IndexPath</span><span class="p">],</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">reloadItems</span><span class="p">(</span><span class="n">at</span> <span class="nv">indexPaths</span><span class="p">:</span> <span class="p">[</span><span class="kt">IndexPath</span><span class="p">],</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">moveItem</span><span class="p">(</span><span class="n">at</span> <span class="nv">indexPath</span> <span class="p">:</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="n">to</span> <span class="nv">destinationIndexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span>
 </code></pre>
 
 <p>Before doing so you must be sure that your data source will report the change. For example, if inserting an item your data source must report 1 more item than the collection view currently has.</p>
@@ -278,30 +278,30 @@ public func moveItem(at indexPath : IndexPath, to destinationIndexPath: IndexPat
 <h2 id='batch-updates' class='heading'>Batch Updates</h2>
 
 <p>Multiple updates can be performed simultaneously use <code>performBatchUpdates(_:completion:)</code>. Any changes made in the first closure will be batched together and commited as a single operation.</p>
-<pre class="highlight plaintext"><code>myData.remove(at: 1)
-myData.append("Another Entry")
+<pre class="highlight swift"><code><span class="n">myData</span><span class="o">.</span><span class="nf">remove</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">myData</span><span class="o">.</span><span class="nf">append</span><span class="p">(</span><span class="s">"Another Entry"</span><span class="p">)</span>
 
-collectionView.performBatchUpdates({
-    collectionView.deletItems(at: [IndexPath.for(item: 1, section: 0)])
-    collectionView.insertITems(at: [[IndexPath.for(item: myData.count - 1, section: 0)]])
-}) { (completed) in
-    // Animation is complete!
-}
+<span class="n">collectionView</span><span class="o">.</span><span class="nf">performBatchUpdates</span><span class="p">({</span>
+    <span class="n">collectionView</span><span class="o">.</span><span class="nf">deletItems</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="p">[</span><span class="kt">IndexPath</span><span class="o">.</span><span class="k">for</span><span class="p">(</span><span class="nv">item</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="mi">0</span><span class="p">)])</span>
+    <span class="n">collectionView</span><span class="o">.</span><span class="nf">insertITems</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="p">[[</span><span class="kt">IndexPath</span><span class="o">.</span><span class="k">for</span><span class="p">(</span><span class="nv">item</span><span class="p">:</span> <span class="n">myData</span><span class="o">.</span><span class="n">count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="mi">0</span><span class="p">)]])</span>
+<span class="p">})</span> <span class="p">{</span> <span class="p">(</span><span class="n">completed</span><span class="p">)</span> <span class="k">in</span>
+    <span class="c1">// Animation is complete!</span>
+<span class="p">}</span>
 </code></pre>
 
 <p>Note that delete and reload updates use index paths prior to any changes, inserts refer to index paths after all changes are made, and moves go from a pre-update index path fo a post-updates index path. The following illustrates this</p>
-<pre class="highlight plaintext"><code>Section A
-[H] [J] [K]
-Section B
-[X] [Y] [Z]
+<pre class="highlight swift"><code><span class="kt">Section</span> <span class="kt">A</span>
+<span class="p">[</span><span class="kt">H</span><span class="p">]</span> <span class="p">[</span><span class="kt">J</span><span class="p">]</span> <span class="p">[</span><span class="kt">K</span><span class="p">]</span>
+<span class="kt">Section</span> <span class="kt">B</span>
+<span class="p">[</span><span class="kt">X</span><span class="p">]</span> <span class="p">[</span><span class="kt">Y</span><span class="p">]</span> <span class="p">[</span><span class="kt">Z</span><span class="p">]</span>
 
-move section A to 1
-Move [1, 1] to [1, 1]
+<span class="n">move</span> <span class="n">section</span> <span class="kt">A</span> <span class="n">to</span> <span class="mi">1</span>
+<span class="kt">Move</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="n">to</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
 
-Section B
-[X] [Z]
-Section A
-[H] [Y] [J] [K]
+<span class="kt">Section</span> <span class="kt">B</span>
+<span class="p">[</span><span class="kt">X</span><span class="p">]</span> <span class="p">[</span><span class="kt">Z</span><span class="p">]</span>
+<span class="kt">Section</span> <span class="kt">A</span>
+<span class="p">[</span><span class="kt">H</span><span class="p">]</span> <span class="p">[</span><span class="kt">Y</span><span class="p">]</span> <span class="p">[</span><span class="kt">J</span><span class="p">]</span> <span class="p">[</span><span class="kt">K</span><span class="p">]</span>
 </code></pre>
 
 <p>Notice that the second move at [1, 1] moves [Y] from its starting index path [1, 1] to its final index path after changes [1, 1].</p>

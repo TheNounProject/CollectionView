@@ -266,44 +266,44 @@
 <p>MutableResultsController is designed manage your data, respond to changes in that data, and translate those changes into updates a collection view can understand. The only difference from a core data backed controller that recieves changes by monitoring the store is that you provide the changes. Let&rsquo;s take a look</p>
 
 <p>A very basic example of a mutable results controller setup:</p>
-<pre class="highlight plaintext"><code>let mrc = MutableResultsController&lt;NoSectionType, Child&gt;()
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">mrc</span> <span class="o">=</span> <span class="kt">MutableResultsController</span><span class="o">&lt;</span><span class="kt">NoSectionType</span><span class="p">,</span> <span class="kt">Child</span><span class="o">&gt;</span><span class="p">()</span>
 
-let child1 = Child()
-let child2 = Child()
-mrc.setContents([child1, child2])
-mrc.numberOfSections() // 1
-mrc.numberOfObjects(in: 0) // 2
+<span class="k">let</span> <span class="nv">child1</span> <span class="o">=</span> <span class="kt">Child</span><span class="p">()</span>
+<span class="k">let</span> <span class="nv">child2</span> <span class="o">=</span> <span class="kt">Child</span><span class="p">()</span>
+<span class="n">mrc</span><span class="o">.</span><span class="nf">setContents</span><span class="p">([</span><span class="n">child1</span><span class="p">,</span> <span class="n">child2</span><span class="p">])</span>
+<span class="n">mrc</span><span class="o">.</span><span class="nf">numberOfSections</span><span class="p">()</span> <span class="c1">// 1</span>
+<span class="n">mrc</span><span class="o">.</span><span class="nf">numberOfObjects</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">// 2</span>
 </code></pre>
 
 <p>In this simple example we it may not seem clear why using a controller is better than a simple array. One nice benefit is that you can maintain a consistent api for powering your data source. But the real power comes when we start set up a more complex controller.</p>
 
 <p>Let&rsquo;s add a section key path and ordering. Defining a name and age property on our Child object we can then use those properties to group and sort a set of chilren. Let&rsquo;s group them by age and then sort by name within each group. And finally we also went each group to line up from youngest to oldes.</p>
-<pre class="highlight plaintext"><code>struct Child {
-    let name : String
-    let age : String
-}
+<pre class="highlight swift"><code><span class="kd">struct</span> <span class="kt">Child</span> <span class="p">{</span>
+    <span class="k">let</span> <span class="nv">name</span> <span class="p">:</span> <span class="kt">String</span>
+    <span class="k">let</span> <span class="nv">age</span> <span class="p">:</span> <span class="kt">String</span>
+<span class="p">}</span>
 
-let mrc = MutableResultsController&lt;Int, Child&gt;(sectionKeyPath: \Child.rank,
-                                    sortDescriptors: [SortDescriptor(\Child.name)],
-                                    sectionSortDescriptors: [SortDescriptor&lt;Int&gt;.ascending])
+<span class="k">let</span> <span class="nv">mrc</span> <span class="o">=</span> <span class="kt">MutableResultsController</span><span class="o">&lt;</span><span class="kt">Int</span><span class="p">,</span> <span class="kt">Child</span><span class="o">&gt;</span><span class="p">(</span><span class="nv">sectionKeyPath</span><span class="p">:</span> <span class="err">\</span><span class="kt">Child</span><span class="o">.</span><span class="n">rank</span><span class="p">,</span>
+                                    <span class="nv">sortDescriptors</span><span class="p">:</span> <span class="p">[</span><span class="kt">SortDescriptor</span><span class="p">(</span><span class="err">\</span><span class="kt">Child</span><span class="o">.</span><span class="n">name</span><span class="p">)],</span>
+                                    <span class="nv">sectionSortDescriptors</span><span class="p">:</span> <span class="p">[</span><span class="kt">SortDescriptor</span><span class="o">&lt;</span><span class="kt">Int</span><span class="o">&gt;.</span><span class="n">ascending</span><span class="p">])</span>
 
-mrc.setContents([
-    Child((name: "Geoff", age: 9),
-    Child((name: "Sarah", age: 8),
-    Child((name: "Steve", age: 10)
-    Child((name: "Amy", age: 8),
-])
+<span class="n">mrc</span><span class="o">.</span><span class="nf">setContents</span><span class="p">([</span>
+    <span class="kt">Child</span><span class="p">((</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Geoff"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">9</span><span class="p">),</span>
+    <span class="kt">Child</span><span class="p">((</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Sarah"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">8</span><span class="p">),</span>
+    <span class="kt">Child</span><span class="p">((</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Steve"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="kt">Child</span><span class="p">((</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Amy"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">8</span><span class="p">),</span>
+<span class="p">])</span>
 
-// Sections
-8 : [Child((name: "Amy", age: 8), Child((name: "Sarah", age: 8)]
-9 : [Child((name: "Geoff", age: 9)]
-10: [Child((name: "Steve", age: 10)]
+<span class="c1">// Sections</span>
+<span class="mi">8</span> <span class="p">:</span> <span class="p">[</span><span class="kt">Child</span><span class="p">((</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Amy"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">8</span><span class="p">),</span> <span class="kt">Child</span><span class="p">((</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Sarah"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">8</span><span class="p">)]</span>
+<span class="mi">9</span> <span class="p">:</span> <span class="p">[</span><span class="kt">Child</span><span class="p">((</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Geoff"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">9</span><span class="p">)]</span>
+<span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="kt">Child</span><span class="p">((</span><span class="nv">name</span><span class="p">:</span> <span class="s">"Steve"</span><span class="p">,</span> <span class="nv">age</span><span class="p">:</span> <span class="mi">10</span><span class="p">)]</span>
 
-mrc.numberOfSections() // 3
-mrc.numberOfObjects(in: 0) // 2
-mrc.numberOfObjects(in: 1) // 1
-mrc.numberOfObjects(in: 2) // 1
-mrc.object(at: IndexPath.for(item: 0, section: 0)) // name:Amy age:8)
+<span class="n">mrc</span><span class="o">.</span><span class="nf">numberOfSections</span><span class="p">()</span> <span class="c1">// 3</span>
+<span class="n">mrc</span><span class="o">.</span><span class="nf">numberOfObjects</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span> <span class="c1">// 2</span>
+<span class="n">mrc</span><span class="o">.</span><span class="nf">numberOfObjects</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">// 1</span>
+<span class="n">mrc</span><span class="o">.</span><span class="nf">numberOfObjects</span><span class="p">(</span><span class="nv">in</span><span class="p">:</span> <span class="mi">2</span><span class="p">)</span> <span class="c1">// 1</span>
+<span class="n">mrc</span><span class="o">.</span><span class="nf">object</span><span class="p">(</span><span class="nv">at</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="o">.</span><span class="k">for</span><span class="p">(</span><span class="nv">item</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nv">section</span><span class="p">:</span> <span class="mi">0</span><span class="p">))</span> <span class="c1">// name:Amy age:8)</span>
 
 </code></pre>
 

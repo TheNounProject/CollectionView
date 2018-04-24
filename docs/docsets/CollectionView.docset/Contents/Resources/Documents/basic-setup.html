@@ -312,8 +312,8 @@
 <p>Becuase views are reused by a collection view it is never your responsibilty to load/initialize them. Each class or xib you intent to you must be registered before loading any data.</p>
 
 <p>Use the following depending on your setup:</p>
-<pre class="highlight plaintext"><code>func register(class cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String)
-func register(nib: NSNib, forCellWithReuseIdentifier identifier: String)
+<pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">register</span><span class="p">(</span><span class="kd">class</span> <span class="nv">cellClass</span><span class="p">:</span> <span class="kt">CollectionViewCell</span><span class="o">.</span><span class="k">Type</span><span class="p">,</span> <span class="n">forCellWithReuseIdentifier</span> <span class="nv">identifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span>
+<span class="kd">func</span> <span class="nf">register</span><span class="p">(</span><span class="nv">nib</span><span class="p">:</span> <span class="kt">NSNib</span><span class="p">,</span> <span class="n">forCellWithReuseIdentifier</span> <span class="nv">identifier</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span>
 </code></pre>
 
 <p>Each cell should only be registered once when your collection view is setup. Typically this can be done in viewDidLoad in the controller containing your collection view.</p>

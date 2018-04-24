@@ -8,7 +8,7 @@ As data changes a collection view displaying that data will need to update as we
 
 To perform a single update operation you can use any of the update functions directly.
 
-```
+```swift
 public func insertSections(_ sections: IndexSet, animated: Bool)
 public func deleteSections(_ sections: IndexSet, animated: Bool)
 public func moveSection(_ section: Int, to newSection: Int, animated: Bool)
@@ -28,7 +28,7 @@ Before doing so you must be sure that your data source will report the change. F
 
 Multiple updates can be performed simultaneously use `performBatchUpdates(_:completion:)`. Any changes made in the first closure will be batched together and commited as a single operation.
 
-```
+```swift
 myData.remove(at: 1)
 myData.append("Another Entry")
 
@@ -42,7 +42,7 @@ collectionView.performBatchUpdates({
 
 Note that delete and reload updates use index paths prior to any changes, inserts refer to index paths after all changes are made, and moves go from a pre-update index path fo a post-updates index path. The following illustrates this
 
-```
+```swift
 Section A
 [H] [J] [K]
 Section B

@@ -63,7 +63,7 @@ Without a xib, you will need to create the subviews manually in `init(frame fram
 Becuase views are reused by a collection view it is never your responsibilty to load/initialize them. Each class or xib you intent to you must be registered before loading any data.
 
 Use the following depending on your setup:
-```
+```swift
 func register(class cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String)
 func register(nib: NSNib, forCellWithReuseIdentifier identifier: String)
 ```

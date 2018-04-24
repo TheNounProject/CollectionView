@@ -1,5 +1,5 @@
 
-language: swift
+language: objective-c
 osx_image: xcode9.3
 os: osx
 xcode_scheme: CollectionViewTests

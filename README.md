@@ -1,5 +1,7 @@
 ![CollectionView](https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/header.png "Collection View")
 
+![test](https://travis-ci.org/TheNounProject/CollectionView.svg?branch=master)
+
 An easy to use, highly customizable replacement for NSCollectionView.
 
 ---

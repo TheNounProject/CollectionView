@@ -2,5 +2,4 @@
 language: objective-c
 osx_image: xcode9.3
 os: osx
-xcode_scheme: CollectionViewTests
-xcode_project: CollectionView.xcodeproj
+script: xcodebuild clean && xcodebuild build -project CollectionView.xcodeproj -scheme CollectionViewTests

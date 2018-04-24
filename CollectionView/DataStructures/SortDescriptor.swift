@@ -15,11 +15,17 @@ import Foundation
 /// - same: The two objects are equally compared
 /// - ascending: The first object is before the second (ordered)
 /// - descending: The second object precedes the first (reversed)
-public enum SortDescriptorResult {
+public enum SortDescriptorResult : ExpressibleByBooleanLiteral {
     case same
     case ascending
     case descending
+    
+    public typealias BooleanLiteralType = Bool
+    public init(booleanLiteral value: Bool) {
+        self = value ? .ascending : .descending
+    }
 }
+
 
 
 /// a comparator used to compare two objects

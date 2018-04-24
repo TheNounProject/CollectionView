@@ -243,7 +243,7 @@ final public class CollectionViewDocumentView : NSView {
                     else { removedRect = removedRect.union(cell.frame) }
                     
                     cell.layer?.zPosition = 0
-                    if animated  && !animating, let attrs = self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
+                    if animated, let attrs = self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
                         self.preparedCellIndex[ip] = nil
                         updates.append(ItemUpdate(cell: cell, attrs: attrs, type: .remove))
                     }
@@ -324,7 +324,7 @@ final public class CollectionViewDocumentView : NSView {
                     
                     view.layer?.zPosition = -100
                     
-                    if animated && !animating, var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!) ?? view.attributes {
+                    if animated, var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!) ?? view.attributes {
                         if attrs.floating == true {
                             if view.superview != self.collectionView._floatingSupplementaryView {
                                 view.removeFromSuperview()
@@ -407,7 +407,6 @@ final public class CollectionViewDocumentView : NSView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
                 }
-//                log.debug(attrs)
                 updates.append(ItemUpdate(view: view, attrs: attrs, type: .update, identifier: id))
             }
         }
@@ -415,23 +414,14 @@ final public class CollectionViewDocumentView : NSView {
         return (_rect, updates)
     }
     
-    var animating = false
-    var hasPendingAnimations : Bool = false
-    var disableAnimationTimer : Timer?
     internal func applyUpdates(_ updates: Set<ItemUpdate>, animated: Bool, completion: AnimationCompletion?) {
         
         let _updates = updates
-//        for u in _updates {
-//            log.debug("\(u.view.attributes?.indexPath.description ?? "[?, ?]") - \(u.type) - is view\(u.view)")
-//        }
         
-        if animated && !animating {
+        if animated {
             let _animDuration = self.collectionView.animationDuration
-            
-            self.animating = true
-            
-            // Dispatch to allow frame changes from reloadLayout() to apply before 
-            // beginning the animations
+
+            // Dispatch to allow frame changes from reloadLayout() to apply before beginning the animations
             DispatchQueue.main.async { [unowned self] in
                 var removals = [ItemUpdate]()
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in
@@ -451,20 +441,12 @@ final public class CollectionViewDocumentView : NSView {
                         }
                     }
                 }) { () -> Void in
-                    if self.disableAnimationTimer == nil {
-                        self.animating = false
-                    }
                     self.finishRemovals(removals)
                     completion?(true)
                 }
              }
         }
         else {
-            if animated {
-                disableAnimationTimer?.invalidate()
-                disableAnimationTimer = Timer.scheduledTimer(timeInterval: collectionView.animationDuration, target: self, selector: #selector(enableAnimations), userInfo: nil, repeats: false)
-                animating = true
-            }
             for item in _updates {
                 if item.type == .remove {
                     removeItem(item)
@@ -480,12 +462,6 @@ final public class CollectionViewDocumentView : NSView {
             completion?(!animated)
         }
     }
-    @objc func enableAnimations() {
-        animating = false
-        disableAnimationTimer?.invalidate()
-        disableAnimationTimer = nil
-    }
-    
     
     fileprivate func finishRemovals(_ removals: [ItemUpdate]) {
         for item in removals {

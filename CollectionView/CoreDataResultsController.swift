@@ -344,7 +344,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
      
      For custom names, leave nil and conform your section objects to CustomDisplayStringConvertible
      */
-    public var sectionNameKeyPath : String?
+    public var sectionNameKeyPath : KeyPath<Section, String>?
     
     
     /**
@@ -367,9 +367,9 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         guard let obj = sectionInfo(at: indexPath)?.representedObject else {
             return "Ungrouped"
         }
-        if let key = self.sectionNameKeyPath,
-            let val = obj.value(forKeyPath: key) as? CustomDisplayStringConvertible {
-            return val.displayDescription
+        if let key = self.sectionNameKeyPath {
+            let val = obj[keyPath: key]
+            return val
         }
         return (obj as? CustomDisplayStringConvertible)?.displayDescription ?? ""
     }

@@ -839,6 +839,7 @@ extension MutableResultsController where Element:AnyObject {
             else {
                 currentSection.remove(object)
                 let newSection = self.getOrCreateSectionInfo(for: sectionValue)
+                _sections.needsSort = true
                 newSection.ensureEditing()
                 newSection.add(object)
                 self._editingContext.itemsWithSectionChange.insert(object)

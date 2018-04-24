@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2DC5161E329CA000EBC234 /* IndexedSet.swift */; };
 		1C6E50851E2D9C2A00C85946 /* ResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50821E2D9C2A00C85946 /* ResultsController.swift */; };
+		1CB3A3D02075651900A2AB9B /* ReaultionalRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */; };
 		1CC05C221FF6F564001E6936 /* MutableResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC05C211FF6F564001E6936 /* MutableResultsController.swift */; };
 		DE13C18B1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */; };
 		DE297DE01E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */; };
@@ -29,14 +30,14 @@
 		DE98600B1E6F956100B6A3EC /* FetchedSetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */; };
 		DE9A6220203782F100210035 /* MRCValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A621F203782F100210035 /* MRCValueTests.swift */; };
 		DE9A6222203CBE7200210035 /* SectionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A6221203CBE7200210035 /* SectionInfo.swift */; };
-		DE9A6224203CE8CC00210035 /* FRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90669E2034E5F8007B73E7 /* FRCTests.swift */; };
+		DE9A6224203CE8CC00210035 /* FetchedRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE90669E2034E5F8007B73E7 /* FetchedRCTests.swift */; };
 		DE9A6226203D1B9500210035 /* CoreDataResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */; };
 		DE9A6228203E6B8900210035 /* MRCObjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9A6227203E6B8900210035 /* MRCObjectTests.swift */; };
 		DEA638B1200874950023F2BD /* SelectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA638B0200874950023F2BD /* SelectionTests.swift */; };
 		DEA638B3200874950023F2BD /* CollectionView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE9071E91CAC7FD800AD0E37 /* CollectionView.framework */; };
 		DEA6BA631D52E00900B3EF24 /* CollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEA6BA621D52E00900B3EF24 /* CollectionViewController.swift */; };
 		DEAFE2A71E41655C00FCF9C6 /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */; };
-		DEB0F4401E4105D100C2260B /* DelegateChangeSets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */; };
+		DEB0F4401E4105D100C2260B /* CollectionViewProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB0F43F1E4105D100C2260B /* CollectionViewProvider.swift */; };
 		DEB3AC25204DB90A00E18358 /* CVProxyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB3AC24204DB90A00E18358 /* CVProxyTests.swift */; };
 		DEB4D5631E64EEC00044026F /* CollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECA70CB1D8751010006D795 /* CollectionViewFlowLayout.swift */; };
 		DEB7366A1E8599E7008467F8 /* CollectionViewPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB736671E8599E7008467F8 /* CollectionViewPreviewController.swift */; };
@@ -67,8 +68,10 @@
 		1C2DC5161E329CA000EBC234 /* IndexedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedSet.swift; sourceTree = "<group>"; };
 		1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataResultsController.swift; sourceTree = "<group>"; };
 		1C6E50821E2D9C2A00C85946 /* ResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsController.swift; sourceTree = "<group>"; };
+		1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaultionalRCTests.swift; sourceTree = "<group>"; };
 		1CC05C211FF6F564001E6936 /* MutableResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableResultsController.swift; sourceTree = "<group>"; };
 		DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedObjectContextObservationCoordinator.swift; sourceTree = "<group>"; };
+		DE1EE9A42072B00B00B76FE2 /* CollapsableCollectionViewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableCollectionViewProvider.swift; sourceTree = "<group>"; };
 		DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupplementaryViewIdentifier.swift; sourceTree = "<group>"; };
 		DE35BE1E20376FCC008FEF6F /* SortDescriptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortDescriptor.swift; sourceTree = "<group>"; };
 		DE3E47551E4259B800F19D9E /* EditDistance.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDistance.swift; sourceTree = "<group>"; };
@@ -83,7 +86,7 @@
 		DE82E95D1D78BFC900346B9E /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DE8B448920337DC100F16614 /* OrderedSetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedSetTests.swift; sourceTree = "<group>"; };
 		DE8B448B2033903500F16614 /* IndexedSetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexedSetTests.swift; sourceTree = "<group>"; };
-		DE90669E2034E5F8007B73E7 /* FRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FRCTests.swift; sourceTree = "<group>"; };
+		DE90669E2034E5F8007B73E7 /* FetchedRCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchedRCTests.swift; sourceTree = "<group>"; };
 		DE9071E91CAC7FD800AD0E37 /* CollectionView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CollectionView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE9071EC1CAC7FD800AD0E37 /* CollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollectionView.h; sourceTree = "<group>"; };
 		DE9071EE1CAC7FD800AD0E37 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -104,7 +107,7 @@
 		DEA638B2200874950023F2BD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DEA6BA621D52E00900B3EF24 /* CollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewController.swift; sourceTree = "<group>"; };
 		DEAFE2A61E41655C00FCF9C6 /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
-		DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DelegateChangeSets.swift; sourceTree = "<group>"; };
+		DEB0F43F1E4105D100C2260B /* CollectionViewProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewProvider.swift; sourceTree = "<group>"; };
 		DEB3AC24204DB90A00E18358 /* CVProxyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVProxyTests.swift; sourceTree = "<group>"; };
 		DEB736671E8599E7008467F8 /* CollectionViewPreviewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewPreviewController.swift; sourceTree = "<group>"; };
 		DEB736681E8599E7008467F8 /* CollectionViewPreviewLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionViewPreviewLayout.swift; sourceTree = "<group>"; };
@@ -139,7 +142,8 @@
 			isa = PBXGroup;
 			children = (
 				1C6E50821E2D9C2A00C85946 /* ResultsController.swift */,
-				DEB0F43F1E4105D100C2260B /* DelegateChangeSets.swift */,
+				DEB0F43F1E4105D100C2260B /* CollectionViewProvider.swift */,
+				DE1EE9A42072B00B00B76FE2 /* CollapsableCollectionViewProvider.swift */,
 				DE9A6221203CBE7200210035 /* SectionInfo.swift */,
 				1CC05C211FF6F564001E6936 /* MutableResultsController.swift */,
 				1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */,
@@ -237,7 +241,8 @@
 				DEB3AC24204DB90A00E18358 /* CVProxyTests.swift */,
 				DE8B448920337DC100F16614 /* OrderedSetTests.swift */,
 				DE8B448B2033903500F16614 /* IndexedSetTests.swift */,
-				DE90669E2034E5F8007B73E7 /* FRCTests.swift */,
+				DE90669E2034E5F8007B73E7 /* FetchedRCTests.swift */,
+				1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */,
 				DE9A621F203782F100210035 /* MRCValueTests.swift */,
 				DE9A6227203E6B8900210035 /* MRCObjectTests.swift */,
 				DEA638B2200874950023F2BD /* Info.plist */,
@@ -312,7 +317,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Noun Project";
 				TargetAttributes = {
 					DE9071E81CAC7FD800AD0E37 = {
@@ -369,7 +374,7 @@
 				DE9A6226203D1B9500210035 /* CoreDataResultsController.swift in Sources */,
 				DE82E95C1D78BF9300346B9E /* Protocols.swift in Sources */,
 				DEB4D5631E64EEC00044026F /* CollectionViewFlowLayout.swift in Sources */,
-				DEB0F4401E4105D100C2260B /* DelegateChangeSets.swift in Sources */,
+				DEB0F4401E4105D100C2260B /* CollectionViewProvider.swift in Sources */,
 				DE98600B1E6F956100B6A3EC /* FetchedSetController.swift in Sources */,
 				DEE3B5851D246CB100AD34F1 /* CollectionViewListLayout.swift in Sources */,
 				DEB7366A1E8599E7008467F8 /* CollectionViewPreviewController.swift in Sources */,
@@ -406,7 +411,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DE9A6224203CE8CC00210035 /* FRCTests.swift in Sources */,
+				DE9A6224203CE8CC00210035 /* FetchedRCTests.swift in Sources */,
+				1CB3A3D02075651900A2AB9B /* ReaultionalRCTests.swift in Sources */,
 				DE9A6228203E6B8900210035 /* MRCObjectTests.swift in Sources */,
 				DE8B448A20337DC100F16614 /* OrderedSetTests.swift in Sources */,
 				DEB3AC25204DB90A00E18358 /* CVProxyTests.swift in Sources */,
@@ -440,12 +446,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -495,12 +503,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -526,6 +536,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};

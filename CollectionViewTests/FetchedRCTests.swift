@@ -1,5 +1,5 @@
 //
-//  FRCTests.swift
+//  FetchedRCTests.swift
 //  CollectionViewTests
 //
 //  Created by Wesley Byrne on 2/14/18.
@@ -9,7 +9,7 @@
 import XCTest
 @testable import CollectionView
 
-class FRCTests: XCTestCase, ResultsControllerDelegate {
+class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
     
     fileprivate lazy var context : NSManagedObjectContext = {
         let model = TestModel()
@@ -72,14 +72,14 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         _ = self.createItemsBySection(1, items: 10)
         let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
         // Check ascending TRUE
-        frc.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
+        frc.sortDescriptors = [SortDescriptor(\Child.displayOrder, ascending: true)]
         XCTAssertNoThrow(try frc.performFetch())
         for n in 0..<10 {
             XCTAssertEqual(frc.object(at: IndexPath.for(item: n, section: 0))!.displayOrder.intValue, n)
         }
         
         // Check ascending FALSE
-        frc.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
+        frc.sortDescriptors = [SortDescriptor(\Child.displayOrder, ascending: false)]
         XCTAssertNoThrow(try frc.performFetch())
         for n in 0..<10 {
             XCTAssertEqual(frc.object(at: IndexPath.for(item: n, section: 0))!.displayOrder.intValue, 9 - n)
@@ -98,8 +98,8 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         self._expectation = expectation(description: "Delegate")
         _ = Child.createOrphan(in: context)
         waitForExpectations(timeout: 0.1) { (err) in
-            XCTAssertEqual(self.changeSet.items.inserted.count, 0)
-            XCTAssertEqual(self.changeSet.sections.inserted.count, 1)
+            XCTAssertEqual(self.changeSet.itemUpdates.inserted.count, 0)
+            XCTAssertEqual(self.changeSet.sectionUpdates.inserted.count, 1)
             XCTAssertEqual(frc.numberOfSections, 1)
             XCTAssertEqual(frc.numberOfObjects(in: 0), 1)
         }
@@ -115,8 +115,8 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         _ = self.createItemsBySection(1, items: 5)
         
         waitForExpectations(timeout: 0.1) { (err) in
-            XCTAssertEqual(self.changeSet.items.inserted.count, 0)
-            XCTAssertEqual(self.changeSet.sections.inserted.count, 1)
+            XCTAssertEqual(self.changeSet.itemUpdates.inserted.count, 0)
+            XCTAssertEqual(self.changeSet.sectionUpdates.inserted.count, 1)
             XCTAssertEqual(frc.numberOfSections, 1)
             XCTAssertEqual(frc.numberOfObjects(in: 0), 5)
         }
@@ -133,8 +133,8 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         self._expectation = expectation(description: "Delegate")
         _ = self.createItemsBySection(5, items: 5)
         waitForExpectations(timeout: 0.1) { (err) in
-            XCTAssertEqual(self.changeSet.items.inserted.count, 0)
-            XCTAssertEqual(self.changeSet.sections.inserted.count, 5)
+            XCTAssertEqual(self.changeSet.itemUpdates.inserted.count, 0)
+            XCTAssertEqual(self.changeSet.sectionUpdates.inserted.count, 5)
             XCTAssertEqual(frc.numberOfSections, 5)
             for s in 0..<frc.numberOfSections {
                 XCTAssertEqual(frc.numberOfObjects(in: s), 5)
@@ -169,23 +169,23 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     
     func test_delegate_removeItem_first() {
         _testRemoveItems(sections: 1, items: 10, indexPaths: [IndexPath.for(item: 0, section: 0)]) { (frc) in
-            XCTAssertEqual(self.changeSet.items.deleted.count, 1)
-            XCTAssertEqual(self.changeSet.items.deleted.first, IndexPath.for(item: 0, section: 0))
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 1)
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.first, IndexPath.for(item: 0, section: 0))
             XCTAssertEqual(frc.numberOfObjects(in: 0), 9)
         }
     }
     func test_delegate_removeItem_middle() {
         _testRemoveItems(sections: 1, items: 10, indexPaths: [IndexPath.for(item: 5, section: 0)]) { (frc) in
-            XCTAssertEqual(self.changeSet.items.deleted.count, 1)
-            XCTAssertEqual(self.changeSet.items.deleted.first, IndexPath.for(item: 5, section: 0))
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 1)
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.first, IndexPath.for(item: 5, section: 0))
             XCTAssertEqual(frc.numberOfObjects(in: 0), 9)
         }
     }
     
     func test_delegate_removeItem_last() {
         _testRemoveItems(sections: 1, items: 10, indexPaths: [IndexPath.for(item: 9, section: 0)]) { (frc) in
-            XCTAssertEqual(self.changeSet.items.deleted.count, 1)
-            XCTAssertEqual(self.changeSet.items.deleted.first, IndexPath.for(item: 9, section: 0))
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 1)
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.first, IndexPath.for(item: 9, section: 0))
             XCTAssertEqual(frc.numberOfObjects(in: 0), 9)
         }
     }
@@ -198,9 +198,9 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         ]
         
         _testRemoveItems(sections: 4, items: 10, indexPaths: ips) { (frc) in
-            XCTAssertEqual(self.changeSet.items.deleted.count, 3)
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 3)
             for ip in ips {
-                XCTAssertTrue(self.changeSet.items.deleted.contains(ip))
+                XCTAssertTrue(self.changeSet.itemUpdates.deleted.contains(ip))
             }
             XCTAssertEqual(frc.numberOfObjects(in: 0), 9)
             XCTAssertEqual(frc.numberOfObjects(in: 1), 9)
@@ -212,9 +212,9 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     func test_delegate_removeAllItemsfromSection() {
         let ips = IndexPath.inRange(0..<5, section: 0)
         _testRemoveItems(sections: 4, items: 5, indexPaths: ips) { (frc) in
-            XCTAssertEqual(self.changeSet.items.deleted.count, 0)
-            XCTAssertEqual(self.changeSet.sections.deleted.count, 1)
-            XCTAssertTrue(self.changeSet.sections.deleted.contains(0))
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 0)
+            XCTAssertEqual(self.changeSet.sectionUpdates.deleted.count, 1)
+            XCTAssertTrue(self.changeSet.sectionUpdates.deleted.contains(0))
             XCTAssertEqual(frc.numberOfSections, 3)
             XCTAssertEqual(frc.numberOfObjects(in: 0), 5)
             XCTAssertEqual(frc.numberOfObjects(in: 1), 5)
@@ -225,9 +225,9 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
     func test_delegate_removeAllItemsfromLastSection() {
         let ips = IndexPath.inRange(0..<5, section: 3)
         _testRemoveItems(sections: 4, items: 5, indexPaths: ips) { (frc) in
-            XCTAssertEqual(self.changeSet.items.deleted.count, 0)
-            XCTAssertEqual(self.changeSet.sections.deleted.count, 1)
-            XCTAssertTrue(self.changeSet.sections.deleted.contains(3))
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 0)
+            XCTAssertEqual(self.changeSet.sectionUpdates.deleted.count, 1)
+            XCTAssertTrue(self.changeSet.sectionUpdates.deleted.contains(3))
             XCTAssertEqual(frc.numberOfSections, 3)
             XCTAssertEqual(frc.numberOfObjects(in: 0), 5)
             XCTAssertEqual(frc.numberOfObjects(in: 1), 5)
@@ -241,12 +241,12 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         ips.append(contentsOf: IndexPath.inRange(0..<5, section: 3))
         
         _testRemoveItems(sections: 4, items: 5, indexPaths: ips) { (frc) in
-            XCTAssertEqual(self.changeSet.items.deleted.count, 0)
-            XCTAssertEqual(self.changeSet.sections.deleted.count, 4)
-            XCTAssertTrue(self.changeSet.sections.deleted.contains(0))
-            XCTAssertTrue(self.changeSet.sections.deleted.contains(1))
-            XCTAssertTrue(self.changeSet.sections.deleted.contains(2))
-            XCTAssertTrue(self.changeSet.sections.deleted.contains(3))
+            XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 0)
+            XCTAssertEqual(self.changeSet.sectionUpdates.deleted.count, 4)
+            XCTAssertTrue(self.changeSet.sectionUpdates.deleted.contains(0))
+            XCTAssertTrue(self.changeSet.sectionUpdates.deleted.contains(1))
+            XCTAssertTrue(self.changeSet.sectionUpdates.deleted.contains(2))
+            XCTAssertTrue(self.changeSet.sectionUpdates.deleted.contains(3))
             XCTAssertEqual(frc.numberOfSections, 0)
         }
     }
@@ -273,11 +273,11 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         
         self.waitForExpectations(timeout: 0.5) { (err) in
             // There should really only be one move
-            XCTAssertEqual(self.changeSet.items.count, 3)
-            XCTAssertEqual(self.changeSet.items.moved.count, 3)
+            XCTAssertEqual(self.changeSet.itemUpdates.count, 3)
+            XCTAssertEqual(self.changeSet.itemUpdates.moved.count, 3)
             print(self.changeSet)
             XCTAssertEqual(frc.object(at: IndexPath.zero), moved)
-            for move in self.changeSet.items.moved {
+            for move in self.changeSet.itemUpdates.moved {
                 XCTAssertEqual(children[move.source._section][move.source._item], frc.object(at: move.destination))
             }
         }
@@ -305,8 +305,8 @@ class FRCTests: XCTestCase, ResultsControllerDelegate {
         
         self.waitForExpectations(timeout: 0.5) { (err) in
             // There should really only be one move
-            XCTAssertEqual(self.changeSet.items.count, 2)
-            XCTAssertEqual(self.changeSet.items.moved.count, 2)
+            XCTAssertEqual(self.changeSet.itemUpdates.count, 2)
+            XCTAssertEqual(self.changeSet.itemUpdates.moved.count, 2)
             print(self.changeSet)
             XCTAssertEqual(frc.numberOfObjects(in: 1), 7)
             XCTAssertEqual(frc.numberOfObjects(in: 2), 3)

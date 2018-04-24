@@ -9,11 +9,11 @@
 import Foundation
 
 public protocol DiffAware {
-    func diff<T: Collection>(old: T, new: T) -> [Edit<T.Iterator.Element>] where T.Iterator.Element:Hashable, T.Index == Int, T.IndexDistance == Int
+    func diff<T: Collection>(old: T, new: T) -> [Edit<T.Iterator.Element>] where T.Iterator.Element:Hashable, T.Index == Int
 }
 
 extension DiffAware {
-    func preprocess<T: Collection>(old: T, new: T) -> [Edit<T.Iterator.Element>]? where T.Iterator.Element:Hashable, T.Index == Int, T.IndexDistance == Int {
+    func preprocess<T: Collection>(old: T, new: T) -> [Edit<T.Iterator.Element>]? where T.Iterator.Element:Hashable, T.Index == Int {
         switch (old.isEmpty, new.isEmpty) {
         case (true, true):
             // empty

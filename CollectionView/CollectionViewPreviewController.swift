@@ -185,10 +185,11 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     
     
     private var overlay = BackgroundView(color: NSColor.white)
-    
-    /**
-     CollectionViewDelegatePreviewLayout
-     */
+
+    public var dismissGestureEnabled: Bool = false {
+        didSet { dismissGesture?.isEnabled = dismissGestureEnabled }
+    }
+    private var dismissGesture : NSMagnificationGestureRecognizer?
     
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -210,6 +211,11 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         overlay.addConstraintsToMatchParent()
         
         collectionView.horizontalScroller = nil
+        
+        let gesture = NSMagnificationGestureRecognizer(target: self, action: #selector(CollectionViewPreviewController.magnificationGestureRecognized(_:)))
+        self.view.addGestureRecognizer(gesture)
+        gesture.isEnabled = self.dismissGestureEnabled
+        self.dismissGesture = gesture
     }
     
     // MARK: - Source & Data
@@ -265,6 +271,14 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         eventMonitor?.stop()
         eventMonitor = nil
     }
+    
+    
+    @objc func magnificationGestureRecognized(_ sender: NSMagnificationGestureRecognizer) {
+        if sender.state == .began, sender.magnification < 0 {
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+
     
     
     // MARK: - Transitions

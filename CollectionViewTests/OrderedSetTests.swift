@@ -284,6 +284,23 @@ class OrderedSetTests: XCTestCase {
         }
     }
     
+    
+    func testInsertPerformance() {
+        // This is an example of a performance test case.
+        self.measureMetrics([.wallClockTime], automaticallyStartMeasuring: false) {
+            let source = (0..<5000).map { return "Object \($0)" }
+            let new = (2000..<2500).map { return "Object \($0)" }
+            var set = OrderedSet<String>(unsafe: source)
+            let sorts = [SortDescriptor(\String.displayDescription)]
+            self.startMeasuring()
+            
+//            for str in new {
+//                set.insert(str, using: sorts)
+//            }
+            set.insert(contentsOf: new, using: sorts)
+        }
+    }
+    
     func testUnionPerformance() {
         // This is an example of a performance test case.
         var list = [String]()

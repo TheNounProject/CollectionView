@@ -134,17 +134,27 @@ public extension Array {
     }
     
     public mutating func insert(_ element: Element, using sortDescriptors: [SortDescriptor<Element>]) -> Int {
-        if sortDescriptors.count > 0 {
-            for (idx, existing) in self.enumerated() {
-                if sortDescriptors.compare(element, existing) != .ascending {
-                    self.insert(element, at: idx)
-                    return idx
-                }
-            }
+
+        if sortDescriptors.count > 0, let idx = (self.index{ return sortDescriptors.compare(element, $0) != .ascending }) {
+            self.insert(element, at: idx)
+            return idx
         }
         self.append(element)
         return self.count - 1
     }
+    
+//    public mutating func insert(_ element: Element, using sortDescriptors: [SortDescriptor<Element>]) -> Int {
+//        if sortDescriptors.count > 0 {
+//            for (idx, existing) in self.enumerated() {
+//                if sortDescriptors.compare(element, existing) != .ascending {
+//                    self.insert(element, at: idx)
+//                    return idx
+//                }
+//            }
+//        }
+//        self.append(element)
+//        return self.count - 1
+//    }
 }
     
 extension Sequence {

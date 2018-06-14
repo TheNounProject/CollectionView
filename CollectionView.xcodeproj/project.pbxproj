@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2DC5161E329CA000EBC234 /* IndexedSet.swift */; };
 		1C6E50851E2D9C2A00C85946 /* ResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C6E50821E2D9C2A00C85946 /* ResultsController.swift */; };
+		1C79FCA620D2EE6D00518495 /* CVFlowLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C79FCA520D2EE6D00518495 /* CVFlowLayoutTests.swift */; };
 		1CB3A3D02075651900A2AB9B /* ReaultionalRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */; };
 		1CC05C221FF6F564001E6936 /* MutableResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC05C211FF6F564001E6936 /* MutableResultsController.swift */; };
 		DE13C18B1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */; };
@@ -68,6 +69,7 @@
 		1C2DC5161E329CA000EBC234 /* IndexedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IndexedSet.swift; sourceTree = "<group>"; };
 		1C6E50811E2D9C2A00C85946 /* CoreDataResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataResultsController.swift; sourceTree = "<group>"; };
 		1C6E50821E2D9C2A00C85946 /* ResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultsController.swift; sourceTree = "<group>"; };
+		1C79FCA520D2EE6D00518495 /* CVFlowLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVFlowLayoutTests.swift; sourceTree = "<group>"; };
 		1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaultionalRCTests.swift; sourceTree = "<group>"; };
 		1CC05C211FF6F564001E6936 /* MutableResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableResultsController.swift; sourceTree = "<group>"; };
 		DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedObjectContextObservationCoordinator.swift; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 		DEA638AF200874950023F2BD /* CollectionViewTests */ = {
 			isa = PBXGroup;
 			children = (
+				1C79FCA520D2EE6D00518495 /* CVFlowLayoutTests.swift */,
 				DED9FFAA204503AA00478480 /* CollectionViewEditingTests.swift */,
 				DEA638B0200874950023F2BD /* SelectionTests.swift */,
 				DEB3AC24204DB90A00E18358 /* CVProxyTests.swift */,
@@ -411,6 +414,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C79FCA620D2EE6D00518495 /* CVFlowLayoutTests.swift in Sources */,
 				DE9A6224203CE8CC00210035 /* FetchedRCTests.swift in Sources */,
 				1CB3A3D02075651900A2AB9B /* ReaultionalRCTests.swift in Sources */,
 				DE9A6228203E6B8900210035 /* MRCObjectTests.swift in Sources */,

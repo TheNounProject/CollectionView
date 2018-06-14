@@ -38,6 +38,14 @@
                BlueprintName = "CollectionViewTests"
                ReferencedContainer = "container:CollectionView.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "CVFlowLayoutTests/testAttributesInRectPerformance_bigSection()">
+               </Test>
+               <Test
+                  Identifier = "CVFlowLayoutTests/testAttributesInRectPerformance_multiSection()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <AdditionalOptions>

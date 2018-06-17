@@ -55,8 +55,6 @@ final class BasicHeaderView : CollectionReusableView {
         accessoryButton.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        
-        
         _titleInset = NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 8)
         
         self.addConstraints([
@@ -84,7 +82,7 @@ final class BasicHeaderView : CollectionReusableView {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         
-        NSColor(white: 1, alpha: 0.95).setFill()
+    NSColor.windowBackgroundColor.withAlphaComponent(0.95).setFill()
         dirtyRect.fill()
         
         if drawBorder {

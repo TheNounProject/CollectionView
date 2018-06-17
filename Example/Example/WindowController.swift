@@ -81,24 +81,34 @@ class WindowController : NSWindowController {
 
     
     @IBAction func groupSelectorChanged(_ sender: NSSegmentedControl) {
-        let grid = (self.window?.toolbar?.items[0].view as? NSSegmentedControl)?.selectedSegment == 1
+        
+        var layout : BaseController.Layout = {
+            let idx = (self.window?.toolbar?.items[0].view as? NSSegmentedControl)?.selectedSegment ?? 0
+            switch idx {
+            case 1: return .flow
+            case 2: return .column
+            default: return .list
+            }
+        }()
+        
+        
         if sender.selectedSegment == 0 {
             fetchedController.view.frame.size = self.window!.frame.size
             self.fetchedController.content.setSectionKeyPath(nil)
-            self.fetchedController.setLayout(grid: grid)
+            self.fetchedController.setLayout(type: layout)
             self.fetchedController.reload(nil)
             self.contentViewController = fetchedController
         }
         else if sender.selectedSegment == 1 {
             fetchedController.view.frame.size = self.window!.frame.size
             self.fetchedController.content.setSectionKeyPath(\Child.second)
-            self.fetchedController.setLayout(grid: grid)
+            self.fetchedController.setLayout(type: layout)
             self.fetchedController.reload(nil)
             self.contentViewController = fetchedController
         }
         else {
             relationalController.view.frame.size = self.window!.frame.size
-            self.relationalController.setLayout(grid: grid)
+            self.relationalController.setLayout(type: layout)
             self.relationalController.reload(nil)
             self.contentViewController = relationalController
         }
@@ -109,10 +119,30 @@ class WindowController : NSWindowController {
 
 
 
-class BaseController : CollectionViewController, CollectionViewDelegateFlowLayout, CollectionViewDelegateListLayout, CollectionViewPreviewControllerDelegate{
+class BaseController : CollectionViewController, CollectionViewDelegateFlowLayout, CollectionViewDelegateListLayout, CollectionViewPreviewControllerDelegate, CollectionViewDelegateColumnLayout {
     
-    var listLayout = CollectionViewListLayout()
-    var gridLayout = CollectionViewFlowLayout()
+    enum Layout {
+        case list, flow, column
+    }
+    
+    lazy var listLayout : CollectionViewListLayout = {
+        let layout = CollectionViewListLayout()
+        layout.itemHeight = 40
+        layout.headerHeight = 50
+        return layout
+    }()
+    lazy var flowLayout :    CollectionViewFlowLayout = {
+        let layout = CollectionViewFlowLayout()
+        layout.defaultSectionInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        layout.defaultHeaderHeight = 50
+        layout.defaultRowTransform = .none
+        return layout
+    }()
+    lazy var columnLayout : CollectionViewColumnLayout = {
+        let layout = CollectionViewColumnLayout()
+        layout.layoutStrategy = .shortestFirst
+        return layout
+    }()
     
     var provider : CollectionViewProvider!
     
@@ -120,14 +150,7 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         super.viewDidLoad()
         
         self.collectionView.contentInsets.top = 70
-        
-        listLayout.itemHeight = 40
-        listLayout.headerHeight = 50
         collectionView.collectionViewLayout = listLayout
-        
-        gridLayout.defaultSectionInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-        gridLayout.defaultHeaderHeight = 50
-        gridLayout.defaultRowTransform = .none
         
         // The default way of registering cells
         collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!, forCellWithReuseIdentifier: "GridCell")
@@ -143,7 +166,7 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     @IBAction func toggleLayout(_ sender: AnyObject?) {
         let control = self.view.window?.toolbar?.items[0].view as? NSSegmentedControl
         if self.collectionView.collectionViewLayout is CollectionViewListLayout {
-            self.collectionView.collectionViewLayout = self.gridLayout
+            self.collectionView.collectionViewLayout = self.flowLayout
             control?.setSelected(true, forSegment: 1)
         }
         else {
@@ -154,14 +177,23 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     }
     
     @IBAction func layoutSelectorChanged(_ sender: NSSegmentedControl) {
-        self.setLayout(grid: sender.selectedSegment > 0)
+        switch sender.selectedSegment {
+        case 1: setLayout(type: .flow)
+        case 2: setLayout(type: .column)
+        default: setLayout(type: .list)
+        }
         self.collectionView.reloadData()
     }
     
-    func setLayout(grid: Bool) {
-        self.collectionView.collectionViewLayout = grid
-            ? self.gridLayout
-            : self.listLayout
+    func setLayout(type: Layout) {
+        let layout : CollectionViewLayout = {
+            switch type {
+            case .list: return self.listLayout
+            case .flow: return self.flowLayout
+            case .column: return self.columnLayout
+            }
+        }()
+        self.collectionView.collectionViewLayout = layout
     }
     
     func child(at indexPath: IndexPath) -> Child? {
@@ -250,6 +282,16 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         if provider.showEmptySection(at: indexPath) {
             return 200
         }
+        
+        if collectionViewLayout is CollectionViewColumnLayout {
+            let child = self.child(at: indexPath)!
+            let variance = child.variable.intValue
+            let size : CGFloat = 150
+            let multiplier = CGFloat(variance % 5)
+            return  size + (50 * multiplier)
+        }
+        
+        
         return 50
     }
     
@@ -264,6 +306,25 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         return self.collectionView(collectionView, layout:collectionViewLayout, heightForHeaderInSection:section)
     }
 
+    
+    
+    // MARK: - Column Layout
+    /*-------------------------------------------------------------------------------*/
+    
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, numberOfColumnsInSection section: Int) -> Int {
+        if provider.showEmptyState {
+            return 1
+        }
+        if provider.showEmptySection(at: IndexPath.for(section: section)) {
+            return 1
+        }
+        return Int(collectionView.frame.size.width / 200)
+        
+    }
+    
+    
+    // MARK: - Data Source
+    /*-------------------------------------------------------------------------------*/
     
     func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView {
         let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "BasicHeaderView", for: indexPath) as! BasicHeaderView
@@ -292,26 +353,26 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
             return cell
         }
         
-        if collectionView.collectionViewLayout is CollectionViewFlowLayout {
-            let cell = GridCell.deque(for: indexPath, in: collectionView) as! GridCell
-            cell.setup(with: child)
+        if collectionView.collectionViewLayout is CollectionViewListLayout {
+            let cell = ListCell.deque(for: indexPath, in: collectionView) as! ListCell
+            
+            if !cell.reused {
+                cell.restingBackgroundColor = NSColor.controlBackgroundColor // NSColor(white: 0.98, alpha: 1)
+                cell.highlightedBackgroundColor = NSColor.windowBackgroundColor
+                // NSColor(white: 0.95, alpha: 1)
+                //            cell.selectedBackgroundColor = NSColor.selectedContentBackgroundColor // NSColor(white: 0.95, alpha: 1)
+                cell.inset = 16
+                cell.style = .split
+                cell.titleLabel.font = NSFont.systemFont(ofSize: 12, weight: NSFont.Weight.thin)
+                cell.titleLabel.stringValue = ""
+            }
+            
+            cell.detailLabel.stringValue = "\(child.name) \(indexPath)"
             return cell
         }
         
-        let cell = ListCell.deque(for: indexPath, in: collectionView) as! ListCell
-        
-        if !cell.reused {
-            cell.restingBackgroundColor = NSColor(white: 0.98, alpha: 1)
-            cell.highlightedBackgroundColor = NSColor(white: 0.95, alpha: 1)
-            cell.selectedBackgroundColor = NSColor(white: 0.95, alpha: 1)
-            cell.inset = 16
-            cell.style = .split
-            cell.titleLabel.font = NSFont.systemFont(ofSize: 12, weight: NSFont.Weight.thin)
-            cell.titleLabel.stringValue = ""
-        }
-        
-        
-        cell.detailLabel.stringValue = "\(child.name) \(indexPath)"
+        let cell = GridCell.deque(for: indexPath, in: collectionView) as! GridCell
+        cell.setup(with: child)
         return cell
         
     }

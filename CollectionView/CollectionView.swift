@@ -142,7 +142,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
     open override var wantsUpdateLayer: Bool { return true }
     
     open override func updateLayer() {
-        super.updateLayer()
         self.layer?.backgroundColor = self.drawsBackground ? self.backgroundColor.cgColor : nil
     }
     

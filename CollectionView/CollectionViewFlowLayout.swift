@@ -203,7 +203,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     
     
     /// If supplementary views should be inset to section insets
-    public var insetSupplementaryViews = true
+    public var insetSupplementaryViews = false
     
     
     // MARK: - Layout Information
@@ -387,7 +387,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             sectionAttrs.frame.origin.y = top
             sectionAttrs.contentFrame.origin.y = top
             
-            let contentWidth = cv.contentVisibleRect.size.width - (insets.left + insets.right + contentInsets.left + contentInsets.right)
+            let contentWidth = cv.contentVisibleRect.size.width - (insets.width + contentInsets.width)
             
             let heightHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? self.defaultHeaderHeight
             if heightHeader > 0 {
@@ -395,7 +395,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 attrs.frame = insetSupplementaryViews
                     ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - (contentInsets.left + contentInsets.right), height: heightHeader)
+                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - contentInsets.width, height: heightHeader)
                 sectionAttrs.header = attrs
                 sectionAttrs.frame = attrs.frame
                 top = attrs.frame.maxY
@@ -416,8 +416,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 var forceBreak: Bool = false
                 for item in 0..<numItems {
-                    allIndexPaths.append(IndexPath.for(item: item, section: sec))
                     let ip = IndexPath.for(item: item, section: sec)
+                    allIndexPaths.append(ip)
                     let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
                     var attrs = CollectionViewLayoutAttributes(forCellWith: ip)
                     
@@ -528,47 +528,28 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     /*-------------------------------------------------------------------------------*/
     
     override open func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
-        guard !rect.isEmpty && !self.sectionAttributes.isEmpty else { return [] }
-        
-        var indexPaths = [IndexPath]()
-        for sAttrs in self.sectionAttributes {
-            
-            // If we have passed the target, finish
-            guard sAttrs.frame.origin.y < rect.maxY else { break }
-            guard sAttrs.frame.intersects(rect) else { continue }
-            
-            // If the section is completely shown, add all the attrs
-            if rect.contains(sAttrs.frame) {
-                indexPaths.append(contentsOf: sAttrs.items.map { return $0.indexPath })
-            }
-                // Scan the rows of the section
-            else if sAttrs.rows.count > 0 {
-                for row in sAttrs.rows {
-                    guard row.frame.intersects(rect) else {
-                        guard row.frame.origin.y < rect.maxY else { break }
-                        continue
-                    }
-                    for attr in row.items where attr.frame.intersects(rect) {
-                        indexPaths.append(attr.indexPath)
-                    }
-                }
-            }
-        }
-        return indexPaths
+        return itemAttributes(in: rect) { return $0.indexPath }
     }
     
     override open func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
+        return itemAttributes(in: rect) { return $0.copy() }
+    }
+    
+    private func itemAttributes<T>(in rect: CGRect, reducer: ((CollectionViewLayoutAttributes)->T)) -> [T] {
         guard !rect.isEmpty && !self.sectionAttributes.isEmpty else { return [] }
         
-        var result = [CollectionViewLayoutAttributes]()
+        var results = [T]()
         for sAttrs in self.sectionAttributes {
+            
             // If we have passed the target, finish
-            guard sAttrs.frame.origin.y < rect.maxY else { break }
-            guard sAttrs.frame.intersects(rect) else { continue }
+            guard sAttrs.frame.intersects(rect) else {
+                guard sAttrs.frame.origin.y < rect.maxY else { break }
+                continue
+            }
             
             // If the section is completely shown, add all the attrs
             if rect.contains(sAttrs.frame) {
-                result.append(contentsOf: sAttrs.items.map { return $0.copy() })
+                results.append(contentsOf: sAttrs.items.map { return reducer($0) })
             }
                 // Scan the rows of the section
             else if sAttrs.rows.count > 0 {
@@ -577,21 +558,18 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                         guard row.frame.origin.y < rect.maxY else { break }
                         continue
                     }
-                    for attr in row.items where attr.frame.intersects(rect) {
-                        result.append(attr.copy())
+                    for item in row.items where item.frame.intersects(rect) {
+                        results.append(reducer(item))
                     }
                 }
             }
         }
-        return result
+        return results
     }
     
     
     override open func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
-        if indexPath._section >= self.sectionAttributes.count { return nil }
-        if indexPath._item >= self.sectionAttributes[indexPath._section].items.count { return nil }
-        let list = self.sectionAttributes[indexPath._section]
-        return list.items[indexPath._item].copy()
+        return self.sectionAttributes.object(at: indexPath._section)?.items.object(at: indexPath._item)?.copy()
     }
     
     override open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {

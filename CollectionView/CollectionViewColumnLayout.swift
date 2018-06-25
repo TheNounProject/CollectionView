@@ -416,6 +416,7 @@ open class CollectionViewColumnLayout : CollectionViewLayout {
                     : CGRect(x: 0, y: top, width: cv.contentVisibleRect.size.width, height: footerHeight)
                 
                 section.footer = attributes
+                section.frame.size.height += attributes.frame.size.height
                 top = attributes.frame.maxY
             }
             section.frame.size.height += sectionInsets.bottom

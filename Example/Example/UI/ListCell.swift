@@ -200,11 +200,11 @@ class ListCell : CollectionViewCell {
             
             titleLabel.alignment = .left
             titleLabel.font = NSFont.systemFont(ofSize: 14)
-            titleLabel.textColor = NSColor.darkGray
+            titleLabel.textColor = NSColor.labelColor
             
             detailLabel.alignment = .left
             detailLabel.font = NSFont.systemFont(ofSize: 12)
-            detailLabel.textColor = NSColor.gray
+            detailLabel.textColor = NSColor.labelColor
             
             self.addConstraint(NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: titleLabel, attribute: .right, multiplier: 1, constant: inset))
             self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: titleLabel, attribute: .lastBaseline, multiplier: 1, constant: 1))
@@ -243,11 +243,11 @@ class ListCell : CollectionViewCell {
             
             titleLabel.alignment = .left
             titleLabel.font = NSFont.systemFont(ofSize: 14)
-            titleLabel.textColor = NSColor.darkGray
+            titleLabel.textColor = NSColor.labelColor
             
             detailLabel.alignment = .right
             detailLabel.font = NSFont.systemFont(ofSize: 14)
-            detailLabel.textColor = NSColor.gray
+            detailLabel.textColor = NSColor.labelColor
             
             self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset))
             self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0))

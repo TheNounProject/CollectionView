@@ -272,7 +272,7 @@ final public class CollectionViewDocumentView : NSView {
             let cell = self.collectionView._loadCell(at: ip)
             
             cell.setSelected(self.collectionView.itemAtIndexPathIsSelected(ip), animated: false)
-            _rect = _rect.union(attrs.frame.insetBy(dx: -1, dy: -1) )
+//            _rect = _rect.union(attrs.frame.insetBy(dx: -1, dy: -1) )
             
             self.collectionView.delegate?.collectionView?(self.collectionView, willDisplayCell: cell, forItemAt: ip)
             cell.viewWillDisplay()

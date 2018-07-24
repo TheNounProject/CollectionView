@@ -185,10 +185,11 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     
     
     private var overlay = BackgroundView(color: NSColor.white)
-    
-    /**
-     CollectionViewDelegatePreviewLayout
-     */
+
+    public var dismissGestureEnabled: Bool = false {
+        didSet { dismissGesture?.isEnabled = dismissGestureEnabled }
+    }
+    private var dismissGesture : NSMagnificationGestureRecognizer?
     
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -210,6 +211,11 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         overlay.addConstraintsToMatchParent()
         
         collectionView.horizontalScroller = nil
+        
+        let gesture = NSMagnificationGestureRecognizer(target: self, action: #selector(CollectionViewPreviewController.magnificationGestureRecognized(_:)))
+        self.view.addGestureRecognizer(gesture)
+        gesture.isEnabled = self.dismissGestureEnabled
+        self.dismissGesture = gesture
     }
     
     // MARK: - Source & Data
@@ -265,6 +271,14 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         eventMonitor?.stop()
         eventMonitor = nil
     }
+    
+    
+    @objc func magnificationGestureRecognized(_ sender: NSMagnificationGestureRecognizer) {
+        if sender.state == .began, sender.magnification < 0 {
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+
     
     
     // MARK: - Transitions
@@ -363,30 +377,35 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     open func dismiss(animated: Bool, completion: AnimationCompletion? = nil)  {
         self.delegate?.collectionViewPreviewControllerWillDismiss(self)
         self.stopEventMonitor()
-        guard let sourceCV = self.sourceCollectionView,
-            let ip = self.collectionView.indexPathsForSelectedItems.first ?? self.collectionView.indexPathForFirstVisibleItem else {
-            self.view.removeFromSuperview()
-            completion?(true)
-            return
-        }
         
-        if animated {
-            let cell = self.collectionView.cellForItem(at:ip)
-            let trans = cell as? CollectionViewPreviewTransitionCell
-            trans?.prepareForTransition(toItemAt: ip, in: sourceCV)
-            
-            NSAnimationContext.runAnimationGroup({ (context) in
-                context.duration = self.transitionDuration
-                context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
-                context.allowsImplicitAnimation = true
+        let ips = self.collectionView.indexPathsForVisibleItems.filter {
+            if let cell = self.collectionView.cellForItem(at: $0) {
+                return collectionView.contentVisibleRect.intersects(cell.frame)
+            }
+            return false
+        }
+        print(ips)
+        
+        if animated, let sourceCV = self.sourceCollectionView, !ips.isEmpty {
+            for ip in ips {
                 
-                trans?.transition(toItemAt: ip, in: sourceCV)
-                self.overlay.animator().alphaValue = 0
-            }) {
-                completion?(true)
-                trans?.finishTransition(toItemAt: ip, in: sourceCV)
-                self.view.removeFromSuperview()
-                self.removeFromParentViewController()
+                let cell = self.collectionView.cellForItem(at:ip)
+                let trans = cell as? CollectionViewPreviewTransitionCell
+                trans?.prepareForTransition(toItemAt: ip, in: sourceCV)
+                
+                NSAnimationContext.runAnimationGroup({ (context) in
+                    context.duration = self.transitionDuration
+                    context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                    context.allowsImplicitAnimation = true
+                    
+                    trans?.transition(toItemAt: ip, in: sourceCV)
+                    self.overlay.animator().alphaValue = 0
+                }) {
+                    completion?(true)
+                    trans?.finishTransition(toItemAt: ip, in: sourceCV)
+                    self.view.removeFromSuperview()
+                    self.removeFromParentViewController()
+                }
             }
         }
         else {

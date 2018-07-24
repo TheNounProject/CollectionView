@@ -203,7 +203,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     
     
     /// If supplementary views should be inset to section insets
-    public var insetSupplementaryViews = true
+    public var insetSupplementaryViews = false
     
     
     // MARK: - Layout Information
@@ -218,7 +218,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     ///
     /// - none: No transform
     /// - center: Center the elements at their current size and spacing
-    /// - fill: Enlarge the elements to fill the row
+    /// - fill: Enlarge the elements to fill the row specifying the max scale (< 1 for no max)
     public enum RowTransform {
         case none
         case center
@@ -298,10 +298,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             
             if f.indexPath > indexPath { return nil }
             if l.indexPath < indexPath { return nil }
-            for (idx, item) in self.items.enumerated() {
-                if item.indexPath == indexPath { return idx }
+            return self.items.index {
+                return $0.indexPath == indexPath
             }
-            return nil
         }
         
         func item(verticallyAlignedTo attrs: CollectionViewLayoutAttributes) -> IndexPath? {
@@ -313,12 +312,9 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             let center = attrs.frame.midX
             
             if l.frame.origin.x < center { return l.indexPath }
-            for item in self.items {
-                if item.frame.maxX > center {
-                    return item.indexPath
-                }
-            }
-            return nil
+            return self.items.first {
+                return $0.frame.maxX > center
+            }?.indexPath
         }
         
         var description: String {
@@ -360,7 +356,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     
     private var _lastSize = CGSize.zero
     open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        defer { self._lastSize = newBounds.size }
         return _lastSize != newBounds.size
     }
     
@@ -369,6 +364,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         self.allIndexPaths.removeAll()
         self.sectionAttributes.removeAll()
         guard let cv = self.collectionView else { return }
+        
+        self._lastSize = cv.frame.size
         
         let numSections = cv.numberOfSections
         guard numSections > 0 else { return }
@@ -390,7 +387,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             sectionAttrs.frame.origin.y = top
             sectionAttrs.contentFrame.origin.y = top
             
-            let contentWidth = cv.contentVisibleRect.size.width - (insets.left + insets.right + contentInsets.left + contentInsets.right)
+            let contentWidth = cv.contentVisibleRect.size.width - (insets.width + contentInsets.width)
             
             let heightHeader : CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? self.defaultHeaderHeight
             if heightHeader > 0 {
@@ -398,7 +395,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 attrs.frame = insetSupplementaryViews
                     ? CGRect(x: insets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - (contentInsets.left + contentInsets.right), height: heightHeader)
+                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - contentInsets.width, height: heightHeader)
                 sectionAttrs.header = attrs
                 sectionAttrs.frame = attrs.frame
                 top = attrs.frame.maxY
@@ -419,8 +416,8 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 
                 var forceBreak: Bool = false
                 for item in 0..<numItems {
-                    allIndexPaths.append(IndexPath.for(item: item, section: sec))
                     let ip = IndexPath.for(item: item, section: sec)
+                    allIndexPaths.append(ip)
                     let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
                     var attrs = CollectionViewLayoutAttributes(forCellWith: ip)
                     
@@ -428,7 +425,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                     case let .flow(size):
                         
                         func newRow() {
-                            
                             
                             var spacing : CGFloat = 0
                             if sectionAttrs.rows.count > 0 {
@@ -527,32 +523,53 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     }
     
     
+    
+    // MARK: - Query Content
+    /*-------------------------------------------------------------------------------*/
+    
+    override open func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
+        return itemAttributes(in: rect) { return $0.indexPath }
+    }
+    
     override open func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
-        var attrs : [CollectionViewLayoutAttributes] = []
+        return itemAttributes(in: rect) { return $0.copy() }
+    }
+    
+    private func itemAttributes<T>(in rect: CGRect, reducer: ((CollectionViewLayoutAttributes)->T)) -> [T] {
+        guard !rect.isEmpty && !self.sectionAttributes.isEmpty else { return [] }
         
-        guard let cv = self.collectionView else { return [] }
-        if rect.equalTo(CGRect.zero) || cv.numberOfSections == 0 { return attrs }
-        for sectionIndex in 0..<cv.numberOfSections {
-            let sAttrs = self.sectionAttributes[sectionIndex]
-            if sAttrs.frame.isEmpty || !sAttrs.frame.intersects(rect) { continue }
-            for row in sAttrs.rows {
-                guard row.frame.intersects(rect) else { continue }
-                for attr in row.items{
-                    if attr.frame.intersects(rect) {
-                        attrs.append(attr.copy())
+        var results = [T]()
+        for sAttrs in self.sectionAttributes {
+            
+            // If we have passed the target, finish
+            guard sAttrs.frame.intersects(rect) else {
+                guard sAttrs.frame.origin.y < rect.maxY else { break }
+                continue
+            }
+            
+            // If the section is completely shown, add all the attrs
+            if rect.contains(sAttrs.frame) {
+                results.append(contentsOf: sAttrs.items.map { return reducer($0) })
+            }
+                // Scan the rows of the section
+            else if sAttrs.rows.count > 0 {
+                for row in sAttrs.rows {
+                    guard row.frame.intersects(rect) else {
+                        guard row.frame.origin.y < rect.maxY else { break }
+                        continue
                     }
-                    else if attr.frame.origin.y > rect.maxY { break }
+                    for item in row.items where item.frame.intersects(rect) {
+                        results.append(reducer(item))
+                    }
                 }
             }
         }
-        return attrs
+        return results
     }
     
+    
     override open func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
-        if indexPath._section >= self.sectionAttributes.count{ return nil }
-        if indexPath._item >= self.sectionAttributes[indexPath._section].items.count { return nil }
-        let list = self.sectionAttributes[indexPath._section]
-        return list.items[indexPath._item].copy()
+        return self.sectionAttributes.object(at: indexPath._section)?.items.object(at: indexPath._item)?.copy()
     }
     
     override open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
@@ -596,43 +613,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     }
     
     
-    override open func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
-        guard let cv = self.collectionView else { return [] }
-        
-        var indexPaths = [IndexPath]()
-        
-        if rect.equalTo(CGRect.zero) || cv.numberOfSections == 0 { return indexPaths }
-        for sectionIndex in 0..<cv.numberOfSections {
-            
-            if cv.numberOfItems(in: sectionIndex) == 0 { continue }
-            
-            let sAttrs = self.sectionAttributes[sectionIndex]
-            if sAttrs.frame.isEmpty || !sAttrs.frame.intersects(rect) { continue }
-            
-            // If the section is completely show, add all the attrs
-            if rect.contains(sAttrs.frame) {
-                for a in sAttrs.items {
-                    indexPaths.append(a.indexPath)
-                }
-//                if let ips = self.sectionAttributes[sectionIndex] {
-//                    indexPaths.formUnion(ips)
-//                }
-            }
-            else if sAttrs.rows.count > 0 {
-                for row in sAttrs.rows {
-                    guard row.frame.intersects(rect) else { continue }
-                    for attr in row.items {
-                        if attr.frame.intersects(rect) {
-                            indexPaths.append(attr.indexPath as IndexPath)
-                        }
-                        else if attr.frame.origin.y > rect.maxY { break }
-                    }
-                }
-            }
-        }
-        return indexPaths
-    }
-    
+
     override open var collectionViewContentSize: CGSize {
         guard let cv = collectionView else { return CGSize.zero }
         let numberOfSections = cv.numberOfSections

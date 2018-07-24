@@ -114,108 +114,98 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
     /// Default insets for all sections
     public final var sectionInsets : NSEdgeInsets = NSEdgeInsetsZero { didSet{ invalidate() }}
     
-    fileprivate var numSections : Int { get { return self.collectionView?.numberOfSections ?? 0 }}
-    
     private weak var delegate : CollectionViewDelegateListLayout? { get{ return self.collectionView!.delegate as? CollectionViewDelegateListLayout }}
     
     
-    private var sectionIndexPaths : [[IndexPath]] = []
-    private var sectionItemAttributes : [[CollectionViewLayoutAttributes]] = []
+    private var sections : [SectionAttributes] = []
     
-    private var itemAttributes : [IndexPath:CollectionViewLayoutAttributes] = [:]
-    private var headersAttributes : [Int:CollectionViewLayoutAttributes] = [:]
-    private var footersAttributes : [Int:CollectionViewLayoutAttributes] = [:]
+    private struct SectionAttributes  : CustomStringConvertible {
+        var frame = CGRect.zero
+        var contentFrame = CGRect.zero
+        let insets : NSEdgeInsets
+        var header : CollectionViewLayoutAttributes?
+        var footer : CollectionViewLayoutAttributes?
+        var items : [CollectionViewLayoutAttributes] = []
+        init(insets: NSEdgeInsets, count: Int = 0) {
+            self.insets = insets
+            self.items.reserveCapacity(count)
+        }
+        var description: String {
+            return "Section Attributes : \(frame)  content: \(contentFrame) Items: \(items.count)"
+        }
+    }
     
-    private var sectionFrames : [CGRect] = []
-    private var sectionContentFrames : [CGRect] = []
-    
+
     override public init() {
         super.init()
     }
     
+    
     private var _cvWidth : CGFloat = 0
-    override open func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
+    override public func shouldInvalidateLayout(forBoundsChange newBounds : CGRect) -> Bool {
         defer { self._cvWidth = newBounds.size.width }
         return _cvWidth != newBounds.size.width
     }
     
+    fileprivate var numSections : Int { get { return self.collectionView?.numberOfSections ?? 0 }}
+    
     override public func prepare(){
         
         self.allIndexPaths.removeAll()
-        self.sectionIndexPaths.removeAll()
-        self.sectionItemAttributes.removeAll()
-        self.headersAttributes.removeAll()
-        self.footersAttributes.removeAll()
-        self.itemAttributes.removeAll()
-        self.sectionFrames.removeAll()
-        self.sectionContentFrames.removeAll()
-        
-        let numberOfSections = self.numSections
-        if numberOfSections == 0 { return }
-        
-        var top : CGFloat = self.collectionView?.leadingView?.bounds.size.height ?? 0
-        
-        self.sectionItemAttributes = Array(repeating: [], count: numberOfSections)
+        self.sections.removeAll()
         
         guard let cv = self.collectionView else { return }
+        
+        let numberOfSections = self.numSections
+        guard numberOfSections > 0 else { return }
+        
+        var top : CGFloat = self.collectionView?.leadingView?.bounds.size.height ?? 0
         let contentInsets = cv.contentInsets
         
-        for section in 0..<numberOfSections {
+        for sectionIdx in 0..<numberOfSections {
             
-            /*
-             * 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
-             */
+            // 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
+            let insets =  self.delegate?.collectionView?(cv, layout: self, insetForSectionAt: sectionIdx) ?? self.sectionInsets
+            let rowSpacing : CGFloat = self.delegate?.collectionView?(cv, layout: self, interitemSpacingForItemsInSection: sectionIdx) ?? self.interitemSpacing
+            
+            let contentWidth = cv.bounds.size.width - contentInsets.width
+            let itemWidth = contentWidth - insets.width
+            
+            let itemCount = cv.numberOfItems(in: sectionIdx)
+            var section = SectionAttributes(insets: insets, count: itemCount)
+            section.frame = CGRect(x: contentInsets.left, y: top, width: contentWidth, height: 0)
             
             
-            let insets :  NSEdgeInsets =  self.delegate?.collectionView?(cv, layout: self, insetForSectionAt: section) ?? self.sectionInsets
-            
-//            insets.left += contentInsets.left
-//            insets.right += contentInsets.right
-            
-            let rowSpacing : CGFloat = self.delegate?.collectionView?(cv, layout: self, interitemSpacingForItemsInSection: section) ?? self.interitemSpacing
-            
-            let contentWidth = cv.bounds.size.width - (contentInsets.left + contentInsets.right)
-            let itemWidth = contentWidth - (insets.left + insets.right)
-            var sectionFrame: CGRect = CGRect(x: contentInsets.left, y: top, width: contentWidth, height: 0)
-            
-            /*
-             * 2. Section header
-             */
-            let heightHeader : CGFloat = self.delegate?.collectionView?(cv, layout: self, heightForHeaderInSection: section) ?? self.headerHeight
+            // 2. Section header
+            let heightHeader : CGFloat = self.delegate?.collectionView?(cv, layout: self, heightForHeaderInSection: sectionIdx) ?? self.headerHeight
             if heightHeader > 0 {
-                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, with: IndexPath.for(item: 0, section: section))
+                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader,
+                                                                with: IndexPath.for(item: 0, section: sectionIdx))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
                     CGRect(x: insets.left, y: top, width: itemWidth, height: heightHeader)
                     : CGRect(x: 0, y: top, width: contentWidth, height: heightHeader)
-                self.headersAttributes[section] = attributes
+                
+                section.header = attributes
                 top = attributes.frame.maxY
             }
             
+            // Insets are between header and section content
             top += insets.top
             
             
-            
-            /*
-             * 3. Section items
-             */
-            
-            var contentRect: CGRect = CGRect(x: insets.left, y: top, width: itemWidth, height: 0)
-            let itemCount = self.collectionView!.numberOfItems(in: section)
-            
-            // Add the ip and attr arrays for the section, they are filled in below
-            self.sectionIndexPaths.append([])
-            self.sectionItemAttributes.append([])
+            //3. Section items
+            section.contentFrame = CGRect(x: insets.left, y: top, width: itemWidth, height: 0)
             
             if itemCount > 0 {
-                let xPos = contentRect.origin.x
-                var yPos = contentRect.origin.y
+                let xPos = section.contentFrame.origin.x
+                var yPos = section.contentFrame.origin.y
                 
                 var newTop : CGFloat = 0
                 
                 for idx in 0..<itemCount {
                     
-                    let ip = IndexPath.for(item:idx, section: section)
+                    let ip = IndexPath.for(item:idx, section: sectionIdx)
                     allIndexPaths.append(ip)
                     
                     let attrs = CollectionViewLayoutAttributes(forCellWith: ip)
@@ -224,130 +214,112 @@ public final class CollectionViewListLayout : CollectionViewLayout  {
                     newTop = yPos + rowHeight
                     yPos = newTop + rowSpacing
                     
-                    self.sectionIndexPaths[section].append(ip)
-                    self.sectionItemAttributes[section].append(attrs)
-                    self.itemAttributes[ip] = attrs
+                    section.items.append(attrs)
                 }
                 top = newTop
             }
-            contentRect.size.height = top - contentRect.origin.y
+            section.contentFrame.size.height = top - section.contentFrame.origin.y
             
-            let footerHeight = self.delegate?.collectionView?(cv, layout: self, heightForFooterInSection: section) ?? self.footerHeight
+            
+            // 4. Footers
+            let footerHeight = self.delegate?.collectionView?(cv, layout: self, heightForFooterInSection: sectionIdx) ?? self.footerHeight
             if footerHeight > 0 {
-                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(item:0, section: section))
+                let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionFooter, with: IndexPath.for(item:0, section: sectionIdx))
                 attributes.alpha = 1
                 attributes.frame = insetSupplementaryViews ?
                     CGRect(x: insets.left, y: top, width: itemWidth, height: footerHeight)
                     : CGRect(x: 0, y: top, width: contentWidth, height: footerHeight)
-                self.footersAttributes[section] = attributes
+                section.footer = attributes
                 top = attributes.frame.maxY
             }
             top += insets.bottom
 
-            sectionFrame.size.height = top - sectionFrame.origin.y
-            
-            sectionFrames.append(sectionFrame)
-            sectionContentFrames.append(contentRect)
+            section.frame.size.height = top - section.frame.origin.y
+            sections.append(section)
         }
     }
     
-    override open var collectionViewContentSize : CGSize {
+    override public var collectionViewContentSize : CGSize {
         guard let cv = collectionView else { return CGSize.zero }
         var size = cv.contentDocumentView.frame.size
         
-        let numberOfSections = self.numSections
-        if numberOfSections == 0 { return size }
+        if self.numSections == 0 { return size }
         
-        size.width = cv.bounds.size.width - (cv.contentInsets.left + cv.contentInsets.right)
-        size.height = cv.bounds.height
-        if let f = self.sectionFrames.last {
-            size.height = f.maxY
-        }
+        size.width = cv.bounds.size.width - cv.contentInsets.width
+        size.height = self.sections.last?.frame.maxY ?? cv.bounds.height
         return size
     }
     
-    open override func rectForSection(_ section: Int) -> CGRect {
-        return sectionFrames[section]
+    public override func rectForSection(_ section: Int) -> CGRect {
+        return sections[section].frame
     }
+    
     public override func contentRectForSection(_ section: Int) -> CGRect {
-        return sectionContentFrames[section]
+        return sections[section].contentFrame
     }
     
     
-    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
+    public override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
+        return itemAttributes(in: rect) { return $0.indexPath }
+    }
+    
+    public override func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
+        return itemAttributes(in: rect) { return $0.copy() }
+    }
+    
+    private func itemAttributes<T>(in rect: CGRect, reducer: ((CollectionViewLayoutAttributes)->T)) -> [T] {
+        guard !rect.isEmpty && !self.sections.isEmpty else { return [] }
         
-        guard let cv = self.collectionView else { return [] }
-        var indexPaths = [IndexPath]()
-        
-        if rect.isEmpty || self.numSections == 0 { return indexPaths }
-        for sectionIndex in 0..<cv.numberOfSections {
+        var results = [T]()
+        for section in self.sections {
             
-            if cv.numberOfItems(in: sectionIndex) == 0 { continue }
-            
-            let contentFrame = sectionContentFrames[sectionIndex]
-            if contentFrame.isEmpty || !contentFrame.intersects(rect) { continue }
-            
-            // If the section is completely show, add all the attrs
-            if rect.contains(contentFrame) {
-                indexPaths.append(contentsOf: sectionIndexPaths[sectionIndex])
+            // If we have passed the target, finish
+            guard section.items.count > 0 && section.frame.intersects(rect) else {
+                guard section.frame.origin.y < rect.maxY else { break }
                 continue
             }
             
-            for attr in sectionItemAttributes[sectionIndex] {
-                if attr.frame.intersects(rect) {
-                    indexPaths.append(attr.indexPath as IndexPath)
+            if rect.contains(section.contentFrame) {
+                results.append(contentsOf: section.items.map { return reducer($0) })
+            }
+            else {
+                for item in section.items {
+                    guard item.frame.intersects(rect) else {
+                        guard item.frame.minY < rect.maxY else { break }
+                        continue
+                    }
+                    results.append(reducer(item))
                 }
             }
         }
-        return indexPaths
-    }
-    
-    
-    
-    open override func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
-        var attrs : [CollectionViewLayoutAttributes] = []
-        
-        guard let cv = self.collectionView else { return [] }
-        if rect.isEmpty || cv.numberOfSections == 0 { return attrs }
-        for sectionIdx in  0..<cv.numberOfSections {
-            
-            let contentFrame = self.sectionContentFrames[sectionIdx]
-            if contentFrame.isEmpty || !contentFrame.intersects(rect) { continue }
-            
-            let containsAll = rect.contains(contentFrame)
-            for attr in sectionItemAttributes[sectionIdx] {
-                if containsAll || attr.frame.intersects(rect) {
-                    attrs.append(attr.copy())
-                }
-            }
-        }
-        return attrs
+        return results
     }
     
     public override func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
-        return itemAttributes[indexPath]?.copy()
+        return sections.object(at: indexPath._section)?.items.object(at: indexPath._item)?.copy()
     }
     
     public override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+        let section = self.sections[indexPath._section]
         
         if elementKind == CollectionViewLayoutElementKind.SectionHeader {
-            let attrs = self.headersAttributes[indexPath._section]?.copy()
-            if pinHeadersToTop, let currentAttrs = attrs, let cv = self.collectionView {
+            guard let attrs = section.header?.copy() else { return nil }
+            if pinHeadersToTop, let cv = self.collectionView {
                 let contentOffset = cv.contentOffset
-                let frame = currentAttrs.frame
+                let frame = attrs.frame
                 
                 var nextHeaderOrigin = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude)
-                if let nextHeader = self.headersAttributes[indexPath._section + 1] {
+                if let nextHeader = self.sections.object(at: indexPath._section + 1)?.header {
                     nextHeaderOrigin = nextHeader.frame.origin
                 }
                 let topInset = cv.contentInsets.top 
-                currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
-                currentAttrs.floating = currentAttrs.frame.origin.y > frame.origin.y
+                attrs.frame.origin.y =  min(max(contentOffset.y + topInset , frame.origin.y), nextHeaderOrigin.y - frame.height)
+                attrs.floating = attrs.frame.origin.y > frame.origin.y
             }
             return attrs
         }
         else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
-            return self.footersAttributes[indexPath._section]
+            return section.footer?.copy()
         }
         return nil
     }

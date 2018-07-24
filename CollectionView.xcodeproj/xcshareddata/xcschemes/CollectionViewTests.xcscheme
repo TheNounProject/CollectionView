@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
+   LastUpgradeVersion = "0940"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -38,6 +38,14 @@
                BlueprintName = "CollectionViewTests"
                ReferencedContainer = "container:CollectionView.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "CVFlowLayoutTests/testAttributesInRectPerformance_bigSection()">
+               </Test>
+               <Test
+                  Identifier = "CVFlowLayoutTests/testAttributesInRectPerformance_multiSection()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <AdditionalOptions>

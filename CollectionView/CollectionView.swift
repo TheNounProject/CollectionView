@@ -1266,7 +1266,17 @@ open class CollectionView : ScrollView, NSDraggingSource {
         _editing = 0
         
         guard !self._updateContext.items.isEmpty || !self._updateContext.sections.isEmpty else {
-            completion?(true)
+            
+            if _updateContext.reloadedItems.count > 0 {
+                for ip in _updateContext.reloadedItems {
+                    guard let cell = self.contentDocumentView.preparedCellIndex[ip] else { continue }
+                    self.contentDocumentView.preparedCellIndex[ip] = _prepareReplacementCell(for: cell, at: ip)
+                }
+                self.reloadLayout(animated, scrollPosition: .none, completion: completion)
+            }
+            else {
+                completion?(true)
+            }
             return
         }
         

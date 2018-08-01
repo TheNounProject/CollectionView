@@ -122,7 +122,7 @@ public extension CollectionViewResultsProxy {
     ///   - edits: A set of EditDistance Edits
     ///   - section: The section the changes should apply to
     /// - Returns: A new proxy with the edits added
-    public func addEdits<T:Hashable>(from edits: EditDistance<T>, for section: Int = 0) {
+    public func addEdits<T:Collection>(from edits: EditDistance<T>, for section: Int = 0) where T.Iterator.Element: Hashable, T.Index == Int {
         for e in edits.edits {
             switch e.operation {
             case .deletion:

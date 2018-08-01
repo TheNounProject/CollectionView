@@ -17,10 +17,16 @@ public struct ResultsChangeSet { }
 
 
 /// A Helper to 
-public class CollectionViewResultsProxy   {
+public class CollectionViewResultsProxy: CustomDebugStringConvertible   {
     var itemUpdates = ItemChangeSet()
     var sectionUpdates = SectionChangeSet()
     
+    
+    public init() { }
+    
+    public var debugDescription: String {
+        return "Items: \(self.itemUpdates)\nSections:\(self.sectionUpdates)"
+    }
     
     /**
      Add an item change
@@ -89,6 +95,7 @@ public class CollectionViewResultsProxy   {
 }
 
 
+
 public protocol CollectionViewProviderDelegate: class {
     func providerWillChangeContent(_ provider: CollectionViewProvider)
     func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
@@ -102,6 +109,42 @@ public extension CollectionViewProviderDelegate {
     func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) { }
     func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion? { return nil }
 }
+
+
+
+
+
+public extension CollectionViewResultsProxy {
+    
+    /// Create a proxy for a set of edits in one section
+    ///
+    /// - Parameters:
+    ///   - edits: A set of EditDistance Edits
+    ///   - section: The section the changes should apply to
+    /// - Returns: A new proxy with the edits added
+    public func addEdits<T:Hashable>(from edits: EditDistance<T>, for section: Int = 0) {
+        for e in edits.edits {
+            switch e.operation {
+            case .deletion:
+                self.addChange(forItemAt: IndexPath.for(item: e.index, section: section),
+                               with: .delete)
+            case .insertion:
+                self.addChange(forItemAt: nil,
+                               with: .insert(IndexPath.for(item: e.index, section: section)))
+            case let .move(origin: o):
+                self.addChange(forItemAt: IndexPath.for(item: o, section: section),
+                               with: .move(IndexPath.for(item: e.index, section: section)))
+            case .substitution:
+                self.addChange(forItemAt: IndexPath.for(item: e.index, section: section),
+                               with: .update)
+            }
+        }
+    }
+}
+
+
+
+
 
 
 /**

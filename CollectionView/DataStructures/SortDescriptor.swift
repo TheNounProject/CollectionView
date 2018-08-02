@@ -117,7 +117,7 @@ public extension Array {
     }
     
     public mutating func sort(using sortDescriptors: [SortDescriptor<Element>]) {
-        guard sortDescriptors.count > 0 else { return }
+        guard !sortDescriptors.isEmpty else { return }
         if sortDescriptors.count == 1 {
             return self.sort(using: sortDescriptors[0])
         }
@@ -135,7 +135,7 @@ public extension Array {
     
     public mutating func insert(_ element: Element, using sortDescriptors: [SortDescriptor<Element>]) -> Int {
 
-        if sortDescriptors.count > 0, let idx = (self.index{ return sortDescriptors.compare(element, $0) != .ascending }) {
+        if !sortDescriptors.isEmpty, let idx = (self.index{ return sortDescriptors.compare(element, $0) != .ascending }) {
             self.insert(element, at: idx)
             return idx
         }
@@ -165,7 +165,7 @@ extension Sequence {
     }
     
     public func sorted(using sortDescriptors: [SortDescriptor<Element>]) -> [Element] {
-        guard sortDescriptors.count > 0 else { return Array(self) }
+        guard !sortDescriptors.isEmpty else { return Array(self) }
         if sortDescriptors.count == 1 {
             return self.sorted(using: sortDescriptors[0])
         }

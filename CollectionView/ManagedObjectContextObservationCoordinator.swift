@@ -32,7 +32,7 @@ fileprivate struct RefKeyTable<Key:Hashable & AnyObject, Value:Any> : Sequence, 
         }
     }
     
-    private var storage = [KeyRef:Value]()
+    private var storage = [KeyRef: Value]()
     
     subscript(key: Key) -> Value? {
         get {
@@ -123,8 +123,8 @@ class ManagedObjectContextObservationCoordinator {
         }
     }
 
-    private var contexts = RefKeyTable<NSManagedObjectContext,Int>()
-    class var shared : ManagedObjectContextObservationCoordinator {
+    private var contexts = RefKeyTable<NSManagedObjectContext, Int>()
+    class var shared: ManagedObjectContextObservationCoordinator {
         struct Static { static let instance = ManagedObjectContextObservationCoordinator() }
         return Static.instance
     }
@@ -141,7 +141,6 @@ class ManagedObjectContextObservationCoordinator {
         contexts[context] = count + 1
     }
     
-    
     func remove(context: NSManagedObjectContext) {
         let count = contexts[context] ?? 0
         if count <= 1 {
@@ -153,9 +152,8 @@ class ManagedObjectContextObservationCoordinator {
         }
     }
     
-    
     @objc func handleChangeNotification(_ notification: Foundation.Notification) {
-        var changeSets = [NSEntityDescription:EntityChangeSet]()
+        var changeSets = [NSEntityDescription: EntityChangeSet]()
         guard let info = notification.userInfo else {
             return
         }
@@ -196,7 +194,7 @@ class ManagedObjectContextObservationCoordinator {
         }
         
         NotificationCenter.default.post(name: Notification.name, object: notification.object, userInfo: [
-            ManagedObjectContextObservationCoordinator.Notification.changeSetKey : changeSets
+            ManagedObjectContextObservationCoordinator.Notification.changeSetKey: changeSets
             ])
     }   
 }

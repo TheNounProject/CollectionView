@@ -30,7 +30,7 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
     
     /// The frame rectangle of the item.
     public var frame: CGRect = CGRect.zero
-    
+
     
     /// The center point of the item.
     public var center: CGPoint {

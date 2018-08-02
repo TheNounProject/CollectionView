@@ -37,7 +37,7 @@ struct Logger {
     
     private static func log(_ message: Any, type: String, file: String, funtion: String, line: Int) {
         let fileName = file.components(separatedBy: "/").last!.components(separatedBy: ".").first!
-        guard logFiles.count == 0 || logFiles.contains(fileName) else {
+        guard logFiles.isEmpty || logFiles.contains(fileName) else {
             return;
         }
         print("\(fileName) @ \(line) \(type): \(message)")
@@ -157,7 +157,7 @@ extension Dictionary {
 extension Set {
     
     mutating func removeOne() -> Element? {
-        guard self.count > 0 else { return nil }
+        guard !self.isEmpty else { return nil }
         return self.removeFirst()
     }
     
@@ -167,7 +167,7 @@ extension Set {
      - parameter set: The set of elements to remove from the receiver
      - returns: A new set of removed elements
      */
-     @discardableResult mutating func remove<C : Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
+     @discardableResult mutating func remove<C: Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
         var removed = Set(minimumCapacity: self.count)
         for item in set {
             if let r = self.remove(item) {
@@ -316,10 +316,14 @@ extension NSEdgeInsets {
 public extension NSView {
     @discardableResult func addConstraintsToMatchParent(_ insets: NSEdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
         if let sv = self.superview {
-            let top = NSLayoutConstraint(item: self, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal, toItem: sv, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: insets == nil ? 0 : insets!.top)
-            let right = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.right, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.right, multiplier: 1, constant: insets?.right ?? 0)
-            let bottom = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.bottom, relatedBy: NSLayoutConstraint.Relation.equal, toItem: self, attribute: NSLayoutConstraint.Attribute.bottom, multiplier: 1, constant: insets?.bottom ?? 0)
-            let left = NSLayoutConstraint(item: self, attribute: NSLayoutConstraint.Attribute.left, relatedBy: NSLayoutConstraint.Relation.equal, toItem: sv, attribute: NSLayoutConstraint.Attribute.left, multiplier: 1, constant: insets == nil ? 0 : insets!.left)
+            let top = NSLayoutConstraint(item: self, attribute: NSLayoutConstraint.Attribute.top, relatedBy: NSLayoutConstraint.Relation.equal,
+                                         toItem: sv, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: insets == nil ? 0 : insets!.top)
+            let right = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.right, relatedBy: NSLayoutConstraint.Relation.equal,
+                                           toItem: self, attribute: NSLayoutConstraint.Attribute.right, multiplier: 1, constant: insets?.right ?? 0)
+            let bottom = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.bottom, relatedBy: NSLayoutConstraint.Relation.equal,
+                                            toItem: self, attribute: NSLayoutConstraint.Attribute.bottom, multiplier: 1, constant: insets?.bottom ?? 0)
+            let left = NSLayoutConstraint(item: self, attribute: NSLayoutConstraint.Attribute.left, relatedBy: NSLayoutConstraint.Relation.equal,
+                                          toItem: sv, attribute: NSLayoutConstraint.Attribute.left, multiplier: 1, constant: insets == nil ? 0 : insets!.left)
             sv.addConstraints([top, bottom, right, left])
             self.translatesAutoresizingMaskIntoConstraints = false
             return (top, right, bottom, left)

@@ -213,7 +213,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
                 removeIndex.append(e)
             }
         }
-        guard removeIndex.count > 0 else { return }
+        guard !removeIndex.isEmpty else { return }
         // Remove in descending index
         let sorted = removeIndex.sorted()
         for idx in sorted.reversed() {
@@ -222,7 +222,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         self._remap(startingAt: sorted[0])
     }
     
-    var needsSort : Bool = false
+    var needsSort: Bool = false
     mutating func _batchRemove(_ object: Element) {
         self.needsSort = true
         guard let index = self._map.removeValue(forKey: object) else { return }
@@ -293,7 +293,7 @@ extension OrderedSet {
         }
         
         var checkIdx = 0
-        while new.count > 0, checkIdx < _data.count {
+        while !new.isEmpty, checkIdx < _data.count {
             let check = _data[checkIdx]
             if sortDescriptors.compare(new[0], check) == SortDescriptorResult.ascending {
                 if checkIdx < fMatch { fMatch = checkIdx }
@@ -316,7 +316,7 @@ extension OrderedSet {
     }
     
     public mutating func sort(using sortDescriptors: [SortDescriptor<Element>]) {
-        guard sortDescriptors.count > 0 else { return }
+        guard !sortDescriptors.isEmpty else { return }
         self._data.sort(using: sortDescriptors)
         self._map.removeAll(keepingCapacity: true)
         self._remap()
@@ -328,13 +328,13 @@ extension OrderedSet {
         return new
     }
     
-    public mutating func sort(by sort: ((Element, Element)-> Bool)) {
+    public mutating func sort(by sort: ((Element, Element) -> Bool)) {
         self._data = self._data.sorted(by: sort)
         self._map.removeAll(keepingCapacity: true)
         self._remap()
     }
     
-    public func sorted(by sort: ((Element, Element)-> Bool)) -> OrderedSet<Element> {
+    public func sorted(by sort: ((Element, Element) -> Bool)) -> OrderedSet<Element> {
         let data = self._data.sorted(by: sort)
         return OrderedSet(elements: data)
     }

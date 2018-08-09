@@ -99,6 +99,10 @@ class ManagedObjectContextObservationCoordinator {
             self.entity = obj.entity
             self.updated(obj)
         }
+
+        var isEmpty : Bool {
+            return inserted.isEmpty && deleted.isEmpty && updated.isEmpty
+        }
         
         @discardableResult mutating func inserted(_ object: NSManagedObject) -> Bool {
             return inserted.insert(object).inserted

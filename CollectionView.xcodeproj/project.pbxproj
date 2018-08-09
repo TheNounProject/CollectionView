@@ -14,6 +14,7 @@
 		1CA2942720D45657008112D5 /* CVListLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CA2942620D45657008112D5 /* CVListLayoutTests.swift */; };
 		1CB3A3D02075651900A2AB9B /* ReaultionalRCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */; };
 		1CC05C221FF6F564001E6936 /* MutableResultsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CC05C211FF6F564001E6936 /* MutableResultsController.swift */; };
+		DE0A5253211BAC7C00FD8365 /* ContextObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0A5252211BAC7C00FD8365 /* ContextObserver.swift */; };
 		DE13C18B1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */; };
 		DE297DE01E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */; };
 		DE316FAD1CC72ABC00F763E6 /* ClipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9072171CAC807900AD0E37 /* ClipView.swift */; };
@@ -76,6 +77,7 @@
 		1CA2942620D45657008112D5 /* CVListLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVListLayoutTests.swift; sourceTree = "<group>"; };
 		1CB3A3CF2075651900A2AB9B /* ReaultionalRCTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReaultionalRCTests.swift; sourceTree = "<group>"; };
 		1CC05C211FF6F564001E6936 /* MutableResultsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MutableResultsController.swift; sourceTree = "<group>"; };
+		DE0A5252211BAC7C00FD8365 /* ContextObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextObserver.swift; sourceTree = "<group>"; };
 		DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManagedObjectContextObservationCoordinator.swift; sourceTree = "<group>"; };
 		DE1EE9A42072B00B00B76FE2 /* CollapsableCollectionViewProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollapsableCollectionViewProvider.swift; sourceTree = "<group>"; };
 		DE297DDF1E6A8B5400AAFC2A /* SupplementaryViewIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupplementaryViewIdentifier.swift; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				DE13C18A1E4CE46100CEC80C /* ManagedObjectContextObservationCoordinator.swift */,
 				DEE5F7AD1E92D79A0002079C /* MergedFetchedResultsController.swift */,
 				DE98600A1E6F956100B6A3EC /* FetchedSetController.swift */,
+				DE0A5252211BAC7C00FD8365 /* ContextObserver.swift */,
 			);
 			name = ResultsController;
 			sourceTree = "<group>";
@@ -409,6 +412,7 @@
 				1CC05C221FF6F564001E6936 /* MutableResultsController.swift in Sources */,
 				DE3E47561E4259B800F19D9E /* EditDistance.swift in Sources */,
 				DEB7366C1E8599E7008467F8 /* CollectionViewPreviewCell.swift in Sources */,
+				DE0A5253211BAC7C00FD8365 /* ContextObserver.swift in Sources */,
 				DEF14B991CBDD83B00553CEF /* CollectionViewColumnLayout.swift in Sources */,
 				1C2DC5171E329CA000EBC234 /* IndexedSet.swift in Sources */,
 				DE82E9591D78B78300346B9E /* CollectionViewLayoutAttributes.swift in Sources */,

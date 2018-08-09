@@ -23,11 +23,10 @@ public protocol FetchedSetControllerDelegate : class {
     func controllerDidChangeContent(_ controller: FetchedSetController)
 }
 
-
 /**
  A results controller that does not concern itself with the order of objects, but only their membership to the supplied fetch request.
 */
-public class FetchedSetController : NSObject {
+public class FetchedSetController: ContextObserver {
     
     typealias Element = NSManagedObject
     
@@ -35,38 +34,28 @@ public class FetchedSetController : NSObject {
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
     
-    
-    /**
-     A convenience initializer that takes an entity name and creates a fetch request
-
-     - Parameter context: A managed object context to fetch from
-     - Parameter entityName: An entity name to fetch
-
-    */
+    /// A convenience initializer that takes an entity name and creates a fetch request
+    /// - Parameter context: A managed object context to fetch from
+    /// - Parameter entityName: An entity name to fetch
     convenience public init(context: NSManagedObjectContext, entityName: String) {
-        let req = NSFetchRequest<NSManagedObject>(entityName: entityName)
+        let req = NSFetchRequest<Element>(entityName: entityName)
         self.init(context: context, request: req)
     }
     
     
-    /**
-     Initialize a controller with a context and request
-
-     - Parameter context: A managed object context to fetch from
-     - Parameter request: A request for an entity
-
-    */
+    /// Initialize a controller with a context and request
+    ///
+    /// - Parameter context: A managed object context to fetch from
+    /// - Parameter request: A request for an entity
     public init(context: NSManagedObjectContext, request: NSFetchRequest<NSManagedObject>) {
-        self.managedObjectContext = context
         self.fetchRequest = request
-        super.init()
-        validateRequest()
+        super.init(context: context)
+        self.validateRequest()
     }
     
     deinit {
         unregister()
     }
-    
     
     private var _fetched: Bool = false
     
@@ -74,7 +63,6 @@ public class FetchedSetController : NSObject {
         _fetched = false
         unregister()
     }
-    
     
     /// Fetches the object and begins monitoring the context for changes
     ///
@@ -116,7 +104,7 @@ public class FetchedSetController : NSObject {
     /*-------------------------------------------------------------------------------*/
     
     /// The managed object context to fetch from
-    public private(set) var managedObjectContext : NSManagedObjectContext
+//    public private(set) var managedObjectContext : NSManagedObjectContext
     
     
     /**
@@ -138,7 +126,6 @@ public class FetchedSetController : NSObject {
     /// A fetch request (including a predicate if needed) for the entity to fetch
     public let fetchRequest : NSFetchRequest<NSManagedObject>
     
-    
     /// The delegate of the controller
     public weak var delegate: FetchedSetControllerDelegate? {
         didSet {
@@ -158,111 +145,75 @@ public class FetchedSetController : NSObject {
     /// The number of objects in the set
     public var numberOfObjects : Int { return _storage.count }
     
-    
-    
-    // MARK: - Notification Registration
-    /*-------------------------------------------------------------------------------*/
-    private var _registered = false
-    private func register() {
-        guard !_registered, self.delegate != nil else { return }
-        ManagedObjectContextObservationCoordinator.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ManagedObjectContextObservationCoordinator.Notification.name, object: self.managedObjectContext)    }
-    
-    private func unregister() {
-        guard _registered else { return }
-        ManagedObjectContextObservationCoordinator.shared.remove(context: self.managedObjectContext)
-        NotificationCenter.default.removeObserver(self, name: ManagedObjectContextObservationCoordinator.Notification.name, object: self.managedObjectContext)
-    }
-    
-    
-    /// If change processing should occur within a perform or performAndWait block on the context
-    public var wait: Bool = true
-    
-    @objc func handleChangeNotification(_ notification: Notification) {
-        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
-            return
-        }
-        
-        if let itemChanges = changes[self.fetchRequest.entity!] {
-        func run() {
-                var deleted = Set<Element>()
-                var inserted = Set<Element>()
-                var updated = Set<Element>()
-                
-                for obj in itemChanges.deleted {
-                    guard let _ = self._storage.remove(obj) else { continue }
-                    deleted.insert(obj)
-                }
-                
-                for obj in itemChanges.inserted {
-                    if self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: obj) == true {
-                        self._storage.insert(obj)
-                        inserted.insert(obj)
-                    }
-                }
-                
-                for obj in itemChanges.updated {
-                    
-                    let existed = self.contains(obj)
-                    let match = self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: obj) == true
-                    
-                    if existed {
-                        if !match { deleted.insert(obj) }
-                        else { updated.insert(obj) }
-                    }
-                    else if match {
-                        inserted.insert(obj)
-                    }
-                }
-                
-                if deleted.count == 0, updated.count == 0, inserted.count == 0 { return }
-                
-                self._storage.subtract(deleted)
-                self._storage.formUnion(inserted)
-                
-                if self.delegate?.controllerWillChangeContent(self) == true {
-                    
-                    for o in deleted {
-                        self.delegate?.controller(self, didChangeObject: o, for: .delete)
-                    }
-                    for o in inserted {
-                        self.delegate?.controller(self, didChangeObject: o, for: .insert)
-                    }
-                    for o in updated {
-                        self.delegate?.controller(self, didChangeObject: o, for: .update)
-                    }
-                }
-                
-                self.delegate?.controllerDidChangeContent(self)
-            }
-
-            if wait {
-                self.managedObjectContext.performAndWait { run() }
-            }
-            else {
-                self.managedObjectContext.perform { run() }
-            }
-        }
-        
-        
-    }
-    
-    
-    
-    // MARK: - Accessing Content
-    /*-------------------------------------------------------------------------------*/
-    
-    /**
-     Check if the set contains a given element
-
-     - Parameter element: The element in query
-     
-     - Returns: True if the object exists in the set
-
-    */
+    /// Check if the set contains a given element
+    ///
+    /// - Parameter element: The element in query
+    /// - Returns: True if the object exists in the set
     private func contains(_ element: Element) -> Bool {
         return self._storage.contains(element)
     }
     
     
+    
+    
+    // MARK: - Notification Registration
+    /*-------------------------------------------------------------------------------*/
+    public override func shouldRegister() -> Bool {
+        return self.delegate != nil
+    }
+    
+    public override func process(_ changes: [NSEntityDescription : (inserted: Set<NSManagedObject>, deleted: Set<NSManagedObject>, updated: Set<NSManagedObject>)]) {
+        
+        guard let changes = changes[self.fetchRequest.entity!] else { return }
+        
+        var deleted = Set<Element>()
+        var inserted = Set<Element>()
+        var updated = Set<Element>()
+        
+        for obj in changes.deleted {
+            guard let _ = self._storage.remove(obj) else { continue }
+            deleted.insert(obj)
+        }
+        
+        for obj in changes.inserted {
+            if self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: obj) == true {
+                self._storage.insert(obj)
+                inserted.insert(obj)
+            }
+        }
+        
+        for obj in changes.updated {
+            
+            let existed = self.contains(obj)
+            let match = self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: obj) == true
+            
+            if existed {
+                if !match { deleted.insert(obj) }
+                else { updated.insert(obj) }
+            }
+            else if match {
+                inserted.insert(obj)
+            }
+        }
+        
+        if deleted.count == 0, updated.count == 0, inserted.count == 0 { return }
+        
+        self._storage.subtract(deleted)
+        self._storage.formUnion(inserted)
+        
+        if self.delegate?.controllerWillChangeContent(self) == true {
+            
+            for o in deleted {
+                self.delegate?.controller(self, didChangeObject: o, for: .delete)
+            }
+            for o in inserted {
+                self.delegate?.controller(self, didChangeObject: o, for: .insert)
+            }
+            for o in updated {
+                self.delegate?.controller(self, didChangeObject: o, for: .update)
+            }
+        }
+        self.delegate?.controllerDidChangeContent(self)
+    }
+
 }

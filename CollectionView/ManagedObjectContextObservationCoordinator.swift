@@ -10,14 +10,12 @@ import Foundation
 
 fileprivate let nilKeyHash = UUID().hashValue
 
-fileprivate struct RefKeyTable<Key:Hashable & AnyObject, Value:Any> : Sequence, ExpressibleByDictionaryLiteral {
+fileprivate struct RefKeyTable<Key: Hashable & AnyObject, Value: Any> : Sequence, ExpressibleByDictionaryLiteral {
     
-    
-    
-    private struct KeyRef : Hashable {
+    private struct KeyRef: Hashable {
         
         weak var key: Key?
-        var keyHash : Int
+        var keyHash: Int
         
         init(val: Key) {
             self.key = val
@@ -72,16 +70,14 @@ fileprivate struct RefKeyTable<Key:Hashable & AnyObject, Value:Any> : Sequence, 
     
 }
 
-
-
 class ManagedObjectContextObservationCoordinator {
     
     struct Notification {
         static let name = Foundation.Notification.Name(rawValue: "CDResultsControllerNotification")
-        static let changeSetKey : String = "EntityChangeSet"
+        static let changeSetKey: String = "EntityChangeSet"
     }
     
-    struct EntityChangeSet : CustomStringConvertible {
+    struct EntityChangeSet: CustomStringConvertible {
         var entity: NSEntityDescription
         var inserted = Set<NSManagedObject>()
         var deleted = Set<NSManagedObject>()
@@ -100,7 +96,7 @@ class ManagedObjectContextObservationCoordinator {
             self.updated(obj)
         }
 
-        var isEmpty : Bool {
+        var isEmpty: Bool {
             return inserted.isEmpty && deleted.isEmpty && updated.isEmpty
         }
         
@@ -134,17 +130,22 @@ class ManagedObjectContextObservationCoordinator {
     }
     
     func add(context: NSManagedObjectContext) {
-        let count = contexts[context] ?? 0
-        if count == 0 {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: Foundation.Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
+        let contextCount = contexts[context] ?? 0
+        if contextCount == 0 {
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(handleChangeNotification(_:)),
+                                                   name: .NSManagedObjectContextObjectsDidChange,
+                                                   object: context)
         }
-        contexts[context] = count + 1
+        contexts[context] = contextCount + 1
     }
     
     func remove(context: NSManagedObjectContext) {
         let count = contexts[context] ?? 0
         if count <= 1 {
-            NotificationCenter.default.removeObserver(self, name: Foundation.Notification.Name.NSManagedObjectContextObjectsDidChange, object: context)
+            NotificationCenter.default.removeObserver(self,
+                                                      name: .NSManagedObjectContextObjectsDidChange,
+                                                      object: context)
             _ = contexts.removeValue(forKey: context)
         }
         else {

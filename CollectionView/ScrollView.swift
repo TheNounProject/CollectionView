@@ -8,18 +8,17 @@
 
 import Foundation
 
-
-open class ScrollView : NSScrollView {
+open class ScrollView: NSScrollView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         self.swapClipView()
     }
-    open override var isFlipped : Bool { return true }
+    open override var isFlipped: Bool { return true }
     required public init?(coder: NSCoder) {
         super.init(coder: coder)
         self.swapClipView()
     }
-    open var clipView : ClipView? {
+    open var clipView: ClipView? {
         return self.contentView as? ClipView
     }
     
@@ -34,11 +33,11 @@ open class ScrollView : NSScrollView {
     }
 }
 
-class FloatingSupplementaryView : NSView {
-    override var isFlipped : Bool { return true }
+class FloatingSupplementaryView: NSView {
+    override var isFlipped: Bool { return true }
     internal override func hitTest(_ aPoint: NSPoint) -> NSView? {
         for view in self.subviews {
-            if view.frame.contains(aPoint){
+            if view.frame.contains(aPoint) {
                 return super.hitTest(aPoint)
             }
         }

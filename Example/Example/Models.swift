@@ -10,32 +10,27 @@ import Foundation
 import CoreData
 import CollectionView
 
-
-let formatter : DateFormatter = {
+let formatter: DateFormatter = {
     let df = DateFormatter()
     df.dateFormat = "MM-dd-yyyy mm:ss"
     return df
 }()
 
-let dateGroupFormatter : DateFormatter = {
+let dateGroupFormatter: DateFormatter = {
     let df = DateFormatter()
     df.dateFormat = "MM-dd-yyyy mm"
     return df
 }()
 
-
-
-class Parent : NSManagedObject, CustomDisplayStringConvertible {
+class Parent: NSManagedObject, CustomDisplayStringConvertible {
     
-    @NSManaged var children : Set<Child>
+    @NSManaged var children: Set<Child>
     @NSManaged var created: Date
 	
-    @NSManaged var displayOrder : NSNumber
-    @NSManaged var name : String
+    @NSManaged var displayOrder: NSNumber
+    @NSManaged var name: String
     
-    
-    
-    static func create(in moc : NSManagedObjectContext? = nil, withChild child: Bool = true) -> Parent {
+    static func create(in moc: NSManagedObjectContext? = nil, withChild child: Bool = true) -> Parent {
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let req = NSFetchRequest<Parent>(entityName: "Parent")
         req.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
@@ -52,7 +47,6 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
         }
         return new
     }
-    
 	
     func createChild() -> Child {
         return createChildren(1).first!
@@ -90,16 +84,15 @@ class Parent : NSManagedObject, CustomDisplayStringConvertible {
     }
 }
 
-
-class Child : NSManagedObject, CustomDisplayStringConvertible {
+class Child: NSManagedObject, CustomDisplayStringConvertible {
     
-    @NSManaged var parent : Parent?
+    @NSManaged var parent: Parent?
     @NSManaged var created: Date
     @NSManaged var group: String
     @NSManaged var second: NSNumber
-    @NSManaged var name : String
+    @NSManaged var name: String
     @NSManaged var variable: NSNumber
-    @NSManaged var displayOrder : NSNumber
+    @NSManaged var displayOrder: NSNumber
     
     var displayDescription: String {
         guard self.isValid else {
@@ -112,11 +105,11 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
         return displayDescription
     }
     
-    var dateString : String {
+    var dateString: String {
         return formatter.string(from: created)
     }
     
-    static func create(in moc : NSManagedObjectContext? = nil) -> Child {
+    static func create(in moc: NSManagedObjectContext? = nil) -> Child {
         let moc = moc ?? AppDelegate.current.managedObjectContext
         let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: moc) as! Child
         
@@ -136,13 +129,12 @@ class Child : NSManagedObject, CustomDisplayStringConvertible {
     
 }
 
-
 extension NSManagedObject {
-    var isValid : Bool {
+    var isValid: Bool {
         return self.managedObjectContext != nil && self.isDeleted == false
     }
     
-    var idString : String {
+    var idString: String {
         let str = self.objectID.uriRepresentation().lastPathComponent
         if self.objectID.isTemporaryID { return str.sub(from: -3) }
         return self.objectID.uriRepresentation().lastPathComponent

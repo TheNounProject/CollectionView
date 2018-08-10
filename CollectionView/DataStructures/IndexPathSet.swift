@@ -8,8 +8,7 @@
 
 import Foundation
 
-
-struct IndexPathSet : Sequence {
+struct IndexPathSet: Sequence {
     
     typealias Element = IndexPath
     
@@ -17,7 +16,7 @@ struct IndexPathSet : Sequence {
     
     typealias Iterator = AnyIterator<IndexPath>
     func makeIterator() -> Iterator {
-        var s : Int = 0
+        var s: Int = 0
         var data = storage.sorted { (a, b) -> Bool in
             return a.key < b.key
         }
@@ -44,7 +43,5 @@ struct IndexPathSet : Sequence {
     func contains(_ indexPath: IndexPath) -> Bool {
         return storage[indexPath._section]?.contains(indexPath._item) == true
     }
-    
-    
     
 }

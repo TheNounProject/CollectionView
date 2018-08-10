@@ -9,20 +9,17 @@
 //import Foundation
 import AppKit
 
-
 //typealias DisplayLinkCallback = @convention(block) ( CVDisplayLink!, UnsafePointer<CVTimeStamp>, UnsafePointer<CVTimeStamp>, CVOptionFlags, UnsafeMutablePointer<CVOptionFlags>, UnsafeMutablePointer<Void>)->Void
 
-open class ClipView : NSClipView {
+open class ClipView: NSClipView {
     
-    static let DefaultDecelerationRate : CGFloat = 0.78
+    static let DefaultDecelerationRate: CGFloat = 0.78
     
     var shouldAnimateOriginChange = false
     var destinationOrigin = CGPoint.zero
-    var scrollView : NSScrollView? { return self.enclosingScrollView ?? self.superview as? NSScrollView }
+    var scrollView: NSScrollView? { return self.enclosingScrollView ?? self.superview as? NSScrollView }
     
-    var scrollEnabled : Bool = true
-    
-    
+    var scrollEnabled: Bool = true
     
     /**
      The rate of deceleration for animated scrolls. Higher is slower. default is 0.78
@@ -34,7 +31,7 @@ open class ClipView : NSClipView {
         }
     }
     
-    var completionBlock : AnimationCompletion?
+    var completionBlock: AnimationCompletion?
     
     init(clipView: NSClipView) {
         super.init(frame: clipView.frame)
@@ -46,7 +43,6 @@ open class ClipView : NSClipView {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-    
     
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -64,12 +60,15 @@ open class ClipView : NSClipView {
     }
     
     override open func viewWillMove(toWindow newWindow: NSWindow?) {
-        if (self.window != nil) {
-            NotificationCenter.default.removeObserver(self, name: NSWindow.didChangeScreenNotification, object: self.window)
+        if self.window != nil {
+            NotificationCenter.default.removeObserver(self, name: NSWindow.didChangeScreenNotification,
+                                                      object: self.window)
         }
         super.viewWillMove(toWindow: newWindow)
-        if (newWindow != nil) {
-            NotificationCenter.default.addObserver(self, selector: #selector(ClipView.updateCVDisplay(_:)), name: NSWindow.didChangeScreenNotification, object: newWindow)
+        if newWindow != nil {
+            NotificationCenter.default.addObserver(self, selector: #selector(ClipView.updateCVDisplay(_:)),
+                                                   name: NSWindow.didChangeScreenNotification,
+                                                   object: newWindow)
         }
     }
     
@@ -79,22 +78,21 @@ open class ClipView : NSClipView {
 //        return rect
 //    }
     
-    var _displayLink : CVDisplayLink?
+    var _displayLink: CVDisplayLink?
     
-    var displayLink : CVDisplayLink {
+    var displayLink: CVDisplayLink {
         if let link = _displayLink { return link }
         
-        let linkCallback : CVDisplayLinkOutputCallback = {( displayLink, _, _, _, _, displayLinkContext) -> CVReturn in
+        let linkCallback: CVDisplayLinkOutputCallback = {( displayLink, _, _, _, _, displayLinkContext) -> CVReturn in
             unsafeBitCast(displayLinkContext, to: ClipView.self).updateOrigin()
             return kCVReturnSuccess
         }
-        var link : CVDisplayLink?
+        var link: CVDisplayLink?
         CVDisplayLinkCreateWithActiveCGDisplays(&link)
         CVDisplayLinkSetOutputCallback(link!, linkCallback, UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()))
         self._displayLink = link
         return link!
     }
-    
     
     open override func mouseDown(with event: NSEvent) {
         self.cancelScrollAnimation()
@@ -140,10 +138,9 @@ open class ClipView : NSClipView {
         return success
     }
     
-    
     func finishedScrolling(_ success: Bool) {
         self.completionBlock?(success)
-        self.completionBlock = nil;
+        self.completionBlock = nil
     }
     
     open override func scroll(to newOrigin: NSPoint) {
@@ -181,7 +178,7 @@ open class ClipView : NSClipView {
             if self.window == nil {
                 cancel = true
             }
-            o = self.bounds.origin;
+            o = self.bounds.origin
             integral = self.window?.backingScaleFactor == 1
         }
         
@@ -190,12 +187,12 @@ open class ClipView : NSClipView {
             return
         }
         
-        let lastOrigin = o;
-        let deceleration = self.decelerationRate;
+        let lastOrigin = o
+        let deceleration = self.decelerationRate
         
         // Calculate the next origin on a basic ease-out curve.
-        o.x = o.x * deceleration + self.destinationOrigin.x * (1 - self.decelerationRate);
-        o.y = o.y * deceleration + self.destinationOrigin.y * (1 - self.decelerationRate);
+        o.x = o.x * deceleration + self.destinationOrigin.x * (1 - self.decelerationRate)
+        o.y = o.y * deceleration + self.destinationOrigin.y * (1 - self.decelerationRate)
         
         if integral {
             o = o.integral
@@ -213,7 +210,7 @@ open class ClipView : NSClipView {
         
           //.postNotificationName(NSScrollViewDidLiveScrollNotification, object: self, userInfo: nil)
         
-        if ((fabs(o.x - lastOrigin.x) < 0.1 && fabs(o.y - lastOrigin.y) < 0.1)) {
+        if fabs(o.x - lastOrigin.x) < 0.1 && fabs(o.y - lastOrigin.y) < 0.1 {
             self.endScrolling()
             
             // Make sure we always finish out the animation with the actual coordinates
@@ -243,11 +240,5 @@ open class ClipView : NSClipView {
         }
         CVDisplayLinkStop(self.displayLink)
     }
-    
-    
-    
-    
-    
-    
     
 }

@@ -8,14 +8,11 @@
 
 import Foundation
 
-
-
-
 struct SupplementaryViewIdentifier: Hashable, CustomStringConvertible {
     
     var indexPath: IndexPath?
     var kind: String
-    var reuseIdentifier : String
+    var reuseIdentifier: String
     
     var hashValue: Int {
         if let ip = self.indexPath {
@@ -45,7 +42,7 @@ struct SupplementaryViewIdentifier: Hashable, CustomStringConvertible {
     }
 }
 
-extension SupplementaryViewIdentifier : Comparable {
+extension SupplementaryViewIdentifier: Comparable {
     static func <(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {
         guard let l = lhs.indexPath, let r = rhs.indexPath else { return true }
         return l < r

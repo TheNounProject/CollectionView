@@ -9,11 +9,9 @@
 import XCTest
 import CollectionView
 
-
-
-struct Person : Hashable {
-    let name : String
-    let age : Int
+struct Person: Hashable {
+    let name: String
+    let age: Int
     var hashValue: Int {
         return name.hashValue^age
     }
@@ -32,9 +30,9 @@ struct Person : Hashable {
     }
 }
 
-class NSPerson : NSObject {
-    @objc var name : String
-    @objc var age : Int
+class NSPerson: NSObject {
+    @objc var name: String
+    @objc var age: Int
     init(name: String, age: Int) {
         self.name = name
         self.age = age
@@ -51,7 +49,7 @@ class NSPerson : NSObject {
 }
 
 func randomName(length: Int) -> String {
-    let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    let letters: NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     let len = UInt32(letters.length)
     
     var randomString = ""
@@ -64,9 +62,6 @@ func randomName(length: Int) -> String {
     return randomString
 }
 
-
-
-
 class OrderedSetTests: XCTestCase {
 
     override func setUp() {
@@ -78,15 +73,12 @@ class OrderedSetTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-
-    
-    
     
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
     
     func testInitArrayLiteral() {
-        let set : OrderedSet<String> = ["one", "two", "two", "three"]
+        let set: OrderedSet<String> = ["one", "two", "two", "three"]
         XCTAssertEqual(set[0], "one")
         XCTAssertEqual(set[1], "two")
         XCTAssertEqual(set[2], "three")
@@ -100,12 +92,11 @@ class OrderedSetTests: XCTestCase {
     }
     
     func testInitWithDuplicates() {
-        let set : OrderedSet<String> = ["one", "two", "two", "three"]
+        let set: OrderedSet<String> = ["one", "two", "two", "three"]
         XCTAssertEqual(set[0], "one")
         XCTAssertEqual(set[1], "two")
         XCTAssertEqual(set[2], "three")
     }
-    
     
     // MARK: - Counts & Members
     /*-------------------------------------------------------------------------------*/
@@ -115,7 +106,7 @@ class OrderedSetTests: XCTestCase {
         XCTAssertTrue(set.isEmpty)
     }
     func testIsEmpty_false() {
-        let set : OrderedSet<String> = ["some"]
+        let set: OrderedSet<String> = ["some"]
         XCTAssertFalse(set.isEmpty)
     }
     
@@ -125,28 +116,27 @@ class OrderedSetTests: XCTestCase {
     }
     
     func testFirst_notEmpty() {
-        let set : OrderedSet<String> = ["one", "two", "three"]
+        let set: OrderedSet<String> = ["one", "two", "three"]
         XCTAssertEqual(set.first, "one")
     }
-    
 
     func testIndexOf() {
-        let set : OrderedSet<String> = ["one", "two", "three"]
+        let set: OrderedSet<String> = ["one", "two", "three"]
         XCTAssertEqual(set.index(of: "one"), 0)
         XCTAssertEqual(set.index(of: "two"), 1)
         XCTAssertEqual(set.index(of: "three"), 2)
     }
     func testIndexOf_notFound() {
-        let set : OrderedSet<String> = ["one", "two", "three"]
+        let set: OrderedSet<String> = ["one", "two", "three"]
         XCTAssertNil(set.index(of: "four"))
     }
     
     func testContains_true() {
-        let set : OrderedSet<String> = ["one", "two", "three"]
+        let set: OrderedSet<String> = ["one", "two", "three"]
         XCTAssertTrue(set.contains("two"))
     }
     func testContains_false() {
-        let set : OrderedSet<String> = ["one", "two", "three"]
+        let set: OrderedSet<String> = ["one", "two", "three"]
         XCTAssertFalse(set.contains("other"))
     }
     func testContains_afterAdd() {
@@ -155,11 +145,10 @@ class OrderedSetTests: XCTestCase {
         XCTAssertTrue(set.contains("one"))
     }
     func testContains_afterRemove_false() {
-        var set : OrderedSet<String> = ["one", "two", "three"]
+        var set: OrderedSet<String> = ["one", "two", "three"]
         set.remove("two")
         XCTAssertFalse(set.contains("two"))
     }
-    
     
     // MARK: - Manipulation
     /*-------------------------------------------------------------------------------*/
@@ -188,7 +177,7 @@ class OrderedSetTests: XCTestCase {
     }
     
     func testAddCollection_withDuplicates() {
-        var set : OrderedSet<String> = ["one", "two"]
+        var set: OrderedSet<String> = ["one", "two"]
         set.append(contentsOf: ["one", "three"])
         XCTAssertEqual(set.count, 3)
         XCTAssertEqual(set[0], "one")
@@ -197,18 +186,18 @@ class OrderedSetTests: XCTestCase {
     }
     
     func testRemoveObject() {
-        var set : OrderedSet<String> = ["some"]
+        var set: OrderedSet<String> = ["some"]
         XCTAssertEqual(set.remove("some"), 0)
         XCTAssertEqual(set.count, 0)
     }
     
     func testRemoveObject_notFound() {
-        var set : OrderedSet<String> = ["some"]
+        var set: OrderedSet<String> = ["some"]
         XCTAssertEqual(set.remove("other"), nil)
         XCTAssertEqual(set.count, 1)
     }
     func testRemoveObjectFromMiddle() {
-        var set : OrderedSet<String> = ["one", "two", "three", "four"]
+        var set: OrderedSet<String> = ["one", "two", "three", "four"]
         XCTAssertEqual(set.remove("two"), 1)
         XCTAssertEqual(set[0], "one")
         XCTAssertEqual(set[1], "three")
@@ -216,7 +205,7 @@ class OrderedSetTests: XCTestCase {
     }
     
     func testRemoveObjectAtIndex() {
-        var set : OrderedSet<String> = ["one", "two", "three", "four"]
+        var set: OrderedSet<String> = ["one", "two", "three", "four"]
         XCTAssertEqual(set.remove(at: 1), "two")
         XCTAssertEqual(set[0], "one")
         XCTAssertEqual(set[1], "three")
@@ -224,14 +213,13 @@ class OrderedSetTests: XCTestCase {
     }
     
     func testRemoveAll() {
-        var set : OrderedSet<String> = ["one", "two", "three", "four"]
+        var set: OrderedSet<String> = ["one", "two", "three", "four"]
         set.removeAll()
         XCTAssertEqual(set.count, 0)
     }
     
-    
     func testInsert() {
-        var set : OrderedSet<String> = ["one", "two", "four"]
+        var set: OrderedSet<String> = ["one", "two", "four"]
         XCTAssertTrue(set.insert("three", at: 2))
         XCTAssertEqual(set.count, 4)
         XCTAssertEqual(set[2], "three")
@@ -239,20 +227,20 @@ class OrderedSetTests: XCTestCase {
     }
     
     func testInsertDuplicate() {
-        var set : OrderedSet<String> = ["one", "two", "three"]
+        var set: OrderedSet<String> = ["one", "two", "three"]
         XCTAssertFalse(set.insert("three", at: 1))
         XCTAssertEqual(set.count, 3)
     }
     
     func testInsertAtEnd() {
-        var set : OrderedSet<String> = ["one", "two"]
+        var set: OrderedSet<String> = ["one", "two"]
         XCTAssertTrue(set.insert("three", at: 2))
         XCTAssertEqual(set.count, 3)
         XCTAssertEqual(set[2], "three")
     }
     
     func testInsertMultiple() {
-        var set : OrderedSet<String> = ["one", "four"]
+        var set: OrderedSet<String> = ["one", "four"]
         _ = set.insert(contentsOf: ["two", "three"], at: 1)
         XCTAssertEqual(set.count, 4)
         XCTAssertEqual(set[1], "two")
@@ -277,13 +265,12 @@ class OrderedSetTests: XCTestCase {
     func testAddPerformance() {
         // This is an example of a performance test case.
         self.measure {
-            var set : OrderedSet<String> = ["one", "four"]
+            var set: OrderedSet<String> = ["one", "four"]
             for n in 0..<10000 {
                 set.append("Object_\(n)")
             }
         }
     }
-    
     
     func testInsertPerformance() {
         // This is an example of a performance test case.
@@ -314,7 +301,7 @@ class OrderedSetTests: XCTestCase {
         }
     }
     
-    func setWithObjects(_ n: Int) -> OrderedSet<String>{
+    func setWithObjects(_ n: Int) -> OrderedSet<String> {
         var set = OrderedSet<String>()
         for n in 0..<10000 {
             set.append("Object_\(n)")
@@ -339,7 +326,6 @@ class OrderedSetTests: XCTestCase {
             set.remove(at: set.count - 1)
         }
     }
-    
     
     // MARK: - Iteration Performance
     /*-------------------------------------------------------------------------------*/
@@ -411,7 +397,6 @@ class OrderedSetTests: XCTestCase {
             })
         }
     }
-
     
     // MARK: - Sorting
     /*-------------------------------------------------------------------------------*/

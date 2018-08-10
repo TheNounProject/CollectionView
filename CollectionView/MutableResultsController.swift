@@ -1,4 +1,3 @@
-
 //
 //  FetchedResultsController.swift
 //  CollectionView
@@ -9,15 +8,14 @@
 
 import Foundation
 
-
 /// A set of changes for an entity with with mappings to original Indexes
-fileprivate struct ChangeIndex<Index: Hashable, Object:Hashable>: CustomStringConvertible {
+fileprivate struct ChangeIndex<Index: Hashable, Object: Hashable>: CustomStringConvertible {
     
     var inserted = Set<Object>()
     var updated = IndexedSet<Index, Object>()
     var deleted = IndexedSet<Index, Object>()
     
-    var count : Int {
+    var count: Int {
         return inserted.count + updated.count + deleted.count
     }
     
@@ -58,8 +56,6 @@ fileprivate struct ChangeIndex<Index: Hashable, Object:Hashable>: CustomStringCo
     }
 }
 
-
-
 /**
  A results controller not only manages data, it also provides an easy to use, consistent interface for working with CollectionViews. While a typical controller fetches and manages data changes internally, this slimmed down version leaves the manipulation of it's content up to you so you can use the same interface with any type of data.
 */
@@ -68,7 +64,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     typealias WrappedSectionInfo = SectionInfo<Section, Element>
     
     typealias SectionAccessor = (Element) -> Section?
-    
     
     private struct EditingContext: CustomStringConvertible {
         
@@ -84,19 +79,14 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             return "Context Items: \(objectChanges.deleted.count) Deleted, \(objectChanges.inserted.count) Inserted, \(objectChanges.updated.count) Updated"
         }
     }
-    
-    
 
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
+    public init() { }
     
-    public init() {
-        
-    }
-    
-    public init(sectionKeyPath: KeyPath<Element,Section>? = nil,
-         sortDescriptors: [SortDescriptor<Element>] = [],
-         sectionSortDescriptors: [SortDescriptor<Section>] = []) {
+    public init(sectionKeyPath: KeyPath<Element, Section>? = nil,
+                sortDescriptors: [SortDescriptor<Element>] = [],
+                sectionSortDescriptors: [SortDescriptor<Section>] = []) {
         self.setSectionKeyPath(sectionKeyPath)
         self.sortDescriptors = sortDescriptors
         self.sectionSortDescriptors = sectionSortDescriptors
@@ -109,10 +99,10 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
     
-    public var sortDescriptors : [SortDescriptor<Element>] = []
-    public var sectionSortDescriptors : [SortDescriptor<Section>] = []
+    public var sortDescriptors: [SortDescriptor<Element>] = []
+    public var sectionSortDescriptors: [SortDescriptor<Section>] = []
     
-    var sectionGetter : SectionAccessor?
+    var sectionGetter: SectionAccessor?
     /// Returns true if a sectionKeyPath has been set
     public var isSectioned: Bool {
         return sectionGetter != nil
@@ -138,27 +128,21 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         }
     }
     
-    
     /**
      The delegate to report changes to
      */
     public weak var delegate: ResultsControllerDelegate?
     
-    
-    
     // MARK: - Controller Contents
     /*-------------------------------------------------------------------------------*/
     
-    private var _objectSectionMap = [Element:WrappedSectionInfo]() // Map between elements and the last group it was known to be in
+    private var _objectSectionMap = [Element: WrappedSectionInfo]() // Map between elements and the last group it was known to be in
     private var _sections = OrderedSet<WrappedSectionInfo>()
     
-    
     /// The number of sections in the controller
-    public var numberOfSections : Int {
+    public var numberOfSections: Int {
         return _sections.count
     }
-    
-    
     
     /**
      The number of objects in a given section
@@ -171,7 +155,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         return self._sections[section].numberOfObjects
     }
     
-    
     /**
      A list of all objects in the controller
      
@@ -183,15 +166,12 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         }
     }
     
-    
-    
     /**
      The list of sections in the controller
      
      For performance reasons accessing the controllers data should be done via the controller getters such as sectionInfo(forSectionAt:) or object(at:)
      */
-    public var sections: [SectionInfo<Section,Element>] { return _sections.objects }
-    
+    public var sections: [SectionInfo<Section, Element>] { return _sections.objects }
     
     /**
      The value of sectionKeyPath for the objects in a given section
@@ -211,11 +191,8 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         return (object(forSectionAt: indexPath) as? CustomDisplayStringConvertible)?.displayDescription ?? ""
     }
     
-    
-    
     // MARK: - Querying Sections & Objects
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
      The object at a given index path
@@ -228,27 +205,25 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     public func object(at indexPath: IndexPath) -> Element? {
         return self.sectionInfo(at: indexPath)?._storage._object(at: indexPath._item)
     }
-
     
     /// Section info for a given index path
     ///
     /// - Parameter sectionIndexPath: A index path (item is not used)
     /// - Returns: The section info if available
-    public func sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo<Section,Element>? {
+    public func sectionInfo(at sectionIndexPath: IndexPath) -> SectionInfo<Section, Element>? {
         return self.sectionInfo(at: sectionIndexPath._section)
     }
     
     @available(*, deprecated, renamed: "sectionInfo(at:)")
-    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo<Section,Element>? {
+    public func sectionInfo(forSectionAt sectionIndexPath: IndexPath) -> SectionInfo<Section, Element>? {
         return self.sectionInfo(at: sectionIndexPath)
     }
-    
     
     /// Section info for a given section
     ///
     /// - Parameter sectionIndex: A section index
     /// - Returns: The section info if available
-    public func sectionInfo(at sectionIndex: Int) -> SectionInfo<Section,Element>? {
+    public func sectionInfo(at sectionIndex: Int) -> SectionInfo<Section, Element>? {
         guard sectionIndex < self.numberOfSections else { return nil }
         return self._sections.object(at: sectionIndex)
     }
@@ -265,12 +240,11 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         return self.sectionInfo(at: sectionIndexPath)?.representedObject
     }
     
-    
     /// Section info representing a given section value (or nil)
     ///
     /// - Parameter section: A value that is represented by a section in the controller
     /// - Returns: The section info if available
-    public func sectionInfo(representing section: Section?) -> SectionInfo<Section,Element>? {
+    public func sectionInfo(representing section: Section?) -> SectionInfo<Section, Element>? {
         guard let ip = self.indexPathOfSection(representing: section) else { return nil }
         return self.sectionInfo(at: ip)
     }
@@ -292,11 +266,8 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         return _sections.contains(_wrap)
     }
     
-    
-    
     // MARK: - Getting IndexPaths
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
      The index path of a given object contained in the controller
@@ -318,7 +289,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         return nil
     }
     
-    
     /**
      The index path of the section represented by section info
      
@@ -327,14 +297,12 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
      - Returns: The index path of the section matching the given info (or nil)
      
      */
-    public func indexPath(of sectionInfo: SectionInfo<Section,Element>) -> IndexPath? {
+    public func indexPath(of sectionInfo: SectionInfo<Section, Element>) -> IndexPath? {
         if let idx = _sections.index(of: sectionInfo) {
             return IndexPath.for(section: idx)
         }
         return nil
     }
-    
-    
     
     /**
      The index path of the section that represents a value
@@ -354,18 +322,15 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         return nil
     }
     
-    
-    
     // MARK: - Storage Manipulation
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
      Set pre-grouped content on the controller
 
      - Parameter content: A list of section, [Element] tuples to set as the content
     */
-    public func setContent(_ content: [(Section,[Element])]) {
+    public func setContent(_ content: [(Section, [Element])]) {
         self._sections = []
         for s in content {
             let section = WrappedSectionInfo(object: s.0, objects: s.1)
@@ -378,7 +343,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         self.sortObjects()
         self.delegate?.controllerDidLoadContent(controller: self)
     }
-    
     
     /// Set the content of the controller to be sorted and grouped according to options
     ///
@@ -418,7 +382,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         self.delegate?.controllerDidLoadContent(controller: self)
     }
     
-    
     private func sortObjects() {
         guard !self.sortDescriptors.isEmpty else { return }
         for s in _sections {
@@ -439,7 +402,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         if _sectionsCopy == nil { _sectionsCopy = _sections }
     }
     
-    
     internal func getOrCreateSectionInfo(for section: Section?) -> WrappedSectionInfo {
         if let s = self.sectionInfo(representing: section) { return s }
         self.ensureSectionCopy()
@@ -458,37 +420,33 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         self._sections.remove(sectionInfo)
     }
     
-    
-    func shouldRemoveEmptySection(_ section: SectionInfo<Section, Element>)-> Bool {
+    func shouldRemoveEmptySection(_ section: SectionInfo<Section, Element>) -> Bool {
         return true
     }
-    
     
     // MARK: - Making Updates
     /*-------------------------------------------------------------------------------*/
     
     /// Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)
-    public var pendingChangeCount : Int {
+    public var pendingChangeCount: Int {
         return pendingItemChangeCount
     }
     
     /// Same as pendingChangeCount. Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)
-    public var pendingItemChangeCount : Int {
+    public var pendingItemChangeCount: Int {
         return 0
 //        return context.objectChanges.count
     }
-
     
     /// If true, changes reported to the delegate account for a placeholer cell that is not reported in the controllers data
     @available(*, unavailable, message: "This functionality has been deprecated and will be replaced soon.")
-    public var hasEmptyPlaceholder : Bool = false
+    public var hasEmptyPlaceholder: Bool = false
     
     /// A special set of changes if hasEmptyPlaceholder is true that can be passed along to a Collection View
     @available(*, unavailable, message: "This functionality has been deprecated and will be replaced soon.")
-    public private(set) var placeholderChanges : CollectionViewProvider?
+    public private(set) var placeholderChanges: CollectionViewProvider?
     
-    
-    private var _sectionsCopy : OrderedSet<WrappedSectionInfo>?
+    private var _sectionsCopy: OrderedSet<WrappedSectionInfo>?
     private var _editingContext = EditingContext()
     private var _editing = 0
     
@@ -499,7 +457,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             debugPrint(section.element._storage)
         }
     }
-    
     
     /// Begin an esiting session to group multiple changes (see `endEditing()`)
     public func beginEditing() {
@@ -525,12 +482,12 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             self.sortSections()
         }
         
-        var processedSections = [Int:EditDistance<OrderedSet<Element>>]()
+        var processedSections = [Int: EditDistance<OrderedSet<Element>>]()
         for (idx, s) in _sections.enumerated() {
             if let changeSet = s.endEditing(sorting: sortDescriptors, forceUpdates: Set()) {
                 if s.numberOfObjects == 0 && self.shouldRemoveEmptySection(s) {
                     self._removeSection(info: s)
-                    continue;
+                    continue
                 }
                 processedSections[idx] = changeSet
             }
@@ -562,8 +519,6 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             }
         }
         
-        
-        
         func reduceCrossSectional(_ object: Element) {
             
             // Get the sourceIP, targetIP and section info of the target
@@ -580,13 +535,11 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             // Add the new move edit
             let newEdit = Edit(.move(origin: sourceIP._item), value: object, index: targetIP._item)
             processedSections[targetIP._section]?.operationIndex.moves.insert(newEdit, for: targetIP._item)
-            
-            
 
             // Remove the original edits
             // With Heckel multiple edits can be made on the same object (Move and Update)
 //            var targetReplaced : (Element, Int)? = nil
-            var affected : (Element, Int)? = nil
+            var affected: (Element, Int)?
             for e in targetEdits {
                 switch e.operation {
                 case .substitution: affected = affected ?? (e.value, e.index)
@@ -611,7 +564,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             guard let sourceEdits = processedSections[sourceSectionIndex]?.operationIndex.edits(for: object), !sourceEdits.isEmpty else { return }
             
             // Remove the old edits and replace them with an insert if it was going to remain
-            var _affected : (Element, Int)? = nil
+            var _affected: (Element, Int)?
             for e in sourceEdits {
                 switch e.operation {
                 case .substitution: _affected = _affected ?? (e.value, e.index)
@@ -677,12 +630,10 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
 }
 
-
-extension MutableResultsController where Section:AnyObject {
+extension MutableResultsController where Section: AnyObject {
     
     // MARK: - Section Manipulation
     /*-------------------------------------------------------------------------------*/
-    
     
     /// Remove the section representing the given value
     ///
@@ -710,7 +661,6 @@ extension MutableResultsController where Section:AnyObject {
         _ = self.getOrCreateSectionInfo(for: section)
     }
     
-    
     /**
      Notify the controller that a section value has changed
      
@@ -726,9 +676,7 @@ extension MutableResultsController where Section:AnyObject {
     }
 }
 
-
-extension MutableResultsController where Element:AnyObject {
-    
+extension MutableResultsController where Element: AnyObject {
     
     // MARK: - Object Manipulation
     /*-------------------------------------------------------------------------------*/
@@ -736,7 +684,7 @@ extension MutableResultsController where Element:AnyObject {
     /// Delete objects from the controller
     ///
     /// - Parameter deletedObjects: A collection objects in the controller
-    public func delete<C : Collection>(objects deletedObjects: C) where C.Iterator.Element == Element {
+    public func delete<C: Collection>(objects deletedObjects: C) where C.Iterator.Element == Element {
         self.beginEditing()
         defer { self.endEditing() }
         
@@ -759,18 +707,16 @@ extension MutableResultsController where Element:AnyObject {
         section.remove(object)
     }
     
-    
     /// Insert multiple objects into the controller
     ///
     /// - Parameter newObjects: A collection of objects
-    public func insert<C : Collection>(objects newObjects: C) where C.Iterator.Element == Element {
+    public func insert<C: Collection>(objects newObjects: C) where C.Iterator.Element == Element {
         self.beginEditing()
         defer { self.endEditing() }
         for o in newObjects {
             self.insert(object: o)
         }
     }
-
     
     /// Insert an object into the controller
     ///
@@ -807,8 +753,6 @@ extension MutableResultsController where Element:AnyObject {
         }
         self._editingContext.objectChanges.inserted(object)
     }
-    
-    
     
     /**
      Notify the controller that an existing object has been updated
@@ -857,6 +801,3 @@ extension MutableResultsController where Element:AnyObject {
         self._editingContext.objectChanges.updated(object, at: tempIP)
     }
 }
-
-
-

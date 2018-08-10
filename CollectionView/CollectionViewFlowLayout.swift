@@ -8,17 +8,11 @@
 
 import Foundation
 
-
-
-
-
-
-
 /**
  CollectionViewDelegateFlowLayout
 */
 
-public protocol CollectionViewDelegateFlowLayout  {
+public protocol CollectionViewDelegateFlowLayout {
     
     // MARK: - Element Size
     /*-------------------------------------------------------------------------------*/
@@ -32,7 +26,9 @@ public protocol CollectionViewDelegateFlowLayout  {
      - Returns: A style to apply to the item
 
     */
-    func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle
+    func collectionView(_ collectionView: CollectionView,
+                        flowLayout: CollectionViewFlowLayout,
+                        styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle
     
     /**
      Asks the delegate for the height of the header view in a specified section
@@ -45,9 +41,10 @@ public protocol CollectionViewDelegateFlowLayout  {
      
      - Returns: The height to apply to the header view in the specified section
      
-    */
-    func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
-                                        heightForHeaderInSection section: Int) -> CGFloat
+     */
+    func collectionView (_ collectionView: CollectionView,
+                         flowLayout collectionViewLayout: CollectionViewFlowLayout,
+                         heightForHeaderInSection section: Int) -> CGFloat
     
     /**
      Asks the delegate for the height of the footer view in a specified section
@@ -60,11 +57,11 @@ public protocol CollectionViewDelegateFlowLayout  {
      
      - Returns: The height to apply to the header view in the specified section
 
-    */
-
-    func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
-                                        heightForFooterInSection section: Int) -> CGFloat
+     */
     
+    func collectionView (_ collectionView: CollectionView,
+                         flowLayout collectionViewLayout: CollectionViewFlowLayout,
+                         heightForFooterInSection section: Int) -> CGFloat
     
     // MARK: - Insets & Transforms
     /*-------------------------------------------------------------------------------*/
@@ -79,10 +76,9 @@ public protocol CollectionViewDelegateFlowLayout  {
      - Returns: Edge insets for the specified section
 
     */
-    func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
+    func collectionView (_ collectionView: CollectionView,
+                         flowLayout collectionViewLayout: CollectionViewFlowLayout,
                          insetsForSectionAt section: Int) -> NSEdgeInsets
-    
-    
     
     /**
      Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none
@@ -94,39 +90,44 @@ public protocol CollectionViewDelegateFlowLayout  {
      - Returns: The type of row transform to apply
      
      */
-    func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
+    func collectionView (_ collectionView: CollectionView,
+                         flowLayout collectionViewLayout: CollectionViewFlowLayout,
                          rowTransformForSectionAt section: Int) -> CollectionViewFlowLayout.RowTransform
 }
 
 extension CollectionViewDelegateFlowLayout {
     
-    public func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
+    public func collectionView(_ collectionView: CollectionView,
+                               flowLayout: CollectionViewFlowLayout,
+                               styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {
         return flowLayout.defaultItemStyle
     }
     
-    public func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
-                         heightForHeaderInSection section: Int) -> CGFloat{
+    public func collectionView (_ collectionView: CollectionView,
+                                flowLayout collectionViewLayout: CollectionViewFlowLayout,
+                                heightForHeaderInSection section: Int) -> CGFloat {
         return collectionViewLayout.defaultHeaderHeight
     }
     
-    public func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
-                         heightForFooterInSection section: Int) -> CGFloat {
+    public func collectionView (_ collectionView: CollectionView,
+                                flowLayout collectionViewLayout: CollectionViewFlowLayout,
+                                heightForFooterInSection section: Int) -> CGFloat {
         return collectionViewLayout.defaultFooterHeight
     }
     
-    public func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
-                         insetsForSectionAt section: Int) -> NSEdgeInsets {
+    public func collectionView (_ collectionView: CollectionView,
+                                flowLayout collectionViewLayout: CollectionViewFlowLayout,
+                                insetsForSectionAt section: Int) -> NSEdgeInsets {
         return collectionViewLayout.defaultSectionInsets
     }
     
-    public func collectionView (_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout,
-                         rowTransformForSectionAt section: Int) -> CollectionViewFlowLayout.RowTransform {
+    public func collectionView (_ collectionView: CollectionView,
+                                flowLayout collectionViewLayout: CollectionViewFlowLayout,
+                                rowTransformForSectionAt section: Int) -> CollectionViewFlowLayout.RowTransform {
         return collectionViewLayout.defaultRowTransform
     }
     
-    
 }
-
 
 /**
  A variation of UICollectionViewFlowLayout
@@ -174,7 +175,7 @@ extension CollectionViewDelegateFlowLayout {
  The spanGroupSpacingBefore/After options will apply a set amount of space before or after a group of span items (one or more spans).
  
  */
-open class CollectionViewFlowLayout : CollectionViewLayout {
+open class CollectionViewFlowLayout: CollectionViewLayout {
     
     // MARK: - Options
     /*-------------------------------------------------------------------------------*/
@@ -182,37 +183,29 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
     /// Spacing between flow elements
     public var interitemSpacing: CGFloat = 8
     
-    
     /// Vertical spacing between multiple span elements
-    public var interpanSpacing : CGFloat?
-    
+    public var interpanSpacing: CGFloat?
     
     /// Top spacing between the span elements that are preceded by flow elements
-    public var spanGroupSpacingBefore : CGFloat?
-    
+    public var spanGroupSpacingBefore: CGFloat?
     
     /// Bottom spacing between span elements that are followed by flow elements
-    public var spanGroupSpacingAfter : CGFloat?
-    
+    public var spanGroupSpacingAfter: CGFloat?
     
     public var defaultItemStyle = ItemStyle.flow(CGSize(width: 60, height: 60))
-    public var defaultFooterHeight : CGFloat = 0
-    public var defaultHeaderHeight : CGFloat = 0
-    public var defaultRowTransform : RowTransform = .none
-    public var defaultSectionInsets : NSEdgeInsets = NSEdgeInsetsZero
-    
+    public var defaultFooterHeight: CGFloat = 0
+    public var defaultHeaderHeight: CGFloat = 0
+    public var defaultRowTransform: RowTransform = .none
+    public var defaultSectionInsets: NSEdgeInsets = NSEdgeInsetsZero
     
     /// If supplementary views should be inset to section insets
     public var insetSupplementaryViews = false
-    
     
     // MARK: - Layout Information
     /*-------------------------------------------------------------------------------*/
     
     /// Only used during layout preparation to reference the width of the previously inserted row
-    private(set) public var widthOfLastRow : CGFloat?
-    
-    
+    private(set) public var widthOfLastRow: CGFloat?
     
     /// Row transforms can be applied to flow elements that fall within the same row
     ///
@@ -234,7 +227,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         /// Break from the flow positioning the item in it's own row
         case span(CGSize)
         
-        var isSpan : Bool {
+        var isSpan: Bool {
             switch self {
             case .span: return true
             default: return false
@@ -242,12 +235,12 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         }
     }
     
-    private struct RowAttributes : CustomStringConvertible {
+    private struct RowAttributes: CustomStringConvertible {
         var frame = CGRect.null
         var itemHeight: CGFloat {
             return items.last?.frame.size.height ?? 0
         }
-        var items : [CollectionViewLayoutAttributes]
+        var items: [CollectionViewLayoutAttributes]
         
         init(attributes: CollectionViewLayoutAttributes) {
             self.items = [attributes]
@@ -305,8 +298,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
         
         func item(verticallyAlignedTo attrs: CollectionViewLayoutAttributes) -> IndexPath? {
             
-            guard self.items.count > 1,
-                let _ = self.items.first,
+            guard self.items.count > 1, !self.items.isEmpty,
                 let l = self.items.last else { return items.last?.indexPath }
             
             let center = attrs.frame.midX
@@ -426,7 +418,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                         func newRow() {
                             
                             var spacing: CGFloat = 0
-                            if sectionAttrs.rows.count > 0 {
+                            if !sectionAttrs.rows.isEmpty {
                                 top = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
                                                                                                     leftInset: insets.left,
                                                                                                     width: contentWidth,
@@ -457,7 +449,7 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                         
                     case let .span(size):
                         
-                        if sectionAttrs.rows.count > 0 && previousStyle?.isSpan != true {
+                        if !sectionAttrs.rows.isEmpty && previousStyle?.isSpan != true {
                             top = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
                                                                                                     leftInset: insets.left,
                                                                                                     width: contentWidth,
@@ -515,7 +507,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 sectionAttrs.frame = sectionAttrs.frame.union(attrs.frame)
                 top = attrs.frame.maxY
             }
-            
             
             sectionAttributes.append(sectionAttrs)
 
@@ -669,14 +660,14 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             var proposed: IndexPath?
             var prev: RowAttributes?
             for row in sectionAttributes[section].rows {
-                if let _ = row.index(of: currentIndexPath) {
+                if row.index(of: currentIndexPath) != nil {
                     guard let pRow = prev else {
                         guard let pSectionRow = sectionAttributes.object(at: section - 1)?.rows.last else { return nil }
                         proposed = pSectionRow.item(verticallyAlignedTo: cAttrs)
-                        break;
+                        break
                     }
                     proposed = pRow.item(verticallyAlignedTo: cAttrs)
-                    break;
+                    break
                 }
                 prev = row
             }
@@ -696,22 +687,21 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
                 }
                 ip = prop
             }
-
             
         case .down:
             guard let cAttrs = collectionView.layoutAttributesForItem(at: currentIndexPath) else { return nil }
             
-            var proposed : IndexPath?
-            var prev : RowAttributes?
+            var proposed: IndexPath?
+            var prev: RowAttributes?
             for row in sectionAttributes[section].rows.reversed() {
-                if let _ = row.index(of: currentIndexPath) {
+                if row.index(of: currentIndexPath) != nil {
                     guard let pRow = prev else {
                         guard let pSectionRow = sectionAttributes.object(at: section + 1)?.rows.first else { return nil }
                         proposed = pSectionRow.item(verticallyAlignedTo: cAttrs)
-                        break;
+                        break
                     }
                     proposed = pRow.item(verticallyAlignedTo: cAttrs)
-                    break;
+                    break
                 }
                 prev = row
             }
@@ -721,7 +711,6 @@ open class CollectionViewFlowLayout : CollectionViewLayout {
             }
             startingIP = ip
             fallthrough
-            
         
         case .right :
             

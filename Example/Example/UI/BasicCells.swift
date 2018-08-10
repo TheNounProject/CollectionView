@@ -9,25 +9,22 @@
 import Foundation
 import CollectionView
 
-
-
-protocol BasicHeaderDelegate : class {
+protocol BasicHeaderDelegate: class {
     func basicHeaderView(_ view: BasicHeaderView, didSelectButton button: IconButton)
 }
 
-
-final class BasicHeaderView : CollectionReusableView {
+final class BasicHeaderView: CollectionReusableView {
     
     let titleLabel = NSTextField(frame: CGRect.zero)
     let accessoryButton = IconButton(frame: CGRect.zero)
     
-    weak var delegate : BasicHeaderDelegate?
+    weak var delegate: BasicHeaderDelegate?
     
-    var titleInset : CGFloat {
+    var titleInset: CGFloat {
         set { _titleInset.constant = newValue }
         get { return _titleInset.constant }
     }
-    private var _titleInset : NSLayoutConstraint!
+    private var _titleInset: NSLayoutConstraint!
     
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -55,14 +52,19 @@ final class BasicHeaderView : CollectionReusableView {
         accessoryButton.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        _titleInset = NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 8)
+        _titleInset = NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal,
+                                         toItem: self, attribute: .left, multiplier: 1, constant: 8)
         
         self.addConstraints([
             _titleInset,
-            NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal, toItem: accessoryButton, attribute: .left, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: accessoryButton, attribute: .right, multiplier: 1, constant: 6),
-            NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: accessoryButton, attribute: .centerY, multiplier: 1, constant: 0)
+            NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                               toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal,
+                               toItem: accessoryButton, attribute: .left, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal,
+                               toItem: accessoryButton, attribute: .right, multiplier: 1, constant: 6),
+            NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                               toItem: accessoryButton, attribute: .centerY, multiplier: 1, constant: 0)
             ])
     }
     
@@ -70,13 +72,14 @@ final class BasicHeaderView : CollectionReusableView {
         super.init(coder: coder)
     }
     
-    
     var drawBorder: Bool = true {
         didSet { self.needsDisplay = true }
     }
     
     class func register(_ collectionView: CollectionView) {
-        collectionView.register(class: BasicHeaderView.self, forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, withReuseIdentifier: "BasicHeaderView")
+        collectionView.register(class: BasicHeaderView.self,
+                                forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader,
+                                withReuseIdentifier: "BasicHeaderView")
     }
     
     override func draw(_ dirtyRect: NSRect) {
@@ -105,6 +108,4 @@ final class BasicHeaderView : CollectionReusableView {
         self.delegate?.basicHeaderView(self, didSelectButton: accessoryButton)
     }
     
-    
 }
-

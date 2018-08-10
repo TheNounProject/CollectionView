@@ -8,12 +8,10 @@
 
 import Foundation
 
-
 /**
  An UICollectionViewLayoutAttributes object manages the layout-related attributes for a given item in a collection view. Layout objects create instances of this class when asked to do so by the collection view. In turn, the collection view uses the layout information to position cells and supplementary views inside its bounds.
 */
 public class CollectionViewLayoutAttributes: CustomStringConvertible {
-    
     
     // MARK: - Identifying the Referenced Item
     /*-------------------------------------------------------------------------------*/
@@ -30,14 +28,12 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
     
     /// The frame rectangle of the item.
     public var frame: CGRect = CGRect.zero
-
     
     /// The center point of the item.
     public var center: CGPoint {
         get { return CGPoint(x: frame.origin.x + frame.size.width/2, y: frame.origin.y + frame.size.height/2) }
         set { self.frame.origin = CGPoint(x: center.x - frame.size.width/2, y: center.y - frame.size.height/2) }
     }
-    
     
     /// The size of the item
     public var size: CGSize {
@@ -62,12 +58,9 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
     
     /// Specifies if the item it detached from the scroll view (SupplementaryViews only)
     public var floating: Bool = false
-
-    
     
     // MARK: - Creating Layout Attributes
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
      Creates and returns a layout attributes object that represents a cell with the specified index path.
@@ -82,8 +75,6 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
         self.zIndex = 1
         self.indexPath = indexPath
     }
-    
-    
     
     /**
      Creates and returns a layout attributes object that represents the specified supplementary view.
@@ -117,7 +108,7 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
      - Note: A CollectionViewLayout should copy attributes when returning them
     */
     public func copy() -> CollectionViewLayoutAttributes {
-        var attrs : CollectionViewLayoutAttributes!
+        var attrs: CollectionViewLayoutAttributes!
         if self.representedElementCategory == .cell {
             attrs = CollectionViewLayoutAttributes(forCellWith: self.indexPath)
         }
@@ -132,7 +123,7 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
         return attrs
     }
     internal func copyWithIndexPath(_ newIndexPath: IndexPath) -> CollectionViewLayoutAttributes {
-        var attrs : CollectionViewLayoutAttributes!
+        var attrs: CollectionViewLayoutAttributes!
         if self.representedElementCategory == .cell {
             attrs = CollectionViewLayoutAttributes(forCellWith: newIndexPath)
         }

@@ -8,9 +8,7 @@
 
 import Foundation
 
-
-
-func delay(_ delay: TimeInterval, block: @escaping (()->Void)) {
+func delay(_ delay: TimeInterval, block: @escaping (() -> Void)) {
     let mDelay = DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
     DispatchQueue.main.asyncAfter(deadline: mDelay, execute: {
         block()
@@ -38,14 +36,13 @@ struct Logger {
     private static func log(_ message: Any, type: String, file: String, funtion: String, line: Int) {
         let fileName = file.components(separatedBy: "/").last!.components(separatedBy: ".").first!
         guard logFiles.isEmpty || logFiles.contains(fileName) else {
-            return;
+            return
         }
         print("\(fileName) @ \(line) \(type): \(message)")
     }
 }
 
 typealias log = Logger
-
 
 /**
  Provides support for OSX < 10.11 and provides some helpful additions
@@ -68,10 +65,8 @@ public extension IndexPath {
         precondition(section >= 0, "Attempt to create an indexPath with negative section")
         return IndexPath(indexes: [section, item])
     }
-
     
-    public static var zero : IndexPath { return IndexPath.for(item: 0, section: 0) }
-    
+    public static var zero: IndexPath { return IndexPath.for(item: 0, section: 0) }
     
     /**
      Returns the item of the index path
@@ -90,18 +85,18 @@ public extension IndexPath {
         return ips
     }
     
-    public var previous : IndexPath? {
+    public var previous: IndexPath? {
         guard self._item >= 1 else { return nil }
         return IndexPath.for(item: self._item - 1, section: self._section)
     }
-    public var next : IndexPath {
+    public var next: IndexPath {
         return IndexPath.for(item: self._item + 1, section: self._section)
     }
-    public var nextSection : IndexPath {
+    public var nextSection: IndexPath {
         return IndexPath.for(item: 0, section: self._section + 1)
     }
     
-    var sectionCopy : IndexPath {
+    var sectionCopy: IndexPath {
         return IndexPath.for(item: 0, section: self._section)
     }
     
@@ -119,7 +114,7 @@ public extension IndexPath {
         return IndexPath.for(item: self._item, section: section + by)
     }
     
-    func isBetween(_ start: IndexPath, end:IndexPath) -> Bool {
+    func isBetween(_ start: IndexPath, end: IndexPath) -> Bool {
         if self == start { return true }
         if self == end { return true }
         let _start = Swift.min(start, end)
@@ -127,8 +122,6 @@ public extension IndexPath {
         return (_start..<_end).contains(self)
     }
 }
-
-
 
 /// :nodoc:
 extension Comparable {
@@ -139,10 +132,8 @@ extension Comparable {
     }
 }
 
-
-
 extension Dictionary {
-    func union(_ other: Dictionary<Key, Value>, overwrite: Bool = true) -> Dictionary<Key, Value> {
+    func union(_ other: [Key: Value], overwrite: Bool = true) -> [Key: Value] {
         var new = self
         for element in other {
             if overwrite || new[element.key] == nil {
@@ -152,7 +143,6 @@ extension Dictionary {
         return new
     }
 }
-
 
 extension Set {
     
@@ -183,7 +173,7 @@ extension Set {
      - parameter set: The set of elements to remove from the receiver
      - returns: A new set with the shared elements removed
      */
-    func removing<C : Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
+    func removing<C: Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
         var copy = self
         for item in set {
             copy.remove(item)
@@ -194,11 +184,11 @@ extension Set {
 
 extension CGPoint {
     
-    var integral : CGPoint {
+    var integral: CGPoint {
         return CGPoint(x: round(self.x), y: round(self.y))
     }
     
-    public var maxAbsVelocity : CGFloat {
+    public var maxAbsVelocity: CGFloat {
         return max(abs(self.x), abs(self.y))
     }
     
@@ -226,7 +216,7 @@ extension CGPoint {
 }
 
 extension CGRect {
-    var center : CGPoint {
+    var center: CGPoint {
         get { return CGPoint(x: self.midX, y: self.midY) }
         set {
             self.origin.x = newValue.x - (self.size.width/2)
@@ -280,7 +270,7 @@ extension CGRect {
         switch edge {
         case .minXEdge:
             let origin = CGPoint(x: other.maxX, y: self.origin.y)
-            let size = CGSize(width: self.maxX - origin.x , height: self.size.height)
+            let size = CGSize(width: self.maxX - origin.x, height: self.size.height)
             return CGRect(origin: origin, size: size)
             
         case .maxXEdge:
@@ -297,10 +287,8 @@ extension CGRect {
     }
 }
 
-
-
 extension NSEdgeInsets {
-    static var zero : NSEdgeInsets { return NSEdgeInsetsZero }
+    static var zero: NSEdgeInsets { return NSEdgeInsetsZero }
     init(_ all: CGFloat) {
         self.init(top: all, left: all, bottom: all, right: all)
     }
@@ -312,7 +300,6 @@ extension NSEdgeInsets {
     }
 }
 
-
 public extension NSView {
     @discardableResult func addConstraintsToMatchParent(_ insets: NSEdgeInsets? = nil) -> (top: NSLayoutConstraint, right: NSLayoutConstraint, bottom: NSLayoutConstraint, left: NSLayoutConstraint)? {
         if let sv = self.superview {
@@ -320,10 +307,12 @@ public extension NSView {
                                          toItem: sv, attribute: NSLayoutConstraint.Attribute.top, multiplier: 1, constant: insets == nil ? 0 : insets!.top)
             let right = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.right, relatedBy: NSLayoutConstraint.Relation.equal,
                                            toItem: self, attribute: NSLayoutConstraint.Attribute.right, multiplier: 1, constant: insets?.right ?? 0)
-            let bottom = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.bottom, relatedBy: NSLayoutConstraint.Relation.equal,
-                                            toItem: self, attribute: NSLayoutConstraint.Attribute.bottom, multiplier: 1, constant: insets?.bottom ?? 0)
-            let left = NSLayoutConstraint(item: self, attribute: NSLayoutConstraint.Attribute.left, relatedBy: NSLayoutConstraint.Relation.equal,
-                                          toItem: sv, attribute: NSLayoutConstraint.Attribute.left, multiplier: 1, constant: insets == nil ? 0 : insets!.left)
+            let bottom = NSLayoutConstraint(item: sv, attribute: NSLayoutConstraint.Attribute.bottom,
+                                            relatedBy: NSLayoutConstraint.Relation.equal, toItem: self,
+                                            attribute: NSLayoutConstraint.Attribute.bottom, multiplier: 1, constant: insets?.bottom ?? 0)
+            let left = NSLayoutConstraint(item: self, attribute: NSLayoutConstraint.Attribute.left,
+                                          relatedBy: NSLayoutConstraint.Relation.equal, toItem: sv,
+                                          attribute: NSLayoutConstraint.Attribute.left, multiplier: 1, constant: insets == nil ? 0 : insets!.left)
             sv.addConstraints([top, bottom, right, left])
             self.translatesAutoresizingMaskIntoConstraints = false
             return (top, right, bottom, left)
@@ -334,6 +323,3 @@ public extension NSView {
         return nil
     }
 }
-
-
-

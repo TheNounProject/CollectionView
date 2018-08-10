@@ -9,8 +9,7 @@
 import Foundation
 import AppKit
 
-
-func repeatBlock(_ count: Int, block: ()->Void) {
+func repeatBlock(_ count: Int, block: () -> Void) {
     for _ in 0..<count {
         block()
     }
@@ -31,7 +30,7 @@ extension Int {
 
 extension String {
     static func random(_ length: Int) -> String {
-        let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        let letters: NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         let len = UInt32(letters.length)
         
         var randomString = ""
@@ -69,7 +68,6 @@ extension Sequence {
 
 extension Array {
     
-    
     func random() -> Element? {
         guard self.count > 0 else { return nil }
         let idx = Int.random(in: 0...self.count - 1)
@@ -92,10 +90,10 @@ extension Array {
     }
 }
 
-class ActionMenuItem : NSMenuItem {
+class ActionMenuItem: NSMenuItem {
     
-    typealias Handler = ((ActionMenuItem)->Void)
-    let handler : Handler
+    typealias Handler = ((ActionMenuItem) -> Void)
+    let handler: Handler
     
     init(title: String, handler: @escaping Handler) {
         self.handler = handler

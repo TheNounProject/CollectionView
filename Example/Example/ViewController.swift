@@ -9,12 +9,7 @@
 import Cocoa
 import CollectionView
 
-
-
-
-
 class ViewController: CollectionViewController, ResultsControllerDelegate, BasicHeaderDelegate, CollectionViewDelegateColumnLayout, CollectionViewDelegateFlowLayout, CollectionViewPreviewControllerDelegate {
-
 
     var relational: Bool = false
     
@@ -24,11 +19,9 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
                                                                                  sectionRequest: NSFetchRequest<Parent>(entityName: "Parent"),
                                                                                  sectionKeyPath: \Child.parent2)
     
-    
-    var resultsController : ResultsController {
+    var resultsController: ResultsController {
         return relational ? relationalResultsController : fetchedResultsController
     }
-    
     
     var listLayout = CollectionViewListLayout()
     var gridLayout = CollectionViewFlowLayout()
@@ -54,11 +47,8 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         relationalResultsController.sortDescriptors = [SortDescriptor(\Child.displayOrder)]
         relationalResultsController.sectionSortDescriptors = [SortDescriptor(\Parent.displayOrder)]
         
-        
-        
         // Reload to get started
         collectionView.reloadData()
-        
         
         if let t = self.test {
             let moc = AppDelegate.current.managedObjectContext
@@ -83,21 +73,11 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         
     }
     
-    
-    
-    
-    
     // MARK: - Actions
     /*-------------------------------------------------------------------------------*/
     
-    
-
-    
-
-    
-    
     struct Test {
-        var core : [[IndexPath?]] = [
+        var core: [[IndexPath?]] = [
             [
                 nil,
                 IndexPath.for(item: 6, section: 1),
@@ -110,7 +90,7 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
                 IndexPath.for(item: 3, section: 1),
                 IndexPath.for(item: 5, section: 1),
                 nil,
-                nil,
+                nil
                 ],
             [
                 IndexPath.for(item: 7, section: 0),
@@ -123,14 +103,14 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
             ]
         ]
         
-        var inserts : [IndexPath] = [
+        var inserts: [IndexPath] = [
             IndexPath.for(item: 0, section: 0),
             IndexPath.for(item: 4, section: 1)
         ]
         
     }
     
-    var test : Test?
+    var test: Test?
     
 //    var tests : [[IndexPath?]] = [
 //        [
@@ -163,9 +143,6 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
 //        IndexPath.for(item: 4, section: 1)
 //    ]
     
-    
-
-    
     @IBAction func refresh(_ sender: AnyObject?) {
         do {
             try self.content.performFetch()
@@ -183,10 +160,6 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
     @IBAction func reload(_ sender: AnyObject?) {
         collectionView.reloadData()
     }
-    
-    
-
-
 
     // MARK: - ResultsController
     /*-------------------------------------------------------------------------------*/
@@ -213,9 +186,5 @@ class ViewController: CollectionViewController, ResultsControllerDelegate, Basic
         // See documentation for ChangeSets for more info
         collectionView.applyChanges(from: changes)
     }
-    
-    
-    
 
 }
-

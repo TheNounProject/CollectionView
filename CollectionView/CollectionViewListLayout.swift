@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /**
  A vertical list based layout similiar to a native table view
 */
@@ -74,7 +73,6 @@ import Foundation
     @objc optional func collectionView(_ collectionView: CollectionView,
                                        layout collectionViewLayout: CollectionViewLayout,
                                        interitemSpacingForItemsInSection section: Int) -> CGFloat
-
     
     /**
      Asks the delegate for insets to use when laying out items in a given section
@@ -89,27 +87,25 @@ import Foundation
     @objc optional func collectionView(_ collectionView: CollectionView,
                                        layout collectionViewLayout: CollectionViewLayout,
                                        insetForSectionAt section: Int) -> NSEdgeInsets
-
     
 }
 
-
 /// A list layout that makes CollectionView a perfect alternative to NSTableView
-public final class CollectionViewListLayout: CollectionViewLayout  {
+public final class CollectionViewListLayout: CollectionViewLayout {
     
-    //MARK: - Default layout values
-    
-    /// The vertical spacing between items in the same column
-    public final var interitemSpacing: CGFloat = 0 { didSet{ invalidate() }}
+    // MARK: - Default layout values
     
     /// The vertical spacing between items in the same column
-    public final var itemHeight: CGFloat = 36 { didSet{ invalidate() }}
+    public final var interitemSpacing: CGFloat = 0 { didSet { invalidate() }}
+    
+    /// The vertical spacing between items in the same column
+    public final var itemHeight: CGFloat = 36 { didSet { invalidate() }}
     
     /// The height of section header views
-    public final var headerHeight: CGFloat = 0.0 { didSet{ invalidate() }}
+    public final var headerHeight: CGFloat = 0.0 { didSet { invalidate() }}
     
     /// The height of section footer views
-    public final var footerHeight: CGFloat = 0.0 { didSet{ invalidate() }}
+    public final var footerHeight: CGFloat = 0.0 { didSet { invalidate() }}
     
     /// If supplementary views should respect section insets or fill the CollectionView width
     public final var insetSupplementaryViews: Bool = false { didSet { invalidate() }}
@@ -117,8 +113,9 @@ public final class CollectionViewListLayout: CollectionViewLayout  {
     /// Default insets for all sections
     public final var sectionInsets: NSEdgeInsets = NSEdgeInsetsZero { didSet { invalidate() }}
     
-    private weak var delegate: CollectionViewDelegateListLayout? { get { return self.collectionView!.delegate as? CollectionViewDelegateListLayout }}
-    
+    private weak var delegate: CollectionViewDelegateListLayout? {
+        return self.collectionView!.delegate as? CollectionViewDelegateListLayout
+    }
     
     private var sections: [SectionAttributes] = []
     
@@ -137,12 +134,10 @@ public final class CollectionViewListLayout: CollectionViewLayout  {
             return "Section Attributes : \(frame)  content: \(contentFrame) Items: \(items.count)"
         }
     }
-    
 
     override public init() {
         super.init()
     }
-    
     
     private var _cvWidth: CGFloat = 0
     override public func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
@@ -150,9 +145,9 @@ public final class CollectionViewListLayout: CollectionViewLayout  {
         return _cvWidth != newBounds.size.width
     }
     
-    fileprivate var numSections: Int { get { return self.collectionView?.numberOfSections ?? 0 }}
+    fileprivate var numSections: Int { return self.collectionView?.numberOfSections ?? 0 }
     
-    override public func prepare(){
+    override public func prepare() {
         
         self.allIndexPaths.removeAll()
         self.sections.removeAll()
@@ -169,7 +164,9 @@ public final class CollectionViewListLayout: CollectionViewLayout  {
             
             // 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
             let insets =  self.delegate?.collectionView?(cv, layout: self, insetForSectionAt: sectionIdx) ?? self.sectionInsets
-            let rowSpacing: CGFloat = self.delegate?.collectionView?(cv, layout: self, interitemSpacingForItemsInSection: sectionIdx) ?? self.interitemSpacing
+            let rowSpacing: CGFloat = self.delegate?.collectionView?(cv,
+                                                                     layout: self,
+                                                                     interitemSpacingForItemsInSection: sectionIdx) ?? self.interitemSpacing
             
             let contentWidth = cv.bounds.size.width - contentInsets.width
             let itemWidth = contentWidth - insets.width
@@ -178,9 +175,8 @@ public final class CollectionViewListLayout: CollectionViewLayout  {
             var section = SectionAttributes(insets: insets, count: itemCount)
             section.frame = CGRect(x: contentInsets.left, y: top, width: contentWidth, height: 0)
             
-            
             // 2. Section header
-            let heightHeader : CGFloat = self.delegate?.collectionView?(cv, layout: self, heightForHeaderInSection: sectionIdx) ?? self.headerHeight
+            let heightHeader: CGFloat = self.delegate?.collectionView?(cv, layout: self, heightForHeaderInSection: sectionIdx) ?? self.headerHeight
             if heightHeader > 0 {
                 let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader,
                                                                 with: IndexPath.for(item: 0, section: sectionIdx))
@@ -207,7 +203,7 @@ public final class CollectionViewListLayout: CollectionViewLayout  {
                 
                 for idx in 0..<itemCount {
                     
-                    let ip = IndexPath.for(item:idx, section: sectionIdx)
+                    let ip = IndexPath.for(item: idx, section: sectionIdx)
                     allIndexPaths.append(ip)
                     
                     let attrs = CollectionViewLayoutAttributes(forCellWith: ip)
@@ -221,7 +217,6 @@ public final class CollectionViewListLayout: CollectionViewLayout  {
                 top = newTop
             }
             section.contentFrame.size.height = top - section.contentFrame.origin.y
-            
             
             // 4. Footers
             let footerHeight = self.delegate?.collectionView?(cv, layout: self, heightForFooterInSection: sectionIdx) ?? self.footerHeight
@@ -242,7 +237,7 @@ public final class CollectionViewListLayout: CollectionViewLayout  {
         }
     }
     
-    override public var collectionViewContentSize : CGSize {
+    override public var collectionViewContentSize: CGSize {
         guard let cv = collectionView else { return CGSize.zero }
         var size = cv.contentDocumentView.frame.size
         

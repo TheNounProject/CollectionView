@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 import CollectionView
 
-class FetchedController : BaseController {
+class FetchedController: BaseController {
     
     let content = FetchedResultsController<NSNumber, Child>(context: AppDelegate.current.managedObjectContext,
                                                             request: NSFetchRequest<Child>(entityName: "Child"))

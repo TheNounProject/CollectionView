@@ -13,7 +13,6 @@ import Foundation
 */
 public protocol CollectionViewPreviewControllerDelegate: class {
     
-    
     /**
      Asks the delegate for a cell to use to preview the item at indexPath
      
@@ -27,7 +26,6 @@ public protocol CollectionViewPreviewControllerDelegate: class {
     */
     func collectionViewPreviewController(_ controller: CollectionViewPreviewController, cellForItemAt indexPath: IndexPath) -> CollectionViewCell
     
-    
     /**
      Asks the delegate if the item at the specified index path should be included in the preview.
      
@@ -40,7 +38,6 @@ public protocol CollectionViewPreviewControllerDelegate: class {
 
     */
     func collectionViewPreviewController(_ controller: CollectionViewPreviewController, canPreviewItemAt indexPath: IndexPath) -> Bool
-    
     
     /**
      <#Description#>
@@ -57,10 +54,10 @@ extension CollectionViewPreviewControllerDelegate {
     func collectionViewPreview(_ controller: CollectionViewPreviewController, didMoveToItemAt indexPath: IndexPath) { }
 }
 
-class BackgroundView : NSView {
+class BackgroundView: NSView {
     var backgroundColor: NSColor?
     
-    var useLayer : Bool = true { didSet { wantsLayer = useLayer }}
+    var useLayer: Bool = true { didSet { wantsLayer = useLayer }}
     
     override var wantsUpdateLayer: Bool { return useLayer }
     
@@ -90,8 +87,6 @@ class BackgroundView : NSView {
     }
 }
 
-
-
 internal class EventMonitor {
     fileprivate var local: Any?
     fileprivate let mask: NSEvent.EventTypeMask
@@ -118,9 +113,6 @@ internal class EventMonitor {
     }
 }
 
-
-
-
 /**
  An easy to use CollectionViewController that transitions from a source collection view.
  
@@ -144,10 +136,7 @@ internal class EventMonitor {
 
  
 */
-open class CollectionViewPreviewController : CollectionViewController, CollectionViewDelegatePreviewLayout {
-    
-    
-
+open class CollectionViewPreviewController: CollectionViewController, CollectionViewDelegatePreviewLayout {
 
     // MARK: - Delegate
     /*-------------------------------------------------------------------------------*/
@@ -155,7 +144,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     /**
      A delegate to provide data
     */
-    open weak var delegate : CollectionViewPreviewControllerDelegate?
+    open weak var delegate: CollectionViewPreviewControllerDelegate?
     
     open override func loadView() {
         if self.nibName != nil { super.loadView() }
@@ -175,7 +164,6 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     
     fileprivate var eventMonitor: EventMonitor?
     
-    
     // MARK: - Styling
     /*-------------------------------------------------------------------------------*/
     /**
@@ -183,13 +171,12 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     */
     open var backgroundColor: NSColor = NSColor.white {  didSet { overlay.backgroundColor = backgroundColor }}
     
-    
     private var overlay = BackgroundView(color: NSColor.white)
 
     public var dismissGestureEnabled: Bool = false {
         didSet { dismissGesture?.isEnabled = dismissGestureEnabled }
     }
-    private var dismissGesture : NSMagnificationGestureRecognizer?
+    private var dismissGesture: NSMagnificationGestureRecognizer?
     
     open override func viewDidLoad() {
         super.viewDidLoad()
@@ -212,7 +199,8 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         
         collectionView.horizontalScroller = nil
         
-        let gesture = NSMagnificationGestureRecognizer(target: self, action: #selector(CollectionViewPreviewController.magnificationGestureRecognized(_:)))
+        let gesture = NSMagnificationGestureRecognizer(target: self,
+                                                       action: #selector(CollectionViewPreviewController.magnificationGestureRecognized(_:)))
         self.view.addGestureRecognizer(gesture)
         gesture.isEnabled = self.dismissGestureEnabled
         self.dismissGesture = gesture
@@ -222,18 +210,18 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     /*-------------------------------------------------------------------------------*/
     
     /// The  collection view the receiver was presented from
-    private(set) public var sourceCollectionView : CollectionView?
+    private(set) public var sourceCollectionView: CollectionView?
     
     /// The index path the receiver was presented from
-    private(set) public var sourceIndexPath : IndexPath?
+    private(set) public var sourceIndexPath: IndexPath?
     
     /// The index path for the currently displayed item
-    public var currentIndexPath : IndexPath? {
+    public var currentIndexPath: IndexPath? {
         return collectionView.indexPathsForSelectedItems.first ?? self.collectionView.indexPathForFirstVisibleItem
     }
     
-    public var isEmpty : Bool {
-        return self.collectionView.indexPathsForVisibleItems.count == 0
+    public var isEmpty: Bool {
+        return self.collectionView.indexPathsForVisibleItems.isEmpty
     }
     
     open func reloadData() {
@@ -255,7 +243,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     }
     
     func startEventMonitor() {
-        let events : NSEvent.EventTypeMask = [
+        let events: NSEvent.EventTypeMask = [
             NSEvent.EventTypeMask.scrollWheel
             ]
         
@@ -272,24 +260,21 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         eventMonitor = nil
     }
     
-    
     @objc func magnificationGestureRecognized(_ sender: NSMagnificationGestureRecognizer) {
         if sender.state == .began, sender.magnification < 0 {
             self.dismiss(animated: true, completion: nil)
         }
     }
-
-    
     
     // MARK: - Transitions
     /*-------------------------------------------------------------------------------*/
     
-    public var layoutConstraintConfiguration : ((_ container: NSViewController, _ controller: CollectionViewPreviewController)->Void)?
+    public var layoutConstraintConfiguration : ((_ container: NSViewController, _ controller: CollectionViewPreviewController) -> Void)?
     
     /**
      The duration of present/dismiss transitions
      */
-    open var transitionDuration : TimeInterval = 0.25
+    open var transitionDuration: TimeInterval = 0.25
     
     /**
      Present the preview controller, transitioning from an item at indexPath in the source collectionView
@@ -313,6 +298,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         self.delegate = sourceCollectionView.delegate as? CollectionViewPreviewControllerDelegate
             ?? controller as? CollectionViewPreviewControllerDelegate
         
+        // swiftlint:disable:next line_length
         assert(self.delegate != nil, "Developer Error: When presenting CollectionViewPreviewController, controller or sourceCollectionView's delegate must conform to CollectionViewPreviewController")
         
         self.sourceCollectionView = sourceCollectionView
@@ -338,7 +324,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         
         self.startEventMonitor()
         
-        guard let cell = self.collectionView.cellForItem(at:indexPath),
+        guard let cell = self.collectionView.cellForItem(at: indexPath),
             let attrs = self.collectionView.layoutAttributesForItem(at: indexPath) else {
                 self.overlay.alphaValue = 1
                 self.view.window?.makeFirstResponder(self.collectionView)
@@ -366,7 +352,6 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         self.view.window?.makeFirstResponder(self.collectionView)
     }
     
-    
     /**
      Dismiss the preview controller, transitioning the current item back to its source
 
@@ -374,7 +359,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
      - Parameter completion: A block to call when the tranision is complete
 
     */
-    open func dismiss(animated: Bool, completion: AnimationCompletion? = nil)  {
+    open func dismiss(animated: Bool, completion: AnimationCompletion? = nil) {
         self.delegate?.collectionViewPreviewControllerWillDismiss(self)
         self.stopEventMonitor()
         
@@ -389,7 +374,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         if animated, let sourceCV = self.sourceCollectionView, !ips.isEmpty {
             for ip in ips {
                 
-                let cell = self.collectionView.cellForItem(at:ip)
+                let cell = self.collectionView.cellForItem(at: ip)
                 let trans = cell as? CollectionViewPreviewTransitionCell
                 trans?.prepareForTransition(toItemAt: ip, in: sourceCV)
                 
@@ -415,7 +400,6 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         }
     }
     
-    
     open override func numberOfSections(in collectionView: CollectionView) -> Int {
         return sourceCollectionView?.numberOfSections ?? 0
     }
@@ -423,7 +407,6 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     open override func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
         return sourceCollectionView?.numberOfItems(in: section) ?? 0
     }
-    
     
     open func previewLayout(_ layout: CollectionViewPreviewLayout, canPreviewItemAt indexPath: IndexPath) -> Bool {
         return delegate?.collectionViewPreviewController(self, canPreviewItemAt: indexPath) ?? true
@@ -444,7 +427,7 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
     // MARK: - Interactive Gesture
     /*-------------------------------------------------------------------------------*/
     
-    public var interactiveGestureEnabled : Bool {
+    public var interactiveGestureEnabled: Bool {
         set { self.view.acceptsTouchEvents = newValue }
         get { return self.view.acceptsTouchEvents }
     }
@@ -470,7 +453,9 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         let next = self.collectionView.collectionViewLayout.indexPathForNextItem(moving: .right, from: ip)
         let prev = self.collectionView.collectionViewLayout.indexPathForNextItem(moving: .left, from: ip)
         
-        event.trackSwipeEvent(options: [.clampGestureAmount], dampenAmountThresholdMin: next == nil ? 0 : -1, max: prev == nil ? 0 : 1) { (delta, phase, completed, stop) in
+        event.trackSwipeEvent(options: [.clampGestureAmount],
+                              dampenAmountThresholdMin: next == nil ? 0 : -1,
+                              max: prev == nil ? 0 : 1) { (delta, phase, completed, _) in
 
             if phase == .began {
                 self.pauseGesture = true
@@ -491,8 +476,4 @@ open class CollectionViewPreviewController : CollectionViewController, Collectio
         }
     }
     
-    
 }
-
-
-

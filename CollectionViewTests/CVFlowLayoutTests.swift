@@ -11,7 +11,6 @@ import XCTest
 
 class CVFlowLayoutTests: XCTestCase {
 
-
     func testDataSource() {
         let test = LayoutTester(data: [100])
         XCTAssertEqual(test.layout.layoutAttributesForItem(at: IndexPath.zero)?.indexPath, IndexPath.zero)
@@ -27,7 +26,6 @@ class CVFlowLayoutTests: XCTestCase {
         XCTAssertFalse(test.layout.shouldInvalidateLayout(forBoundsChange: test.frame))
         XCTAssertFalse(test.layout.shouldInvalidateLayout(forBoundsChange: test.frame.offsetBy(dx: 4, dy: 5)))
     }
-    
     
     private let _prepareCounts = (sections: 100, items:  300)
     func testTesterPerformance_bigSection() {
@@ -84,7 +82,6 @@ class CVFlowLayoutTests: XCTestCase {
             test.layout.prepare()
         }
     }
-    
     
     // MARK: - Multi Section indexPathsForItems(in rect)
     /*-------------------------------------------------------------------------------*/
@@ -151,7 +148,6 @@ class CVFlowLayoutTests: XCTestCase {
         }
     }
     
-    
     // MARK: - Querying Layout Attributes
     /*-------------------------------------------------------------------------------*/
     func testAttributesInRectPerformance_big_top() {
@@ -165,19 +161,17 @@ class CVFlowLayoutTests: XCTestCase {
     
 }
 
-
-fileprivate class LayoutTester : CollectionViewDataSource, CollectionViewDelegateFlowLayout {
-    
+fileprivate class LayoutTester: CollectionViewDataSource, CollectionViewDelegateFlowLayout {
     
     let collectionView = CollectionView(frame: NSRect(x: 0, y: 0, width: 1000, height: 800))
-    var frame : CGRect {
+    var frame: CGRect {
         set { self.collectionView.frame = newValue }
         get { return self.collectionView.frame }
     }
     let layout = CollectionViewFlowLayout()
-    var data : [Int]
+    var data: [Int]
     
-    var styleProvider : ((IndexPath) -> CollectionViewFlowLayout.ItemStyle)?
+    var styleProvider: ((IndexPath) -> CollectionViewFlowLayout.ItemStyle)?
     
     init(data: [Int] = [10]) {
         self.data = data
@@ -190,7 +184,6 @@ fileprivate class LayoutTester : CollectionViewDataSource, CollectionViewDelegat
         self.init(data: [Int](repeating: items, count: sections))
     }
     
-    
     // CollectionView Data Source
     func numberOfSections(in collectionView: CollectionView) -> Int {
         return data.count
@@ -201,7 +194,6 @@ fileprivate class LayoutTester : CollectionViewDataSource, CollectionViewDelegat
     func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
         return collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath)
     }
-    
     
     // Flow Delegate
     func collectionView(_ collectionView: CollectionView, flowLayout: CollectionViewFlowLayout, styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle {

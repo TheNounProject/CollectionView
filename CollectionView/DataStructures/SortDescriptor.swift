@@ -1,4 +1,3 @@
-
 //
 //  SortDescriptor.swift
 //  CollectionView
@@ -9,13 +8,12 @@
 
 import Foundation
 
-
 /// Sort Descriptor Result
 ///
 /// - same: The two objects are equally compared
 /// - ascending: The first object is before the second (ordered)
 /// - descending: The second object precedes the first (reversed)
-public enum SortDescriptorResult : ExpressibleByBooleanLiteral {
+public enum SortDescriptorResult: ExpressibleByBooleanLiteral {
     case same
     case ascending
     case descending
@@ -26,19 +24,17 @@ public enum SortDescriptorResult : ExpressibleByBooleanLiteral {
     }
 }
 
-
-
 /// a comparator used to compare two objects
 public struct SortDescriptor<T> {
     
-    public let ascending : Bool
-    private let comparator : (T, T) -> SortDescriptorResult
+    public let ascending: Bool
+    private let comparator: (T, T) -> SortDescriptorResult
     
     /// Initialize a sort descriptor with a custom comparator
     ///
     /// - Parameter keyPath: A keypath for the type being sorted
     /// - Parameter ascending: If the comparison should order ascending
-    public init<V:Comparable>(_ keyPath: KeyPath<T,V>, ascending:Bool = true) {
+    public init<V: Comparable>(_ keyPath: KeyPath<T, V>, ascending: Bool = true) {
         self.comparator = {
             let v1 = $0[keyPath: keyPath]
             let v2 = $1[keyPath: keyPath]
@@ -52,7 +48,7 @@ public struct SortDescriptor<T> {
     /// Initialize a sort descriptor with a custom comparator
     ///
     /// - Parameter comparator: A comparator returning a comparison result
-    public init(_ comparator: @escaping ((T,T)->SortDescriptorResult)) {
+    public init(_ comparator: @escaping ((T, T) -> SortDescriptorResult)) {
         self.comparator = comparator
         self.ascending = true
     }
@@ -63,20 +59,20 @@ public struct SortDescriptor<T> {
     ///   - a: The first object
     ///   - b: The second object
     /// - Returns: A SortDescriptorResult for the two objects.
-    public func compare(_ a:T, to b:T) -> SortDescriptorResult {
+    public func compare(_ a: T, to b: T) -> SortDescriptorResult {
         return comparator(a, b)
     }
 }
 
-extension SortDescriptor where T:Comparable {
-    public static var ascending : SortDescriptor<T> {
+extension SortDescriptor where T: Comparable {
+    public static var ascending: SortDescriptor<T> {
         return SortDescriptor({ (a, b) -> SortDescriptorResult in
             if a == b { return .same }
             if a > b { return .descending }
             return .ascending
         })
     }
-    public static var descending : SortDescriptor<T> {
+    public static var descending: SortDescriptor<T> {
         return SortDescriptor({ (a, b) -> SortDescriptorResult in
             if a == b { return .same }
             if a > b { return .descending }
@@ -89,7 +85,7 @@ protocol Comparer {
     associatedtype Compared
     func compare(_ a: Compared, to b: Compared) -> SortDescriptorResult
 }
-extension SortDescriptor : Comparer { }
+extension SortDescriptor: Comparer { }
 
 extension Sequence where Element: Comparer {
     func compare(_ element: Element.Compared, _ other: Element.Compared) -> SortDescriptorResult {
@@ -107,7 +103,6 @@ extension Sequence where Element: Comparer {
         return self.compare(element, other) == .ascending
     }
 }
-
 
 public extension Array {
     public mutating func sort(using sortDescriptor: SortDescriptor<Element>) {
@@ -135,7 +130,7 @@ public extension Array {
     
     public mutating func insert(_ element: Element, using sortDescriptors: [SortDescriptor<Element>]) -> Int {
 
-        if !sortDescriptors.isEmpty, let idx = (self.index{ return sortDescriptors.compare(element, $0) != .ascending }) {
+        if !sortDescriptors.isEmpty, let idx = (self.index { return sortDescriptors.compare(element, $0) != .ascending }) {
             self.insert(element, at: idx)
             return idx
         }
@@ -174,4 +169,3 @@ extension Sequence {
         }
     }
 }
-

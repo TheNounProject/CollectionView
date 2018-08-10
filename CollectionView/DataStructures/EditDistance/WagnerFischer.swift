@@ -12,7 +12,7 @@ public final class WagnerFischer: DiffAware {
         self.reduceMove = reduceMove
     }
     
-    public func diff<T: Collection>(old: T, new: T) -> [Edit<T.Iterator.Element>] where T.Iterator.Element:Hashable, T.Index == Int {
+    public func diff<T: Collection>(old: T, new: T) -> [Edit<T.Iterator.Element>] where T.Iterator.Element: Hashable, T.Index == Int {
         let previousRow = Row<T>()
         previousRow.seed(with: new)
         let currentRow = Row<T>()
@@ -103,11 +103,9 @@ public final class WagnerFischer: DiffAware {
 //    }
 //}
 
-
-
 // We can adapt the algorithm to use less space, O(m) instead of O(mn),
 // since it only requires that the previous row and current row be stored at any one time
-class Row<T:Collection> where T.Iterator.Element:Hashable {
+class Row<T: Collection> where T.Iterator.Element: Hashable {
     
     public typealias Element = T.Iterator.Element
     
@@ -124,9 +122,8 @@ class Row<T:Collection> where T.Iterator.Element:Hashable {
             let slotIndex = convert(indexInNew: index)
             slots[slotIndex] = combine(
                 slot: slots[slotIndex-1],
-                change:  Edit(.insertion, value: item, index: index)
+                change: Edit(.insertion, value: item, index: index)
             )
-            
             
         }
     }
@@ -197,4 +194,3 @@ class Row<T:Collection> where T.Iterator.Element:Hashable {
         return indexInNew + 1
     }
 }
-

@@ -8,38 +8,36 @@
 
 import Foundation
 
-
 public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDebugStringConvertible, ExpressibleByDictionaryLiteral {
     
-    
     //    var table = MapTab
-    fileprivate var byValue = [Value:Index]()
-    fileprivate var byIndex = [Index:Value]()
+    fileprivate var byValue = [Value: Index]()
+    fileprivate var byIndex = [Index: Value]()
     
     //    fileprivate var _sequenced = OrderedSet<Value>()
     
-    public var indexes : [Index] {
+    public var indexes: [Index] {
         return Array(byIndex.keys)
     }
-    public var indexSet : Set<Index> {
+    public var indexSet: Set<Index> {
         return Set(byIndex.keys)
     }
     
-    public var dictionary : [Index:Value] {
+    public var dictionary: [Index: Value] {
         return byIndex
     }
     
-    public var values : [Value] {
+    public var values: [Value] {
         return Array(byIndex.values)
     }
-    public var valuesSet : Set<Value> {
+    public var valuesSet: Set<Value> {
         return Set(byIndex.values)
     }
     
-    public var count : Int {
+    public var count: Int {
         return byValue.count
     }
-    public var isEmpty : Bool {
+    public var isEmpty: Bool {
         return byValue.isEmpty
     }
     
@@ -79,8 +77,6 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
         str += "]"
         return str
     }
-    
-    
     
     public func contains(_ object: Value) -> Bool {
         return byValue[object] != nil
@@ -142,7 +138,6 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
         byIndex.removeAll()
     }
     
-    
     public typealias Iterator = AnyIterator<(index: Index, value: Value)>
     public func makeIterator() -> Iterator {
         var it = byIndex.makeIterator()
@@ -155,7 +150,6 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
     }
 }
 
-
 extension IndexedSet {
     func union(_ other: IndexedSet) -> IndexedSet {
         var new = self
@@ -166,8 +160,8 @@ extension IndexedSet {
     }
 }
 
-extension Array where Element:Hashable {
-    public var indexedSet : IndexedSet<Int, Element> {
+extension Array where Element: Hashable {
+    public var indexedSet: IndexedSet<Int, Element> {
         var set = IndexedSet<Int, Element>()
         for (idx, v) in self.enumerated() {
             set.insert(v, for: idx)
@@ -176,8 +170,8 @@ extension Array where Element:Hashable {
     }
 }
 
-extension Collection where Iterator.Element:Hashable {
-    public var indexedSet : IndexedSet<Int, Iterator.Element> {
+extension Collection where Iterator.Element: Hashable {
+    public var indexedSet: IndexedSet<Int, Iterator.Element> {
         var set = IndexedSet<Int, Iterator.Element>()
         for (idx, v) in self.enumerated() {
             set.insert(v, for: idx)
@@ -186,9 +180,9 @@ extension Collection where Iterator.Element:Hashable {
     }
 }
 
-extension IndexedSet where Index:Comparable {
+extension IndexedSet where Index: Comparable {
     
-    var orderedIndexes : [Index] {
+    var orderedIndexes: [Index] {
         return self.byIndex.keys.sorted()
     }
     
@@ -207,7 +201,7 @@ extension IndexedSet where Index:Comparable {
         return str
     }
     
-    var orderedValues : [Value] {
+    var orderedValues: [Value] {
         let sorted = self.byIndex.sorted(by: { (v1, v2) -> Bool in
             return v1.key < v2.key
         })
@@ -219,7 +213,3 @@ extension IndexedSet where Index:Comparable {
     }
     
 }
-
-
-
-

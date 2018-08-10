@@ -8,33 +8,26 @@
 
 import Foundation
 
-
-
 public enum EditOperation {
     case insertion
     case deletion
     case substitution
     case move(origin: Int)
     
-    var isDeletion : Bool {
+    var isDeletion: Bool {
         switch self {
         case .deletion: return true
         default: return false
         }
     }
     
-    var isInsertion : Bool {
+    var isInsertion: Bool {
         switch self {
         case .insertion: return true
         default: return false
         }
     }
 }
-
-
-
-
-
 
 public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     
@@ -85,9 +78,7 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     }
 }
 
-
-
-public struct ChangeSetOptions :OptionSet {
+public struct ChangeSetOptions: OptionSet {
     
     public let rawValue: Int
     public static let minimumOperations = ChangeSetOptions(rawValue: 1 << 0)
@@ -97,10 +88,9 @@ public struct ChangeSetOptions :OptionSet {
     }
 }
 
-public typealias HashedIndexedSet<T:Hashable> = IndexedSet<T,T>
+public typealias HashedIndexedSet<T: Hashable> = IndexedSet<T, T>
 
-
-public struct EditOperationIndex<T:Hashable> {
+public struct EditOperationIndex<T: Hashable> {
     
     public var inserts = IndexedSet<Int, Edit<T>>()
     public var deletes = IndexedSet<Int, Edit<T>>()
@@ -132,7 +122,7 @@ public struct EditOperationIndex<T:Hashable> {
         deletes.insert(Edit(.deletion, value: value, index: index), for: index)
     }
     
-    var allEdits : [Edit<T>] {
+    var allEdits: [Edit<T>] {
        var edits = [Edit<T>]()
         edits.append(contentsOf: inserts.values)
         edits.append(contentsOf: deletes.values)
@@ -179,9 +169,6 @@ public struct EditOperationIndex<T:Hashable> {
     }
 }
 
-
-
-
 public struct EditDistance<T: Collection> where T.Iterator.Element: Hashable, T.Index == Int {
     
     public typealias Element = T.Iterator.Element
@@ -192,13 +179,11 @@ public struct EditDistance<T: Collection> where T.Iterator.Element: Hashable, T.
     /// The ending-point collection.
     public let destination: T
 
-    lazy var operationIndex : EditOperationIndex<Element> = {
+    lazy var operationIndex: EditOperationIndex<Element> = {
         return EditOperationIndex<Element>(edits: self.edits)
     }()
     
     public var edits: [Edit<Element>]
-    
-    
     
     public init(source s: T, target t: T, forceUpdates: Set<Element>? = nil, algorithm: DiffAware = Heckel()) {
         self.origin = s
@@ -207,9 +192,7 @@ public struct EditDistance<T: Collection> where T.Iterator.Element: Hashable, T.
     }
 }
 
-
-
-extension EditDistance : CustomStringConvertible {
+extension EditDistance: CustomStringConvertible {
     
     // TODO: This is really not performant, take out after dev
     public var description: String {
@@ -222,4 +205,3 @@ extension EditDistance : CustomStringConvertible {
         return str
     }
 }
-

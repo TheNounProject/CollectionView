@@ -8,23 +8,20 @@
 
 import Foundation
 
-
 protocol CollectionViewDelegatePreviewLayout: class {
     func previewLayout(_ layout: CollectionViewPreviewLayout, canPreviewItemAt indexPath: IndexPath) -> Bool
 }
 
-
-
-public final class CollectionViewPreviewLayout : CollectionViewLayout  {
+public final class CollectionViewPreviewLayout: CollectionViewLayout {
     
     // MARK: - Default layout values
     
     /// The vertical spacing between items in the same column
-    public var interItemSpacing : CGFloat = 8 { didSet{ invalidate() }}
+    public var interItemSpacing: CGFloat = 8 { didSet { invalidate() }}
     
     public override var scrollDirection: CollectionViewScrollDirection { return .horizontal }
     
-    private var numSections : Int { get { return self.collectionView?.numberOfSections ?? 0 }}
+    private var numSections: Int { return self.collectionView?.numberOfSections ?? 0 }
     private var sections = [Section]()
     
     private struct Section {
@@ -32,25 +29,22 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
         var itemAttributes = [CollectionViewLayoutAttributes?]()
     }
     
-    
     var usableIndexPaths = OrderedSet<IndexPath>()
     
     public override func invalidate() {
         _cvSize = collectionView?.bounds.size ?? CGSize.zero
     }
     
-    var delegate : CollectionViewDelegatePreviewLayout? {
+    var delegate: CollectionViewDelegatePreviewLayout? {
         return self.collectionView?.delegate as? CollectionViewDelegatePreviewLayout
     }
-    
-    
     
     var contentWidth: CGFloat = 0
     override public init() {
         super.init()
     }
     
-    override public func prepare(){
+    override public func prepare() {
         
         self.allIndexPaths.removeAll()
         self.sections.removeAll()
@@ -61,19 +55,16 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
         let numberOfSections = self.numSections
         if numberOfSections == 0 { return }
         
-        var left : CGFloat = 0.0
-        let yPos : CGFloat = 0
+        var left: CGFloat = 0.0
+        let yPos: CGFloat = 0
         
         let contentInsets = self.collectionView?.contentInsets ?? NSEdgeInsetsZero
-        
         
         for sectionIdx in 0..<numberOfSections {
             
             let itemHeight = self.collectionView!.contentVisibleRect.size.height - contentInsets.top - contentInsets.bottom
             let itemWidth = self.collectionView!.contentVisibleRect.size.width
             let itemSize = CGSize(width: itemWidth, height: itemHeight)
-
-            
             
             var section = Section()
             
@@ -84,7 +75,7 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
                 
                 for idx in 0..<itemCount {
                     
-                    let ip = IndexPath.for(item:idx, section: sectionIdx)
+                    let ip = IndexPath.for(item: idx, section: sectionIdx)
                     allIndexPaths.append(ip)
                     
                     guard self.delegate?.previewLayout(self, canPreviewItemAt: ip) != false else {
@@ -117,19 +108,18 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
         return size
     }
     
-    
     public override func rectForSection(_ section: Int) -> CGRect {
         return sections[section].frame
     }
     
     public override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         
-        guard !rect.isEmpty && sections.count > 0 else { return [] }
+        guard !rect.isEmpty && !sections.isEmpty else { return [] }
         
         var indexPaths = [IndexPath]()
         for sectionIdx in 0..<sections.count {
             
-            guard sections[sectionIdx].itemAttributes.count > 0
+            guard !sections[sectionIdx].itemAttributes.isEmpty
                 && sections[sectionIdx].frame.intersects(rect) else { continue }
             
             for attr in sections[sectionIdx].itemAttributes {
@@ -146,18 +136,17 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
         }
         return indexPaths
     }
-
     
     public override func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
         
-        guard !rect.isEmpty && sections.count > 0 else { return [] }
+        guard !rect.isEmpty && !sections.isEmpty else { return [] }
         
-        var result : [CollectionViewLayoutAttributes] = []
+        var result: [CollectionViewLayoutAttributes] = []
         
         for sectionIdx in  0..<sections.count {
             
-            guard sections[sectionIdx].itemAttributes.count > 0
-                && sections[sectionIdx].frame.intersects(rect) else { continue }
+            guard !sections[sectionIdx].itemAttributes.isEmpty,
+                sections[sectionIdx].frame.intersects(rect) else { continue }
             
             for attr in sections[sectionIdx].itemAttributes {
                 if let f = attr?.frame {
@@ -192,7 +181,6 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
         return self.layoutAttributesForItem(at: indexPath)?.frame
     }
     
-    
     public override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
 
         switch direction {
@@ -206,5 +194,3 @@ public final class CollectionViewPreviewLayout : CollectionViewLayout  {
     }
     
 }
-
-

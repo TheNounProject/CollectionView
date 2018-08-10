@@ -8,23 +8,20 @@
 
 import Foundation
 
-
-
 public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     
-    public let representedObject : Section?
+    public let representedObject: Section?
     public var objects: [Element] { return _storage.objects }
     
-    public var numberOfObjects : Int { return _storage.count }
+    public var numberOfObjects: Int { return _storage.count }
     
-    private(set) var _storage : OrderedSet<Element>
+    private(set) var _storage: OrderedSet<Element>
     private var _storageCopy = OrderedSet<Element>()
     
     internal init(object: Section?, objects: [Element] = []) {
         self.representedObject = object
         _storage = OrderedSet(elements: objects)
     }
-    
     
     // MARK: - Equatable
     /*-------------------------------------------------------------------------------*/
@@ -66,7 +63,6 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     func sort(using sortDescriptors: [SortDescriptor<Element>]) {
         self._storage.sort(using: sortDescriptors)
     }
-    
     
     // MARK: - Editing
     /*-------------------------------------------------------------------------------*/

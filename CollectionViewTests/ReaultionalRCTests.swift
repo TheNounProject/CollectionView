@@ -9,11 +9,9 @@
 import XCTest
 @testable import CollectionView
 
-
-
 class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
     
-    fileprivate lazy var context : NSManagedObjectContext = {
+    fileprivate lazy var context: NSManagedObjectContext = {
         let model = TestModel()
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
         try! coordinator.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: nil, options: nil)
@@ -75,7 +73,6 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         XCTAssertEqual(content.numberOfObjects(in: 0), 0)
     }
     
-    
     func test_sectionName_dispayConvertible() {
         let content = createController(fetchSections: true)
         let p = Parent.create(in: self.context, children: 0)
@@ -90,8 +87,6 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         XCTAssertNoThrow(try content.performFetch())
         XCTAssertEqual(content.sectionName(forSectionAt: IndexPath.zero), p.name)
     }
-    
-    
     
     func testSectionSortDescriptors() {
         let content = createController(fetchSections: true)
@@ -118,8 +113,6 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         }
     }
     
-    
-    
     // MARK: - Inserting
     /*-------------------------------------------------------------------------------*/
     
@@ -129,7 +122,7 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         self._expectation = expectation(description: "Delegate")
         
         _ = Parent.create(in: self.context, children: 1)
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(content.numberOfSections, 1)
             XCTAssertEqual(content.numberOfObjects(in: 0), 1)
         }
@@ -141,7 +134,7 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         self._expectation = expectation(description: "Delegate")
         
         _ = Parent.create(in: self.context, children: 0)
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(content.numberOfSections, 0)
         }
     }
@@ -152,7 +145,7 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         self._expectation = expectation(description: "Delegate")
         
         _ = Parent.create(in: self.context, children: 1)
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(content.numberOfSections, 1)
             XCTAssertEqual(content.numberOfObjects(in: 0), 1)
         }
@@ -166,7 +159,7 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         _ = Parent.create(in: self.context, children: 1)
         _ = Parent.create(in: self.context, children: 1)
         _ = Parent.create(in: self.context, children: 1)
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(content.numberOfSections, 3)
         }
     }
@@ -179,11 +172,10 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         _ = Parent.create(in: self.context, children: 0)
         _ = Parent.create(in: self.context, children: 0)
         _ = Parent.create(in: self.context, children: 0)
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(content.numberOfSections, 3)
         }
     }
-    
     
     // MARK: - Removing Items
     /*-------------------------------------------------------------------------------*/
@@ -203,7 +195,7 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
                 self.context.delete(c)
             }
         }
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(content.numberOfSections, 0)
         }
     }
@@ -225,14 +217,13 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
                 self.context.delete(c)
             }
         }
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(content.numberOfSections, 3)
             for idx in 0..<3 {
                 XCTAssertEqual(content.numberOfObjects(in: idx), 0)
             }
         }
     }
-    
     
     // MARK: - Moving
     /*-------------------------------------------------------------------------------*/
@@ -241,7 +232,7 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         let content = createController(fetchSections: false)
         content.sectionSortDescriptors = [SortDescriptor(\Parent.displayOrder)]
         
-        let parents : [Parent] = (0..<3).map {
+        let parents: [Parent] = (0..<3).map {
             let p = Parent.create(in: self.context, children: 1)
             p.displayOrder = NSNumber(value: $0)
             return p
@@ -255,7 +246,7 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
         for idx in 0..<3 {
             parents[idx].displayOrder = NSNumber(value: 2 - idx)
         }
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             for idx in 0..<3 {
                 let ip = IndexPath.for(section: idx)
                 XCTAssertEqual(content.object(forSectionAt: ip), parents[2 - idx])
@@ -264,7 +255,7 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
     }
     
     var changeSet = CollectionViewResultsProxy()
-    var _expectation : XCTestExpectation?
+    var _expectation: XCTestExpectation?
     func controllerWillChangeContent(controller: ResultsController) {
         changeSet.prepareForUpdates()
     }
@@ -281,10 +272,8 @@ class RelationalRCTests: XCTestCase, ResultsControllerDelegate {
 
 }
 
-
 // MARK: - Helpers
 /*-------------------------------------------------------------------------------*/
-
 
 fileprivate extension NSAttributeDescription {
     convenience init(name: String, type: NSAttributeType) {
@@ -296,7 +285,7 @@ fileprivate extension NSAttributeDescription {
 
 extension String {
     static func random(_ length: Int) -> String {
-        let letters : NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        let letters: NSString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
         let len = UInt32(letters.length)
         
         var randomString = ""
@@ -309,13 +298,13 @@ extension String {
     }
 }
 
-fileprivate class Parent : NSManagedObject, CustomDisplayStringConvertible {
-    @NSManaged var displayOrder : NSNumber
-    @NSManaged var name : String
+fileprivate class Parent: NSManagedObject, CustomDisplayStringConvertible {
+    @NSManaged var displayOrder: NSNumber
+    @NSManaged var name: String
     @NSManaged var createdAt: Date
-    @NSManaged var children : Set<Child>
+    @NSManaged var children: Set<Child>
     
-    static func create(in moc : NSManagedObjectContext, children: Int = 1) -> Parent {
+    static func create(in moc: NSManagedObjectContext, children: Int = 1) -> Parent {
         let req = NSFetchRequest<Parent>(entityName: "Parent")
         req.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
         req.fetchLimit = 1
@@ -341,14 +330,14 @@ fileprivate class Parent : NSManagedObject, CustomDisplayStringConvertible {
     }
 }
 
-fileprivate class Child : NSManagedObject {
+fileprivate class Child: NSManagedObject {
     @NSManaged var second: NSNumber
     @NSManaged var minute: NSNumber
-    @NSManaged var displayOrder : NSNumber
+    @NSManaged var displayOrder: NSNumber
     @NSManaged var createdAt: Date
     @NSManaged var parent: Parent?
     
-    static func createOrphan(in moc : NSManagedObjectContext) -> Child {
+    static func createOrphan(in moc: NSManagedObjectContext) -> Child {
         let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: moc) as! Child
         child.displayOrder = NSNumber(value: 0)
         let d = Date()
@@ -361,7 +350,7 @@ fileprivate class Child : NSManagedObject {
     }
 }
 
-fileprivate class TestModel : NSManagedObjectModel {
+fileprivate class TestModel: NSManagedObjectModel {
     override init() {
         super.init()
         
@@ -407,7 +396,3 @@ fileprivate class TestModel : NSManagedObjectModel {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-
-
-

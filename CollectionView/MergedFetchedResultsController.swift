@@ -8,10 +8,7 @@
 
 import Foundation
 
-
-
-
-fileprivate struct ChangeContext<Element:NSManagedObject> : CustomStringConvertible {
+fileprivate struct ChangeContext<Element: NSManagedObject> : CustomStringConvertible {
     
     var objectChanges = ObjectChangeSet<IndexPath, Element>()
     var itemsWithSectionChange = Set<Element>()
@@ -25,29 +22,24 @@ fileprivate struct ChangeContext<Element:NSManagedObject> : CustomStringConverti
     }
 }
 
-
-
-
-
 fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: NSManagedObject>: NSObject, Comparable, SectionInfo {
     
-    public var object : Any? { return self._value }
+    public var object: Any? { return self._value }
     public var objects: [Any] { return _storage.objects }
     
-    public var numberOfObjects : Int { return _storage.count }
+    public var numberOfObjects: Int { return _storage.count }
     
-    private(set) var _value : ValueType?
-    fileprivate(set) var _storage = OrderedSet<Element>()
+    private(set) var _value: ValueType?
+    private(set) var _storage = OrderedSet<Element>()
     private(set) var _storageCopy = OrderedSet<Element>()
     
-    private unowned var controller : MergedFetchedResultsController<ValueType, Element>
+    private unowned var controller: MergedFetchedResultsController<ValueType, Element>
     
     internal init(controller: MergedFetchedResultsController<ValueType, Element>, value: ValueType?, objects: [Element] = []) {
         self.controller = controller
         self._value = value
         _storage.add(contentsOf: objects)
     }
-    
     
     // MARK: - Equatable
     /*-------------------------------------------------------------------------------*/
@@ -68,7 +60,6 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
         return lhs._value != nil
     }
     
-    
     // MARK: - Objects
     /*-------------------------------------------------------------------------------*/
     
@@ -88,7 +79,6 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
 //        self.needsSort = false
 //        self._storage.sort(using: sortDescriptors)
 //    }
-    
     
     // MARK: - Editing
     /*-------------------------------------------------------------------------------*/
@@ -111,7 +101,7 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
     func endEditing(forceUpdates: Set<Element>) -> ChangeSet<OrderedSet<Element>> {
         assert(isEditing, "endEditing() called before beginEditing() for RelationalResultsControllerSection")
         
-        if self._added.count > 0 {
+        if !self._added.isEmpty {
             let ordered = self._added.sorted(using: controller.sortDescriptors)
             _storage.insert(contentsOf: ordered, using: controller.sortDescriptors)
         }
@@ -131,11 +121,8 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
         assert(self.isEditing, "Attempt tot call add while not editing")
         self._added.insert(element)
     }
-
     
 }
-
-
 
 /**
  An item based results controller that merges NSManagedObjects that have shared properties.
@@ -144,11 +131,7 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
 */
 public class MergedFetchedResultsController<Section: SectionRepresentable, Element: NSManagedObject> : NSObject, ResultsController {
     
-    
     fileprivate typealias SectionInfo = FetchedSectionInfo<Section, Element>
-
-    
-    
     
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
@@ -160,10 +143,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         self.sortDescriptors = sortDescriptors
     }
     
-    
-    
     private var _fetched: Bool = false
-    
     
     /**
      Performs the provided fetch request to populate the controller. Calling again resets the controller.
@@ -180,7 +160,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         }
         _fetched = true
         
-        var additional = [Section:[Element]]()
+        var additional = [Section: [Element]]()
         var orphaned = [Element]()
         
         for request in fetchRequests {
@@ -192,7 +172,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             request.sortDescriptors = sortDescriptors
             let _objects = try managedObjectContext.fetch(request)
             
-            if _objects.count == 0 { continue }
+            if _objects.isEmpty { continue }
             
             func _insert(section: Section?, objects: [Element]) -> SectionInfo {
                 if let s = self._sectionInfo(representing: section) {
@@ -223,7 +203,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             }
         }
         
-        if _sections.count > 0 {
+        if !_sections.isEmpty {
             self.sortSections()
         }
         for add in additional {
@@ -231,7 +211,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         }
         _sectionInfo(representing: nil)?._storage.insert(contentsOf: orphaned, using: self.sortDescriptors)
     }
-    
     
     /// Clears all data and stops monitoring for changes in the context.
     public func reset() {
@@ -243,7 +222,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         self.fetchedObjects.removeAll()
     }
     
-    
     public func addRequest(_ request: NSFetchRequest<Element>) {
         assert(request.entityName != nil, "request is missing entity name")
         let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: self.managedObjectContext)
@@ -252,7 +230,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         request.returnsObjectsAsFaults = false
         fetchRequests.append(request)
     }
-    
     
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
@@ -263,7 +240,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     public var sortDescriptors = [NSSortDescriptor]()
     public var sectionKeyPath: String?
     
-    
     public weak var delegate: ResultsControllerDelegate? {
         didSet {
             if (oldValue == nil) == (delegate == nil) { return }
@@ -272,21 +248,17 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         }
     }
     
-    
-    
     // MARK: - Controller Contents
     /*-------------------------------------------------------------------------------*/
     
     private var fetchedObjects = Set<Element>()
     
-    private var _objectSectionMap = [Element:SectionInfo]() // Map between elements and the last group it was known to be in
+    private var _objectSectionMap = [Element: SectionInfo]() // Map between elements and the last group it was known to be in
     
     private var _fetchedObjects = [Element]()
     private var _sections = OrderedSet<SectionInfo>()
-
     
-    
-    public var numberOfSections : Int {
+    public var numberOfSections: Int {
         return _sections.count
     }
     
@@ -298,11 +270,9 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         return _sectionInfo(at: indexPath)?._value?.displayDescription ?? ""
     }
     
-    
     public var allObjects: [Any] { return Array(fetchedObjects) }
     
     public var sections: [SectionInfo] { return _sections.objects }
-    
     
     // MARK: - Querying Sections & Objects
     /*-------------------------------------------------------------------------------*/
@@ -317,8 +287,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     public func object(at indexPath: IndexPath) -> Any? {
         return self._object(at: indexPath)
     }
-    
-
     
     // MARK: - Typed Getters
     /*-------------------------------------------------------------------------------*/
@@ -338,9 +306,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         }
         return nil
     }
-    
-    
-
     
     // MARK: - Getting IndexPaths
     /*-------------------------------------------------------------------------------*/
@@ -375,9 +340,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         return nil
     }
     
-    
-    
-    
     // MARK: - Helpers
     /*-------------------------------------------------------------------------------*/
     private func contains(object: Element) -> Bool {
@@ -397,8 +359,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         guard let ip = self._indexPathOfSection(representing: section) else { return nil }
         return self._sectionInfo(at: ip)
     }
-
-    
     
     // MARK: - Storage Manipulation
     /*-------------------------------------------------------------------------------*/
@@ -421,53 +381,43 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         self._sections.sort()
     }
     
-    
-    
-    
     // MARK: - Notification Registration
     /*-------------------------------------------------------------------------------*/
     private func register() {
         ResultsControllerCDManager.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)    }
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)),
+                                               name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
+    }
     
     private func unregister() {
         ResultsControllerCDManager.shared.remove(context: self.managedObjectContext)
         NotificationCenter.default.removeObserver(self, name: ResultsControllerCDManager.Dispatch.name, object: self.managedObjectContext)
     }
-
-
-
-    
     
     // MARK: - Empty Sections
     /*-------------------------------------------------------------------------------*/
     
     /// If true, changes reported to the delegate account for a placeholer cell that is not reported in the controllers data
-    public var hasEmptyPlaceholder : Bool = false
+    public var hasEmptyPlaceholder: Bool = false
     
     /// A special set of changes if hasEmptyPlaceholder is true that can be passed along to a Collection View
-    public private(set) var placeholderChanges : ResultsChangeSet?
-    
-    
-    
+    public private(set) var placeholderChanges: ResultsChangeSet?
     
     // MARK: - Handling Changes
     /*-------------------------------------------------------------------------------*/
     
     /// Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)
-    public var pendingChangeCount : Int {
+    public var pendingChangeCount: Int {
         return pendingItemChangeCount
     }
     
     /// Same as pendingChangeCount. Returns the number of changes processed during an update. Only valid during controllDidChangeContent(_)
-    public var pendingItemChangeCount : Int {
+    public var pendingItemChangeCount: Int {
         return context.objectChanges.count
     }
     
-    
     private var context = ChangeContext<Element>()
-    private var _sectionsCopy : OrderedSet<SectionInfo>?
-    
+    private var _sectionsCopy: OrderedSet<SectionInfo>?
     
     @objc func handleChangeNotification(_ notification: Notification) {
         
@@ -482,7 +432,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         
         preprocess(notification: notification)
         
-        if context.objectChanges.count == 0 {
+        if context.objectChanges.isEmpty {
             return
         }
         delegate.controllerWillChangeContent(controller: self)
@@ -491,19 +441,15 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         processInserted()
         processUpdated()
         
-        
-        var processedSections = [SectionInfo:ChangeSet<OrderedSet<Element>>]()
-        for s in _sections {
-            if s.isEditing {
-                if s.numberOfObjects == 0 {
-                    self._remove(s._value)
-                    continue;
-                }
-                let set = s.endEditing(forceUpdates: self.context.objectChanges.updated.valuesSet)
-                processedSections[s] = set
+        var processedSections = [SectionInfo: ChangeSet<OrderedSet<Element>>]()
+        for s in _sections where s.isEditing {
+            if s.numberOfObjects == 0 {
+                self._remove(s._value)
+                continue
             }
+            let set = s.endEditing(forceUpdates: self.context.objectChanges.updated.valuesSet)
+            processedSections[s] = set
         }
-        
         
         if let oldSections = _sectionsCopy {
             var sectionChanges = ChangeSet(source: oldSections, target: _sections)
@@ -528,7 +474,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         }
         let _previousSectionCount = _sectionsCopy?.count
         _sectionsCopy = nil
-        
 
         func reduceCrossSectional(_ object: Element, targetEdit tEdit: Edit<Element>? = nil) -> Bool {
             
@@ -552,7 +497,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             processedSections[targetSection]?.remove(edit: proposedEdit)
             
             if targetIP._item != proposedEdit.index {
-                let _ = processedSections[targetSection]?.edit(withSource: targetIP._item)
+                _ = processedSections[targetSection]?.edit(withSource: targetIP._item)
                 // Nothing to do
             }
             else if case .substitution = proposedEdit.operation, let obj = self.context.objectChanges.object(for: targetIP) {
@@ -571,18 +516,16 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             if self.placeholderChanges == nil {
                 self.placeholderChanges = ResultsChangeSet()
             }
-            if old == 0 && _sections.count != 0 {
+            if old == 0 && !_sections.isEmpty {
                 self.placeholderChanges?.addChange(forItemAt: IndexPath.zero, with: .delete)
             }
-            else if old != 0 && _sections.count == 0 {
+            else if old != 0 && _sections.isEmpty {
                 self.placeholderChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
             }
         }
         else {
             self.placeholderChanges = nil
         }
-        
-        
         
         self.managedObjectContext.perform({
             for s in processedSections {
@@ -628,16 +571,14 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         })
     }
     
-    
     private func preprocess(notification: Notification) {
         
         var objects = ObjectChangeSet<IndexPath, Element>()
         
-        guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey] as? [NSEntityDescription:ResultsControllerCDManager.EntityChangeSet] else {
-            return
+        guard let changes = notification.userInfo?[ResultsControllerCDManager.Dispatch.changeSetKey]
+            as? [NSEntityDescription: ResultsControllerCDManager.EntityChangeSet] else {
+                return
         }
-        
-        
         
         for request in self.fetchRequests {
             if let itemChanges = changes[request.entity!] {
@@ -728,9 +669,6 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             }
         }
     }
-
-    
-    
     
     private func processUpdated() {
         
@@ -783,11 +721,4 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
         }
     }
     
-    
-    
-
-    
 }
-
-
-

@@ -41,7 +41,6 @@ public extension CAShapeLayer {
         }
     }
     
-    
     func setPath(from: CGPoint, to: CGPoint) {
         let path = CGMutablePath()
         path.move(to: CGPoint(x: from.x, y: from.y))
@@ -76,14 +75,13 @@ public enum IconType {
     case checkmark
 }
 
-
 /// Display an icon (IconType), drawn and animated with core animation.
-@IBDesignable open class IconButton : Button {
+@IBDesignable open class IconButton: Button {
     
     private let iconLayer = IconLayer()
     
     /// The color of the icon while the button is highlighted
-    @IBInspectable open var tintColor : NSColor {
+    @IBInspectable open var tintColor: NSColor {
         set { self.iconLayer.tintColor = newValue }
         get { return iconLayer.tintColor }
     }
@@ -92,12 +90,12 @@ public enum IconType {
     @IBInspectable open var highlightTintColor: NSColor?
     
     /// The size of the icon within the button. The icon is always centered
-    @IBInspectable open var iconSize : CGSize {
+    @IBInspectable open var iconSize: CGSize {
         set { iconLayer.iconSize = newValue }
         get { return iconLayer.iconSize }
     }
     /// The width of each of the bars used to create the icons
-    @IBInspectable open var barWidth : CGFloat {
+    @IBInspectable open var barWidth: CGFloat {
         set { iconLayer.barWidth = newValue }
         get { return iconLayer.barWidth }
     }
@@ -105,11 +103,11 @@ public enum IconType {
     @IBInspectable open var autoDisable: Bool = false
     
     /// The icon currently displayed in the button (read only)
-    open var iconType: IconType { get { return iconLayer.iconType }}
+    open var iconType: IconType { return iconLayer.iconType }
     
-    override open var hovered : Bool {
+    override open var hovered: Bool {
         didSet {
-            if (highlightTintColor != nil) {
+            if highlightTintColor != nil {
                 
                 if self.fadeDuration == 0 {
                     CATransaction.begin()
@@ -142,7 +140,6 @@ public enum IconType {
         super.layout()
         self.iconLayer.frame = self.bounds
     }
-    
    
     /**
      Set the icon to be displayed in the button optionally animating the change.
@@ -157,12 +154,7 @@ public enum IconType {
     }
 }
 
-
-
-
-
-open class IconLayer : CALayer {
-    
+open class IconLayer: CALayer {
     
     public override init() {
         super.init()
@@ -188,7 +180,6 @@ open class IconLayer : CALayer {
         setIcon(self.iconType, animated: false)
     }
     
-    
     /// The color of the icon while the button is highlighted
     open var tintColor: NSColor = NSColor.lightGray {
         didSet {
@@ -199,7 +190,7 @@ open class IconLayer : CALayer {
     }
     
     /// The size of the icon within the button. The icon is always centered
-    open var iconSize : CGSize  = CGSize(width: 24, height: 24) {
+    open var iconSize: CGSize  = CGSize(width: 24, height: 24) {
         didSet {
             if !oldValue.equalTo(iconSize) {
                 self.setIcon(self.iconType, animated: true)
@@ -207,7 +198,7 @@ open class IconLayer : CALayer {
         }
     }
     /// The width of each of the bars used to create the icons
-    open var barWidth : CGFloat = 1 {
+    open var barWidth: CGFloat = 1 {
         didSet {
             bar1.lineWidth = barWidth
             bar2.lineWidth = barWidth
@@ -216,23 +207,21 @@ open class IconLayer : CALayer {
     }
     
     /// The icon currently displayed in the button (read only)
-    open var iconType: IconType { get { return _type }}
+    open var iconType: IconType { return _type }
     
-    fileprivate var _type : IconType! = .hamburger
+    fileprivate var _type: IconType! = .hamburger
     
     fileprivate let bar1 = CAShapeLayer()
     fileprivate let bar2 = CAShapeLayer()
     fileprivate let bar3 = CAShapeLayer()
     
-    fileprivate var iconFrame : CGRect {
-        get {
-            let refSize = self.bounds.size
-            var rect = CGRect(x: (refSize.width/2) - iconSize.width/2, y: (refSize.height/2) - iconSize.height/2, width: iconSize.width, height: iconSize.height)
-            rect = rect.insetBy(dx: barWidth/2, dy: barWidth/2)
-            return rect
-        }
+    fileprivate var iconFrame: CGRect {
+        let refSize = self.bounds.size
+        var rect = CGRect(x: (refSize.width/2) - iconSize.width/2, y: (refSize.height/2) - iconSize.height/2, width: iconSize.width, height: iconSize.height)
+        rect = rect.insetBy(dx: barWidth/2, dy: barWidth/2)
+        return rect
     }
-    override open var bounds : CGRect {
+    override open var bounds: CGRect {
         didSet {
             if !oldValue.equalTo(self.bounds) {
                 self.setIcon(self.iconType, animated: true)
@@ -240,15 +229,13 @@ open class IconLayer : CALayer {
         }
     }
     
-    override open var frame : CGRect {
+    override open var frame: CGRect {
         didSet {
             if !oldValue.size.equalTo(frame.size) {
                 self.setIcon(self.iconType, animated: false)
             }
         }
     }
-    
-    
     
     /**
      Set the icon to be displayed in the button optionally animating the change.
@@ -309,7 +296,6 @@ open class IconLayer : CALayer {
                         p2: pathFromPosition(4, toPosition: 4),
                         p3: pathFromPosition(4, toPosition: 4),
                         animated: animated)
-            
             
         }
         else if type == .angleDown {
@@ -381,7 +367,7 @@ open class IconLayer : CALayer {
                         p3: pathFromPosition(4, toPosition: 4),
                         animated: animated)
         }
-        self._type = type;
+        self._type = type
     }
     
     fileprivate func setBarOpacity(_ o1: Float, o2: Float, o3: Float) {
@@ -413,7 +399,7 @@ open class IconLayer : CALayer {
         let iFrame = iconFrame
         var point = CGPoint(x: 0, y: 0)
         
-        if (pos < 3) { point.y = iFrame.minY }
+        if pos < 3 { point.y = iFrame.minY }
         else if pos < 6 { point.y = iFrame.midY }
         else { point.y = iFrame.maxY }
         
@@ -433,18 +419,18 @@ open class IconLayer : CALayer {
         let adjust = sqrt(min(iconSize.width, iconSize.height))/3
         
         if p1 < 3 && p2 < 3 {
-            pt1.y = pt1.y + adjust
-            pt2.y = pt2.y + adjust
+            pt1.y += adjust
+            pt2.y += adjust
         }
         else if p1 > 5 && p2 > 5 {
             pt1.y = pt1.y - adjust
             pt2.y = pt2.y - adjust
         }
-        else if (p1 == 0 && p2 == 8) {
+        else if p1 == 0 && p2 == 8 {
             pt1 = CGPoint(x: pt1.x + adjust, y: pt1.y + adjust)
             pt2 = CGPoint(x: pt2.x - adjust, y: pt2.y - adjust)
         }
-        else if (p1 == 8 && p2 == 0) {
+        else if p1 == 8 && p2 == 0 {
             pt1 = CGPoint(x: pt1.x - adjust, y: pt1.y - adjust)
             pt2 = CGPoint(x: pt2.x + adjust, y: pt2.y + adjust)
         }
@@ -462,14 +448,7 @@ open class IconLayer : CALayer {
         return path.toCGPath()!
     }
     
-    
 }
-
-
-
-
-
-
 
 extension NSBezierPath {
     func toCGPath () -> CGPath? {
@@ -481,11 +460,11 @@ extension NSBezierPath {
         var didClosePath = false
         
         for i in 0...self.elementCount-1 {
-            var points = [NSPoint](repeating: NSZeroPoint, count: 3)
+            var points = [NSPoint](repeating: NSPoint.zero, count: 3)
             switch self.element(at: i, associatedPoints: &points) {
             case .moveToBezierPathElement:
                 if !points[0].x.isNaN && !points[0].x.isNaN {
-                    path.move(to: CGPoint(x: points[0].x,y: points[0].y))
+                    path.move(to: CGPoint(x: points[0].x, y: points[0].y))
                 }
             case .lineToBezierPathElement:
                 if !points[0].x.isNaN && !points[0].x.isNaN {
@@ -501,7 +480,7 @@ extension NSBezierPath {
                                   control2: CGPoint(x: points[2].x, y: points[2].y))
                 }
             case .closePathBezierPathElement:path.closeSubpath()
-            didClosePath = true;
+            didClosePath = true
             }
         }
         
@@ -512,9 +491,6 @@ extension NSBezierPath {
         return path.copy()
     }
 }
-
-
-
 
 extension NSImage {
     func tintedImageWithColor(_ tintColor: NSColor?) -> NSImage {
@@ -532,17 +508,9 @@ extension NSImage {
         return copy
     }
     
-    
 }
 
-
-
-
-
-
-
-
-class ButtonCell : NSButtonCell {
+class ButtonCell: NSButtonCell {
     
     override func drawTitle(_ title: NSAttributedString, withFrame frame: NSRect, in controlView: NSView) -> NSRect {
         return super.drawTitle(self.attributedTitle, withFrame: frame, in: controlView)
@@ -550,37 +518,36 @@ class ButtonCell : NSButtonCell {
     
 }
 
-
-@IBDesignable open class Button : NSButton {
+@IBDesignable open class Button: NSButton {
     
-    @IBInspectable open var backgroundColor: NSColor? = nil
-    @IBInspectable open var backgroundHoverColor: NSColor? = nil
-    @IBInspectable open var backgroundDisableColor: NSColor? = nil
-    @IBInspectable open var fadeDuration : Double = 0
+    @IBInspectable open var backgroundColor: NSColor?
+    @IBInspectable open var backgroundHoverColor: NSColor?
+    @IBInspectable open var backgroundDisableColor: NSColor?
+    @IBInspectable open var fadeDuration: Double = 0
     
-    @IBInspectable open var cornerRadius : CGFloat = 0
+    @IBInspectable open var cornerRadius: CGFloat = 0
     
     /// The border width
     @IBInspectable open var borderWidth: CGFloat = 0
     /// The border color
     @IBInspectable open var borderColor: NSColor = NSColor.lightGray
-    @IBInspectable open var borderHoverColor: NSColor? = nil
-    @IBInspectable open var borderDisableColor: NSColor? = nil
+    @IBInspectable open var borderHoverColor: NSColor?
+    @IBInspectable open var borderDisableColor: NSColor?
     
     @IBInspectable var titlePadding: CGFloat = 0 { didSet { needsDisplay = true }}
     @IBInspectable open var titleColor: NSColor! = NSColor.black { didSet { self.updateColors() }}
-    @IBInspectable open var titleHoverColor: NSColor? = nil
-    @IBInspectable open var titleDisableColor: NSColor? = nil
+    @IBInspectable open var titleHoverColor: NSColor?
+    @IBInspectable open var titleDisableColor: NSColor?
     
-    @IBInspectable open var imageTint : NSColor? = nil { didSet { self.updateColors() }}
-    @IBInspectable open var imageHoverTint : NSColor? = nil
-    @IBInspectable open var imageDisableTint: NSColor? = nil
+    @IBInspectable open var imageTint: NSColor? = nil { didSet { self.updateColors() }}
+    @IBInspectable open var imageHoverTint: NSColor?
+    @IBInspectable open var imageDisableTint: NSColor?
     
-    @IBInspectable var useLayer : Bool = false
-    @IBInspectable var clipsSubviews : Bool = false
+    @IBInspectable var useLayer: Bool = false
+    @IBInspectable var clipsSubviews: Bool = false
     
     open override var wantsDefaultClipping: Bool { return self.clipsSubviews }
-    override open var title : String { didSet { self.updateColors() }}
+    override open var title: String { didSet { self.updateColors() }}
     
     open override var intrinsicContentSize: NSSize {
         var size = super.intrinsicContentSize
@@ -590,8 +557,7 @@ class ButtonCell : NSButtonCell {
         return size
     }
     
-    
-    @IBInspectable var clickScale : CGFloat = 0
+    @IBInspectable var clickScale: CGFloat = 0
     
     override open var isEnabled: Bool { didSet {
         self.needsDisplay = true
@@ -600,7 +566,7 @@ class ButtonCell : NSButtonCell {
     
     open override var wantsUpdateLayer: Bool { return self.useLayer }
     
-    var hovered : Bool = false {
+    var hovered: Bool = false {
         didSet {
             if hovered == oldValue { return }
             self.updateColors()
@@ -637,18 +603,17 @@ class ButtonCell : NSButtonCell {
         self.image = self.image?.tintedImageWithColor(self.imageTint)
     }
     
-    var _imgTint : NSColor? {
-        var tint : NSColor?
+    var _imgTint: NSColor? {
+        var tint: NSColor?
         if !isEnabled { tint = self.imageDisableTint }
         else if hovered { tint = self.imageHoverTint }
         return tint ?? self.imageTint
     }
     
-    
     func updateColors() {
         self.image = self.image?.tintedImageWithColor(self._imgTint)
         
-        var tColor : NSColor?
+        var tColor: NSColor?
         if !isEnabled { tColor = self.titleDisableColor }
         else if hovered { tColor = self.titleHoverColor }
         
@@ -657,7 +622,7 @@ class ButtonCell : NSButtonCell {
         }
         
         let t = NSMutableAttributedString(attributedString: self.attributedTitle)
-        let range = NSMakeRange(0, t.length)
+        let range = NSRange(location: 0, length: t.length)
         t.removeAttribute(NSAttributedStringKey.foregroundColor, range: range)
         t.addAttribute(NSAttributedStringKey.foregroundColor, value: tColor!, range: range)
         self.attributedTitle = t
@@ -667,14 +632,14 @@ class ButtonCell : NSButtonCell {
         
         self.layer?.masksToBounds = self.clipsSubviews
         self.layer?.cornerRadius = self.cornerRadius
-        var bgColor : NSColor? = nil
+        var bgColor: NSColor?
         if !self.isEnabled { bgColor = self.backgroundDisableColor }
         else if self.hovered { bgColor = self.backgroundHoverColor }
         
         self.layer?.backgroundColor = (bgColor ?? self.backgroundColor)?.cgColor
         
         if self.borderWidth != 0 {
-            var sColor : NSColor? = nil
+            var sColor: NSColor?
             if !self.isEnabled { sColor = self.borderDisableColor }
             else if self.hovered { sColor = self.borderHoverColor }
             self.layer?.borderColor = (sColor ?? self.borderColor).cgColor
@@ -682,7 +647,6 @@ class ButtonCell : NSButtonCell {
         self.layer?.borderWidth = self.borderWidth
         
     }
-    
     
     open override func draw(_ dirtyRect: NSRect) {
         if self.fadeDuration > 0 {
@@ -693,10 +657,9 @@ class ButtonCell : NSButtonCell {
         
         let path = NSBezierPath(roundedRect: self.bounds, xRadius: self.cornerRadius, yRadius: self.cornerRadius)
         
-        var bgColor : NSColor? = nil
+        var bgColor: NSColor?
         if !self.isEnabled { bgColor = self.backgroundDisableColor }
         else if self.hovered { bgColor = self.backgroundHoverColor }
-        
         
         if let bc = bgColor ?? self.backgroundColor {
             bc.setFill()
@@ -704,7 +667,7 @@ class ButtonCell : NSButtonCell {
         }
         if self.borderWidth != 0 {
             
-            var sColor : NSColor? = nil
+            var sColor: NSColor?
             if !self.isEnabled { sColor = self.borderDisableColor }
             else if self.hovered { sColor = self.borderHoverColor }
             (sColor ?? self.borderColor).setStroke()
@@ -715,7 +678,6 @@ class ButtonCell : NSButtonCell {
         NSGraphicsContext.restoreGraphicsState()
         super.draw(dirtyRect)
     }
-    
     
     override open func mouseEntered(with theEvent: NSEvent) {
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow), view.isDescendant(of: self) {
@@ -729,12 +691,11 @@ class ButtonCell : NSButtonCell {
         hovered = false
     }
     
-    
     open override func acceptsFirstMouse(for theEvent: NSEvent?) -> Bool {
         return true
     }
     var trackingEnabled = true
-    fileprivate var _trackingArea : NSTrackingArea?
+    fileprivate var _trackingArea: NSTrackingArea?
     open func disableTracking() {
         self.trackingEnabled = false
         self.updateTrackingAreas()
@@ -763,7 +724,3 @@ class ButtonCell : NSButtonCell {
         else if !stayHighlighted { self.hovered = false }
     }
 }
-
-
-
-

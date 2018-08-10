@@ -8,15 +8,12 @@
 
 import Foundation
 
-
-
 /**
 A protocol for CollectionViewCells that need to customize their transition when used in CollectionViewPreviewController.
  
  If you adopt this protocol in a custom CollectionViewCell subclass, see the source code for CollectionViewPreviewCell for an example implementation.
  */
-public protocol CollectionViewPreviewTransitionCell : class {
-    
+public protocol CollectionViewPreviewTransitionCell: class {
     
     // MARK: - Transitioning From Source
     /*-------------------------------------------------------------------------------*/
@@ -53,7 +50,6 @@ public protocol CollectionViewPreviewTransitionCell : class {
      */
     func finishTransition(fromItemAt indexPath: IndexPath, in collectionView: CollectionView)
     
-    
     // MARK: - Transitioning To Source
     /*-------------------------------------------------------------------------------*/
     
@@ -66,7 +62,6 @@ public protocol CollectionViewPreviewTransitionCell : class {
      */
     func prepareForTransition(toItemAt indexPath: IndexPath, in collectionView: CollectionView)
     
-    
     /**
      Called within the transition animation block in which the cell should move back to its source.
      
@@ -77,8 +72,6 @@ public protocol CollectionViewPreviewTransitionCell : class {
      
      */
     func transition(toItemAt indexPath: IndexPath, in collectionView: CollectionView)
-    
-    
     
     /**
      Called when the transition back to the source has completed and the containing preview controller will be removed.
@@ -91,13 +84,10 @@ public protocol CollectionViewPreviewTransitionCell : class {
     
 }
 
-
-
-
 /**
  A default implementation of CollectionViewPreviewTransitionCell
 */
-open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreviewTransitionCell {
+open class CollectionViewPreviewCell: CollectionViewCell, CollectionViewPreviewTransitionCell {
     
 //    open override var wantsUpdateLayer: Bool { return true }
     
@@ -112,8 +102,6 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
         self.transitionState = .appeaered
     }
     
-    
-    
     public enum TransitionState {
         case appearing
         case appeaered
@@ -121,11 +109,10 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
         case disappeared
     }
     
-    open var transitionState : TransitionState = .appearing
-    open var isTransitioning : Bool {
+    open var transitionState: TransitionState = .appearing
+    open var isTransitioning: Bool {
         return transitionState == .appearing || transitionState == .disappearing
     }
-    
     
     // MARK: - Transitioning From Source
     /*-------------------------------------------------------------------------------*/
@@ -157,7 +144,6 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
         }
     }
     
-    
     // MARK: - Transitioning To Source
     /*-------------------------------------------------------------------------------*/
     
@@ -171,7 +157,6 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
             
             self.removeFromSuperview()
             self.collectionView?.addSubview(self)
-            
             
             CATransaction.begin()
             CATransaction.setDisableActions(true)
@@ -199,6 +184,4 @@ open class CollectionViewPreviewCell : CollectionViewCell, CollectionViewPreview
         self.removeFromSuperview()
     }
     
-    
 }
-

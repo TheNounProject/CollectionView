@@ -8,7 +8,6 @@
 
 import Foundation
 
-
 /**
  The CollectionViewDataSource is responsible for providing the data and views required by a collection view
  
@@ -22,7 +21,6 @@ import Foundation
  These methods are responsible for returning the number of items in the collection view along with the items themselves.
 */
 @objc public protocol CollectionViewDataSource {
-    
     
     // MARK: - Getting Item and Section Metrics
 
@@ -48,15 +46,9 @@ import Foundation
 
     */
     func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int
- 
-    
-    
     
     // MARK: - Getting Views for Items
     /*-------------------------------------------------------------------------------*/
-    
-    
-    
     
     /**
      Asks your data source object for the cell that corresponds to the specified item in the collection view.
@@ -72,7 +64,6 @@ import Foundation
 
     */
     func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell
-    
  
     /**
      Asks your data source object to provide a supplementary view to display in the collection view.
@@ -90,11 +81,8 @@ import Foundation
     */
     @objc optional func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView
     
-    
-    
     // MARK: - Dragging Items
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
      Asks your data source for a pasteboard writing for the item at the specified index path
@@ -131,14 +119,11 @@ import Foundation
     @objc optional func collectionView(_ collectionView: CollectionView, dragRectForItemAt indexPath: IndexPath, withStartingRect rect: UnsafeMutablePointer<CGRect>)
 }
 
-
-
 /**
  The CollectionViewDelegate protocol defines methods that allow you to manage the status, selection, highlighting, and scrolling of items in a collection view and to perform actions on those items. The methods of this protocol are all optional.
 */
 
 @objc public protocol CollectionViewDelegate {
-    
     
     // MARK: - Reloading Data
     /*-------------------------------------------------------------------------------*/
@@ -154,7 +139,6 @@ import Foundation
     */
     @objc optional func collectionViewWillReloadLayout(_ collectionView: CollectionView)
     
-    
 	/**
 	Notifies the delegate that the collection view finished reloading it's layout
      
@@ -168,7 +152,6 @@ import Foundation
     // MARK: - First Responder
     /*-------------------------------------------------------------------------------*/
     
-    
     /**
      Notifies the delegate that the collection view has changed status as first responder
 
@@ -180,7 +163,6 @@ import Foundation
     
     // MARK: - Mouse Tracking
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
       Notifies the delegate that the mouse has moved into the frame of a section.
@@ -203,7 +185,6 @@ import Foundation
     */
     @objc optional func collectionView(_ collectionView: CollectionView, mouseDownInItemAt indexPath: IndexPath?, with event: NSEvent)
     
-    
     /**
      Notifies the delegate that the mouse was released in the specified index path
 
@@ -216,11 +197,8 @@ import Foundation
                                        mouseUpInItemAt indexPath: IndexPath?,
                                        with event: NSEvent)
     
-    
-    
     // MARK: - Highlighting
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
      Asks the delegate if the item at the specified index path should highlight
@@ -233,28 +211,21 @@ import Foundation
     */
     @objc optional func collectionView(_ collectionView: CollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool
     
-    
-    
     // MARK: - Selections
     /*-------------------------------------------------------------------------------*/
     
-    
-    
     // Single index path selection delegate methods are deprecated. Please use Set<IndexPath> versions.
-    @available(*, deprecated,  message: "Please use collectionView(_:, shouldDeselectItemsAt:)")
+    @available(*, deprecated, message: "Please use collectionView(_:, shouldDeselectItemsAt:)")
     @objc optional func collectionView(_ collectionView: CollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool
     
-    @available(*, deprecated,  message: "Please use collectionView(_:, didDeselectItemsAt:)")
+    @available(*, deprecated, message: "Please use collectionView(_:, didDeselectItemsAt:)")
     @objc optional func collectionView(_ collectionView: CollectionView, didDeselectItemAt indexPath: IndexPath)
     
-    @available(*, deprecated,  message: "Please use collectionView(_:, shouldSelectItemsAt:)")
+    @available(*, deprecated, message: "Please use collectionView(_:, shouldSelectItemsAt:)")
     @objc optional func collectionView(_ collectionView: CollectionView, shouldSelectItemAt indexPath: IndexPath, with event: NSEvent?) -> Bool
     
-    @available(*, deprecated,  message: "Please use collectionView(_:, didSelectItemsAt:)")
+    @available(*, deprecated, message: "Please use collectionView(_:, didSelectItemsAt:)")
     @objc optional func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath)
-    
-    
-    
     
     /**
      Asks the delegate to approve the pending selection of items.
@@ -285,7 +256,6 @@ import Foundation
     
     @objc optional func collectionView(_ collectionView: CollectionView, didSelectItemsAt indexPaths: Set<IndexPath>)
     
-    
     /**
      Asks the delegate object to approve the pending deselection of items.
      
@@ -309,10 +279,6 @@ import Foundation
      */
     @objc optional func collectionView(_ collectionView: CollectionView, didDeselectItemsAt indexPaths: Set<IndexPath>)
     
-    
-
-
-    
     /**
      Not implemented
 
@@ -323,7 +289,6 @@ import Foundation
     */
     @available(*, unavailable, message: "Trackpad pressure is not yet implemented")
     @objc optional func collectionView(_ collectionView: CollectionView, didChangePressure pressure: CGFloat, forItemAt indexPath: IndexPath)
-    
     
     /**
      Notifies the delegate that an item was double clicked
@@ -345,12 +310,10 @@ import Foundation
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath?, with event: NSEvent)
     
-    
     // MARK: - View Display
     /*-------------------------------------------------------------------------------*/
     
-    @objc optional func collectionView(_ collectionView: CollectionView, willDisplayCell cell:CollectionViewCell, forItemAt indexPath: IndexPath)
-    
+    @objc optional func collectionView(_ collectionView: CollectionView, willDisplayCell cell: CollectionViewCell, forItemAt indexPath: IndexPath)
     
     /**
      Notifies the delegate that a supplementary view will bw displayed
@@ -360,8 +323,7 @@ import Foundation
      - Parameter indexPath: The index path of the view
 
     */
-    @objc optional func collectionView(_ collectionView: CollectionView, willDisplaySupplementaryView view:CollectionReusableView, ofElementKind elementKind: String, at indexPath: IndexPath)
-    
+    @objc optional func collectionView(_ collectionView: CollectionView, willDisplaySupplementaryView view: CollectionReusableView, ofElementKind elementKind: String, at indexPath: IndexPath)
     
     /**
      Notifies the delegate that a cell was removed from view
@@ -372,7 +334,6 @@ import Foundation
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didEndDisplayingCell cell: CollectionViewCell, forItemAt indexPath: IndexPath)
-    
     
     /**
      Notifies the delegate that a supplementary view was removed from view
@@ -385,10 +346,8 @@ import Foundation
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didEndDisplayingSupplementaryView view: CollectionReusableView, ofElementKind elementKind: String, at indexPath: IndexPath)
     
-    
     // MARK: - Ancoring
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
      Asks the delegate for an index path to anchor when resizing
@@ -405,7 +364,6 @@ import Foundation
     // MARK: - Resizing
     /*-------------------------------------------------------------------------------*/
     
-    
     /**
      Notifies the delegate that the collection view did begin resizing
 
@@ -416,7 +374,6 @@ import Foundation
     
     // MARK: - Scrolling
     /*-------------------------------------------------------------------------------*/
-    
     
     /**
      Asks the delegate if the collection view should scroll to an item
@@ -437,7 +394,6 @@ import Foundation
 
     */
     @objc optional func collectionView(_ collectionView: CollectionView, didScrollToItemAt indexPath: IndexPath)
-
     
     /**
      Notifies the delegate that the collection view was scrolled
@@ -449,7 +405,6 @@ import Foundation
     */
     @objc optional func collectionViewDidScroll(_ collectionView: CollectionView)
     
-    
     /**
      Notifies the delegate that the collection view will begin scrolling
      
@@ -458,7 +413,6 @@ import Foundation
 
     */
     @objc optional func collectionViewWillBeginScrolling(_ collectionView: CollectionView, animated: Bool)
-    
     
     /**
      Notifies the delegate that the collection view did end scrolling
@@ -470,16 +424,14 @@ import Foundation
     @objc optional func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: Bool)
 }
 
-
-
 @available(*, unavailable, renamed: "CollectionViewDragDelegate")
-public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
+public protocol CollectionViewInteractionDelegate: CollectionViewDelegate { }
 
 /**
  The CollectionViewDragDelegate forwards system drag functions to the delegate in the context of a Collection View.
 
 */
-@objc public protocol CollectionViewDragDelegate : CollectionViewDelegate {
+@objc public protocol CollectionViewDragDelegate: CollectionViewDelegate {
     
     // MARK: - Dragging Source
     /*-------------------------------------------------------------------------------*/
@@ -494,8 +446,7 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
      - Returns: True if a dragging session should begin
 
     */
-    @objc optional func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, with event: NSEvent) ->Bool
-    
+    @objc optional func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, with event: NSEvent) -> Bool
     
     /**
      Asks the delegate to validate the selected items for drag.
@@ -595,4 +546,3 @@ public protocol CollectionViewInteractionDelegate : CollectionViewDelegate { }
     */
     @objc optional func collectionView(_ collectionView: CollectionView, performDragOperation dragInfo: NSDraggingInfo) -> Bool
 }
-

@@ -8,9 +8,6 @@
 
 import Foundation
 
-
-
-
 /**
  A FetchedResultsController provides the same data store and change reporting as a MutableResultsController but sources it's contents from a CoreData context.
  
@@ -19,7 +16,6 @@ import Foundation
  The controller can also be sorted, grouped into sections and automatically updated when changes are made in the managed obejct context.
  */
 public class FetchedResultsController<Section: SectionType, Element: NSManagedObject> : MutableResultsController<Section, Element> {
-    
     
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
@@ -32,7 +28,7 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
      - Parameter sectionKeyPath: An optional key path to use for section groupings
      
      */
-    public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionKeyPath: KeyPath<Element,Section>? = nil) {
+    public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionKeyPath: KeyPath<Element, Section>? = nil) {
         
         assert(request.entityName != nil, "request is missing entity name")
         let objectEntity = NSEntityDescription.entity(forEntityName: request.entityName!, in: context)
@@ -52,8 +48,6 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         unregister()
     }
     
-    
-    
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
     
@@ -69,7 +63,7 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
     }
     
     ///The fetch request for the controller
-    public let fetchRequest : NSFetchRequest<Element>
+    public let fetchRequest: NSFetchRequest<Element>
     
     override var sectionGetter: SectionAccessor? {
         didSet {
@@ -108,20 +102,15 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         fetchRequest.entity = objectEntity
     }
     
-    
-    
     func evaluate(object: Element) -> Bool {
         guard let p = self.fetchRequest.predicate else { return true }
         return p.evaluate(with: object)
     }
     
-    
-    
     // MARK: - Status
     /*-------------------------------------------------------------------------------*/
     fileprivate var _fetched: Bool = false
     private var _registered = false
-    
     
     func setNeedsFetch() {
         _fetched = false
@@ -132,7 +121,9 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         guard let moc = self._managedObjectContext, !_registered, self.delegate != nil else { return }
         _registered = true
         ManagedObjectContextObservationCoordinator.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ManagedObjectContextObservationCoordinator.Notification.name, object: moc)    }
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)),
+                                               name: ManagedObjectContextObservationCoordinator.Notification.name,
+                                               object: moc)    }
     
     fileprivate func unregister() {
         guard let moc = self._managedObjectContext, _registered else { return }
@@ -140,7 +131,6 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         ManagedObjectContextObservationCoordinator.shared.remove(context: moc)
         NotificationCenter.default.removeObserver(self, name: ManagedObjectContextObservationCoordinator.Notification.name, object: moc)
     }
-    
     
     /**
      Performs the provided fetch request to populate the controller. Calling again resets the controller.
@@ -155,9 +145,8 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         _fetched = true
         
         let _objects = try managedObjectContext.fetch(self.fetchRequest)
-        self.setContent(objects:_objects)
+        self.setContent(objects: _objects)
     }
-    
     
     /// Clears all data and stops monitoring for changes in the context.
     public override func reset() {
@@ -169,7 +158,7 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         return true
     }
     
-    func processChanges(_ changes: [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
+    func processChanges(_ changes: [NSEntityDescription: ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
         if let itemChanges = changes[fetchRequest.entity!] {
             self.beginEditing()
             for obj in itemChanges.deleted {
@@ -206,17 +195,17 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
     }
     
     @objc func handleChangeNotification(_ notification: Notification) {
-        guard let _ = self.delegate, self._fetched else {
+        guard self.delegate != nil, self._fetched else {
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
             return
         }
-        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
+        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey]
+            as? [NSEntityDescription: ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
             return
         }
         self.processChanges(changes)
     }
 }
-
 
 /**
  
@@ -267,7 +256,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         validateRequests()
     }
     
-    
     /// Intialize a controller
     ///
     /// - Parameters:
@@ -297,9 +285,8 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         
         // Manage notification registration
         
-        
         // Add the queried sections if desired
-        var sections : [Section]?
+        var sections: [Section]?
         if self.fetchSections {
             sections = try managedObjectContext.fetch(self.sectionFetchRequest)
         }
@@ -310,7 +297,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         register()
         _fetched = true
     }
-
     
     override func validateRequests() {
         super.validateRequests()
@@ -320,12 +306,10 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         sectionFetchRequest.entity = sectionEntity
     }
     
-    
     func evaluate(section: Section) -> Bool {
         guard let p = self.sectionFetchRequest.predicate else { return true }
         return p.evaluate(with: section)
     }
-    
     
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
@@ -337,23 +321,21 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
      
      A parent object that does not match the request here, may still be visible if it has children that match the predicate of fetchRequest.
      */
-    public let sectionFetchRequest : NSFetchRequest<Section>
+    public let sectionFetchRequest: NSFetchRequest<Section>
     
     /**
      A keyPath of the section objects to get the displayable name
      
      For custom names, leave nil and conform your section objects to CustomDisplayStringConvertible
      */
-    public var sectionNameKeyPath : KeyPath<Section, String>?
-    
+    public var sectionNameKeyPath: KeyPath<Section, String>?
     
     /**
      If true, sections will be fetched independent of objects using sectionFetchRequest.
      
      This is useful to populate the controller with section objects that may not have any children.
      */
-    public var fetchSections : Bool = true
-    
+    public var fetchSections: Bool = true
     
     override func shouldRemoveEmptySection(_ section: SectionInfo<Section, Element>) -> Bool {
         guard fetchSections, let s = section.representedObject else { return true }
@@ -374,11 +356,10 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         return (obj as? CustomDisplayStringConvertible)?.displayDescription ?? ""
     }
     
-    
     // MARK: - Handling Changes
     /*-------------------------------------------------------------------------------*/
     
-    override func processChanges(_ changes: [NSEntityDescription : ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
+    override func processChanges(_ changes: [NSEntityDescription: ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
         guard let delegate = self.delegate, self._fetched else {
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
             return
@@ -392,7 +373,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                     self.delete(section: section)
                 }
             }
-            
             
             func _updated(section: Section) {
                 let match = self.evaluate(section: section)
@@ -429,4 +409,3 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     }
 
 }
-

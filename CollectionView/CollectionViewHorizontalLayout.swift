@@ -8,8 +8,6 @@
 
 import Foundation
 
-
-
 /// The delegate for CollectionViewHorizontalListLayout
 @objc public protocol CollectionViewDelegateHorizontalListLayout: CollectionViewDelegate {
     
@@ -21,17 +19,17 @@ import Foundation
      - Parameter indexPath: The index path for the item
      
      - Returns: The desired width of the item at indexPath
-
-    */
-    @objc optional func collectionView (_ collectionView: CollectionView,layout collectionViewLayout: CollectionViewLayout,
-        widthForItemAt indexPath: IndexPath) -> CGFloat
+     
+     */
+    @objc optional func collectionView (_ collectionView: CollectionView,
+                                        layout collectionViewLayout: CollectionViewLayout,
+                                        widthForItemAt indexPath: IndexPath) -> CGFloat
 }
 
-
 /// A full height horizontal scrolling layout 
-open class CollectionViewHorizontalListLayout : CollectionViewLayout {
+open class CollectionViewHorizontalListLayout: CollectionViewLayout {
     
-    override open var scrollDirection : CollectionViewScrollDirection {
+    override open var scrollDirection: CollectionViewScrollDirection {
         return CollectionViewScrollDirection.horizontal
     }
     
@@ -43,7 +41,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     open var itemWidth: CGFloat = 100
     open var itemSpacing: CGFloat = 8
     
-    var cache : [CGRect] = []
+    var cache: [CGRect] = []
     var contentWidth: CGFloat = 0
     
     open override func prepare() {
@@ -66,7 +64,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
             let ip = IndexPath.for(item: row, section: 0)
             self.allIndexPaths.append(ip)
             var height = cv.bounds.height 
-            height = height - sectionInsets.top - sectionInsets.bottom
+            height -= sectionInsets.height
             
             let width = self.delegate?.collectionView?(cv, layout: self, widthForItemAt: ip) ?? itemWidth
             
@@ -91,9 +89,9 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
         return false
     }
     
-    open override var collectionViewContentSize : CGSize {
+    open override var collectionViewContentSize: CGSize {
         let numberOfSections = self.collectionView!.numberOfSections
-        if numberOfSections == 0{
+        if numberOfSections == 0 {
             return CGSize.zero
         }
         var contentSize = self.collectionView!.bounds.size as CGSize
@@ -108,7 +106,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     open override func rectForSection(_ section: Int) -> CGRect {
         guard let cv = self.collectionView else { return CGRect.zero }
         let size = self.collectionViewContentSize
-        return CGRect(x: cv.contentInsets.left, y: 0, width:  size.width, height: size.height)
+        return CGRect(x: cv.contentInsets.left, y: 0, width: size.width, height: size.height)
     }
     open override func contentRectForSection(_ section: Int) -> CGRect {
         return rectForSection(section)
@@ -136,8 +134,7 @@ open class CollectionViewHorizontalListLayout : CollectionViewLayout {
     }
 }
 
-
-open class HorizontalCollectionView : CollectionView {
+open class HorizontalCollectionView: CollectionView {
     
     override public init() {
         super.init()

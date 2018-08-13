@@ -9,9 +9,9 @@
 import XCTest
 import CollectionView
 
-class SelectionTests: XCTestCase, CollectionViewDataSource  {
+class SelectionTests: XCTestCase, CollectionViewDataSource {
     
-    var collectionView : CollectionView!
+    var collectionView: CollectionView!
     
     override func setUp() {
         super.setUp()
@@ -23,7 +23,6 @@ class SelectionTests: XCTestCase, CollectionViewDataSource  {
         collectionView.reloadData()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-    
     
     func numberOfSections(in collectionView: CollectionView) -> Int {
         return 1
@@ -58,6 +57,5 @@ class SelectionTests: XCTestCase, CollectionViewDataSource  {
         collectionView.deselectItem(at: ip, animated: true)
         assert(collectionView.itemAtIndexPathIsSelected(ip2), "Index path 2 selected after deselect")
     }
-    
     
 }

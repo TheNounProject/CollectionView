@@ -1,4 +1,3 @@
-
 //
 //  CollectionViewDocumentView.swift
 //  Lingo
@@ -9,7 +8,6 @@
 
 import Foundation
 
-
 extension Set {
   
     mutating func insertOverwrite(_ element: Element) {
@@ -17,39 +15,37 @@ extension Set {
         self.insert(element)
     }
     
-    mutating func formUnionOverwrite<S : Sequence>(_ other: S) where S.Iterator.Element == Element {
+    mutating func formUnionOverwrite<S: Sequence>(_ other: S) where S.Iterator.Element == Element {
         self.subtract(other)
         self.formUnion(other)
     }
     
-    func unionOverwrite<S : Sequence>(_ other: S) -> Set<Element> where S.Iterator.Element == Element {
+    func unionOverwrite<S: Sequence>(_ other: S) -> Set<Element> where S.Iterator.Element == Element {
         let new = self.subtracting(other)
         return new.union(other)
     }
 }
 
-
-
-internal struct ItemUpdate : Hashable {
+internal struct ItemUpdate: Hashable {
     enum `Type` {
         case insert
         case remove
         case update
     }
     
-    let view : CollectionReusableView
-    let _attrs : CollectionViewLayoutAttributes?
-    let indexPath : IndexPath
-    let type : Type
-    let identifier : SupplementaryViewIdentifier?
+    let view: CollectionReusableView
+    let _attrs: CollectionViewLayoutAttributes?
+    let indexPath: IndexPath
+    let type: Type
+    let identifier: SupplementaryViewIdentifier?
     
-    fileprivate var attrs : CollectionViewLayoutAttributes {
+    fileprivate var attrs: CollectionViewLayoutAttributes {
         if let a = _attrs { return a }
         
         guard let cv = self.view.collectionView else {
             preconditionFailure("CollectionView Error: A view was returned without using a deque() method.")
         }
-        var a : CollectionViewLayoutAttributes?
+        var a: CollectionViewLayoutAttributes?
         if let id = identifier {
             a = cv.layoutAttributesForSupplementaryView(ofKind: id.kind, at: indexPath)
         }
@@ -101,14 +97,13 @@ internal struct ItemUpdate : Hashable {
     }
 }
 
+final public class CollectionViewDocumentView: NSView {
 
-final public class CollectionViewDocumentView : NSView {
-
-    public override var isFlipped : Bool { return true }
+    public override var isFlipped: Bool { return true }
     
 //    override public class func isCompatibleWithResponsiveScrolling() -> Bool { return true }
     
-    fileprivate var collectionView : CollectionView {
+    fileprivate var collectionView: CollectionView {
         return self.superview!.superview as! CollectionView
     }
     
@@ -125,8 +120,8 @@ final public class CollectionViewDocumentView : NSView {
     
     var preparedRect = CGRect.zero
     
-    var preparedCellIndex = IndexedSet<IndexPath,CollectionViewCell>()
-    var preparedSupplementaryViewIndex = [SupplementaryViewIdentifier:CollectionReusableView]()
+    var preparedCellIndex = IndexedSet<IndexPath, CollectionViewCell>()
+    var preparedSupplementaryViewIndex = [SupplementaryViewIdentifier: CollectionReusableView]()
     
     func reset() {
         
@@ -140,21 +135,21 @@ final public class CollectionViewDocumentView : NSView {
             view.1.removeFromSuperview()
             let id = view.0
             self.collectionView.enqueueSupplementaryViewForReuse(view.1, withIdentifier: id)
-            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view.1, ofElementKind: id.kind, at: id.indexPath!)
+            self.collectionView.delegate?.collectionView?(self.collectionView,
+                                                          didEndDisplayingSupplementaryView: view.1,
+                                                          ofElementKind: id.kind,
+                                                          at: id.indexPath!)
         }
         
-        for v in self.subviews {
-            if v is CollectionReusableView {
-                v.removeFromSuperview()
-            }
+        for v in self.subviews where v is CollectionReusableView {
+            v.removeFromSuperview()
         }
         
         preparedSupplementaryViewIndex.removeAll()
         self.preparedRect = CGRect.zero
     }
-
     
-    fileprivate var extending : Bool = false
+    fileprivate var extending: Bool = false
     
     func extendPreparedRect(_ amount: CGFloat) {
         if self.preparedRect.isEmpty { return }
@@ -163,9 +158,7 @@ final public class CollectionViewDocumentView : NSView {
         self.extending = false
     }
     
-    
     var pendingUpdates: [ItemUpdate] = []
-    
     
     func prepareRect(_ rect: CGRect, animated: Bool = false, force: Bool = false, completion: AnimationCompletion? = nil) {
         
@@ -176,10 +169,14 @@ final public class CollectionViewDocumentView : NSView {
             for _view in self.preparedSupplementaryViewIndex {
                 let view = _view.1
                 let id = _view.0
-                guard let ip = id.indexPath, var attrs = self.collectionView.layoutAttributesForSupplementaryView(ofKind: id.kind, at: ip) else { continue }
+                guard let ip = id.indexPath,
+                    var attrs = self.collectionView.layoutAttributesForSupplementaryView(ofKind: id.kind, at: ip) else { continue }
                 
                 guard attrs.frame.intersects(self.preparedRect) else {
-                    self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, ofElementKind: id.kind, at: ip)
+                    self.collectionView.delegate?.collectionView?(self.collectionView,
+                                                                  didEndDisplayingSupplementaryView: view,
+                                                                  ofElementKind: id.kind,
+                                                                  at: ip)
                     self.preparedSupplementaryViewIndex[id] = nil
                     self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: id)
                     continue
@@ -223,7 +220,6 @@ final public class CollectionViewDocumentView : NSView {
         
         self.applyUpdates(updates, animated: animated, completion: completion)
     }
-    
     
     fileprivate func layoutItemsInRect(_ rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
         var _rect = rect
@@ -302,7 +298,6 @@ final public class CollectionViewDocumentView : NSView {
         return (_rect, updates)
     }
     
-    
     fileprivate func layoutSupplementaryViewsInRect(_ rect: CGRect, animated: Bool = false, forceAll: Bool = false) -> (rect: CGRect, updates: [ItemUpdate]) {
         var _rect = rect
         
@@ -324,7 +319,10 @@ final public class CollectionViewDocumentView : NSView {
                     
                     view.layer?.zPosition = -100
                     
-                    if animated, var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!) ?? view.attributes {
+                    if animated,
+                        var attrs = self.collectionView.collectionViewLayout
+                            .layoutAttributesForSupplementaryView(ofKind: identifier.kind,
+                                                                  at: identifier.indexPath!) ?? view.attributes {
                         if attrs.floating == true {
                             if view.superview != self.collectionView._floatingSupplementaryView {
                                 view.removeFromSuperview()
@@ -340,7 +338,10 @@ final public class CollectionViewDocumentView : NSView {
                         updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: identifier))
                     }
                     else {
-                        self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: view, ofElementKind: identifier.kind, at: identifier.indexPath!)
+                        self.collectionView.delegate?.collectionView?(self.collectionView,
+                                                                      didEndDisplayingSupplementaryView: view,
+                                                                      ofElementKind: identifier.kind,
+                                                                      at: identifier.indexPath!)
                         self.collectionView.enqueueSupplementaryViewForReuse(view, withIdentifier: identifier)
                     }
                     self.preparedSupplementaryViewIndex[identifier] = nil
@@ -360,15 +361,22 @@ final public class CollectionViewDocumentView : NSView {
         
         for identifier in inserted {
             
-            if let view = self.preparedSupplementaryViewIndex[identifier] ?? self.collectionView.dataSource?.collectionView?(self.collectionView, viewForSupplementaryElementOfKind: identifier.kind, at: identifier.indexPath!) {
+            if let view = self.preparedSupplementaryViewIndex[identifier]
+                ?? self.collectionView.dataSource?.collectionView?(self.collectionView,
+                                                                   viewForSupplementaryElementOfKind: identifier.kind,
+                                                                   at: identifier.indexPath!) {
                 
                 assert(view.collectionView != nil, "Attempt to insert a view without using deque:")
                 
-                guard var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: identifier.indexPath!)
+                guard var attrs = self.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: identifier.kind,
+                                                                                                                at: identifier.indexPath!)
                     else { continue }
                 _rect = _rect.union(attrs.frame)
                 
-                self.collectionView.delegate?.collectionView?(self.collectionView, willDisplaySupplementaryView: view, ofElementKind: identifier.kind, at: identifier.indexPath!)
+                self.collectionView.delegate?.collectionView?(self.collectionView,
+                                                              willDisplaySupplementaryView: view,
+                                                              ofElementKind: identifier.kind,
+                                                              at: identifier.indexPath!)
                 if view.superview == nil {
                     if attrs.floating == true {
                         self.collectionView._floatingSupplementaryView.addSubview(view)
@@ -377,7 +385,7 @@ final public class CollectionViewDocumentView : NSView {
                         self.addSubview(view)
                     }
                 }
-                if view.superview == self.collectionView._floatingSupplementaryView{
+                if view.superview == self.collectionView._floatingSupplementaryView {
                     attrs = attrs.copy()
                     attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
                 }
@@ -451,7 +459,7 @@ final public class CollectionViewDocumentView : NSView {
                 if item.type == .remove {
                     removeItem(item)
                 }
-                else  {
+                else {
                     let attrs = item.attrs
                     item.view.apply(attrs, animated: false)
                     if item.type == .insert {
@@ -474,7 +482,10 @@ final public class CollectionViewDocumentView : NSView {
             self.collectionView.enqueueCellForReuse(cell)
         }
         else if let id = item.identifier {
-            self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingSupplementaryView: item.view, ofElementKind: id.kind, at: id.indexPath!)
+            self.collectionView.delegate?.collectionView?(self.collectionView,
+                                                          didEndDisplayingSupplementaryView: item.view,
+                                                          ofElementKind: id.kind,
+                                                          at: id.indexPath!)
             self.collectionView.enqueueSupplementaryViewForReuse(item.view, withIdentifier: id)
         }
         else {

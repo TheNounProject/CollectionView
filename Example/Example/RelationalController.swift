@@ -9,8 +9,7 @@
 import Foundation
 import CollectionView
 
-
-class RelationalController : BaseController, BasicHeaderDelegate {
+class RelationalController: BaseController, BasicHeaderDelegate {
     
     let content = RelationalResultsController(context: AppDelegate.current.managedObjectContext,
                                                                   request: NSFetchRequest<Child>(entityName: "Child"),
@@ -19,7 +18,6 @@ class RelationalController : BaseController, BasicHeaderDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         
         content.fetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
         content.sectionFetchRequest.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: true)]
@@ -55,7 +53,6 @@ class RelationalController : BaseController, BasicHeaderDelegate {
         }
     }
     
-    
     // MARK: - Header views
     /*-------------------------------------------------------------------------------*/
     
@@ -77,7 +74,6 @@ class RelationalController : BaseController, BasicHeaderDelegate {
         
         let menu = NSMenu()
         menu.addItem(NSMenuItem.separator())
-        
         
         if ip._section > 0 {
             menu.addItem(ActionMenuItem(title: "↑ Move Up", handler: { (_) in
@@ -111,7 +107,6 @@ class RelationalController : BaseController, BasicHeaderDelegate {
             _ = section.createChildren(500)
         }))
         
-        
         menu.addItem(NSMenuItem.separator())
         
         menu.addItem(ActionMenuItem(title: "Insert Section", handler: { (_) in
@@ -135,7 +130,6 @@ class RelationalController : BaseController, BasicHeaderDelegate {
         
         menu.popUp(positioning: nil, at: view.accessoryButton.frame.origin, in: view)
     }
-    
     
     func collectionView(_ collectionView: CollectionView, didRightClickItemAt indexPath: IndexPath?, with event: NSEvent) {
         guard let indexPath = indexPath,
@@ -161,7 +155,6 @@ class RelationalController : BaseController, BasicHeaderDelegate {
         menu.popUp(positioning: nil, at: loc, in: cell)
     }
     
-    
     func insertItem(at indexPath: IndexPath, before: Bool) {
         guard let child = self.content.object(at: indexPath),
             let parent = child.parent else { return }
@@ -185,6 +178,5 @@ class RelationalController : BaseController, BasicHeaderDelegate {
         }
         child.managedObjectContext?.delete(child)
     }
-    
     
 }

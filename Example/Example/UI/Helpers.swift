@@ -8,10 +8,9 @@
 
 import Foundation
 
-
 extension String {
     
-    var numericString : String {
+    var numericString: String {
         let set = CharacterSet(charactersIn: "0123456789.")
         return self.removingCharactersInSet(set)
     }
@@ -20,8 +19,6 @@ extension String {
         let comps = self.components(separatedBy: set.inverted)
         return comps.joined(separator: "")
     }
-    
-    
     
     func sub(to: Int) -> String {
         let idx = self.index(self.startIndex,

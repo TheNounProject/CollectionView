@@ -8,12 +8,11 @@
 
 import Foundation
 
-
-public class CollapsableCollectionViewProvider : CollectionViewResultsProxy {
+public class CollapsableCollectionViewProvider: CollectionViewResultsProxy {
     
     /// When set as the delegate
-    public unowned let collectionView : CollectionView
-    public unowned let resultsController : ResultsController
+    public unowned let collectionView: CollectionView
+    public unowned let resultsController: ResultsController
     public weak var delegate: CollectionViewProviderDelegate?
     
     /// The last known section count of real data
@@ -48,14 +47,11 @@ public class CollapsableCollectionViewProvider : CollectionViewResultsProxy {
      
      */
     public var populateWhenEmpty = false
-    
-    
-    
 }
 
 // MARK: - Results Controller Delegate
 /*-------------------------------------------------------------------------------*/
-extension CollapsableCollectionViewProvider : ResultsControllerDelegate {
+extension CollapsableCollectionViewProvider: ResultsControllerDelegate {
     
     public func controllerDidLoadContent(controller: ResultsController) {
         self.sectionCount = controller.numberOfSections
@@ -99,5 +95,3 @@ extension CollapsableCollectionViewProvider : ResultsControllerDelegate {
         self.collectionView.applyChanges(from: self, completion: completion)
     }
 }
-
-

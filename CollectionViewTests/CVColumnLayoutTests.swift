@@ -27,7 +27,6 @@ class CVColumnLayoutTests: XCTestCase {
         XCTAssertFalse(test.layout.shouldInvalidateLayout(forBoundsChange: test.frame.offsetBy(dx: 4, dy: 5)))
     }
     
-    
     func testRectQuery() {
         let test = LayoutTester(sections: _prepareCounts.sections, itemsPerSection: _prepareCounts.items)
         
@@ -83,7 +82,6 @@ class CVColumnLayoutTests: XCTestCase {
             test.layout.prepare()
         }
     }
-    
     
     // MARK: - Multi Section indexPathsForItems(in rect)
     /*-------------------------------------------------------------------------------*/
@@ -144,7 +142,6 @@ class CVColumnLayoutTests: XCTestCase {
         }
     }
     
-    
     // MARK: - Querying Layout Attributes
     /*-------------------------------------------------------------------------------*/
     func testAttributesInRectPerformance_big_top() {
@@ -157,23 +154,20 @@ class CVColumnLayoutTests: XCTestCase {
     
 }
 
-
-fileprivate class LayoutTester : CollectionViewDataSource, CollectionViewDelegateColumnLayout {
-    
+fileprivate class LayoutTester: CollectionViewDataSource, CollectionViewDelegateColumnLayout {
     
     let collectionView = CollectionView(frame: NSRect(x: 0, y: 0, width: 1000, height: 800))
-    var frame : CGRect {
+    var frame: CGRect {
         set { self.collectionView.frame = newValue }
         get { return self.collectionView.frame }
     }
     let layout = CollectionViewColumnLayout()
-    var data : [Int]
+    var data: [Int]
     
-    
-    let headerHeight : CGFloat = 0
-    var defaultHeight : CGFloat = 100
-    var heightProvider : ((IndexPath) -> CGFloat)?
-    var ratioProvider : ((IndexPath) -> CGSize)?
+    let headerHeight: CGFloat = 0
+    var defaultHeight: CGFloat = 100
+    var heightProvider: ((IndexPath) -> CGFloat)?
+    var ratioProvider: ((IndexPath) -> CGSize)?
     
     init(data: [Int] = [10]) {
         self.data = data
@@ -181,13 +175,14 @@ fileprivate class LayoutTester : CollectionViewDataSource, CollectionViewDelegat
         collectionView.dataSource = self
         collectionView.collectionViewLayout = layout
         collectionView.register(class: CollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
-        collectionView.register(class: CollectionReusableView.self, forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader, withReuseIdentifier: "Header")
+        collectionView.register(class: CollectionReusableView.self,
+                                forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader,
+                                withReuseIdentifier: "Header")
         collectionView.reloadData()
     }
     convenience init(sections: Int, itemsPerSection items: Int) {
         self.init(data: [Int](repeating: items, count: sections))
     }
-    
     
     // CollectionView Data Source
     func numberOfSections(in collectionView: CollectionView) -> Int {
@@ -202,7 +197,6 @@ fileprivate class LayoutTester : CollectionViewDataSource, CollectionViewDelegat
     func collectionView(_ collectionView: CollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> CollectionReusableView {
         return collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Header", for: indexPath)
     }
-    
     
     // Layout Delegate
     

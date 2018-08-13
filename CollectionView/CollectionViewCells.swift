@@ -8,14 +8,10 @@
 
 import Foundation
 
-
 /**
  The CollectionReusableView class defines the behavior for all cells and supplementary views presented by a collection view. Reusable views are so named because the collection view places them on a reuse queue rather than deleting them when they are scrolled out of the visible bounds. Such a view can then be retrieved and repurposed for a different set of content.
 */
-open class CollectionReusableView : NSView {
-    
-
-
+open class CollectionReusableView: NSView {
     
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -28,7 +24,6 @@ open class CollectionReusableView : NSView {
         self.layerContentsRedrawPolicy = NSView.LayerContentsRedrawPolicy.onSetNeedsDisplay
     }
     
-    
     // MARK: - Reuse
     /*-------------------------------------------------------------------------------*/
     
@@ -36,10 +31,10 @@ open class CollectionReusableView : NSView {
     open internal(set) var reuseIdentifier: String?
     
     /// The collection view the view was dequed in
-    open internal(set) weak var collectionView : CollectionView?
+    open internal(set) weak var collectionView: CollectionView?
     
     /// True if the view has been dequed from the reuse pool
-    open internal(set) var reused : Bool = false
+    open internal(set) var reused: Bool = false
     
     // MARK: - Lifecycle
     /*-------------------------------------------------------------------------------*/
@@ -55,7 +50,6 @@ open class CollectionReusableView : NSView {
     /// Called just after the view was added to the collection view
     open func viewDidDisplay() { }
     
-    
     @available(*, unavailable, renamed: "apply(_:animated:)")
     public func applyLayoutAttributes(_ layoutAttributes: CollectionViewLayoutAttributes, animated: Bool) { }
     
@@ -67,13 +61,9 @@ open class CollectionReusableView : NSView {
 
     */
     
-    
-    
-    
-    
     // MARK: - Attributes
     /*-------------------------------------------------------------------------------*/
-    internal var attributes : CollectionViewLayoutAttributes?
+    internal var attributes: CollectionViewLayoutAttributes?
     
     /// The background color of the cell
     open var backgroundColor: NSColor? { didSet { self.needsDisplay = true }}
@@ -120,15 +110,16 @@ open class CollectionReusableView : NSView {
         super.draw(dirtyRect)
     }
     
-    
-    
     // MARK: - Mouse Tracking
     /*-------------------------------------------------------------------------------*/
     
     fileprivate var wantsTracking = false
-    open var trackingOptions = [NSTrackingArea.Options.mouseEnteredAndExited, NSTrackingArea.Options.activeInKeyWindow, NSTrackingArea.Options.inVisibleRect, NSTrackingArea.Options.enabledDuringMouseDrag]
-    var _trackingArea : NSTrackingArea?
-    open var trackMouseMoved : Bool = false {
+    open var trackingOptions = [NSTrackingArea.Options.mouseEnteredAndExited,
+                                NSTrackingArea.Options.activeInKeyWindow,
+                                NSTrackingArea.Options.inVisibleRect,
+                                NSTrackingArea.Options.enabledDuringMouseDrag]
+    var _trackingArea: NSTrackingArea?
+    open var trackMouseMoved: Bool = false {
         didSet {
             if trackMouseMoved == oldValue { return }
             let idx = trackingOptions.index(of: NSTrackingArea.Options.mouseMoved)
@@ -141,8 +132,6 @@ open class CollectionReusableView : NSView {
             self.updateTrackingAreas()
         }
     }
-    
-    
     
     /// Disable tracking (used for highlighting in cells) for this view
     open func disableTracking() {
@@ -163,19 +152,14 @@ open class CollectionReusableView : NSView {
         self.addTrackingArea(_trackingArea!)
     }
     
-    
 }
-
-
 
 /**
  A CollectionViewCell object presents the content for a single data item when that item is within the collection view’s visible bounds. You can use this class as-is or subclass it to add additional properties and methods. The layout and presentation of cells is managed by the collection view and its corresponding layout object.
 */
-open class CollectionViewCell : CollectionReusableView {
+open class CollectionViewCell: CollectionReusableView {
     
     open override func acceptsFirstMouse(for theEvent: NSEvent?) -> Bool { return true }
-    
-    
 
     override public init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -187,12 +171,11 @@ open class CollectionViewCell : CollectionReusableView {
         wantsTracking = true
     }
     
-    
     // MARK: - State
     /*-------------------------------------------------------------------------------*/
     
     fileprivate var _selected: Bool = false
-    fileprivate var _highlighted : Bool = false
+    fileprivate var _highlighted: Bool = false
     
     /// The highlight state of the cell.
     public var highlighted: Bool {
@@ -201,11 +184,10 @@ open class CollectionViewCell : CollectionReusableView {
     }
     
     /// The selection state of the cell.
-    public var selected : Bool {
+    public var selected: Bool {
         set { self.setSelected(newValue, animated: false) }
         get { return self._selected }
     }
-    
     
     open func setSelected(_ selected: Bool, animated: Bool = true) {
         self._selected = selected
@@ -245,7 +227,7 @@ open class CollectionViewCell : CollectionReusableView {
         // Ignore the event if an interaction enabled view is over this cell
         if let view = self.window?.contentView?.hitTest(theEvent.locationInWindow) {
             if view.isDescendant(of: self) {
-                if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAt: ip) , h == false { return }
+                if let h = cv.delegate?.collectionView?(cv, shouldHighlightItemAt: ip), h == false { return }
                 self.setHighlighted(true, animated: true)
             }
         }
@@ -258,15 +240,11 @@ open class CollectionViewCell : CollectionReusableView {
         self.setHighlighted(false, animated: true)
     }
     
-    
-    
     // MARK: - Registration & Reuse Helpers
     /*-------------------------------------------------------------------------------*/
     
     /// Provide a reuse identifier for all cells of this class, defaults to the class name
-    open class var defaultReuseIdentifier : String { return self.className() }
-    
-    
+    open class var defaultReuseIdentifier: String { return self.className() }
     
     /**
      Register a CollectionViewCell subclass to a collection view using the class's defaultReuseIdentifier
@@ -293,4 +271,3 @@ open class CollectionViewCell : CollectionReusableView {
     }
     
 }
-

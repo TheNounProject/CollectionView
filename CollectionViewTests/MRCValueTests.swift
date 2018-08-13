@@ -9,11 +9,11 @@
 import XCTest
 @testable import CollectionView
 
-fileprivate struct Child : ResultType {
+fileprivate struct Child: ResultType {
     let id = UUID()
-    var rank : Int
-    var name : String
-    var parent : Parent
+    var rank: Int
+    var name: String
+    var parent: Parent
     
     init(rank: Int, name: String? = nil, parent: Parent) {
         self.rank = rank
@@ -28,10 +28,10 @@ fileprivate struct Child : ResultType {
         return lhs.id == rhs.id
     }
 }
-fileprivate struct Parent : SectionType {
+fileprivate struct Parent: SectionType {
     let id = UUID()
-    var rank : Int
-    var name : String
+    var rank: Int
+    var name: String
     var hashValue: Int {
         return id.hashValue
     }
@@ -46,8 +46,8 @@ fileprivate struct Parent : SectionType {
 
 class MRCValueTests: XCTestCase {
     
-    fileprivate func create(containers: Int, objects: Int) -> (containers: [UUID:Parent], objects: [Child]) {
-        var _containers = [UUID:Parent]()
+    fileprivate func create(containers: Int, objects: Int) -> (containers: [UUID: Parent], objects: [Child]) {
+        var _containers = [UUID: Parent]()
         var _objects = [Child]()
         for cIdx in 0..<containers {
             let container = Parent(rank: cIdx, name: "Container \(cIdx)")

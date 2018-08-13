@@ -8,12 +8,11 @@
 
 import Foundation
 
-
-public final class CVDiff : DiffAware {
+public final class CVDiff: DiffAware {
     
     public init() { }
     
-    public func diff<T>(old: T, new: T) -> [Edit<T.Element>] where T : Collection, T.Element : Hashable, T.Index == Int, T.IndexDistance == Int {
+    public func diff<T>(old: T, new: T) -> [Edit<T.Element>] where T: Collection, T.Element: Hashable, T.Index == Int, T.IndexDistance == Int {
         
         let sourceSet = old.indexedSet
         let targetSet = new.indexedSet

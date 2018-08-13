@@ -8,13 +8,10 @@
 
 import Foundation
 
-
-
-
 /**
  The UICollectionViewController class represents a view controller whose content consists of a collection view.
 */
-open class CollectionViewController : NSViewController, CollectionViewDataSource, CollectionViewDelegate {
+open class CollectionViewController: NSViewController, CollectionViewDataSource, CollectionViewDelegate {
     
     public let collectionView = CollectionView()
     
@@ -39,8 +36,6 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
         collectionView.delegate = self
     }
     
-    
-    
     // MARK: - Data Source
     /*-------------------------------------------------------------------------------*/
     
@@ -56,8 +51,6 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
         assertionFailure("CollectionViewController must implement collectionView:cellForItemAt:")
         return CollectionViewCell()
     }
-    
-    
     
     // MARK: - Layout
     /*-------------------------------------------------------------------------------*/
@@ -75,7 +68,6 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
         self.adjustConstraint(.bottom, value: insets.bottom)
         
     }
-    
     
     /**
      Adjust the constraints for the collection view
@@ -101,5 +93,3 @@ open class CollectionViewController : NSViewController, CollectionViewDataSource
     }
     
 }
-
-

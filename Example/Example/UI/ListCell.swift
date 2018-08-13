@@ -9,17 +9,15 @@
 import Foundation
 import CollectionView
 
-
 func ==(a: ListCell.SeperatorStyle, b: ListCell.SeperatorStyle) -> Bool {
     switch (a, b) {
     case (.none, .none): return true
     case (.default, .default): return true
     case (.full, .full): return true
-    case (.custom(_, _), .custom(_, _)): return true
+    case (.custom, .custom): return true
     default: return false
     }
 }
-
 
 func CGSizeIsEmpty(_ size: CGSize?) -> Bool {
     guard let s = size else { return true }
@@ -27,18 +25,17 @@ func CGSizeIsEmpty(_ size: CGSize?) -> Bool {
     return false
 }
 
-
-class ListCell : CollectionViewCell {
+class ListCell: CollectionViewCell {
     
-    let titleLabel = NSTextField(frame: NSZeroRect)
+    let titleLabel = NSTextField(frame: NSRect.zero)
     
     private var _needsLayout = true
-    var inset : CGFloat = 12 { didSet { _needsLayout = inset != oldValue || _needsLayout }}
+    var inset: CGFloat = 12 { didSet { _needsLayout = inset != oldValue || _needsLayout }}
         
 //    override var wantsUpdateLayer: Bool { return seperatorStyle == SeperatorStyle.None }
     
-    lazy var detailLabel : NSTextField = {
-        let label = NSTextField(frame: NSZeroRect)
+    lazy var detailLabel: NSTextField = {
+        let label = NSTextField(frame: NSRect.zero)
         label.usesSingleLineMode = true
         label.drawsBackground = false
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -50,7 +47,7 @@ class ListCell : CollectionViewCell {
         return label
     }()
     
-    lazy var imageView : NSImageView = {
+    lazy var imageView: NSImageView = {
         let iv =  NSImageView()
         iv.translatesAutoresizingMaskIntoConstraints = false
         return iv
@@ -58,7 +55,7 @@ class ListCell : CollectionViewCell {
     
         var imageSize: CGSize = CGSize.zero { didSet { _needsLayout = imageSize != oldValue || _needsLayout }}
     var seperatorStyle: SeperatorStyle = .default
-    var seperatorColor : NSColor = NSColor(white: 0, alpha: 0.05)
+    var seperatorColor: NSColor = NSColor(white: 0, alpha: 0.05)
     var seperatorWidth: CGFloat = 2
     
     enum SeperatorStyle {
@@ -67,7 +64,6 @@ class ListCell : CollectionViewCell {
         case full
         case custom(left: CGFloat, right: CGFloat)
     }
-    
     
     enum Style {
         case basic
@@ -78,15 +74,14 @@ class ListCell : CollectionViewCell {
         case split
     }
     
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         
         self.titleLabel.unbind(NSBindingName(rawValue: "stringValue"))
     }
     
-    var highlightedBackgroundColor : NSColor?
-    var selectedBackgroundColor : NSColor?
+    var highlightedBackgroundColor: NSColor?
+    var selectedBackgroundColor: NSColor?
     var restingBackgroundColor: NSColor = NSColor.clear {
         didSet {
             if !self.highlighted {
@@ -94,17 +89,16 @@ class ListCell : CollectionViewCell {
             }
         }
     }
-
     
     /// If true, highlighting the cell does not change it's appearance
-     var disableHighlight : Bool = false
+     var disableHighlight: Bool = false
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
         self.alphaValue = selected ? 0.5 : 0.8
         
-        var color : NSColor?
+        var color: NSColor?
         if selected, let bg = self.selectedBackgroundColor {
             color = bg
         }
@@ -114,7 +108,6 @@ class ListCell : CollectionViewCell {
         self.backgroundColor = color ?? self.restingBackgroundColor
         self.needsDisplay = true
     }
-    
     
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
@@ -131,7 +124,7 @@ class ListCell : CollectionViewCell {
     }
     
     init() {
-        super.init(frame: NSZeroRect)
+        super.init(frame: NSRect.zero)
         self.addSubview(titleLabel)
         titleLabel.usesSingleLineMode = true
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -147,13 +140,12 @@ class ListCell : CollectionViewCell {
     }
     required init?(coder: NSCoder) { super.init(coder: coder) }
     
-    var style : Style = .basic {
+    var style: Style = .basic {
         didSet {
             if style == oldValue && !_needsLayout { return }
             self.setupForStyle(style)
         }
     }
-    
     
     fileprivate func setupForStyle(_ style: Style) {
         
@@ -166,8 +158,12 @@ class ListCell : CollectionViewCell {
             titleLabel.alignment = .left
             titleLabel.font = NSFont.systemFont(ofSize: 14)
             titleLabel.textColor = NSColor.darkGray
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0))
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: titleLabel, attribute: .right, multiplier: 1, constant: inset))
+            self.addConstraints([
+                NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .right, multiplier: 1, constant: inset)
+                ])
             
             if style == .basicImage {
                 let iv = self.imageView
@@ -175,24 +171,31 @@ class ListCell : CollectionViewCell {
                 self.addSubview(iv)
                 iv.removeConstraints(iv.constraints)
                 
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: iv, attribute: .left, multiplier: 1, constant: -inset))
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: iv, attribute: .centerY, multiplier: 1, constant: 0))
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .top, relatedBy: .lessThanOrEqual, toItem: iv, attribute: .top, multiplier: 1, constant: 0))
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .greaterThanOrEqual, toItem: iv, attribute: .bottom, multiplier: 1, constant: 0))
-                
-                self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal, toItem: iv, attribute: .right, multiplier: 1, constant: 6))
+                self.addConstraints([
+                    NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal,
+                                       toItem: iv, attribute: .left, multiplier: 1, constant: -inset),
+                    NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                                       toItem: iv, attribute: .centerY, multiplier: 1, constant: 0),
+                    NSLayoutConstraint(item: self, attribute: .top, relatedBy: .lessThanOrEqual,
+                                       toItem: iv, attribute: .top, multiplier: 1, constant: 0),
+                    NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .greaterThanOrEqual,
+                                       toItem: iv, attribute: .bottom, multiplier: 1, constant: 0),
+                    NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal,
+                                       toItem: iv, attribute: .right, multiplier: 1, constant: 6)
+                    ])
                 if CGSizeIsEmpty(self.imageSize) == false {
                     iv.addSizeConstraints(self.imageSize)
                 }
                 else {
-                    iv.addConstraint(NSLayoutConstraint(item: iv, attribute: .width, relatedBy: .equal, toItem: iv, attribute: .height, multiplier: 1, constant: 0))
+                    iv.addConstraint(NSLayoutConstraint(item: iv, attribute: .width, relatedBy: .equal,
+                                                        toItem: iv, attribute: .height, multiplier: 1, constant: 0))
                 }
             }
             else {
                 imageView.removeFromSuperview()
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset))
+                self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal,
+                                                      toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset))
             }
-            
             
         case .subtitle, .subtitleImage:
             
@@ -206,33 +209,49 @@ class ListCell : CollectionViewCell {
             detailLabel.font = NSFont.systemFont(ofSize: 12)
             detailLabel.textColor = NSColor.labelColor
             
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: titleLabel, attribute: .right, multiplier: 1, constant: inset))
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: titleLabel, attribute: .lastBaseline, multiplier: 1, constant: 1))
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: detailLabel, attribute: .right, multiplier: 1, constant: inset))
-            self.addConstraint(NSLayoutConstraint(item: detailLabel, attribute: .top, relatedBy: .equal, toItem: titleLabel, attribute: .lastBaseline, multiplier: 1, constant: 0))
-            self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal, toItem: detailLabel, attribute: .left, multiplier: 1, constant: 0))
-            self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal, toItem: detailLabel, attribute: .right, multiplier: 1, constant: 0))
+            self.addConstraints([
+                NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .right, multiplier: 1, constant: inset),
+                NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .lastBaseline, multiplier: 1, constant: 1),
+                NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal,
+                                   toItem: detailLabel, attribute: .right, multiplier: 1, constant: inset),
+                NSLayoutConstraint(item: detailLabel, attribute: .top, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .lastBaseline, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal,
+                                   toItem: detailLabel, attribute: .left, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal,
+                                   toItem: detailLabel, attribute: .right, multiplier: 1, constant: 0)
+                ])
             
             if style == .subtitleImage {
                 let iv = self.imageView
                 self.addSubview(iv)
                 iv.removeConstraints(iv.constraints)
                 
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: iv, attribute: .left, multiplier: 1, constant: -inset))
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: iv, attribute: .centerY, multiplier: 1, constant: 0))
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .top, relatedBy: .lessThanOrEqual, toItem: iv, attribute: .top, multiplier: 1, constant: 0))
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .greaterThanOrEqual, toItem: iv, attribute: .bottom, multiplier: 1, constant: 0))
-                
-                self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal, toItem: iv, attribute: .right, multiplier: 1, constant: 6))
+                self.addConstraints([
+                    NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal,
+                                       toItem: iv, attribute: .left, multiplier: 1, constant: -inset),
+                    NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                                       toItem: iv, attribute: .centerY, multiplier: 1, constant: 0),
+                    NSLayoutConstraint(item: self, attribute: .top, relatedBy: .lessThanOrEqual,
+                                       toItem: iv, attribute: .top, multiplier: 1, constant: 0),
+                    NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .greaterThanOrEqual,
+                                       toItem: iv, attribute: .bottom, multiplier: 1, constant: 0),
+                    NSLayoutConstraint(item: titleLabel, attribute: .left, relatedBy: .equal,
+                                       toItem: iv, attribute: .right, multiplier: 1, constant: 6)
+                    ])
                 if CGSizeIsEmpty(self.imageSize) == false {
                     iv.addSizeConstraints(self.imageSize)
                 }
                 else {
-                    iv.addConstraint(NSLayoutConstraint(item: iv, attribute: .width, relatedBy: .equal, toItem: iv, attribute: .height, multiplier: 1, constant: 0))
+                    iv.addConstraint(NSLayoutConstraint(item: iv, attribute: .width, relatedBy: .equal,
+                                                        toItem: iv, attribute: .height, multiplier: 1, constant: 0))
                 }
             }
             else {
-                self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset))
+                self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal,
+                                                      toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset))
             }
             
         case .split:
@@ -249,18 +268,23 @@ class ListCell : CollectionViewCell {
             detailLabel.font = NSFont.systemFont(ofSize: 14)
             detailLabel.textColor = NSColor.labelColor
             
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset))
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0))
-            
-            
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: detailLabel, attribute: .centerY, multiplier: 1, constant: 0))
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: detailLabel, attribute: .right, multiplier: 1, constant: inset))
-            
-            self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .greaterThanOrEqual, toItem: detailLabel, attribute: .left, multiplier: 1, constant: -2))
+            self.addConstraints([
+                NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset),
+                NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0),
+                
+                NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                                   toItem: detailLabel, attribute: .centerY, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal,
+                                   toItem: detailLabel, attribute: .right, multiplier: 1, constant: inset),
+                
+                NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .greaterThanOrEqual,
+                                   toItem: detailLabel, attribute: .left, multiplier: 1, constant: -2)
+                ])
             
             self.titleLabel.setContentCompressionResistancePriority(NSLayoutConstraint.Priority(rawValue: 400), for: .horizontal)
             self.detailLabel.setContentCompressionResistancePriority(NSLayoutConstraint.Priority(rawValue: 350), for: .horizontal)
-            
             
         case .titleDetail:
             
@@ -275,14 +299,20 @@ class ListCell : CollectionViewCell {
             detailLabel.font = NSFont.systemFont(ofSize: 13)
             detailLabel.textColor = NSColor.darkGray
             
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal, toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset))
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0))
-            self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 50))
-            
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal, toItem: detailLabel, attribute: .right, multiplier: 1, constant: inset))
-            self.addConstraint(NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal, toItem: detailLabel, attribute: .centerY, multiplier: 1, constant: 0))
-            
-            self.addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal, toItem: detailLabel, attribute: .left, multiplier: 1, constant: -4))
+            self.addConstraints([
+                NSLayoutConstraint(item: self, attribute: .left, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .left, multiplier: 1, constant: -inset),
+                NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                                   toItem: titleLabel, attribute: .centerY, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: titleLabel, attribute: .width, relatedBy: .equal,
+                                   toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 50),
+                NSLayoutConstraint(item: self, attribute: .right, relatedBy: .equal,
+                                   toItem: detailLabel, attribute: .right, multiplier: 1, constant: inset),
+                NSLayoutConstraint(item: self, attribute: .centerY, relatedBy: .equal,
+                                   toItem: detailLabel, attribute: .centerY, multiplier: 1, constant: 0),
+                NSLayoutConstraint(item: titleLabel, attribute: .right, relatedBy: .equal,
+                                   toItem: detailLabel, attribute: .left, multiplier: 1, constant: -4)
+                ])
             
             self.titleLabel.setContentCompressionResistancePriority(NSLayoutConstraint.Priority(rawValue: 400), for: .horizontal)
             self.detailLabel.setContentCompressionResistancePriority(NSLayoutConstraint.Priority(rawValue: 400), for: .horizontal)
@@ -318,7 +348,5 @@ class ListCell : CollectionViewCell {
         ctx?.strokePath()
         NSGraphicsContext.restoreGraphicsState()
     }
-    
-    
     
 }

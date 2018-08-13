@@ -12,7 +12,7 @@ import XCTest
 class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
 
     var data = [Int]()
-    lazy var collectionView : CollectionView = {
+    lazy var collectionView: CollectionView = {
         let cv = CollectionView(frame: NSRect(x: 0, y: 0, width: 600, height: 600))
         cv.collectionViewLayout = CollectionViewListLayout()
         cv.dataSource = self
@@ -29,7 +29,6 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
     func collectionView(_ collectionView: CollectionView, cellForItemAt indexPath: IndexPath) -> CollectionViewCell {
         return CollectionViewCell.deque(for: indexPath, in: collectionView)
     }
-    
     
     override func setUp() {
         super.setUp()
@@ -92,12 +91,12 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
     }
     
     func testMoveItemCrossSection() {
-        self.data = [2,2]
+        self.data = [2, 2]
         self.collectionView.reloadData()
         
         let from = IndexPath.zero
         let to = IndexPath.for(item: 0, section: 1)
-        self.data = [1,3]
+        self.data = [1, 3]
         
         let cell = self.collectionView.cellForItem(at: from)
         self.collectionView.moveItem(at: from, to: to, animated: false)
@@ -109,7 +108,7 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
     }
     
     func testBatchUpdtes() {
-        self.data = [3,3]
+        self.data = [3, 3]
         self.collectionView.reloadData()
         
         let c1 = self.collectionView.cellForItem(at: IndexPath.for(item: 0, section: 0))
@@ -125,7 +124,7 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
         }) { (_) in
             exp.fulfill()
         }
-        self.waitForExpectations(timeout: 0.8) { (err) in
+        self.waitForExpectations(timeout: 0.8) { (_) in
             XCTAssertEqual(self.collectionView.numberOfItems(in: 0), 3)
             XCTAssertEqual(self.collectionView.numberOfItems(in: 1), 3)
             
@@ -135,6 +134,5 @@ class CollectionViewEditing: XCTestCase, CollectionViewDataSource {
             XCTAssertEqual(self.collectionView.cellForItem(at: IndexPath.for(item: 0, section: 0)), c2)
         }
     }
-    
 
 }

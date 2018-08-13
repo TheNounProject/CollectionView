@@ -19,8 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
     
-    
-    static var current : AppDelegate {
+    static var current: AppDelegate {
         return NSApp.delegate as! AppDelegate
     }
     
@@ -42,7 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
         // The persistent store coordinator for the application. This implementation creates and returns a coordinator, having added the store for the application to it. (The directory for the store is created, if necessary.) This property is optional since there are legitimate error conditions that could cause the creation of the store to fail.
         let fileManager = FileManager.default
-        var failError: NSError? = nil
+        var failError: NSError?
         var shouldFail = false
         var failureReason = "There was an error creating or loading the application's saved data."
 
@@ -53,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 failureReason = "Expected a folder to store application data, found a file \(self.applicationDocumentsDirectory.path)."
                 shouldFail = true
             }
-        } catch  {
+        } catch {
             let nserror = error as NSError
             if nserror.code == NSFileReadNoSuchFileError {
                 do {
@@ -67,7 +66,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         
         // Create the coordinator and store
-        var coordinator: NSPersistentStoreCoordinator? = nil
+        var coordinator: NSPersistentStoreCoordinator?
         if failError == nil {
             coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
             let url = self.applicationDocumentsDirectory.appendingPathComponent("ResultsController.sqlite")
@@ -161,7 +160,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             
             let question = NSLocalizedString("Could not save changes while quitting. Quit anyway?", comment: "Quit without saves error question message")
-            let info = NSLocalizedString("Quitting now will lose any changes you have made since the last successful save", comment: "Quit without saves error question info");
+            let info = NSLocalizedString("Quitting now will lose any changes you have made since the last successful save", comment: "Quit without saves error question info")
             let quitButton = NSLocalizedString("Quit anyway", comment: "Quit anyway button title")
             let cancelButton = NSLocalizedString("Cancel", comment: "Cancel button title")
             let alert = NSAlert()
@@ -180,4 +179,3 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
 }
-

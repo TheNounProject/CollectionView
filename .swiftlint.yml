@@ -1,0 +1,48 @@
+disabled_rules:
+- trailing_whitespace
+- identifier_name
+- statement_position
+- large_tuple
+- force_cast
+- force_try
+- type_name
+- function_parameter_count
+- cyclomatic_complexity
+- operator_whitespace
+- private_over_fileprivate
+- nesting
+- type_body_length
+- multiple_closures_with_trailing_closure
+- notification_center_detachment
+opt_in_rules:
+- empty_count
+- empty_string
+excluded:
+- Carthage
+- Pods
+- Example
+- SwiftLint/Common/3rdPartyLib
+line_length:
+    warning: 150
+    error: 200
+    ignores_function_declarations: true
+    ignores_comments: true
+    ignores_urls: true
+    ignores_interpolated_strings: true
+function_body_length:
+    warning: 300
+    error: 500
+function_parameter_count:
+    warning: 6
+    error: 8
+type_body_length:
+    warning: 300
+    error: 500
+file_length:
+    warning: 1000
+    error: 1500
+    ignore_comment_only_lines: true
+cyclomatic_complexity:
+    warning: 20
+    error: 25
+reporter: "xcode"

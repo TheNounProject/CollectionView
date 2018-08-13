@@ -8,11 +8,10 @@ This playground includes some of the utilities in the CollectionView library
 import Cocoa
 import CollectionView
 
-
 //: ## Sort Descriptors
 struct Person {
-    let name : String
-    let age : Int
+    let name: String
+    let age: Int
 }
 
 let jim = Person(name: "Jim", age: 30)
@@ -39,11 +38,7 @@ var dudes = [steve, jim, bob, alex]
 let ageThenName = [SortDescriptor(\Person.age), SortDescriptor(\Person.name)]
 let ordered = dudes.sorted(using: ageThenName)
 
-
-
-
 //: ## CollectionView editing
-
 
 class Section {
     enum State {
@@ -52,8 +47,8 @@ class Section {
         case deleted(index: Int)
     }
     var target: Int?
-    var state : State
-    var expected : Int {
+    var state: State
+    var expected: Int {
         if case let .updated(_, count) = self.state {
             return count + inserted.count - removed.count
         }
@@ -75,19 +70,3 @@ var data = [5, 5, 5, 5]
 //for s in data.enumerated() {
 //    sections.append(Section(index: s.offset, count: s.element))
 //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

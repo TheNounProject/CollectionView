@@ -9,11 +9,11 @@
 import XCTest
 @testable import CollectionView
 
-fileprivate class Child : ResultType, CustomStringConvertible {
+fileprivate class Child: ResultType, CustomStringConvertible {
     let id = UUID()
-    var rank : Int
-    var name : String
-    var parent : Parent
+    var rank: Int
+    var name: String
+    var parent: Parent
     
     init(rank: Int, name: String? = nil, parent: Parent) {
         self.rank = rank
@@ -31,10 +31,10 @@ fileprivate class Child : ResultType, CustomStringConvertible {
         return "Child \(self.name) - [\(self.parent.rank), \(self.rank)]"
     }
 }
-fileprivate class Parent : SectionType, CustomStringConvertible {
+fileprivate class Parent: SectionType, CustomStringConvertible {
     let id = UUID()
-    var rank : Int
-    var name : String
+    var rank: Int
+    var name: String
     var hashValue: Int {
         return id.hashValue
     }
@@ -74,8 +74,8 @@ extension MutableCollection {
 
 class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
     
-    fileprivate func create(containers: Int, objects: Int) -> (containers: [UUID:Parent], objects: [Child]) {
-        var _parents = [UUID:Parent]()
+    fileprivate func create(containers: Int, objects: Int) -> (containers: [UUID: Parent], objects: [Child]) {
+        var _parents = [UUID: Parent]()
         var _children = [Child]()
         for cIdx in 0..<containers {
             let p = Parent(rank: cIdx, name: "Container \(cIdx)")
@@ -84,7 +84,6 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
         }
         return (_parents, _children)
     }
-
     
     // MARK: - Mutating Objects
     /*-------------------------------------------------------------------------------*/
@@ -152,7 +151,7 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
                                                           sortDescriptors: [SortDescriptor(\Child.rank)],
                                                           sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
         XCTAssertEqual(mrc.numberOfSections, 0)
-        let ranks = [5,3,6,2,4,1]
+        let ranks = [5, 3, 6, 2, 4, 1]
         for n in ranks {
             mrc.insert(section: Parent(rank: n, name: "Parent \(n)"))
         }
@@ -184,17 +183,15 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
         XCTAssertEqual(mrc.object(forSectionAt: IndexPath.for(section: 1)), p1)
     }
     
-    
     func test_deleteSection() {
         let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
                                                           sortDescriptors: [SortDescriptor(\Child.rank)],
                                                           sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
         
-        
         let p1 = Parent(rank: 1)
         let p2 = Parent(rank: 2)
         let p3 = Parent(rank: 3)
-        mrc.setContent([p1, p2, p3].map({ (p) -> (Parent,[Child]) in
+        mrc.setContent([p1, p2, p3].map({ (p) -> (Parent, [Child]) in
             return (p, [])
         }))
         
@@ -254,8 +251,6 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
         XCTAssertEqual(mrc.numberOfObjects(in: 0), 10)
         XCTAssertEqual(mrc.numberOfObjects(in: 1), 5)
     }
-    
-    
     
     func testBreakingOperation() {
         
@@ -332,20 +327,17 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
         mrc.insert(object: new)
         mrc.didUpdate(section: p0)
         mrc.didUpdate(section: p1)
-
         
         mrc.endEditing()
-        self.waitForExpectations(timeout: 0.5) { (err) in
+        self.waitForExpectations(timeout: 0.5) { (_) in
             XCTAssertEqual(self.changeSet.itemUpdates.inserted.count, 1)
             XCTAssertEqual(self.changeSet.itemUpdates.deleted.count, 1)
             print("Done")
         }
     }
     
-    
-    
     var changeSet = CollectionViewResultsProxy()
-    var _expectation : XCTestExpectation?
+    var _expectation: XCTestExpectation?
     func controllerWillChangeContent(controller: ResultsController) {
         changeSet.prepareForUpdates()
     }
@@ -360,13 +352,8 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
         _expectation = nil
     }
     
-    
-    
-    
-    
     // MARK: - Performance Tests
     /*-------------------------------------------------------------------------------*/
-    
     
     func testSmallInsertPerformance() {
         let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
@@ -383,7 +370,6 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
             mrc.endEditing()
         }
     }
-    
     
     func testMediumInsertPerformance() {
         let mrc = MutableResultsController<Parent, Child>(sectionKeyPath: \Child.parent,
@@ -432,8 +418,5 @@ class MRCObjectTests: XCTestCase, ResultsControllerDelegate {
             mrc.endEditing()
         }
     }
-    
-    
-    
     
 }

@@ -11,7 +11,7 @@ import XCTest
 
 class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
     
-    fileprivate lazy var context : NSManagedObjectContext = {
+    fileprivate lazy var context: NSManagedObjectContext = {
         let model = TestModel()
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
         try! coordinator.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: nil, options: nil)
@@ -44,23 +44,24 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
     }
 
     func test_performFetch_empty() {
-        let frc = FetchedResultsController<String,Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
+        let frc = FetchedResultsController<String, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
         XCTAssertNoThrow(try frc.performFetch())
         XCTAssertEqual(frc.numberOfSections, 0)
     }
     
     func test_noSectionKeyPaths() {
         _ = Parent.create(in: self.context, children: 5)
-        let frc = FetchedResultsController<String,Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
+        let frc = FetchedResultsController<String, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
         XCTAssertNoThrow(try frc.performFetch())
         XCTAssertEqual(frc.numberOfSections, 1)
         XCTAssertEqual(frc.numberOfObjects(in: 0), 5)
     }
     
-    
     func test_sectionKeyPath() {
         _ = self.createItemsBySection(5, items: 1)
-        let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"), sectionKeyPath: \Child.second)
+        let frc = FetchedResultsController<NSNumber, Child>(context: self.context,
+                                                            request: NSFetchRequest<Child>(entityName: "Child"),
+                                                            sectionKeyPath: \Child.second)
         XCTAssertNoThrow(try frc.performFetch())
         XCTAssertEqual(frc.numberOfSections, 5)
         for n in 0..<5 {
@@ -86,8 +87,6 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         }
     }
     
-    
-    
     // MARK: - Inserting
     /*-------------------------------------------------------------------------------*/
     
@@ -97,7 +96,7 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         XCTAssertNoThrow(try frc.performFetch())
         self._expectation = expectation(description: "Delegate")
         _ = Child.createOrphan(in: context)
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(self.changeSet.itemUpdates.inserted.count, 0)
             XCTAssertEqual(self.changeSet.sectionUpdates.inserted.count, 1)
             XCTAssertEqual(frc.numberOfSections, 1)
@@ -114,7 +113,7 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         self._expectation = expectation(description: "Delegate")
         _ = self.createItemsBySection(1, items: 5)
         
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(self.changeSet.itemUpdates.inserted.count, 0)
             XCTAssertEqual(self.changeSet.sectionUpdates.inserted.count, 1)
             XCTAssertEqual(frc.numberOfSections, 1)
@@ -129,10 +128,9 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         XCTAssertNoThrow(try frc.performFetch())
         XCTAssertEqual(frc.numberOfSections, 0)
         
-        
         self._expectation = expectation(description: "Delegate")
         _ = self.createItemsBySection(5, items: 5)
-        waitForExpectations(timeout: 0.1) { (err) in
+        waitForExpectations(timeout: 0.1) { (_) in
             XCTAssertEqual(self.changeSet.itemUpdates.inserted.count, 0)
             XCTAssertEqual(self.changeSet.sectionUpdates.inserted.count, 5)
             XCTAssertEqual(frc.numberOfSections, 5)
@@ -142,11 +140,10 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         }
     }
     
-    
     // MARK: - Removing Items
     /*-------------------------------------------------------------------------------*/
     
-    fileprivate func _testRemoveItems(sections: Int, items: Int, indexPaths: [IndexPath], handler: @escaping ((FetchedResultsController<NSNumber, Child>)->Void))  {
+    fileprivate func _testRemoveItems(sections: Int, items: Int, indexPaths: [IndexPath], handler: @escaping ((FetchedResultsController<NSNumber, Child>) -> Void)) {
         let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"))
         frc.delegate = self
         if sections > 1 {
@@ -162,7 +159,7 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         for ip in indexPaths {
             self.context.delete(children[ip._section][ip._item])
         }
-        self.waitForExpectations(timeout: 0.1) { (err) in
+        self.waitForExpectations(timeout: 0.1) { (_) in
             handler(frc)
         }
     }
@@ -194,7 +191,7 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         let ips = [
             IndexPath.for(item: 0, section: 0),
             IndexPath.for(item: 0, section: 1),
-            IndexPath.for(item: 0, section: 2),
+            IndexPath.for(item: 0, section: 2)
         ]
         
         _testRemoveItems(sections: 4, items: 10, indexPaths: ips) { (frc) in
@@ -251,12 +248,11 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         }
     }
     
-    
-    
-    
     func test_delegate_moveItemToFront() {
         print("MOVE ITEM TO FRONT")
-        let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"), sectionKeyPath: \Child.second)
+        let frc = FetchedResultsController<NSNumber, Child>(context: self.context,
+                                                            request: NSFetchRequest<Child>(entityName: "Child"),
+                                                            sectionKeyPath: \Child.second)
         frc.delegate = self
         frc.sectionSortDescriptors = [SortDescriptor<NSNumber>.ascending]
         frc.sortDescriptors = [SortDescriptor<Child>(\Child.displayOrder)]
@@ -271,7 +267,7 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
             c.minute = NSNumber(value: c.minute.intValue + 1)
         }
         
-        self.waitForExpectations(timeout: 0.5) { (err) in
+        self.waitForExpectations(timeout: 0.5) { (_) in
             // There should really only be one move
             XCTAssertEqual(self.changeSet.itemUpdates.count, 3)
             XCTAssertEqual(self.changeSet.itemUpdates.moved.count, 3)
@@ -283,10 +279,11 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         }
     }
     
-    
     func test_moveItemsCrossSection() {
         
-        let frc = FetchedResultsController<NSNumber, Child>(context: self.context, request: NSFetchRequest<Child>(entityName: "Child"), sectionKeyPath: \Child.second)
+        let frc = FetchedResultsController<NSNumber, Child>(context: self.context,
+                                                            request: NSFetchRequest<Child>(entityName: "Child"),
+                                                            sectionKeyPath: \Child.second)
         frc.delegate = self
         frc.sectionSortDescriptors = [SortDescriptor<NSNumber>.ascending]
         frc.sortDescriptors = [SortDescriptor<Child>(\Child.displayOrder)]
@@ -303,7 +300,7 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
         m2.displayOrder = 6
         m2.second = NSNumber(value: 1)
         
-        self.waitForExpectations(timeout: 0.5) { (err) in
+        self.waitForExpectations(timeout: 0.5) { (_) in
             // There should really only be one move
             XCTAssertEqual(self.changeSet.itemUpdates.count, 2)
             XCTAssertEqual(self.changeSet.itemUpdates.moved.count, 2)
@@ -316,7 +313,7 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
     }
     
     var changeSet = CollectionViewResultsProxy()
-    var _expectation : XCTestExpectation?
+    var _expectation: XCTestExpectation?
     func controllerWillChangeContent(controller: ResultsController) {
         print("CONTROLLER WILL CHANGE")
         changeSet.prepareForUpdates()
@@ -337,13 +334,11 @@ class FetchedRCTests: XCTestCase, ResultsControllerDelegate {
 
 }
 
-
 /*-------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------*/
 // MARK: - Helpers
 /*-------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------*/
-
 
 fileprivate extension NSAttributeDescription {
     convenience init(name: String, type: NSAttributeType) {
@@ -353,12 +348,12 @@ fileprivate extension NSAttributeDescription {
     }
 }
 
-fileprivate class Parent : NSManagedObject {
-    @NSManaged var displayOrder : NSNumber
+fileprivate class Parent: NSManagedObject {
+    @NSManaged var displayOrder: NSNumber
     @NSManaged var createdAt: Date
-    @NSManaged var children : Set<Child>
+    @NSManaged var children: Set<Child>
     
-    static func create(in moc : NSManagedObjectContext, children: Int = 1) -> Parent {
+    static func create(in moc: NSManagedObjectContext, children: Int = 1) -> Parent {
         let req = NSFetchRequest<Parent>(entityName: "Parent")
         req.sortDescriptors = [NSSortDescriptor(key: "displayOrder", ascending: false)]
         req.fetchLimit = 1
@@ -380,14 +375,14 @@ fileprivate class Parent : NSManagedObject {
     }
 }
 
-fileprivate class Child : NSManagedObject {
+fileprivate class Child: NSManagedObject {
     @NSManaged var second: NSNumber
     @NSManaged var minute: NSNumber
-    @NSManaged var displayOrder : NSNumber
+    @NSManaged var displayOrder: NSNumber
     @NSManaged var createdAt: Date
     @NSManaged var parent: Parent?
     
-    static func createOrphan(in moc : NSManagedObjectContext) -> Child {
+    static func createOrphan(in moc: NSManagedObjectContext) -> Child {
         let child = NSEntityDescription.insertNewObject(forEntityName: "Child", into: moc) as! Child
         child.displayOrder = NSNumber(value: 0)
         let d = Date()
@@ -400,13 +395,13 @@ fileprivate class Child : NSManagedObject {
     }
 }
 
-extension Date : CustomDisplayStringConvertible {
+extension Date: CustomDisplayStringConvertible {
     public var displayDescription: String {
         return "\(self)"
     }
 }
 
-fileprivate class TestModel : NSManagedObjectModel {
+fileprivate class TestModel: NSManagedObjectModel {
     override init() {
         super.init()
         
@@ -451,7 +446,3 @@ fileprivate class TestModel : NSManagedObjectModel {
         fatalError("init(coder:) has not been implemented")
     }
 }
-
-
-
-

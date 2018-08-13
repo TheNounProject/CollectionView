@@ -9,12 +9,11 @@
 import Foundation
 import CollectionView
 
-
-class GridCell : CollectionViewPreviewCell {
+class GridCell: CollectionViewPreviewCell {
     
-    @IBOutlet weak var badgeLabel : NSTextField!
-    @IBOutlet weak var titleLabel : NSTextField!
-    @IBOutlet weak var detailLabel : NSTextField!
+    @IBOutlet weak var badgeLabel: NSTextField!
+    @IBOutlet weak var titleLabel: NSTextField!
+    @IBOutlet weak var detailLabel: NSTextField!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -45,16 +44,15 @@ class GridCell : CollectionViewPreviewCell {
         self.badgeLabel.bind(NSBindingName(rawValue: "value"), to: child, withKeyPath: "displayOrder", options: nil)
         self.titleLabel.bind(NSBindingName(rawValue: "value"), to: child, withKeyPath: "name", options: nil)
     }
-
     
-    override class var defaultReuseIdentifier : String {
+    override class var defaultReuseIdentifier: String {
         return "GridCell"
     }
     
     override class func register(in collectionView: CollectionView) {
-        collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!, forCellWithReuseIdentifier: self.defaultReuseIdentifier)
+        collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!,
+                                forCellWithReuseIdentifier: self.defaultReuseIdentifier)
     }
-    
     
     override var description: String {
         return "GridCell: \(child?.description ?? "nil")"
@@ -69,8 +67,6 @@ class GridCell : CollectionViewPreviewCell {
         super.viewWillMove(toSuperview: newSuperview)
         self.layer?.borderColor = NSColor(white: 0.9, alpha: 1).cgColor
     }
-    
-    
     
     // MARK: - Selection & Highlighting
     /*-------------------------------------------------------------------------------*/
@@ -90,7 +86,6 @@ class GridCell : CollectionViewPreviewCell {
         self.needsDisplay = true
     }
     
-    
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
         
@@ -101,5 +96,3 @@ class GridCell : CollectionViewPreviewCell {
         self.needsDisplay = true
     }
 }
-
-

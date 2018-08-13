@@ -17,14 +17,14 @@ import Foundation
 
 public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection, CustomStringConvertible {
     
-    fileprivate var _map = [Element:Int]()
+    fileprivate var _map = [Element: Int]()
     fileprivate var _data = [Element]()
     
-    public var objects : [Element] { return _data }
+    public var objects: [Element] { return _data }
     
     public init() { }
     
-    public init<C : Collection>(elements: C) where C.Iterator.Element == Element {
+    public init<C: Collection>(elements: C) where C.Iterator.Element == Element {
         for (idx, e) in elements.enumerated() {
             guard _map[e] == nil else {
                 continue
@@ -42,7 +42,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         }
     }
     
-    public init(count insertCount: Int, provider: (Int)->Element) {
+    public init(count insertCount: Int, provider: (Int) -> Element) {
         _data.reserveCapacity(insertCount)
         _map.reserveCapacity(insertCount)
         for n in 0..<insertCount {
@@ -73,9 +73,6 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return str
     }
     
-    
-    
-    
     public var startIndex: Int { return _data.startIndex }
     public var endIndex: Int { return _data.endIndex }
     
@@ -87,8 +84,8 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return _data[index]
     }
     
-    public var count : Int { return _data.count }
-    public func contains(_ object: Element) -> Bool{
+    public var count: Int { return _data.count }
+    public func contains(_ object: Element) -> Bool {
         return _map[object] != nil
     }
     
@@ -120,7 +117,6 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return self._object(at: idx + 1)
     }
     
-    
     // MARK: - Appending
     /*-------------------------------------------------------------------------------*/
 
@@ -135,13 +131,13 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         _map[object] = _data.count - 1
     }
     
-    public mutating func append<C : Collection>(contentsOf newElements: C) where C.Iterator.Element == Element {
+    public mutating func append<C: Collection>(contentsOf newElements: C) where C.Iterator.Element == Element {
         for e in newElements {
             self.append(e)
         }
     }
     
-    mutating public func append(_ insertCount: Int, provider: (Int)->Element) {
+    mutating public func append(_ insertCount: Int, provider: (Int) -> Element) {
         let start = self.count
         var idx = _data.count
         for n in start..<(start + insertCount) {
@@ -153,7 +149,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         }
         _remap(startingAt: start)
     }
-    mutating public func unsafeAppend(_ insertCount: Int, provider: (Int)->Element) {
+    mutating public func unsafeAppend(_ insertCount: Int, provider: (Int) -> Element) {
         let start = self.count
         for n in start..<(start + insertCount) {
             let e = provider(n)
@@ -161,7 +157,6 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
             self._data.append(e)
         }
     }
-
     
     // MARK: - Inserting
     /*-------------------------------------------------------------------------------*/
@@ -173,7 +168,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return true
     }
     
-    public mutating func insert<C : Collection>(contentsOf newElements: C, at index: Int) -> Set<Element> where C.Iterator.Element == Element {
+    public mutating func insert<C: Collection>(contentsOf newElements: C, at index: Int) -> Set<Element> where C.Iterator.Element == Element {
         var inserted = Set<Element>()
         for (idx, e) in newElements.enumerated() {
             if !self.contains(e) {
@@ -181,15 +176,11 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
                 inserted.insert(e)
             }
         }
-        if inserted.count > 0 {
+        if !inserted.isEmpty {
             self._remap(startingAt: index)
         }
         return inserted
     }
-    
-
-    
-    
     
     // MARK: - Removing
     /*-------------------------------------------------------------------------------*/
@@ -206,14 +197,14 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         return index
     }
     
-    public mutating func remove<C : Collection>(contentsOf removeElements: C) where C.Iterator.Element == Element {
+    public mutating func remove<C: Collection>(contentsOf removeElements: C) where C.Iterator.Element == Element {
         var removeIndex = [Int]()
         for e in removeElements {
             if let e = self._map.removeValue(forKey: e) {
                 removeIndex.append(e)
             }
         }
-        guard removeIndex.count > 0 else { return }
+        guard !removeIndex.isEmpty else { return }
         // Remove in descending index
         let sorted = removeIndex.sorted()
         for idx in sorted.reversed() {
@@ -222,7 +213,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         self._remap(startingAt: sorted[0])
     }
     
-    var needsSort : Bool = false
+    var needsSort: Bool = false
     mutating func _batchRemove(_ object: Element) {
         self.needsSort = true
         guard let index = self._map.removeValue(forKey: object) else { return }
@@ -234,7 +225,6 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         _map[e] = nil
     }
     
-    
     public mutating func removeAll(keepingCapacity keep: Bool = false) {
         self.needsSort = false
         _data.removeAll(keepingCapacity: keep)
@@ -243,8 +233,7 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
     
 }
 
-
-extension OrderedSet where Element:Comparable {
+extension OrderedSet where Element: Comparable {
     
     public mutating func sort() {
         self.needsSort = false
@@ -270,13 +259,7 @@ extension OrderedSet {
         return idx
     }
     
-    public mutating func insert<C : Collection>(contentsOf newElements: C, using sortDescriptors: [SortDescriptor<Element>]) where C.Iterator.Element == Element {
-        
-        // TODO:
-//        for e in newElements {
-//            _ = self.insert(e, using: sortDescriptors)
-//        }
-        
+    public mutating func insert<C: Collection>(contentsOf newElements: C, using sortDescriptors: [SortDescriptor<Element>]) where C.Iterator.Element == Element {
         var new = newElements.sorted(using: sortDescriptors)
         var fMatch = self._data.count
         
@@ -293,7 +276,7 @@ extension OrderedSet {
         }
         
         var checkIdx = 0
-        while new.count > 0, checkIdx < _data.count {
+        while !new.isEmpty, checkIdx < _data.count {
             let check = _data[checkIdx]
             if sortDescriptors.compare(new[0], check) == SortDescriptorResult.ascending {
                 if checkIdx < fMatch { fMatch = checkIdx }
@@ -316,7 +299,7 @@ extension OrderedSet {
     }
     
     public mutating func sort(using sortDescriptors: [SortDescriptor<Element>]) {
-        guard sortDescriptors.count > 0 else { return }
+        guard !sortDescriptors.isEmpty else { return }
         self._data.sort(using: sortDescriptors)
         self._map.removeAll(keepingCapacity: true)
         self._remap()
@@ -328,23 +311,21 @@ extension OrderedSet {
         return new
     }
     
-    public mutating func sort(by sort: ((Element, Element)-> Bool)) {
+    public mutating func sort(by sort: ((Element, Element) -> Bool)) {
         self._data = self._data.sorted(by: sort)
         self._map.removeAll(keepingCapacity: true)
         self._remap()
     }
     
-    public func sorted(by sort: ((Element, Element)-> Bool)) -> OrderedSet<Element> {
+    public func sorted(by sort: ((Element, Element) -> Bool)) -> OrderedSet<Element> {
         let data = self._data.sorted(by: sort)
         return OrderedSet(elements: data)
     }
 }
 
-extension Collection where Iterator.Element:Hashable {
+extension Collection where Iterator.Element: Hashable {
     public func orderedSet(using sortDescriptors: [SortDescriptor<Iterator.Element>]) -> OrderedSet<Iterator.Element> {
         let s = OrderedSet<Iterator.Element>(elements: self)
         return s.sorted(using: sortDescriptors)
     }
 }
-
-

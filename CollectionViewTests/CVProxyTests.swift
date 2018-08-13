@@ -10,25 +10,24 @@ import XCTest
 @testable import CollectionView
 
 class CVProxyTests: XCTestCase, CollectionViewDataSource {
-
-
     
-    lazy var collectionView : CollectionView = {
+    lazy var collectionView: CollectionView = {
         let cv = CollectionView(frame: NSRect(x: 0, y: 0, width: 600, height: 600))
         cv.collectionViewLayout = CollectionViewListLayout()
         cv.dataSource = self
         CollectionViewCell.register(in: cv)
         return cv
     }()
-    private lazy var resultsController : MutableResultsController<Parent, Child> = {
-        let rc = MutableResultsController<Parent, Child>(sectionKeyPath: nil, sortDescriptors: [SortDescriptor(\Child.rank)], sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
+    private lazy var resultsController: MutableResultsController<Parent, Child> = {
+        let rc = MutableResultsController<Parent, Child>(sectionKeyPath: nil,
+                                                         sortDescriptors: [SortDescriptor(\Child.rank)],
+                                                         sectionSortDescriptors: [SortDescriptor(\Parent.rank)])
         rc.setSectionKeyPath(\Child.parent)
         return rc
     }()
-    private lazy var provider : CollectionViewProvider = {
+    private lazy var provider: CollectionViewProvider = {
         return CollectionViewProvider(self.collectionView, resultsController: self.resultsController)
     }()
-    
     
     override func setUp() {
         super.setUp()
@@ -100,7 +99,6 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         XCTAssertTrue(provider.showEmptySection(at: IndexPath.zero))
     }
     
-    
     func testReplaceEmptySectionPlaceholder() {
         // Empty sections
         provider.populateEmptySections = true
@@ -117,9 +115,6 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         self.assertCounts([5])
         
     }
-    
-    
-    
     
     // MARK: - Section Expanding
     /*-------------------------------------------------------------------------------*/
@@ -168,7 +163,7 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         collectionView.reloadData()
         provider.collapseSection(at: 1, animated: false)
         
-        self.assertCounts([5, 0 ,5])
+        self.assertCounts([5, 0, 5])
         
         // Edit the data
         parents[0].rank = 1
@@ -180,11 +175,11 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         
         XCTAssertTrue(provider.isSectionCollapsed(at: 0))
         XCTAssertFalse(provider.isSectionCollapsed(at: 1))
-        self.assertCounts([0, 5 ,5])
+        self.assertCounts([0, 5, 5])
         
         provider.expandSection(at: 0, animated: false)
         XCTAssertFalse(provider.isSectionCollapsed(at: 1))
-        self.assertCounts([5, 5 ,5])
+        self.assertCounts([5, 5, 5])
     }
     
     func testMoveItemsFromCollapsedToExpanded() {
@@ -284,15 +279,13 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         self.assertCounts([5, 0, 0])
         XCTAssertTrue(provider.isSectionCollapsed(at: 2))
     }
-    
-    
 
     func testBreakingUseCase1() {
         // A reproduction of a previously breaking case from the demo app
-        let _data : [(String,[String])] = [
-            ("ZSnKWisBqE", ["ueHNbNmzJE","BLDDODjZeP","eObJUPufpv","dOwXZZpyif","RIZOqeMoWM","hGLYuDzKQi","ZOAwicSMDE"]),
-            ("WqoQBTNEaY", ["rsubjBxbVb","zgxqrwEMEP","RFMVhYUOBt","TPtWHpAfhO","vGNjxxuxds","EEQzPOqFLm","WqWAgYBpdk"]),
-            ("KjqnrhLzeE", ["jmKARnCZQJ","GkVzEtvFEp","VWbpXXYeZH","iiRlRTkGKi","UOGPKdyFLd","hRPjsirdxZ"])
+        let _data: [(String, [String])] = [
+            ("ZSnKWisBqE", ["ueHNbNmzJE", "BLDDODjZeP", "eObJUPufpv", "dOwXZZpyif", "RIZOqeMoWM", "hGLYuDzKQi", "ZOAwicSMDE"]),
+            ("WqoQBTNEaY", ["rsubjBxbVb", "zgxqrwEMEP", "RFMVhYUOBt", "TPtWHpAfhO", "vGNjxxuxds", "EEQzPOqFLm", "WqWAgYBpdk"]),
+            ("KjqnrhLzeE", ["jmKARnCZQJ", "GkVzEtvFEp", "VWbpXXYeZH", "iiRlRTkGKi", "UOGPKdyFLd", "hRPjsirdxZ"])
         ]
         
         let parentOrder = ["KjqnrhLzeE", "ZSnKWisBqE", "WqoQBTNEaY"]
@@ -300,8 +293,8 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         let deleted = ["zgxqrwEMEP"]
         let inserted = [("nCcfswhOXr", "KjqnrhLzeE", 0)]
         
-        var children = [String:Child]()
-        var parents = [String:Parent]()
+        var children = [String: Child]()
+        var parents = [String: Parent]()
         for p in _data.enumerated() {
             let id = p.element.0
             let parent = Parent(rank: p.offset, name: id)
@@ -330,10 +323,8 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
             ("EEQzPOqFLm", "KjqnrhLzeE", 3),
             ("jmKARnCZQJ", "ZSnKWisBqE", 1),
             ("BLDDODjZeP", "ZSnKWisBqE", 4),
-            ("vGNjxxuxds", "KjqnrhLzeE", 2),
+            ("vGNjxxuxds", "KjqnrhLzeE", 2)
             ]
-
-        
         
         resultsController.setContent(objects: Array(children.values))
         collectionView.reloadData()
@@ -366,20 +357,16 @@ class CVProxyTests: XCTestCase, CollectionViewDataSource {
         }
         
         resultsController.endEditing()
-       
         
     }
     
-    
 }
 
-
-
-fileprivate class Child : ResultType, CustomStringConvertible {
+fileprivate class Child: ResultType, CustomStringConvertible {
     let id = UUID()
-    var rank : Int
-    var name : String
-    var parent : Parent?
+    var rank: Int
+    var name: String
+    var parent: Parent?
     
     init(rank: Int, name: String? = nil, parent: Parent) {
         self.rank = rank
@@ -397,10 +384,10 @@ fileprivate class Child : ResultType, CustomStringConvertible {
         return "Child \(self.name) - [\(self.parent?.rank), \(self.rank)]"
     }
 }
-fileprivate class Parent : SectionType, CustomStringConvertible {
+fileprivate class Parent: SectionType, CustomStringConvertible {
     let id = UUID()
-    var rank : Int
-    var name : String
+    var rank: Int
+    var name: String
     var hashValue: Int {
         return id.hashValue
     }

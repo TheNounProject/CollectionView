@@ -8,13 +8,12 @@
 
 import Foundation
 
-
 /**
  
  The CollectionViewLayout class is an abstract base class that you subclass and use to generate layout information for a collection view. The job of a layout object is to determine the placement of cells, supplementary views inside the collection view’s bounds and to report that information to the collection view when asked. The collection view then applies the provided layout information to the corresponding views so that they can be presented onscreen.
  
 */
-open class CollectionViewLayout : NSObject {
+open class CollectionViewLayout: NSObject {
     
     // This is set internally when the layout is set on the CollectionView
     open internal(set) weak var collectionView: CollectionView? { didSet { invalidate() }}
@@ -22,21 +21,18 @@ open class CollectionViewLayout : NSObject {
     /**
      The direction that the collection view should scroll
     */
-    open var scrollDirection : CollectionViewScrollDirection { return .vertical }
+    open var scrollDirection: CollectionViewScrollDirection { return .vertical }
     
-    
-    
-    private func overrideWarning(_ function : String = #function) {
+    private func overrideWarning(_ function: String = #function) {
         Swift.print("WARNING: CollectionViewLayout \(function) should be overridden in a subclass. Missing in \(type(of: self)). Make sure super is not called too.")
     }
-    
     
     // Subclasses must override this method and use it to return the width and height of the collection view’s content. These values represent the width and height of all the content, not just the content that is currently visible. The collection view uses this information to configure its own content size to facilitate scrolling.
     
     /**
      The size that encapsulates all views within the collection view
      */
-    open var collectionViewContentSize : CGSize {
+    open var collectionViewContentSize: CGSize {
         overrideWarning()
         return CGSize.zero
     }
@@ -53,8 +49,6 @@ open class CollectionViewLayout : NSObject {
      Currently this is only called when the layout is applied to a collection view.
     */
     open func invalidate() { }
-    
-    
     
     /**
      Asks the layout if it should be invalidated due to a bounds change on the collection view
@@ -84,8 +78,6 @@ open class CollectionViewLayout : NSObject {
         overrideWarning()
     }
     
-    
-    
     // MARK: - Index Paths
     /*-------------------------------------------------------------------------------*/
     
@@ -107,8 +99,6 @@ open class CollectionViewLayout : NSObject {
         return indexPaths
     }
     
-    
-    
     // MARK: - Layout Attributes
     /*-------------------------------------------------------------------------------*/
     
@@ -129,7 +119,6 @@ open class CollectionViewLayout : NSObject {
         return attrs
     }
     
-    
     /**
      Returns the layout attributes for an item at the given index path
 
@@ -143,7 +132,6 @@ open class CollectionViewLayout : NSObject {
         overrideWarning()
         return nil
     }
-    
     
     @available(*, unavailable, renamed: "layoutAttributesForSupplementaryView(ofKind:at:)")
     open func layoutAttributesForSupplementaryView(ofKind elementKind: String, atIndexPath indexPath: IndexPath) -> CollectionViewLayoutAttributes? { return nil }
@@ -163,9 +151,6 @@ open class CollectionViewLayout : NSObject {
         return nil
     }
     
-    
-
-    
     // MARK: - Section Frames
     /*-------------------------------------------------------------------------------*/
     
@@ -182,13 +167,12 @@ open class CollectionViewLayout : NSObject {
         var rect = self.contentRectForSection(section)
         guard let cv = self.collectionView else { return rect }
         for identifier in cv._allSupplementaryViewIdentifiers {
-            if let attributes = self.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: IndexPath.for(item:0, section: section)) {
+            if let attributes = self.layoutAttributesForSupplementaryView(ofKind: identifier.kind, at: IndexPath.for(item: 0, section: section)) {
                 rect = rect.union(attributes.frame)
             }
         }
         return rect
     }
-    
     
     /**
      Returns the rect that encapsulates just the items of a section
@@ -207,13 +191,11 @@ open class CollectionViewLayout : NSObject {
         for itemIndex in 0..<itemCount {
             let indexPath = IndexPath.for(item: itemIndex, section: section)
             if let attributes = self.layoutAttributesForItem(at: indexPath) {
-                rect = rect.union(attributes.frame);
+                rect = rect.union(attributes.frame)
             }
         }
         return rect
     }
-    
-    
     
     // MARK: - Scroll Frames
     /*-------------------------------------------------------------------------------*/
@@ -229,7 +211,6 @@ open class CollectionViewLayout : NSObject {
     open func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         return self.layoutAttributesForItem(at: indexPath)?.frame
     }
-    
     
     // MARK: - Item Direction
     /*-------------------------------------------------------------------------------*/

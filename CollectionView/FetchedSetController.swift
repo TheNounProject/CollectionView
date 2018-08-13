@@ -8,16 +8,13 @@
 
 import Foundation
 
-
-public enum FetchedSetControllerChangeType  {
+public enum FetchedSetControllerChangeType {
     case delete
     case update
     case insert
 }
 
-
-
-public protocol FetchedSetControllerDelegate : class {
+public protocol FetchedSetControllerDelegate: class {
     func controllerWillChangeContent(_ controller: FetchedSetController) -> Bool
     func controller(_ controller: FetchedSetController, didChangeObject object: NSManagedObject, for changeType: FetchedSetControllerChangeType)
     func controllerDidChangeContent(_ controller: FetchedSetController)
@@ -30,7 +27,6 @@ public class FetchedSetController: ContextObserver {
     
     typealias Element = NSManagedObject
     
-    
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
     
@@ -41,7 +37,6 @@ public class FetchedSetController: ContextObserver {
         let req = NSFetchRequest<Element>(entityName: entityName)
         self.init(context: context, request: req)
     }
-    
     
     /// Initialize a controller with a context and request
     ///
@@ -91,29 +86,20 @@ public class FetchedSetController: ContextObserver {
         self.setNeedsFetch()
     }
     
-    
     private func validateRequest() {
         assert(fetchRequest.entityName != nil, "request is missing entity name")
         let objectEntity = NSEntityDescription.entity(forEntityName: fetchRequest.entityName!, in: self.managedObjectContext)
         assert(objectEntity != nil, "Unable to load entity description for object \(fetchRequest.entityName!)")
         fetchRequest.entity = objectEntity
     }
-
     
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
     
-    /// The managed object context to fetch from
-//    public private(set) var managedObjectContext : NSManagedObjectContext
-    
-    
-    /**
-     Update the context and perform a fetch
-
-     - Parameter moc: The new managed object context
-     
-     - Returns: A fetch error if one occurs
-    */
+    /// Update the context and perform a fetch
+    ///
+    /// - Parameter moc: The new managed object context
+    /// - Returns: A fetch error if one occurs
     public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
         guard moc != self.managedObjectContext else { return }
         self.setNeedsFetch()
@@ -122,9 +108,8 @@ public class FetchedSetController: ContextObserver {
         try self.performFetch()
     }
     
-    
     /// A fetch request (including a predicate if needed) for the entity to fetch
-    public let fetchRequest : NSFetchRequest<NSManagedObject>
+    public let fetchRequest: NSFetchRequest<NSManagedObject>
     
     /// The delegate of the controller
     public weak var delegate: FetchedSetControllerDelegate? {
@@ -134,16 +119,14 @@ public class FetchedSetController: ContextObserver {
             else if _fetched { register() }
         }
     }
-    
 
     // MARK: - Contents
     /*-------------------------------------------------------------------------------*/
     
     private var _storage = Set<Element>()
     
-    
     /// The number of objects in the set
-    public var numberOfObjects : Int { return _storage.count }
+    public var numberOfObjects: Int { return _storage.count }
     
     /// Check if the set contains a given element
     ///
@@ -152,9 +135,6 @@ public class FetchedSetController: ContextObserver {
     private func contains(_ element: Element) -> Bool {
         return self._storage.contains(element)
     }
-    
-    
-    
     
     // MARK: - Notification Registration
     /*-------------------------------------------------------------------------------*/
@@ -171,7 +151,7 @@ public class FetchedSetController: ContextObserver {
         var updated = Set<Element>()
         
         for obj in changes.deleted {
-            guard let _ = self._storage.remove(obj) else { continue }
+            guard self._storage.remove(obj) != nil else { continue }
             deleted.insert(obj)
         }
         
@@ -196,7 +176,7 @@ public class FetchedSetController: ContextObserver {
             }
         }
         
-        if deleted.count == 0, updated.count == 0, inserted.count == 0 { return }
+        if deleted.isEmpty, updated.isEmpty, inserted.isEmpty { return }
         
         self._storage.subtract(deleted)
         self._storage.formUnion(inserted)

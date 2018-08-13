@@ -8,16 +8,11 @@
 
 import Foundation
 
-
-
 @available(*, unavailable, renamed: "CollectionViewProvider")
 public struct ResultsChangeSet { }
 
-
-
-
-/// A Helper to 
-public class CollectionViewResultsProxy: CustomDebugStringConvertible   {
+/// A Helper to convert data set changes into collection view edits
+public class CollectionViewResultsProxy: CustomDebugStringConvertible {
     public internal(set) var itemUpdates = ItemChangeSet()
     public internal(set) var sectionUpdates = SectionChangeSet()
     
@@ -53,16 +48,17 @@ public class CollectionViewResultsProxy: CustomDebugStringConvertible   {
     }
     
     /// The count of changes in the set
-    public var count : Int {
+    public var count: Int {
         return itemChangeCount + sectionChangeCount
     }
-    public var itemChangeCount : Int {
+    public var itemChangeCount: Int {
         return itemUpdates.count
     }
-    public var sectionChangeCount : Int {
+    public var sectionChangeCount: Int {
         return sectionUpdates.count
     }
-    public var isEmpty : Bool {
+
+    public var isEmpty: Bool {
         return itemUpdates.isEmpty && sectionUpdates.isEmpty
     }
     
@@ -103,7 +99,7 @@ public extension CollectionViewResultsProxy {
     ///   - edits: A set of EditDistance Edits
     ///   - section: The section the changes should apply to
     /// - Returns: A new proxy with the edits added
-    public func addEdits<T:Collection>(from edits: EditDistance<T>, for section: Int = 0) where T.Iterator.Element: Hashable, T.Index == Int {
+    public func addEdits<T: Collection>(from edits: EditDistance<T>, for section: Int = 0) where T.Iterator.Element: Hashable, T.Index == Int {
         for e in edits.edits {
             switch e.operation {
             case .deletion:
@@ -124,11 +120,10 @@ public extension CollectionViewResultsProxy {
 }
 
 /// A helper object to easily track changes reported by a ResultsController and apply them to a CollectionView
-public class CollectionViewProvider : CollectionViewResultsProxy {
-    
+public class CollectionViewProvider: CollectionViewResultsProxy {
     /// When set as the delegate
-    public unowned let collectionView : CollectionView
-    public unowned let resultsController : ResultsController
+    public unowned let collectionView: CollectionView
+    public unowned let resultsController: ResultsController
     public weak var delegate: CollectionViewProviderDelegate?
     
     /// The last known section count of real data
@@ -164,11 +159,11 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
      */
     public var populateWhenEmpty = false
     
-    private class Section : Equatable, CustomStringConvertible {
-        var source : Int?
+    private class Section: Equatable, CustomStringConvertible {
+        var source: Int?
         var target: Int?
-        var dataCount : Int = 0
-        var displayCount : Int = 0
+        var dataCount: Int = 0
+        var displayCount: Int = 0
         
         init(source: Int?, target: Int?, dataCount: Int, displayCount: Int) {
             self.source = source
@@ -189,11 +184,11 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
     
     private var sections = [Section]()
     var collapsedSections = Set<Int>()
-    public var defaultCollapse : Bool = false
+    public var defaultCollapse: Bool = false
     
     public override func prepareForUpdates() {
         super.prepareForUpdates()
-        sections = (0..<resultsController.numberOfSections).map{
+        sections = (0..<resultsController.numberOfSections).map {
             return Section(source: $0,
                            target: nil,
                            dataCount: resultsController.numberOfObjects(in: $0),
@@ -240,12 +235,12 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
 /*-------------------------------------------------------------------------------*/
 extension CollectionViewProvider {
     
-    public var numberOfSections : Int {
-        let count = resultsController.numberOfSections
-        if count == 0 && self.populateWhenEmpty {
+    public var numberOfSections: Int {
+        let sectionCount = resultsController.numberOfSections
+        if sectionCount == 0 && self.populateWhenEmpty {
             return 1
         }
-        return count
+        return sectionCount
     }
     
     public func numberOfItems(in section: Int) -> Int {
@@ -255,14 +250,14 @@ extension CollectionViewProvider {
         if self.collapsedSections.contains(section) {
             return 0
         }
-        let count = resultsController.numberOfObjects(in: section)
-        if count == 0 && self.populateEmptySections {
+        let itemCount = resultsController.numberOfObjects(in: section)
+        if itemCount == 0 && self.populateEmptySections {
             return 1
         }
-        return count
+        return itemCount
     }
     
-    public var showEmptyState : Bool {
+    public var showEmptyState: Bool {
         return resultsController.numberOfSections == 0
             && self.populateWhenEmpty
     }
@@ -275,7 +270,7 @@ extension CollectionViewProvider {
 
 // MARK: - Results Controller Delegate
 /*-------------------------------------------------------------------------------*/
-extension CollectionViewProvider : ResultsControllerDelegate {
+extension CollectionViewProvider: ResultsControllerDelegate {
     
     public func controllerDidLoadContent(controller: ResultsController) {
         self.sectionCount = controller.numberOfSections
@@ -310,7 +305,7 @@ extension CollectionViewProvider : ResultsControllerDelegate {
         let target = processSections()
         
         // If any of the sections are collapsed we may need to adjust some of the edits
-        if (!self.collapsedSections.isEmpty || self.defaultCollapse) {
+        if !self.collapsedSections.isEmpty || self.defaultCollapse {
             var _collapsed = Set<Int>()
             for sec in target {
                 if let s = sec?.source, self.collapsedSections.contains(s),
@@ -445,10 +440,10 @@ public struct ItemChangeSet {
     
     init() { }
     
-    var count : Int {
+    var count: Int {
         return inserted.count + deleted.count + updated.count + moved.count
     }
-    var isEmpty : Bool {
+    var isEmpty: Bool {
         return inserted.isEmpty && deleted.isEmpty && updated.isEmpty && moved.isEmpty
     }
     
@@ -490,10 +485,10 @@ public struct SectionChangeSet {
     
     init() { }
     
-    var count : Int {
+    var count: Int {
         return inserted.count + deleted.count + updated.count + moved.count
     }
-    var isEmpty : Bool {
+    var isEmpty: Bool {
         return inserted.isEmpty && deleted.isEmpty && updated.isEmpty && moved.isEmpty
     }
     
@@ -503,7 +498,6 @@ public struct SectionChangeSet {
             deleted.insert(source!._section)
         case .update:
             updated.insert(source!._section)
-            break;
         case let .move(newIndexPath):
             moved.append((source!._section, newIndexPath._section))
         case let .insert(newIndexPath):
@@ -563,7 +557,4 @@ public extension CollectionView {
         self.reloadItems(at: Array(changes.updated), animated: true)
     }
     
-    
 }
-
-

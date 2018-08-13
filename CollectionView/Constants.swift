@@ -8,12 +8,10 @@
 
 import Foundation
 
-
 /**
  AnimationCompletion
 */
-public typealias AnimationCompletion = (_ finished: Bool)->Void
-
+public typealias AnimationCompletion = (_ finished: Bool) -> Void
 
 /// CollectionElementCategory
 ///
@@ -39,7 +37,6 @@ public enum CollectionViewScrollPosition {
     case trailing
 }
 
-
 /// CollectionViewSelectionType
 ///
 /// - single:
@@ -51,8 +48,6 @@ internal enum CollectionViewSelectionType {
     case toggle
 }
 
-
-
 /// CollectionViewScrollDirection
 ///
 /// - vertical:
@@ -61,8 +56,6 @@ public enum CollectionViewScrollDirection {
     case vertical
     case horizontal    
 }
-
-
 
 /// CollectionViewDirection
 ///

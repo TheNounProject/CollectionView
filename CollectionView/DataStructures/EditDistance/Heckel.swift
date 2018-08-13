@@ -63,7 +63,7 @@ public final class Heckel: DiffAware {
     
     public init() {}
     
-    public func diff<T>(old: T, new: T) -> [Edit<T.Element>] where T : Collection, T.Element : Hashable, T.Index == Int {
+    public func diff<T>(old: T, new: T) -> [Edit<T.Element>] where T: Collection, T.Element: Hashable, T.Index == Int {
         // The Symbol Table
         // Each line works as the key in the table look-up, i.e. as table[line].
         var table: [T.Element: TableEntry] = [:]
@@ -82,7 +82,7 @@ public final class Heckel: DiffAware {
     private func perform1stPass<T>(
         new: T,
         table: inout [T.Element: TableEntry],
-        newArray: inout [ArrayEntry]) where T : Collection, T.Index == Int {
+        newArray: inout [ArrayEntry]) where T: Collection, T.Index == Int {
         
         // 1st pass
         // a. Each line i of file N is read in sequence
@@ -104,7 +104,7 @@ public final class Heckel: DiffAware {
     private func perform2ndPass<T>(
         old: T,
         table: inout [T.Element: TableEntry],
-        oldArray: inout [ArrayEntry]) where T : Collection, T.Index == Int {
+        oldArray: inout [ArrayEntry]) where T: Collection, T.Index == Int {
         
         // 2nd pass
         // Similar to first pass, except it acts on files
@@ -175,7 +175,7 @@ public final class Heckel: DiffAware {
                 }
                 newArray[indexOfNew] = .indexInOther(indexOfOld)
                 oldArray[indexOfOld] = .indexInOther(indexOfNew)
-            case .indexInOther(_):
+            case .indexInOther:
                 break
             }
         }
@@ -185,7 +185,7 @@ public final class Heckel: DiffAware {
         new: T,
         old: T,
         newArray: [ArrayEntry],
-        oldArray: [ArrayEntry]) -> [Edit<T.Iterator.Element>] where T : Collection, T.Element : Hashable, T.Index == Int {
+        oldArray: [ArrayEntry]) -> [Edit<T.Iterator.Element>] where T: Collection, T.Element: Hashable, T.Index == Int {
         
         // 6th pass
         // At this point following our five passes,

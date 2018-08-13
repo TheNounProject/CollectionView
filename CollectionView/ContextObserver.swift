@@ -12,8 +12,8 @@ import CoreData
 open class ContextObserver {
     
     public var wait: Bool = true
-    public var managedObjectContext : NSManagedObjectContext {
-        didSet{
+    public var managedObjectContext: NSManagedObjectContext {
+        didSet {
             if oldValue != managedObjectContext {
                 self.unregister()
             }
@@ -26,25 +26,32 @@ open class ContextObserver {
         return true
     }
     
-    private var _registered : Bool = false
+
+    private var _registered: Bool = false
     public func register() {
         guard !_registered, shouldRegister() else { return }
         self._registered = true
         ManagedObjectContextObservationCoordinator.shared.add(context: self.managedObjectContext)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)), name: ManagedObjectContextObservationCoordinator.Notification.name, object: self.managedObjectContext)    }
+        NotificationCenter.default.addObserver(self, selector: #selector(handleChangeNotification(_:)),
+                                               name: ManagedObjectContextObservationCoordinator.Notification.name,
+                                               object: self.managedObjectContext)
+    }
     
     public func unregister() {
         guard _registered else { return }
         self._registered = false
         ManagedObjectContextObservationCoordinator.shared.remove(context: self.managedObjectContext)
-        NotificationCenter.default.removeObserver(self, name: ManagedObjectContextObservationCoordinator.Notification.name, object: self.managedObjectContext)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: ManagedObjectContextObservationCoordinator.Notification.name,
+                                                  object: self.managedObjectContext)
     }
     
     open func process( _ changes: [NSEntityDescription: (inserted: Set<NSManagedObject>, deleted: Set<NSManagedObject>, updated: Set<NSManagedObject>)]) {
         
     }
     @objc func handleChangeNotification(_ notification: Notification) {
-        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey] as? [NSEntityDescription:ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
+        guard let changes = notification.userInfo?[ManagedObjectContextObservationCoordinator.Notification.changeSetKey]
+            as? [NSEntityDescription: ManagedObjectContextObservationCoordinator.EntityChangeSet] else {
             return
         }
         func run() {

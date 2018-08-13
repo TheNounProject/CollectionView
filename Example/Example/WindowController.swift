@@ -10,7 +10,7 @@ import Foundation
 import AppKit
 import CollectionView
 
-class WindowController : NSWindowController {
+class WindowController: NSWindowController {
     
     override func windowDidLoad() {
         super.windowDidLoad()
@@ -19,13 +19,12 @@ class WindowController : NSWindowController {
         self.contentViewController = fetchedController
     }
     
-    lazy var fetchedController : FetchedController = {
+    lazy var fetchedController: FetchedController = {
         return FetchedController()
     }()
-    lazy var relationalController : RelationalController = {
+    lazy var relationalController: RelationalController = {
         return RelationalController()
     }()
-    
     
     @IBAction func radomize(_ sender: Any?) {
         
@@ -45,7 +44,6 @@ class WindowController : NSWindowController {
             }
         }
         
-        
         let childrentPerParent = Int(ceil(Double(children.count)/Double(parents.count)))
         for parent in parents {
             var _n = 0
@@ -64,7 +62,6 @@ class WindowController : NSWindowController {
         AppDelegate.current.saveAction(nil)
     }
     
-    
     @IBAction func addChild(_ sender: AnyObject?) {
         let count = NSApp.currentEvent?.modifierFlags.contains(.option) == true ? 5 : 1
         repeatBlock(count) {
@@ -78,11 +75,10 @@ class WindowController : NSWindowController {
             _ = Parent.create()
         }
     }
-
     
     @IBAction func groupSelectorChanged(_ sender: NSSegmentedControl) {
         
-        var layout : BaseController.Layout = {
+        var layout: BaseController.Layout = {
             let idx = (self.window?.toolbar?.items[0].view as? NSSegmentedControl)?.selectedSegment ?? 0
             switch idx {
             case 1: return .flow
@@ -90,7 +86,6 @@ class WindowController : NSWindowController {
             default: return .list
             }
         }()
-        
         
         if sender.selectedSegment == 0 {
             fetchedController.view.frame.size = self.window!.frame.size
@@ -116,35 +111,32 @@ class WindowController : NSWindowController {
     
 }
 
-
-
-
-class BaseController : CollectionViewController, CollectionViewDelegateFlowLayout, CollectionViewDelegateListLayout, CollectionViewPreviewControllerDelegate, CollectionViewDelegateColumnLayout {
+class BaseController: CollectionViewController, CollectionViewDelegateFlowLayout, CollectionViewDelegateListLayout, CollectionViewPreviewControllerDelegate, CollectionViewDelegateColumnLayout {
     
     enum Layout {
         case list, flow, column
     }
     
-    lazy var listLayout : CollectionViewListLayout = {
+    lazy var listLayout: CollectionViewListLayout = {
         let layout = CollectionViewListLayout()
         layout.itemHeight = 40
         layout.headerHeight = 50
         return layout
     }()
-    lazy var flowLayout :    CollectionViewFlowLayout = {
+    lazy var flowLayout: CollectionViewFlowLayout = {
         let layout = CollectionViewFlowLayout()
         layout.defaultSectionInsets = NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         layout.defaultHeaderHeight = 50
         layout.defaultRowTransform = .none
         return layout
     }()
-    lazy var columnLayout : CollectionViewColumnLayout = {
+    lazy var columnLayout: CollectionViewColumnLayout = {
         let layout = CollectionViewColumnLayout()
         layout.layoutStrategy = .shortestFirst
         return layout
     }()
     
-    var provider : CollectionViewProvider!
+    var provider: CollectionViewProvider!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -161,7 +153,6 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         ListCell.register(in: collectionView)
         BasicHeaderView.register(collectionView)
     }
-    
     
     @IBAction func toggleLayout(_ sender: AnyObject?) {
         let control = self.view.window?.toolbar?.items[0].view as? NSSegmentedControl
@@ -186,7 +177,7 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     }
     
     func setLayout(type: Layout) {
-        let layout : CollectionViewLayout = {
+        let layout: CollectionViewLayout = {
             switch type {
             case .list: return self.listLayout
             case .flow: return self.flowLayout
@@ -209,7 +200,6 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         }
     }
     
-    
     @IBAction func refresh(_ sender: AnyObject?) {
         collectionView.reloadData()
     }
@@ -217,8 +207,6 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     @IBAction func reload(_ sender: AnyObject?) {
         collectionView.reloadData()
     }
-    
-    
     
     // MARK: - Results Controller Delegate
     /*-------------------------------------------------------------------------------*/
@@ -240,9 +228,6 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
 //        collectionView.applyChanges(from: changes)
 //    }
     
-    
-    
-    
     override func numberOfSections(in collectionView: CollectionView) -> Int {
         return provider.numberOfSections
     }
@@ -250,7 +235,6 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     override func collectionView(_ collectionView: CollectionView, numberOfItemsInSection section: Int) -> Int {
         return provider.numberOfItems(in: section)
     }
-    
     
     // MARK: - FlowLayout Delegate
     /*-------------------------------------------------------------------------------*/
@@ -267,10 +251,10 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         let variance = child.variable.intValue
         
         // semi-Randomly apply a style
-        if (variance * 2) % 20  == 0  {
+        if (variance * 2) % 20  == 0 {
             return .span(CGSize(width: collectionView.frame.size.width, height: 50))
         }
-        let size : CGFloat = 150
+        let size: CGFloat = 150
         let multiplier = CGFloat(variance % 5)
         return .flow(CGSize(width: size  + (50 * multiplier), height: size))
     }
@@ -286,11 +270,10 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         if collectionViewLayout is CollectionViewColumnLayout {
             let child = self.child(at: indexPath)!
             let variance = child.variable.intValue
-            let size : CGFloat = 150
+            let size: CGFloat = 150
             let multiplier = CGFloat(variance % 5)
             return  size + (50 * multiplier)
         }
-        
         
         return 50
     }
@@ -303,10 +286,8 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     }
     
     func collectionView(_ collectionView: CollectionView, flowLayout collectionViewLayout: CollectionViewFlowLayout, heightForHeaderInSection section: Int) -> CGFloat {
-        return self.collectionView(collectionView, layout:collectionViewLayout, heightForHeaderInSection:section)
+        return self.collectionView(collectionView, layout: collectionViewLayout, heightForHeaderInSection: section)
     }
-
-    
     
     // MARK: - Column Layout
     /*-------------------------------------------------------------------------------*/
@@ -321,7 +302,6 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         return Int(collectionView.frame.size.width / 200)
         
     }
-    
     
     // MARK: - Data Source
     /*-------------------------------------------------------------------------------*/
@@ -388,16 +368,12 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     
     func collectionView(_ collectionView: CollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        
     }
-    
-    
-    
     
     // MARK: - Preview
     /*-------------------------------------------------------------------------------*/
     
-    lazy var previewController : CollectionViewPreviewController = {
+    lazy var previewController: CollectionViewPreviewController = {
         let controller =  CollectionViewPreviewController()
         GridCell.register(in: controller.collectionView)
         return controller
@@ -429,9 +405,9 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
         isPreviewing = false
         
         // Scrolls the source collection view to the item that was being previewed
-        if let final = self.previewController.currentIndexPath, let source = self.previewController.sourceIndexPath  {
+        if let final = self.previewController.currentIndexPath, let source = self.previewController.sourceIndexPath {
             if final != source && !self.collectionView.itemAtIndexPathIsVisible(final) {
-                self.collectionView.scrollItem(at:final, to: .centered, animated: false, completion: nil)
+                self.collectionView.scrollItem(at: final, to: .centered, animated: false, completion: nil)
             }
             self.collectionView.deselectAllItems()
             self.collectionView.selectItem(at: final, animated: false, scrollPosition: .nearest)
@@ -459,13 +435,10 @@ class BaseController : CollectionViewController, CollectionViewDelegateFlowLayou
     func collectionViewPreview(_ controller: CollectionViewPreviewController, didMoveToItemAt indexPath: IndexPath) {
         
     }
-
     
 }
 
-
-extension BaseController : CollectionViewDragDelegate {
-    
+extension BaseController: CollectionViewDragDelegate {
     
     func collectionView(_ collectionView: CollectionView, shouldBeginDraggingAt indexPath: IndexPath, with event: NSEvent) -> Bool {
         return true
@@ -480,5 +453,3 @@ extension BaseController : CollectionViewDragDelegate {
     }
     
 }
-
-

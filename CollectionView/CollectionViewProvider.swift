@@ -11,12 +11,8 @@ import Foundation
 @available(*, unavailable, renamed: "CollectionViewProvider")
 public struct ResultsChangeSet { }
 
-/// A Helper to 
-<<<<<<< HEAD
+/// A Helper to convert data set changes into collection view edits
 public class CollectionViewResultsProxy: CustomDebugStringConvertible {
-=======
-public class CollectionViewResultsProxy: CustomDebugStringConvertible   {
->>>>>>> master
     public internal(set) var itemUpdates = ItemChangeSet()
     public internal(set) var sectionUpdates = SectionChangeSet()
     
@@ -61,11 +57,8 @@ public class CollectionViewResultsProxy: CustomDebugStringConvertible   {
     public var sectionChangeCount: Int {
         return sectionUpdates.count
     }
-<<<<<<< HEAD
+
     public var isEmpty: Bool {
-=======
-    public var isEmpty : Bool {
->>>>>>> master
         return itemUpdates.isEmpty && sectionUpdates.isEmpty
     }
     
@@ -106,11 +99,7 @@ public extension CollectionViewResultsProxy {
     ///   - edits: A set of EditDistance Edits
     ///   - section: The section the changes should apply to
     /// - Returns: A new proxy with the edits added
-<<<<<<< HEAD
     public func addEdits<T: Collection>(from edits: EditDistance<T>, for section: Int = 0) where T.Iterator.Element: Hashable, T.Index == Int {
-=======
-    public func addEdits<T:Collection>(from edits: EditDistance<T>, for section: Int = 0) where T.Iterator.Element: Hashable, T.Index == Int {
->>>>>>> master
         for e in edits.edits {
             switch e.operation {
             case .deletion:
@@ -131,12 +120,7 @@ public extension CollectionViewResultsProxy {
 }
 
 /// A helper object to easily track changes reported by a ResultsController and apply them to a CollectionView
-<<<<<<< HEAD
 public class CollectionViewProvider: CollectionViewResultsProxy {
-=======
-public class CollectionViewProvider : CollectionViewResultsProxy {
->>>>>>> master
-    
     /// When set as the delegate
     public unowned let collectionView: CollectionView
     public unowned let resultsController: ResultsController
@@ -175,13 +159,8 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
      */
     public var populateWhenEmpty = false
     
-<<<<<<< HEAD
     private class Section: Equatable, CustomStringConvertible {
         var source: Int?
-=======
-    private class Section : Equatable, CustomStringConvertible {
-        var source : Int?
->>>>>>> master
         var target: Int?
         var dataCount: Int = 0
         var displayCount: Int = 0
@@ -464,11 +443,7 @@ public struct ItemChangeSet {
     var count: Int {
         return inserted.count + deleted.count + updated.count + moved.count
     }
-<<<<<<< HEAD
     var isEmpty: Bool {
-=======
-    var isEmpty : Bool {
->>>>>>> master
         return inserted.isEmpty && deleted.isEmpty && updated.isEmpty && moved.isEmpty
     }
     
@@ -513,11 +488,7 @@ public struct SectionChangeSet {
     var count: Int {
         return inserted.count + deleted.count + updated.count + moved.count
     }
-<<<<<<< HEAD
     var isEmpty: Bool {
-=======
-    var isEmpty : Bool {
->>>>>>> master
         return inserted.isEmpty && deleted.isEmpty && updated.isEmpty && moved.isEmpty
     }
     

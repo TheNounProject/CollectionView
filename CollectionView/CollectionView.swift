@@ -9,24 +9,6 @@
 import Foundation
 import AppKit
 
-<<<<<<< HEAD
-extension IndexSet {
-    var indices: [Element] {
-        var res = [Element]()
-        for idx in self {
-            res.append(idx)
-        }
-        return res
-    }
-    var normalized: IndexSet {
-        return self.filteredIndexSet(includeInteger: { (idx) -> Bool in
-            return idx >= 0
-        })
-    }
-}
-=======
->>>>>>> master
-
 /**
  A Collection View manages the presentation of items, your app's main job is to provide the data that those items are to represent.
  
@@ -1086,11 +1068,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         var deleted   = IndexSet() // Original Indexes for deleted sections
         var inserted  = IndexSet() // Destination Indexes for inserted sections
         var moved = IndexedSet<Int, Int>() // Source and Destination indexes for moved sections
-<<<<<<< HEAD
         var isEmpty: Bool {
-=======
-        var isEmpty : Bool {
->>>>>>> master
             return deleted.isEmpty && inserted.isEmpty && moved.isEmpty
         }
     }
@@ -1200,11 +1178,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
             reloadedItems.removeAll()
         }
         
-<<<<<<< HEAD
         var isEmpty: Bool {
-=======
-        var isEmpty : Bool {
->>>>>>> master
             return sections.isEmpty && items.isEmpty && reloadedItems.isEmpty && reloadSections.isEmpty
         }
     }
@@ -1258,11 +1232,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
         
         guard !self._updateContext.items.isEmpty || !self._updateContext.sections.isEmpty else {
-<<<<<<< HEAD
             if !_updateContext.reloadedItems.isEmpty {
-=======
-            if _updateContext.reloadedItems.count > 0 {
->>>>>>> master
                 for ip in _updateContext.reloadedItems {
                     guard let cell = self.contentDocumentView.preparedCellIndex[ip] else { continue }
                     self.contentDocumentView.preparedCellIndex[ip] = _prepareReplacementCell(for: cell, at: ip)

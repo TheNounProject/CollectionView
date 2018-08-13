@@ -38,10 +38,6 @@ public class FetchedSetController: ContextObserver {
         self.init(context: context, request: req)
     }
     
-<<<<<<< HEAD
-=======
-    
->>>>>>> master
     /// Initialize a controller with a context and request
     ///
     /// - Parameter context: A managed object context to fetch from
@@ -100,24 +96,10 @@ public class FetchedSetController: ContextObserver {
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
     
-<<<<<<< HEAD
     /// Update the context and perform a fetch
     ///
     /// - Parameter moc: The new managed object context
     /// - Returns: A fetch error if one occurs
-=======
-    /// The managed object context to fetch from
-//    public private(set) var managedObjectContext : NSManagedObjectContext
-    
-    
-    /**
-     Update the context and perform a fetch
-
-     - Parameter moc: The new managed object context
-     
-     - Returns: A fetch error if one occurs
-    */
->>>>>>> master
     public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
         guard moc != self.managedObjectContext else { return }
         self.setNeedsFetch()
@@ -127,11 +109,7 @@ public class FetchedSetController: ContextObserver {
     }
     
     /// A fetch request (including a predicate if needed) for the entity to fetch
-<<<<<<< HEAD
     public let fetchRequest: NSFetchRequest<NSManagedObject>
-=======
-    public let fetchRequest : NSFetchRequest<NSManagedObject>
->>>>>>> master
     
     /// The delegate of the controller
     public weak var delegate: FetchedSetControllerDelegate? {
@@ -148,21 +126,7 @@ public class FetchedSetController: ContextObserver {
     private var _storage = Set<Element>()
     
     /// The number of objects in the set
-<<<<<<< HEAD
     public var numberOfObjects: Int { return _storage.count }
-=======
-    public var numberOfObjects : Int { return _storage.count }
-    
-    /// Check if the set contains a given element
-    ///
-    /// - Parameter element: The element in query
-    /// - Returns: True if the object exists in the set
-    private func contains(_ element: Element) -> Bool {
-        return self._storage.contains(element)
-    }
-    
-    
->>>>>>> master
     
     /// Check if the set contains a given element
     ///
@@ -187,11 +151,7 @@ public class FetchedSetController: ContextObserver {
         var updated = Set<Element>()
         
         for obj in changes.deleted {
-<<<<<<< HEAD
             guard self._storage.remove(obj) != nil else { continue }
-=======
-            guard let _ = self._storage.remove(obj) else { continue }
->>>>>>> master
             deleted.insert(obj)
         }
         
@@ -216,19 +176,11 @@ public class FetchedSetController: ContextObserver {
             }
         }
         
-<<<<<<< HEAD
         if deleted.isEmpty, updated.isEmpty, inserted.isEmpty { return }
         
         self._storage.subtract(deleted)
         self._storage.formUnion(inserted)
         
-=======
-        if deleted.count == 0, updated.count == 0, inserted.count == 0 { return }
-        
-        self._storage.subtract(deleted)
-        self._storage.formUnion(inserted)
-        
->>>>>>> master
         if self.delegate?.controllerWillChangeContent(self) == true {
             
             for o in deleted {

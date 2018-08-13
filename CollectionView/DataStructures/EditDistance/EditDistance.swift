@@ -29,11 +29,6 @@ public enum EditOperation {
     }
 }
 
-
-
-
-
-
 public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
     
     public let operation: EditOperation

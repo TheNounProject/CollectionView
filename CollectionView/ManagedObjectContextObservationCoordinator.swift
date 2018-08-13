@@ -96,11 +96,7 @@ class ManagedObjectContextObservationCoordinator {
             self.updated(obj)
         }
 
-<<<<<<< HEAD
         var isEmpty: Bool {
-=======
-        var isEmpty : Bool {
->>>>>>> master
             return inserted.isEmpty && deleted.isEmpty && updated.isEmpty
         }
         
@@ -129,9 +125,7 @@ class ManagedObjectContextObservationCoordinator {
         return Static.instance
     }
     
-    init() {
-        
-    }
+    init() { }
     
     func add(context: NSManagedObjectContext) {
         let contextCount = contexts[context] ?? 0

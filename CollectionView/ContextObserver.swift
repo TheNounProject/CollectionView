@@ -25,7 +25,6 @@ open class ContextObserver {
     open func shouldRegister() -> Bool {
         return true
     }
-    
 
     private var _registered: Bool = false
     public func register() {

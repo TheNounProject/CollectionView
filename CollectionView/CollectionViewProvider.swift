@@ -17,31 +17,29 @@ public struct ResultsChangeSet { }
 
 
 /// A Helper to 
-public class CollectionViewResultsProxy   {
-    var itemUpdates = ItemChangeSet()
-    var sectionUpdates = SectionChangeSet()
+public class CollectionViewResultsProxy: CustomDebugStringConvertible   {
+    public internal(set) var itemUpdates = ItemChangeSet()
+    public internal(set) var sectionUpdates = SectionChangeSet()
     
+    public init() { }
     
-    /**
-     Add an item change
-     
-     - Parameter source: The source index path of the section
-     - Parameter changeType: The change type
-     
-     */
+    public var debugDescription: String {
+        return "Items: \(self.itemUpdates)\nSections:\(self.sectionUpdates)"
+    }
+    
+    /// Add an item change
+    ///
+    /// - Parameter source: The source index path of the section
+    /// - Parameter changeType: The change type
     public func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         itemUpdates.addChange(forItemAt: source, with: changeType)
     }
     
-    
-    
-    /**
-     Add a section change
-     
-     - Parameter source: The source index path of the section
-     - Parameter changeType: The change type
-     
-     */
+    ///  Add a section change
+    ///
+    /// - Parameter source: The source index path of the section
+    /// - Parameter changeType: The change type
+    ///
     public func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         sectionUpdates.addChange(forSectionAt: source, with: changeType)
     }
@@ -64,30 +62,24 @@ public class CollectionViewResultsProxy   {
     public var sectionChangeCount : Int {
         return sectionUpdates.count
     }
-    
+    public var isEmpty : Bool {
+        return itemUpdates.isEmpty && sectionUpdates.isEmpty
+    }
     
     public func prepareForUpdates() {
         itemUpdates.reset()
         sectionUpdates.reset()
     }
     
-    /**
-     Merge this set with another
-     
-     - Parameter other: Another change set
-     
-     */
+    /// Merge this set with another
+    ///
+    /// - Parameter other: Another change set
+    ///
     public func union(with other: CollectionViewResultsProxy) {
-        self.itemUpdates.inserted.formUnion(other.itemUpdates.inserted)
-        self.itemUpdates.deleted.formUnion(other.itemUpdates.deleted)
-        self.itemUpdates.updated.formUnion(other.itemUpdates.updated)
-        
-        self.sectionUpdates.inserted.formUnion(other.sectionUpdates.inserted)
-        self.sectionUpdates.deleted.formUnion(other.sectionUpdates.deleted)
-        self.sectionUpdates.updated.formUnion(other.sectionUpdates.updated)
+        self.itemUpdates.formUnion(with: other.itemUpdates)
+        self.sectionUpdates.formUnion(with: other.sectionUpdates)
     }
 }
-
 
 public protocol CollectionViewProviderDelegate: class {
     func providerWillChangeContent(_ provider: CollectionViewProvider)
@@ -103,10 +95,35 @@ public extension CollectionViewProviderDelegate {
     func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion? { return nil }
 }
 
+public extension CollectionViewResultsProxy {
+    
+    /// Create a proxy for a set of edits in one section
+    ///
+    /// - Parameters:
+    ///   - edits: A set of EditDistance Edits
+    ///   - section: The section the changes should apply to
+    /// - Returns: A new proxy with the edits added
+    public func addEdits<T:Collection>(from edits: EditDistance<T>, for section: Int = 0) where T.Iterator.Element: Hashable, T.Index == Int {
+        for e in edits.edits {
+            switch e.operation {
+            case .deletion:
+                self.addChange(forItemAt: IndexPath.for(item: e.index, section: section),
+                               with: .delete)
+            case .insertion:
+                self.addChange(forItemAt: nil,
+                               with: .insert(IndexPath.for(item: e.index, section: section)))
+            case let .move(origin: o):
+                self.addChange(forItemAt: IndexPath.for(item: o, section: section),
+                               with: .move(IndexPath.for(item: e.index, section: section)))
+            case .substitution:
+                self.addChange(forItemAt: IndexPath.for(item: e.index, section: section),
+                               with: .update)
+            }
+        }
+    }
+}
 
-/**
- A helper object to easily track changes reported by a ResultsController and apply them to a CollectionView
-*/
+/// A helper object to easily track changes reported by a ResultsController and apply them to a CollectionView
 public class CollectionViewProvider : CollectionViewResultsProxy {
     
     /// When set as the delegate
@@ -125,7 +142,6 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
         self.resultsController.delegate = self
     }
     
-
     /**
      If true, a cell will be inserted when a section becomes empty
      
@@ -147,7 +163,6 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
      
      */
     public var populateWhenEmpty = false
-    
     
     private class Section : Equatable, CustomStringConvertible {
         var source : Int?
@@ -221,7 +236,6 @@ public class CollectionViewProvider : CollectionViewResultsProxy {
     }
 }
 
-
 // MARK: - Data Source
 /*-------------------------------------------------------------------------------*/
 extension CollectionViewProvider {
@@ -258,7 +272,6 @@ extension CollectionViewProvider {
             && self.resultsController.numberOfObjects(in: indexPath.section) == 0
     }
 }
-
 
 // MARK: - Results Controller Delegate
 /*-------------------------------------------------------------------------------*/
@@ -414,7 +427,6 @@ extension CollectionViewProvider : ResultsControllerDelegate {
     }
 }
 
-
 // Deprecated
 extension CollectionViewResultsProxy {
     @available(*, deprecated, renamed: "prepareForUpdates")
@@ -423,22 +435,21 @@ extension CollectionViewResultsProxy {
     }
 }
 
-
-
-
-
-struct ItemChangeSet {
-    typealias Move = (source: IndexPath, destination: IndexPath)
+public struct ItemChangeSet {
+    public typealias Move = (source: IndexPath, destination: IndexPath)
     
-    var inserted = Set<IndexPath>()
-    var deleted = Set<IndexPath>()
-    var updated = Set<IndexPath>()
-    var moved = [Move]()
+    public var inserted = Set<IndexPath>()
+    public var deleted = Set<IndexPath>()
+    public var updated = Set<IndexPath>()
+    public var moved = [Move]()
     
     init() { }
     
     var count : Int {
         return inserted.count + deleted.count + updated.count + moved.count
+    }
+    var isEmpty : Bool {
+        return inserted.isEmpty && deleted.isEmpty && updated.isEmpty && moved.isEmpty
     }
     
     mutating func addChange(forItemAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
@@ -454,6 +465,13 @@ struct ItemChangeSet {
         }
     }
     
+    mutating func formUnion(with other: ItemChangeSet) {
+        self.inserted.formUnion(other.inserted)
+        self.deleted.formUnion(other.deleted)
+        self.updated.formUnion(other.updated)
+        self.moved.append(contentsOf: other.moved)
+    }
+    
     mutating func reset() {
         inserted.removeAll()
         deleted.removeAll()
@@ -462,21 +480,24 @@ struct ItemChangeSet {
     }
 }
 
-struct SectionChangeSet {
-     typealias Move = (source: Int, destination: Int)
+public struct SectionChangeSet {
+    public typealias Move = (source: Int, destination: Int)
     
-     var inserted = IndexSet()
-     var deleted = IndexSet()
-     var updated = IndexSet()
-     var moved = [Move]()
+    public private(set) var inserted = IndexSet()
+    public private(set) var deleted = IndexSet()
+    public private(set) var updated = IndexSet()
+    public private(set) var moved = [Move]()
     
-     init() { }
+    init() { }
     
     var count : Int {
         return inserted.count + deleted.count + updated.count + moved.count
     }
+    var isEmpty : Bool {
+        return inserted.isEmpty && deleted.isEmpty && updated.isEmpty && moved.isEmpty
+    }
     
-     mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
+    mutating func addChange(forSectionAt source: IndexPath?, with changeType: ResultsControllerChangeType) {
         switch changeType {
         case .delete:
             deleted.insert(source!._section)
@@ -490,7 +511,13 @@ struct SectionChangeSet {
         }
     }
     
-     mutating func reset() {
+    mutating func formUnion(with other: SectionChangeSet) {
+        self.inserted.formUnion(other.inserted)
+        self.deleted.formUnion(other.deleted)
+        self.updated.formUnion(other.updated)
+    }
+    
+    mutating func reset() {
         inserted.removeAll()
         deleted.removeAll()
         updated.removeAll()
@@ -498,31 +525,26 @@ struct SectionChangeSet {
     }
 }
 
-
-// Extension to make easy use of the ItemChangeSet and SectionChangeSet
+/// Extension to make easy use of the ItemChangeSet and SectionChangeSet
 public extension CollectionView {
     
-    
-    /**
-     Apply all changes in a change set to a collection view
-
-     - Parameter changeSet: The change set to apply
-     - Parameter completion: A close to call when the update finishes
-
-    */
+    /// Apply all changes in a change set to a collection view
+    ///
+    /// - Parameter changeSet: The change set to apply
+    /// - Parameter completion: A close to call when the update finishes
     public func applyChanges(from changeSet: CollectionViewResultsProxy, completion: AnimationCompletion? = nil) {
-        guard changeSet.count > 0 else {
+        guard !changeSet.isEmpty else {
             completion?(true)
             return
         }
 
         self.performBatchUpdates({
-            _applyChanges(changeSet.itemUpdates)
-            _applyChanges(changeSet.sectionUpdates)
+            applyChanges(changeSet.itemUpdates)
+            applyChanges(changeSet.sectionUpdates)
         }, completion: completion)
     }
     
-    private func _applyChanges(_ changes: SectionChangeSet) {
+    public func applyChanges(_ changes: SectionChangeSet) {
         self.deleteSections(changes.deleted, animated: true)
         self.insertSections(changes.inserted, animated: true)
         self.reloadSupplementaryViews(in: changes.updated, animated: true)
@@ -531,7 +553,7 @@ public extension CollectionView {
         }
     }
     
-    private func _applyChanges(_ changes: ItemChangeSet) {
+    public func applyChanges(_ changes: ItemChangeSet) {
         self.deleteItems(at: Array(changes.deleted), animated: true)
         self.insertItems(at: Array(changes.inserted), animated: true)
         

@@ -7,24 +7,8 @@
 //
 
 import Foundation
+import AppKit
 
-extension IndexSet {
-    
-    var indices : [Element] {
-        var res = [Element]()
-        for idx in self {
-            res.append(idx)
-        }
-        return res
-    }
-    
-    var normalized : IndexSet {
-        return self.filteredIndexSet(includeInteger: { (idx) -> Bool in
-            return idx >= 0
-        })
-    }
-    
-}
 
 /**
  A Collection View manages the presentation of items, your app's main job is to provide the data that those items are to represent.
@@ -973,15 +957,19 @@ open class CollectionView : ScrollView, NSDraggingSource {
             for viewRef in item.value {
                 let id = viewRef.id
                 let oldView = viewRef.view
-                
                 contentDocumentView.preparedSupplementaryViewIndex.removeValue(forKey: id)
                 updates.append(ItemUpdate(view: oldView, attrs: oldView.attributes!, type: .remove, identifier: id))
             }
-            
         }
         self.contentDocumentView.pendingUpdates.append(contentsOf: updates)
     }
     
+    public func reloadSections(_ sections: IndexSet, animated: Bool) {
+        guard !sections.isEmpty else { return }
+        self.beginEditing()
+        self._updateContext.reloadSections.formUnion(sections)
+        self.endEditing(animated)
+    }
     
 	/**
 	Insert sections at the given indexes
@@ -992,7 +980,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
      - Note: If called within performBatchUpdate(_:completion:) sections should be the final indexes after other updates are applied
 	*/
     public func insertSections(_ sections: IndexSet, animated: Bool) {
-        guard sections.count > 0 else { return }
+        guard !sections.isEmpty else { return }
         self.beginEditing()
         self._updateContext.sections.inserted.formUnion(sections)
         self.endEditing(animated)
@@ -1130,7 +1118,6 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var deleted   = IndexSet() // Original Indexes for deleted sections
         var inserted  = IndexSet() // Destination Indexes for inserted sections
         var moved = IndexedSet<Int, Int>() // Source and Destination indexes for moved sections
-        
         var isEmpty : Bool {
             return deleted.isEmpty && inserted.isEmpty && moved.isEmpty
         }
@@ -1232,6 +1219,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         var sections = SectionTracker()
         var items = ItemTracker()
         var reloadedItems = Set<IndexPath>() // Track reloaded items to reload after adjusting IPs
+        var reloadSections = IndexSet()
         
         var updates = [ItemUpdate]()
         
@@ -1241,8 +1229,11 @@ open class CollectionView : ScrollView, NSDraggingSource {
             updates.removeAll()
             reloadedItems.removeAll()
         }
+        
+        var isEmpty : Bool {
+            return sections.isEmpty && items.isEmpty && reloadedItems.isEmpty && reloadSections.isEmpty
+        }
     }
-    
     
     private var _updateContext = UpdateContext()
     private var _editing = 0
@@ -1265,7 +1256,7 @@ open class CollectionView : ScrollView, NSDraggingSource {
         }
         _editing = 0
         
-        guard !self._updateContext.items.isEmpty || !self._updateContext.sections.isEmpty else {
+        guard !self._updateContext.isEmpty else {
             completion?(true)
             return
         }
@@ -1274,6 +1265,37 @@ open class CollectionView : ScrollView, NSDraggingSource {
         self._reloadDataCounts()
         let newData = self.sections
         
+        for idx in self._updateContext.reloadSections {
+            // Reuse existing operation to reload, delete, and insert items in the section as needed
+            precondition(!self._updateContext.sections.deleted.contains(idx), "Cannot delete section that is also being reloaded")
+            let oldCount = oldData[idx]
+            let newCount = newData[idx]
+            let shared = min(oldCount, newCount)
+            let update = Set(IndexPath.inRange(0..<shared, section: idx))
+            self._updateContext.reloadedItems.formUnion(update)
+            if oldCount > newCount {
+                let delete = Set(IndexPath.inRange(shared..<oldCount, section: idx))
+                self._updateContext.items.deleted.formUnion(delete)
+            }
+            else if oldCount < newCount {
+                let insert = IndexPath.inRange(shared..<newCount, section: idx)
+                self._updateContext.items.inserted.formUnion(insert)
+            }
+        }
+        
+        guard !self._updateContext.items.isEmpty || !self._updateContext.sections.isEmpty else {
+            if _updateContext.reloadedItems.count > 0 {
+                for ip in _updateContext.reloadedItems {
+                    guard let cell = self.contentDocumentView.preparedCellIndex[ip] else { continue }
+                    self.contentDocumentView.preparedCellIndex[ip] = _prepareReplacementCell(for: cell, at: ip)
+                }
+                self.reloadLayout(animated, scrollPosition: .none, completion: completion)
+            }
+            else {
+                completion?(true)
+            }
+            return
+        }
         
         // Validate the section changes
         var sectionDelta = self._updateContext.sections.inserted.count - self._updateContext.sections.deleted.count

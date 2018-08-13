@@ -9,20 +9,6 @@
 import Foundation
 import AppKit
 
-extension IndexSet {
-    var indices : [Element] {
-        var res = [Element]()
-        for idx in self {
-            res.append(idx)
-        }
-        return res
-    }
-    var normalized : IndexSet {
-        return self.filteredIndexSet(includeInteger: { (idx) -> Bool in
-            return idx >= 0
-        })
-    }
-}
 
 /**
  A Collection View manages the presentation of items, your app's main job is to provide the data that those items are to represent.

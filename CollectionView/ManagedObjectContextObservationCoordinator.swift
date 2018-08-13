@@ -96,7 +96,11 @@ class ManagedObjectContextObservationCoordinator {
             self.updated(obj)
         }
 
+<<<<<<< HEAD
         var isEmpty: Bool {
+=======
+        var isEmpty : Bool {
+>>>>>>> master
             return inserted.isEmpty && deleted.isEmpty && updated.isEmpty
         }
         

@@ -542,20 +542,17 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
+    open var needsLayoutReload: Bool = false {
+        didSet {
+            if needsLayoutReload { self.needsLayout = true }
+        }
+    }
+    
     open override func layout() {
-        
-//        if #available(OSX 10.12, *) {
-//            // Do nothing
-//        }
-//        else {
-            _floatingSupplementaryView.frame = self.bounds
-//         }
-        
+        self._floatingSupplementaryView.frame = self.bounds
         self.layoutLeadingViews()
-        
         super.layout()
-        
-        if self.collectionViewLayout.shouldInvalidateLayout(forBoundsChange: self.contentVisibleRect) {
+        if needsLayoutReload || self.collectionViewLayout.shouldInvalidateLayout(forBoundsChange: self.contentVisibleRect) {
             if reloadDataOnBoundsChange {
                 self._reloadDataCounts()
             }
@@ -572,6 +569,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         else {
             self.contentDocumentView.prepareRect(_preperationRect, force: false)
         }
+        self.needsLayoutReload = false
     }
     
     @available(*, unavailable, renamed: "reloadLayout(_:scrollPosition:completion:)")

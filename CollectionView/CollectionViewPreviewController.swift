@@ -306,7 +306,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         
         self.overlay.alphaValue = 0
         
-        controller.addChildViewController(self)
+        controller.addChild(self)
         controller.view.addSubview(self.view)
         if let config = self.layoutConstraintConfiguration {
             config(controller, self)
@@ -338,7 +338,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         DispatchQueue.main.async {
             NSAnimationContext.runAnimationGroup({ [unowned self] (context) -> Void in
                 context.duration = self.transitionDuration
-                context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                context.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                 context.allowsImplicitAnimation = true
                 
                 trans?.transition(fromItemAt: indexPath, in: sourceCollectionView, to: attrs)
@@ -380,7 +380,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
                 
                 NSAnimationContext.runAnimationGroup({ (context) in
                     context.duration = self.transitionDuration
-                    context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                    context.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                     context.allowsImplicitAnimation = true
                     
                     trans?.transition(toItemAt: ip, in: sourceCV)
@@ -389,12 +389,12 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
                     completion?(true)
                     trans?.finishTransition(toItemAt: ip, in: sourceCV)
                     self.view.removeFromSuperview()
-                    self.removeFromParentViewController()
+                    self.removeFromParent()
                 }
             }
         }
         else {
-            self.removeFromParentViewController()
+            self.removeFromParent()
             self.view.removeFromSuperview()
             completion?(true)
         }

@@ -31,8 +31,6 @@ class WindowController: NSWindowController {
         let moc = AppDelegate.current.managedObjectContext
         let parents = (try! moc.fetch(Parent.fetchRequest()) as! [Parent]).shuffled()
         var children = (try! moc.fetch(Child.fetchRequest()) as! [Child]).shuffled()
-        let _children = children
-        
         if children.count > 0 {
             let removed = children.sample(0.2)
             for del in removed {
@@ -78,7 +76,7 @@ class WindowController: NSWindowController {
     
     @IBAction func groupSelectorChanged(_ sender: NSSegmentedControl) {
         
-        var layout: BaseController.Layout = {
+        let layout: BaseController.Layout = {
             let idx = (self.window?.toolbar?.items[0].view as? NSSegmentedControl)?.selectedSegment ?? 0
             switch idx {
             case 1: return .flow
@@ -145,7 +143,7 @@ class BaseController: CollectionViewController, CollectionViewDelegateFlowLayout
         collectionView.collectionViewLayout = listLayout
         
         // The default way of registering cells
-        collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!, forCellWithReuseIdentifier: "GridCell")
+        collectionView.register(nib: NSNib(nibNamed: "GridCell", bundle: nil)!, forCellWithReuseIdentifier: "GridCell")
         
         // A shortcut way to register cells
         collectionView.register(class: ListCell.self,

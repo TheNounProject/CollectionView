@@ -55,7 +55,7 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
             self.insert(e.1, for: e.0)
         }
     }
-    public init(_ dictionary: Dictionary<Index, Value>) {
+    public init(_ dictionary: [Index: Value]) {
         for e in dictionary {
             self.insert(e.1, for: e.0)
         }

@@ -210,7 +210,7 @@ open class ClipView: NSClipView {
         
           //.postNotificationName(NSScrollViewDidLiveScrollNotification, object: self, userInfo: nil)
         
-        if fabs(o.x - lastOrigin.x) < 0.1 && fabs(o.y - lastOrigin.y) < 0.1 {
+        if abs(o.x - lastOrigin.x) < 0.1 && abs(o.y - lastOrigin.y) < 0.1 {
             self.endScrolling()
             
             // Make sure we always finish out the animation with the actual coordinates

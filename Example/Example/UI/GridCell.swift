@@ -50,7 +50,7 @@ class GridCell: CollectionViewPreviewCell {
     }
     
     override class func register(in collectionView: CollectionView) {
-        collectionView.register(nib: NSNib(nibNamed: NSNib.Name(rawValue: "GridCell"), bundle: nil)!,
+        collectionView.register(nib: NSNib(nibNamed: "GridCell", bundle: nil)!,
                                 forCellWithReuseIdentifier: self.defaultReuseIdentifier)
     }
     

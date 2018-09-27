@@ -651,7 +651,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
                 // absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
             }
         }
-        
         // TODO: Get removed items from pending updates and adjust them
         if sizeChanged {
             if scrollPosition != .none, let ip = self._topIP,
@@ -2518,8 +2517,8 @@ open class CollectionView: ScrollView, NSDraggingSource {
         if let operation = self.interactionDelegate?.collectionView?(self, dragUpdated: sender) {
             return operation
         }
-        self.autoScroll(to: sender.draggingLocation())
-        return sender.draggingSourceOperationMask()
+        self.autoScroll(to: sender.draggingLocation)
+        return sender.draggingSourceOperationMask
     }
     open override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         self.isDragging = false

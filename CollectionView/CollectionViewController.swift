@@ -7,7 +7,7 @@
 //
 
 import Foundation
-
+import AppKit
 /**
  The UICollectionViewController class represents a view controller whose content consists of a collection view.
 */

@@ -542,6 +542,8 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
+    
+    /// A Boolean value indicating whether the collection view layout should be reloaded on the next view layout. `needsLayout` is also if needed.
     open var needsLayoutReload: Bool = false {
         didSet {
             if needsLayoutReload { self.needsLayout = true }
@@ -559,7 +561,8 @@ open class CollectionView: ScrollView, NSDraggingSource {
             doLayoutPrep()
             setContentViewSize()
             
-            if let ip = _topIP {
+            // Don't pin when implicitly reloading
+            if !self.needsLayoutReload, let ip = _topIP {
                 self._scrollItem(at: ip, to: .leading, animated: false, prepare: false, completion: nil)
             }
             self.reflectScrolledClipView(self.clipView!)

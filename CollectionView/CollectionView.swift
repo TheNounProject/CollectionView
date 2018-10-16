@@ -694,7 +694,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
     /// Returns the current velocity of a scroll in points/second
     public private(set) var scrollVelocity = CGPoint.zero
     
-    
     /// Returns the peak valocity of a scroll during the last scrolling session
     ///
     /// ## Example Usage
@@ -1580,7 +1579,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
-
     /// Returns if the item at a given index path is selected
     ///
     /// - Parameter indexPath: The index path of the item to check

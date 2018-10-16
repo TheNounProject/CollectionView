@@ -19,7 +19,6 @@ open class CollectionViewLayout: NSObject {
     /// The direction that the collection view should scroll
     open var scrollDirection: CollectionViewScrollDirection { return .vertical }
     
-    
     private func overrideWarning(_ function: String = #function) {
         Swift.print("WARNING: CollectionViewLayout \(function) should be overridden in a subclass. Missing in \(type(of: self)). Make sure super is not called too.")
     }

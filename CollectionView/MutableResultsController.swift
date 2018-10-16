@@ -572,6 +572,12 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         delegate?.controllerDidChangeContent(controller: self)
         self._sectionsCopy = nil
     }
+    
+    @available(*, unavailable, message: "This functionality has been replaced with CollectionViewProvider.")
+    public var hasEmptyPlaceholder: Bool = false
+    
+    @available(*, unavailable, message: "This functionality has been replaced with CollectionViewProvider.")
+    public private(set) var placeholderChanges: CollectionViewProvider?
 }
 
 extension MutableResultsController where Section: AnyObject {
@@ -735,13 +741,4 @@ extension MutableResultsController where Element: AnyObject {
         }
         self._editingContext.objectChanges.updated(object, at: tempIP)
     }
-}
-
-
-public extension MutableResultsController {
-    @available(*, unavailable, message: "This functionality has been replaced with CollectionViewProvider.")
-    public var hasEmptyPlaceholder: Bool = false
-    
-    @available(*, unavailable, message: "This functionality has been replaced with CollectionViewProvider.")
-    public private(set) var placeholderChanges: CollectionViewProvider?
 }

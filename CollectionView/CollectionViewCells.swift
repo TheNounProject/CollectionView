@@ -58,7 +58,6 @@ open class CollectionReusableView: NSView {
     /// The background color of the cell
     open var backgroundColor: NSColor? { didSet { self.needsDisplay = true }}
     
-    
     /// Applies the specified layout attributes to the view.
     ///
     /// - Parameter layoutAttributes: The layout attributes to apply

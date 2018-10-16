@@ -193,8 +193,7 @@ public struct EditDistance<T: Collection> where T.Iterator.Element: Hashable, T.
 }
 
 extension EditDistance: CustomStringConvertible {
-    
-    // TODO: This is really not performant, take out after dev
+    // This is really not performant
     public var description: String {
         var str = "ChangeSet<\(Element.self)> ["
         var other = self

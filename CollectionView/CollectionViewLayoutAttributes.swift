@@ -8,9 +8,7 @@
 
 import Foundation
 
-/**
- An UICollectionViewLayoutAttributes object manages the layout-related attributes for a given item in a collection view. Layout objects create instances of this class when asked to do so by the collection view. In turn, the collection view uses the layout information to position cells and supplementary views inside its bounds.
-*/
+/// An UICollectionViewLayoutAttributes object manages the layout-related attributes for a given item in a collection view. Layout objects create instances of this class when asked to do so by the collection view. In turn, the collection view uses the layout information to position cells and supplementary views inside its bounds.
 public class CollectionViewLayoutAttributes: CustomStringConvertible {
     
     // MARK: - Identifying the Referenced Item
@@ -62,13 +60,9 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
     // MARK: - Creating Layout Attributes
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     Creates and returns a layout attributes object that represents a cell with the specified index path.
-
-     - Parameter indexPath: The index path of the cell.
-
-    */
-    
+    /// Creates and returns a layout attributes object that represents a cell with the specified index path.
+    ///
+    /// - Parameter indexPath: The index path of the cell.
     public init(forCellWith indexPath: IndexPath) {
         self.representedElementCategory = .cell
         self.representedElementKind = nil
@@ -76,13 +70,10 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
         self.indexPath = indexPath
     }
     
-    /**
-     Creates and returns a layout attributes object that represents the specified supplementary view.
-
-     - Parameter elementKind: A string that identifies the type of supplementary view.
-     - Parameter indexPath: The index path of the view.
-
-    */
+    /// Creates and returns a layout attributes object that represents the specified supplementary view.
+    ///
+    /// - Parameter elementKind: A string that identifies the type of supplementary view.
+    /// - Parameter indexPath: The index path of the view.
     public init(forSupplementaryViewOfKind elementKind: String, with indexPath: IndexPath) {
         self.representedElementCategory = .supplementaryView
         self.representedElementKind = elementKind
@@ -100,13 +91,11 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
         return str
     }
     
-    /**
-     Create a copy of the layout attributes
-
-     - Returns: An initialized object with the same attributes
-     
-     - Note: A CollectionViewLayout should copy attributes when returning them
-    */
+    /// Create a copy of the layout attributes
+    ///
+    /// - Returns: An initialized object with the same attributes
+    ///
+    /// - Note: A CollectionViewLayout should copy attributes when returning them
     public func copy() -> CollectionViewLayoutAttributes {
         var attrs: CollectionViewLayoutAttributes!
         if self.representedElementCategory == .cell {

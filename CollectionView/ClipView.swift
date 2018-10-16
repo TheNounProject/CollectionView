@@ -9,10 +9,7 @@
 //import Foundation
 import AppKit
 
-//typealias DisplayLinkCallback = @convention(block) ( CVDisplayLink!, UnsafePointer<CVTimeStamp>, UnsafePointer<CVTimeStamp>, CVOptionFlags, UnsafeMutablePointer<CVOptionFlags>, UnsafeMutablePointer<Void>)->Void
-
 open class ClipView: NSClipView {
-    
     static let DefaultDecelerationRate: CGFloat = 0.78
     
     var shouldAnimateOriginChange = false
@@ -21,9 +18,7 @@ open class ClipView: NSClipView {
     
     var scrollEnabled: Bool = true
     
-    /**
-     The rate of deceleration for animated scrolls. Higher is slower. default is 0.78
-    */
+    /// The rate of deceleration for animated scrolls. Higher is slower. default is 0.78
     public var decelerationRate = DefaultDecelerationRate {
         didSet {
             if decelerationRate > 1 { self.decelerationRate = 1 }
@@ -100,7 +95,6 @@ open class ClipView: NSClipView {
     }
     
     @objc func updateCVDisplay(_ note: Notification) {
-        
         guard self._displayLink != nil else { return }
         
         if let screen = self.window?.screen {
@@ -115,9 +109,7 @@ open class ClipView: NSClipView {
     }
     
     var manualScroll = false
-
     @discardableResult open func scrollRectToVisible(_ rect: CGRect, animated: Bool, completion: AnimationCompletion? = nil) -> Bool {
-        
         manualScroll = false
         shouldAnimateOriginChange = animated
         if animated == false {
@@ -158,10 +150,6 @@ open class ClipView: NSClipView {
             
             super.scroll(to: newOrigin)
             self.cancelScrollAnimation()
-            // Can't remember why this is here, it may be to cleanup if needed
-//            if self._displayLink != nil && !manualScroll {
-//                self.endScrolling()
-//            }
         }
     }
     
@@ -170,7 +158,6 @@ open class ClipView: NSClipView {
     }
     
     func updateOrigin() {
-        
         var o = CGPoint.zero
         var integral = false
         var cancel = false
@@ -208,11 +195,8 @@ open class ClipView: NSClipView {
             NotificationCenter.default.post(name: NSScrollView.didLiveScrollNotification, object: self.scrollView)
         }
         
-          //.postNotificationName(NSScrollViewDidLiveScrollNotification, object: self, userInfo: nil)
-        
-        if fabs(o.x - lastOrigin.x) < 0.1 && fabs(o.y - lastOrigin.y) < 0.1 {
+        if abs(o.x - lastOrigin.x) < 0.1 && abs(o.y - lastOrigin.y) < 0.1 {
             self.endScrolling()
-            
             // Make sure we always finish out the animation with the actual coordinates
             DispatchQueue.main.async(execute: { 
                 super.scroll(to: self.destinationOrigin)

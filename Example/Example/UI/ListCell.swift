@@ -43,7 +43,7 @@ class ListCell: CollectionViewCell {
         label.isEditable = false
         label.isSelectable = false
         label.isBordered = false
-        label.lineBreakMode = NSParagraphStyle.LineBreakMode.byTruncatingTail
+        label.lineBreakMode = NSLineBreakMode.byTruncatingTail
         return label
     }()
     
@@ -130,7 +130,7 @@ class ListCell: CollectionViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.drawsBackground = false
         titleLabel.backgroundColor = NSColor.clear
-        titleLabel.lineBreakMode = NSParagraphStyle.LineBreakMode.byTruncatingTail
+        titleLabel.lineBreakMode = NSLineBreakMode.byTruncatingTail
         titleLabel.isEditable = false
         titleLabel.isBordered = false
         titleLabel.isSelectable = false

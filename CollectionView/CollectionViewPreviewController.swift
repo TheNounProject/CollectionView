@@ -8,43 +8,32 @@
 
 import Foundation
 
-/**
- a CollectionViewPreviewControllerDelegate is responsible for providing data to a CollectionViewPreviewController.
-*/
+/// a CollectionViewPreviewControllerDelegate is responsible for providing data to a CollectionViewPreviewController.
 public protocol CollectionViewPreviewControllerDelegate: class {
     
-    /**
-     Asks the delegate for a cell to use to preview the item at indexPath
-     
-     CollectionViewPreviewCell provides a basic implementation of transitions and can be subclasses for custom transitions from and back to the source.
-
-     - Parameter controller: The controller requesting the cell
-     - Parameter indexPath: The indexpath of the item to represent
-     
-     - Returns: A collection view cell
-
-    */
+    /// Asks the delegate for a cell to use to preview the item at indexPath
+    ///
+    /// CollectionViewPreviewCell provides a basic implementation of transitions and can be subclasses for custom transitions from and back to the source.
+    ///
+    /// - Parameter controller: The controller requesting the cell
+    /// - Parameter indexPath: The indexpath of the item to represent
+    ///
+    /// - Returns: A collection view cell
     func collectionViewPreviewController(_ controller: CollectionViewPreviewController, cellForItemAt indexPath: IndexPath) -> CollectionViewCell
     
-    /**
-     Asks the delegate if the item at the specified index path should be included in the preview.
-     
-     If false, under the default usage the preview collection view will not attempt to render a cell for the item. You can safely assume that collectionViewPreviewController(_:cellForItemAt:) will not be called for these items.
-
-     - Parameter controller: The controller requesting the information
-     - Parameter indexPath: The index path of the item
-     
-     - Returns: True if the item can be previewed, false if not.
-
-    */
+    /// Asks the delegate if the item at the specified index path should be included in the preview.
+    ///
+    /// If false, under the default usage the preview collection view will not attempt to render a cell for the item. You can safely assume that collectionViewPreviewController(_:cellForItemAt:) will not be called for these items.
+    ///
+    /// - Parameter controller: The controller requesting the information
+    /// - Parameter indexPath: The index path of the item
+    ///
+    /// - Returns: True if the item can be previewed, false if not.
     func collectionViewPreviewController(_ controller: CollectionViewPreviewController, canPreviewItemAt indexPath: IndexPath) -> Bool
     
-    /**
-     <#Description#>
-
-     - Parameter controller: <#controller description#>
-
-    */
+    /// Notifies the delegate that the preview controller will dismiss
+    ///
+    /// - Parameter controller:
     func collectionViewPreviewControllerWillDismiss(_ controller: CollectionViewPreviewController)
     
     func collectionViewPreview(_ controller: CollectionViewPreviewController, didMoveToItemAt indexPath: IndexPath)
@@ -141,9 +130,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     // MARK: - Delegate
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     A delegate to provide data
-    */
+    /// A delegate to provide data
     open weak var delegate: CollectionViewPreviewControllerDelegate?
     
     open override func loadView() {
@@ -166,9 +153,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     
     // MARK: - Styling
     /*-------------------------------------------------------------------------------*/
-    /**
-     The background color of the view when the items are displayed
-    */
+    /// The background color of the view when the items are displayed
     open var backgroundColor: NSColor = NSColor.white {  didSet { overlay.backgroundColor = backgroundColor }}
     
     private var overlay = BackgroundView(color: NSColor.white)
@@ -230,7 +215,6 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     
     open override func keyUp(with event: NSEvent) {
         self.interpretKeyEvents([event])
-//        super.keyUp(with: event)
     }
     open override func cancelOperation(_ sender: Any?) {
         self.dismiss(animated: true)
@@ -271,28 +255,23 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     
     public var layoutConstraintConfiguration : ((_ container: NSViewController, _ controller: CollectionViewPreviewController) -> Void)?
     
-    /**
-     The duration of present/dismiss transitions
-     */
+    /// The duration of present/dismiss transitions
     open var transitionDuration: TimeInterval = 0.25
     
-    /**
-     Present the preview controller, transitioning from an item at indexPath in the source collectionView
-     
-     **Data Source**
-     
-     The DataSource of the preview collection view will the same as the provided source collection view.
-     
-     **Excluding items from preview**
-     
-     Because the preview collection view must share a data source with it's source, it can be useful to keep some items displayed in the source from being previewed. See `collectionViewPreviewController(_:canPreviewItemAt:)` in CollectionViewPreviewControllerDelegate
-
-     - Parameter controller: The ViewController to present in
-     - Parameter sourceCollectionView: A collectionView to transition from
-     - Parameter indexPath: The index path of the item to transition with
-     - Parameter completion: A block to call when the transition is complete
-
-    */
+    /// Present the preview controller, transitioning from an item at indexPath in the source collectionView
+    ///
+    /// **Data Source**
+    ///
+    /// The DataSource of the preview collection view will the same as the provided source collection view.
+    ///
+    /// **Excluding items from preview**
+    ///
+    /// Because the preview collection view must share a data source with it's source, it can be useful to keep some items displayed in the source from being previewed. See `collectionViewPreviewController(_:canPreviewItemAt:)` in CollectionViewPreviewControllerDelegate
+    ///
+    /// - Parameter controller: The ViewController to present in
+    /// - Parameter sourceCollectionView: A collectionView to transition from
+    /// - Parameter indexPath: The index path of the item to transition with
+    /// - Parameter completion: A block to call when the transition is complete
     open func present(in controller: NSViewController, source sourceCollectionView: CollectionView, indexPath: IndexPath, completion: AnimationCompletion? = nil) {
         
         self.delegate = sourceCollectionView.delegate as? CollectionViewPreviewControllerDelegate
@@ -306,7 +285,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         
         self.overlay.alphaValue = 0
         
-        controller.addChildViewController(self)
+        controller.addChild(self)
         controller.view.addSubview(self.view)
         if let config = self.layoutConstraintConfiguration {
             config(controller, self)
@@ -338,7 +317,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         DispatchQueue.main.async {
             NSAnimationContext.runAnimationGroup({ [unowned self] (context) -> Void in
                 context.duration = self.transitionDuration
-                context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                context.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                 context.allowsImplicitAnimation = true
                 
                 trans?.transition(fromItemAt: indexPath, in: sourceCollectionView, to: attrs)
@@ -352,13 +331,10 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         self.view.window?.makeFirstResponder(self.collectionView)
     }
     
-    /**
-     Dismiss the preview controller, transitioning the current item back to its source
-
-     - Parameter animated: If the dismiss should be animated
-     - Parameter completion: A block to call when the tranision is complete
-
-    */
+    /// Dismiss the preview controller, transitioning the current item back to its source
+    ///
+    /// - Parameter animated: If the dismiss should be animated
+    /// - Parameter completion: A block to call when the tranision is complete
     open func dismiss(animated: Bool, completion: AnimationCompletion? = nil) {
         self.delegate?.collectionViewPreviewControllerWillDismiss(self)
         self.stopEventMonitor()
@@ -373,14 +349,13 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         
         if animated, let sourceCV = self.sourceCollectionView, !ips.isEmpty {
             for ip in ips {
-                
                 let cell = self.collectionView.cellForItem(at: ip)
                 let trans = cell as? CollectionViewPreviewTransitionCell
                 trans?.prepareForTransition(toItemAt: ip, in: sourceCV)
                 
                 NSAnimationContext.runAnimationGroup({ (context) in
                     context.duration = self.transitionDuration
-                    context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                    context.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                     context.allowsImplicitAnimation = true
                     
                     trans?.transition(toItemAt: ip, in: sourceCV)
@@ -389,12 +364,12 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
                     completion?(true)
                     trans?.finishTransition(toItemAt: ip, in: sourceCV)
                     self.view.removeFromSuperview()
-                    self.removeFromParentViewController()
+                    self.removeFromParent()
                 }
             }
         }
         else {
-            self.removeFromParentViewController()
+            self.removeFromParent()
             self.view.removeFromSuperview()
             completion?(true)
         }
@@ -426,7 +401,6 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     
     // MARK: - Interactive Gesture
     /*-------------------------------------------------------------------------------*/
-    
     public var interactiveGestureEnabled: Bool {
         set { self.view.acceptsTouchEvents = newValue }
         get { return self.view.acceptsTouchEvents }
@@ -434,7 +408,6 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     open override func wantsScrollEventsForSwipeTracking(on axis: NSEvent.GestureAxis) -> Bool {
         return true
     }
-    
     open override func wantsForwardedScrollEvents(for axis: NSEvent.GestureAxis) -> Bool {
         return true
     }
@@ -475,5 +448,4 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
             }
         }
     }
-    
 }

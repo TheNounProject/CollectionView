@@ -145,11 +145,9 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     
     private var _fetched: Bool = false
     
-    /**
-     Performs the provided fetch request to populate the controller. Calling again resets the controller.
-     
-     - Throws: If the fetch request is invalid or the fetch fails
-     */
+    /// Performs the provided fetch request to populate the controller. Calling again resets the controller.
+    ///
+    /// - Throws: If the fetch request is invalid or the fetch fails
     public func performFetch() throws {
         
         self._sections.removeAll()

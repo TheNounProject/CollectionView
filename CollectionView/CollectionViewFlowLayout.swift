@@ -8,57 +8,45 @@
 
 import Foundation
 
-/**
- CollectionViewDelegateFlowLayout
-*/
-
+/// CollectionViewDelegateFlowLayout
 public protocol CollectionViewDelegateFlowLayout {
     
     // MARK: - Element Size
     /*-------------------------------------------------------------------------------*/
-    /**
-     Asks the delegate for the layout style for the item at the specified index path
-
-     - Parameter collectionView: The collection view requesting the information
-     - Parameter gridLayout: The layout
-     - Parameter indexPath: The index path of the item to style
-     
-     - Returns: A style to apply to the item
-
-    */
+    
+    /// Asks the delegate for the layout style for the item at the specified index path
+    ///
+    /// - Parameter collectionView: The collection view requesting the information
+    /// - Parameter gridLayout: The layout
+    /// - Parameter indexPath: The index path of the item to style
+    ///
+    /// - Returns: A style to apply to the item
     func collectionView(_ collectionView: CollectionView,
                         flowLayout: CollectionViewFlowLayout,
                         styleForItemAt indexPath: IndexPath) -> CollectionViewFlowLayout.ItemStyle
     
-    /**
-     Asks the delegate for the height of the header view in a specified section
-     
-     Return 0 for no header view
-
-     - Parameter collectionView: The collection view requesting the information
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: The section affected by this height
-     
-     - Returns: The height to apply to the header view in the specified section
-     
-     */
+    /// Asks the delegate for the height of the header view in a specified section
+    ///
+    /// Return 0 for no header view
+    ///
+    /// - Parameter collectionView: The collection view requesting the information
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: The section affected by this height
+    ///
+    /// - Returns: The height to apply to the header view in the specified section
     func collectionView (_ collectionView: CollectionView,
                          flowLayout collectionViewLayout: CollectionViewFlowLayout,
                          heightForHeaderInSection section: Int) -> CGFloat
     
-    /**
-     Asks the delegate for the height of the footer view in a specified section
-     
-     Return 0 for no footer view
-
-     - Parameter collectionView: The collection view requesting the information
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: The section affected by this height
-     
-     - Returns: The height to apply to the header view in the specified section
-
-     */
-    
+    /// Asks the delegate for the height of the footer view in a specified section
+    ///
+    /// Return 0 for no footer view
+    ///
+    /// - Parameter collectionView: The collection view requesting the information
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: The section affected by this height
+    ///
+    /// - Returns: The height to apply to the header view in the specified section
     func collectionView (_ collectionView: CollectionView,
                          flowLayout collectionViewLayout: CollectionViewFlowLayout,
                          heightForFooterInSection section: Int) -> CGFloat
@@ -66,30 +54,24 @@ public protocol CollectionViewDelegateFlowLayout {
     // MARK: - Insets & Transforms
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     Asks the delegate for the insets for the content of the specified index path
-
-     - Parameter collectionView: The collection view requesting the information
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: Thhe section that the return value will be applied to
-     
-     - Returns: Edge insets for the specified section
-
-    */
+    /// Asks the delegate for the insets for the content of the specified index path
+    ///
+    /// - Parameter collectionView: The collection view requesting the information
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: Thhe section that the return value will be applied to
+    ///
+    /// - Returns: Edge insets for the specified section
     func collectionView (_ collectionView: CollectionView,
                          flowLayout collectionViewLayout: CollectionViewFlowLayout,
                          insetsForSectionAt section: Int) -> NSEdgeInsets
     
-    /**
-     Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none
-     
-     - Parameter collectionView: The collection requesting the information
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: The section to transform
-     
-     - Returns: The type of row transform to apply
-     
-     */
+    /// Asks the delegate for a transform to apply to the content in each row the specified section, defaults to .none
+    ///
+    /// - Parameter collectionView: The collection requesting the information
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: The section to transform
+    ///
+    /// - Returns: The type of row transform to apply
     func collectionView (_ collectionView: CollectionView,
                          flowLayout collectionViewLayout: CollectionViewFlowLayout,
                          rowTransformForSectionAt section: Int) -> CollectionViewFlowLayout.RowTransform
@@ -218,9 +200,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         case fill(CGFloat)
     }
     
-    /**
-     Styles for CollectionViewFlowLayout
-     */
+    /// Styles for CollectionViewFlowLayout
     public enum ItemStyle {
         /// Flow items with like other surrounding like-sized items
         case flow(CGSize)
@@ -515,7 +495,6 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
     
     // MARK: - Query Content
     /*-------------------------------------------------------------------------------*/
-    
     override open func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         return itemAttributes(in: rect) { return $0.indexPath }
     }

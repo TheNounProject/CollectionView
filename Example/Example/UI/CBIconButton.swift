@@ -16,10 +16,10 @@ public extension CAShapeLayer {
         anim.duration = duration
         anim.fromValue = self.presentation()?.value(forKeyPath: "path")
         anim.toValue = path
-        anim.fillMode = kCAFillModeBoth
+        anim.fillMode = CAMediaTimingFillMode.both
         anim.isAdditive = true
         anim.isRemovedOnCompletion = false
-        anim.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        anim.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
         self.add(anim, forKey: "animatePath")
     }
     
@@ -30,10 +30,10 @@ public extension CAShapeLayer {
             anim.duration = duration
             anim.fromValue = self.presentation()?.value(forKeyPath: "path")
             anim.toValue = path
-            anim.fillMode = kCAFillModeBoth
+            anim.fillMode = CAMediaTimingFillMode.both
             anim.isAdditive = true
             anim.isRemovedOnCompletion = false
-            anim.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+            anim.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
             self.add(anim, forKey: "animatePath")
         }
         else {
@@ -173,7 +173,7 @@ open class IconLayer: CALayer {
         for bar in [bar1, bar2, bar3] {
             bar.lineWidth = barWidth
             bar.fillColor = nil
-            bar.lineCap = kCALineCapRound
+            bar.lineCap = CAShapeLayerLineCap.round
             bar.strokeColor = self.tintColor.cgColor
             self.addSublayer(bar)
         }
@@ -391,7 +391,7 @@ open class IconLayer: CALayer {
             bar3.path = p3
         }
         for bar in [bar1, bar2, bar3] {
-            bar.lineCap = kCALineCapRound
+            bar.lineCap = CAShapeLayerLineCap.round
         }
     }
     
@@ -444,7 +444,7 @@ open class IconLayer: CALayer {
         }
         path.move(to: pt1)
         path.line(to: pt2)
-        path.lineCapStyle = NSBezierPath.LineCapStyle.roundLineCapStyle
+        path.lineCapStyle = NSBezierPath.LineCapStyle.round
         return path.toCGPath()!
     }
     
@@ -462,32 +462,25 @@ extension NSBezierPath {
         for i in 0...self.elementCount-1 {
             var points = [NSPoint](repeating: NSPoint.zero, count: 3)
             switch self.element(at: i, associatedPoints: &points) {
-            case .moveToBezierPathElement:
-                if !points[0].x.isNaN && !points[0].x.isNaN {
-                    path.move(to: CGPoint(x: points[0].x, y: points[0].y))
-                }
-            case .lineToBezierPathElement:
-                if !points[0].x.isNaN && !points[0].x.isNaN {
-                    path.addLine(to: CGPoint(x: points[0].x, y: points[0].y))
-                }
-            case .curveToBezierPathElement:
-                if !points[0].x.isNaN && !points[0].x.isNaN
-                    && !points[1].x.isNaN && !points[1].x.isNaN
-                    && !points[2].x.isNaN && !points[2].x.isNaN {
-                    
-                    path.addCurve(to: CGPoint(x: points[0].x, y: points[0].y),
-                                  control1: CGPoint(x: points[1].x, y: points[1].y),
-                                  control2: CGPoint(x: points[2].x, y: points[2].y))
-                }
-            case .closePathBezierPathElement:path.closeSubpath()
-            didClosePath = true
+            case .moveTo where !points[0].x.isNaN && !points[0].x.isNaN:
+                path.move(to: CGPoint(x: points[0].x, y: points[0].y))
+            case .lineTo where !points[0].x.isNaN && !points[0].x.isNaN:
+                path.addLine(to: CGPoint(x: points[0].x, y: points[0].y))
+            case .curveTo where !points[0].x.isNaN && !points[0].x.isNaN
+                && !points[1].x.isNaN && !points[1].x.isNaN
+                && !points[2].x.isNaN && !points[2].x.isNaN:
+                path.addCurve(to: CGPoint(x: points[0].x, y: points[0].y),
+                              control1: CGPoint(x: points[1].x, y: points[1].y),
+                              control2: CGPoint(x: points[2].x, y: points[2].y))
+            case .closePath:
+                path.closeSubpath()
+                didClosePath = true
+            default: break
             }
         }
-        
         if !didClosePath && !path.isEmpty {
             path.closeSubpath()
         }
-        
         return path.copy()
     }
 }
@@ -623,8 +616,8 @@ class ButtonCell: NSButtonCell {
         
         let t = NSMutableAttributedString(attributedString: self.attributedTitle)
         let range = NSRange(location: 0, length: t.length)
-        t.removeAttribute(NSAttributedStringKey.foregroundColor, range: range)
-        t.addAttribute(NSAttributedStringKey.foregroundColor, value: tColor!, range: range)
+        t.removeAttribute(NSAttributedString.Key.foregroundColor, range: range)
+        t.addAttribute(NSAttributedString.Key.foregroundColor, value: tColor!, range: range)
         self.attributedTitle = t
     }
     

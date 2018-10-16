@@ -2,7 +2,7 @@
   "module": "CollectionView",
   "skip_undocumented": true,
   "clean": true,
-  "theme": "fullwidth",
+  "theme": "jony",
   "min_acl": "public",
   "author": "Noun Project",
   "readme": "./README.md",

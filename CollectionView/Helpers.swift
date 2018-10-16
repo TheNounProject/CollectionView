@@ -44,22 +44,17 @@ struct Logger {
 
 typealias log = Logger
 
-/**
- Provides support for OSX < 10.11 and provides some helpful additions
-*/
+/// Provides support for OSX < 10.11 and provides some helpful additions
 public extension IndexPath {
 
-    /**
-     Create an index path with a given item and section
-     
-     - Parameter item: An item
-     - Parameter section: A section
-
-     - Returns: An initialized index path with the item and section
-     
-     - Note: item and section must be >= 0
-
-    */
+    /// Create an index path with a given item and section
+    ///
+    /// - Parameter item: An item
+    /// - Parameter section: A section
+    ///
+    /// - Returns: An initialized index path with the item and section
+    ///
+    /// - Note: item and section must be >= 0
     public static func `for`(item: Int = 0, section: Int) -> IndexPath {
         precondition(item >= 0, "Attempt to create an indexPath with negative item")
         precondition(section >= 0, "Attempt to create an indexPath with negative section")
@@ -68,14 +63,10 @@ public extension IndexPath {
     
     public static var zero: IndexPath { return IndexPath.for(item: 0, section: 0) }
     
-    /**
-     Returns the item of the index path
-    */
+    /// Returns the item of the index path
     public var _item: Int { return self[1] }
     
-    /**
-     Returns the section of the index path
-     */
+    /// Returns the section of the index path
     public var _section: Int { return self[0] }
     public static func inRange(_ range: CountableRange<Int>, section: Int) -> [IndexPath] {
         var ips = [IndexPath]()
@@ -151,13 +142,11 @@ extension Set {
         return self.removeFirst()
     }
     
-    /**
-     Remove elements shared by both sets, returning the removed items
-     
-     - parameter set: The set of elements to remove from the receiver
-     - returns: A new set of removed elements
-     */
-     @discardableResult mutating func remove<C: Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
+    /// Remove elements shared by both sets, returning the removed items
+    ///
+    /// - parameter set: The set of elements to remove from the receiver
+    /// - returns: A new set of removed elements
+    @discardableResult mutating func remove<C: Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
         var removed = Set(minimumCapacity: self.count)
         for item in set {
             if let r = self.remove(item) {
@@ -167,12 +156,10 @@ extension Set {
         return removed
     }
     
-    /**
-     Create a new set by removing the elements shared by both sets
-     
-     - parameter set: The set of elements to remove from the receiver
-     - returns: A new set with the shared elements removed
-     */
+    /// Create a new set by removing the elements shared by both sets
+    ///
+    /// - parameter set: The set of elements to remove from the receiver
+    /// - returns: A new set with the shared elements removed
     func removing<C: Collection>(_ set: C) -> Set<Element> where C.Iterator.Element == Element {
         var copy = self
         for item in set {
@@ -183,7 +170,6 @@ extension Set {
 }
 
 extension CGPoint {
-    
     var integral: CGPoint {
         return CGPoint(x: round(self.x), y: round(self.y))
     }
@@ -261,7 +247,6 @@ extension CGRect {
         - edge: The edge to subtract along
       - Returns: The rect remaining from the target after subtracting the given rect
      */
-    
     func subtracting(_ other: CGRect, edge: CGRectEdge) -> CGRect {
         if other.contains(self) { return CGRect.zero }
         if other.isEmpty { return self }

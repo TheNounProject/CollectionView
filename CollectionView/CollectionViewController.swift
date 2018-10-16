@@ -7,10 +7,9 @@
 //
 
 import Foundation
+import AppKit
 
-/**
- The UICollectionViewController class represents a view controller whose content consists of a collection view.
-*/
+/// The UICollectionViewController class represents a view controller whose content consists of a collection view.
 open class CollectionViewController: NSViewController, CollectionViewDataSource, CollectionViewDelegate {
     
     public let collectionView = CollectionView()
@@ -38,7 +37,6 @@ open class CollectionViewController: NSViewController, CollectionViewDataSource,
     
     // MARK: - Data Source
     /*-------------------------------------------------------------------------------*/
-    
     open func numberOfSections(in collectionView: CollectionView) -> Int {
         return 0
     }
@@ -54,28 +52,21 @@ open class CollectionViewController: NSViewController, CollectionViewDataSource,
     
     // MARK: - Layout
     /*-------------------------------------------------------------------------------*/
-    /**
-     Adjust the layout constraints for the collection view
-     
-     - Parameter insets: The insets to apply to the collection view
-     
-     */
+    
+    /// Adjust the layout constraints for the collection view
+    ///
+    /// - Parameter insets: The insets to apply to the collection view
     open func adjustContentInsets(_ insets: NSEdgeInsets) {
-        
         self.adjustConstraint(.top, value: insets.top)
         self.adjustConstraint(.left, value: insets.left)
         self.adjustConstraint(.right, value: insets.right)
         self.adjustConstraint(.bottom, value: insets.bottom)
-        
     }
     
-    /**
-     Adjust the constraints for the collection view
-     
-     - Parameter attribute: The layout attribute to adjust. Must be .Top, .Right, .Bottom, or .Left
-     - Parameter value: The constant to apply to the constraint
-     
-     */
+    /// Adjust the constraints for the collection view
+    ///
+    /// - Parameter attribute: The layout attribute to adjust. Must be .Top, .Right, .Bottom, or .Left
+    /// - Parameter value: The constant to apply to the constraint
     open func adjustConstraint(_ attribute: NSLayoutConstraint.Attribute, value: CGFloat?) {
         for constraint in self.view.constraints {
             if (constraint.secondAttribute == attribute && (constraint.secondItem as? CollectionView) == collectionView)
@@ -91,5 +82,4 @@ open class CollectionViewController: NSViewController, CollectionViewDataSource,
             }
         }
     }
-    
 }

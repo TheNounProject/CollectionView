@@ -8,25 +8,21 @@
 
 import Foundation
 
-/**
- *  The delegate for CollectionViewLayout
- */
+/// The delegate for CollectionViewLayout
 @objc public protocol CollectionViewDelegateGridLayout: CollectionViewDelegate {
     
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                         numberOfColumnsInSection section: Int) -> Int
     
-    /**
-     Defined an aspect ration based on the number of columns in the grid.
-     
-     note: if an aspect ratio and height are supplied via delegate methods for the same item, height is added to the size calculated by the aspect ration. Return CGSizeZero to use a static height for a particular item.
-     
-     - parameter collectionView:       The collection view
-     - parameter collectionViewLayout: The layout asking for the dimensios
-     - parameter section:              The section to apply this aspect ratio to
-     
-     - returns: A size defining the aspect ration or the cells (width x height)
-     */
+    /// Defined an aspect ration based on the number of columns in the grid.
+    ///
+    /// note: if an aspect ratio and height are supplied via delegate methods for the same item, height is added to the size calculated by the aspect ration. Return CGSizeZero to use a static height for a particular item.
+    ///
+    /// - parameter collectionView:       The collection view
+    /// - parameter collectionViewLayout: The layout asking for the dimensios
+    /// - parameter section:              The section to apply this aspect ratio to
+    ///
+    /// - returns: A size defining the aspect ration or the cells (width x height)
     @objc optional func collectionView (_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                         aspectRatioForItemsInSection section: Int) -> CGSize
     

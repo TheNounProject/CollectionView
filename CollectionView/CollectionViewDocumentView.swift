@@ -434,7 +434,7 @@ final public class CollectionViewDocumentView: NSView {
                 var removals = [ItemUpdate]()
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in
                     context.duration = _animDuration
-                    context.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+                    context.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                     
                     for item in _updates {
                         var attrs = item.attrs

@@ -542,7 +542,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
-    
     /// A Boolean value indicating whether the collection view layout should be reloaded on the next view layout. `needsLayout` is also if needed.
     open var needsLayoutReload: Bool = false {
         didSet {

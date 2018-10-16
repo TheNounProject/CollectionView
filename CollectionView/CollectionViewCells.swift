@@ -8,9 +8,7 @@
 
 import Foundation
 
-/**
- The CollectionReusableView class defines the behavior for all cells and supplementary views presented by a collection view. Reusable views are so named because the collection view places them on a reuse queue rather than deleting them when they are scrolled out of the visible bounds. Such a view can then be retrieved and repurposed for a different set of content.
-*/
+/// The CollectionReusableView class defines the behavior for all cells and supplementary views presented by a collection view. Reusable views are so named because the collection view places them on a reuse queue rather than deleting them when they are scrolled out of the visible bounds. Such a view can then be retrieved and repurposed for a different set of content.
 open class CollectionReusableView: NSView {
     
     override public init(frame frameRect: NSRect) {
@@ -41,8 +39,8 @@ open class CollectionReusableView: NSView {
     
     /// Performs any clean up necessary to prepare the view for use again.
     override open func prepareForReuse() {
+        super.prepareForReuse()
         self.reused = true
-//        super.prepareForReuse()
     }
     
     /// Called just before the view is added to the collection view
@@ -53,14 +51,6 @@ open class CollectionReusableView: NSView {
     @available(*, unavailable, renamed: "apply(_:animated:)")
     public func applyLayoutAttributes(_ layoutAttributes: CollectionViewLayoutAttributes, animated: Bool) { }
     
-    /**
-     Applies the specified layout attributes to the view.
-
-     - Parameter layoutAttributes: The layout attributes to apply
-     - Parameter animated: If the collection view is performing an animated update while applying these attributes
-
-    */
-    
     // MARK: - Attributes
     /*-------------------------------------------------------------------------------*/
     internal var attributes: CollectionViewLayoutAttributes?
@@ -68,8 +58,12 @@ open class CollectionReusableView: NSView {
     /// The background color of the cell
     open var backgroundColor: NSColor? { didSet { self.needsDisplay = true }}
     
+    
+    /// Applies the specified layout attributes to the view.
+    ///
+    /// - Parameter layoutAttributes: The layout attributes to apply
+    /// - Parameter animated: If the collection view is performing an animated update while applying these attributes
     open func apply(_ layoutAttributes: CollectionViewLayoutAttributes, animated: Bool) {
-
         if animated {
             self.animator().frame = layoutAttributes.frame
             self.animator().alphaValue = layoutAttributes.alpha
@@ -82,12 +76,10 @@ open class CollectionReusableView: NSView {
             self.layer?.zPosition = layoutAttributes.zIndex
             self.isHidden = layoutAttributes.hidden
         }
-        
         self.attributes = layoutAttributes
     }
     
     open var useMask: Bool = false
-    
     open override func updateLayer() {
         self.layer?.backgroundColor = self.backgroundColor?.cgColor
         if useMask {
@@ -112,7 +104,6 @@ open class CollectionReusableView: NSView {
     
     // MARK: - Mouse Tracking
     /*-------------------------------------------------------------------------------*/
-    
     fileprivate var wantsTracking = false
     open var trackingOptions = [NSTrackingArea.Options.mouseEnteredAndExited,
                                 NSTrackingArea.Options.activeInKeyWindow,
@@ -154,9 +145,7 @@ open class CollectionReusableView: NSView {
     
 }
 
-/**
- A CollectionViewCell object presents the content for a single data item when that item is within the collection view’s visible bounds. You can use this class as-is or subclass it to add additional properties and methods. The layout and presentation of cells is managed by the collection view and its corresponding layout object.
-*/
+/// A CollectionViewCell object presents the content for a single data item when that item is within the collection view’s visible bounds. You can use this class as-is or subclass it to add additional properties and methods. The layout and presentation of cells is managed by the collection view and its corresponding layout object.
 open class CollectionViewCell: CollectionReusableView {
     
     open override func acceptsFirstMouse(for theEvent: NSEvent?) -> Bool { return true }
@@ -173,7 +162,6 @@ open class CollectionViewCell: CollectionReusableView {
     
     // MARK: - State
     /*-------------------------------------------------------------------------------*/
-    
     fileprivate var _selected: Bool = false
     fileprivate var _highlighted: Bool = false
     
@@ -218,7 +206,6 @@ open class CollectionViewCell: CollectionReusableView {
         guard theEvent.type == NSEvent.EventType.mouseEntered && (theEvent.trackingArea?.owner as? CollectionViewCell) == self else { return }
         
         // Make sure the event is inside self
-        
         guard self.highlighted == false else { return }
         guard let window = self.window else { return }
         let mLoc = window.convertFromScreen(NSRect(origin: NSEvent.mouseLocation, size: CGSize.zero)).origin
@@ -246,26 +233,20 @@ open class CollectionViewCell: CollectionReusableView {
     /// Provide a reuse identifier for all cells of this class, defaults to the class name
     open class var defaultReuseIdentifier: String { return self.className() }
     
-    /**
-     Register a CollectionViewCell subclass to a collection view using the class's defaultReuseIdentifier
-     
-     - Parameter collectionView: The collection view to register the class in
-     
-     */
+    /// Register a CollectionViewCell subclass to a collection view using the class's defaultReuseIdentifier
+    ///
+    /// - Parameter collectionView: The collection view to register the class in
     open class func register(in collectionView: CollectionView) {
         let id = defaultReuseIdentifier
         collectionView.register(class: self, forCellWithReuseIdentifier: id)
     }
     
-    /**
-     Deque a cell of this class from a collection view. Uses defaultReuseIdentifier
-     
-     - Parameter indexPath: The indexPath to deque the cell for
-     - Parameter collectionView: The collection view to deque the cell from
-     
-     - Returns: A valid CollectionViewCell
-     
-     */
+    /// Deque a cell of this class from a collection view. Uses defaultReuseIdentifier
+    ///
+    /// - Parameter indexPath: The indexPath to deque the cell for
+    /// - Parameter collectionView: The collection view to deque the cell from
+    ///
+    /// - Returns: A valid CollectionViewCell
     open class func deque(for indexPath: IndexPath, in collectionView: CollectionView) -> CollectionViewCell {
         return collectionView.dequeueReusableCell(withReuseIdentifier: defaultReuseIdentifier, for: indexPath)
     }

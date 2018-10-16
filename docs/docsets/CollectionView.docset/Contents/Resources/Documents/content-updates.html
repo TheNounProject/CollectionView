@@ -4,255 +4,48 @@
     <title>Content Updates  Reference</title>
     <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="css/highlight.css" />
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
+	<meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1.0" />
     <script src="js/jquery.min.js" defer></script>
     <script src="js/jazzy.js" defer></script>
     
-    <script src="js/lunr.min.js" defer></script>
-    <script src="js/typeahead.jquery.js" defer></script>
-    <script src="js/jazzy.search.js" defer></script>
   </head>
   <body>
-
-
     <a title="Content Updates  Reference"></a>
-
-    <header class="header">
-      <p class="header-col header-col--primary">
-        <a class="header-link" href="index.html">
-          CollectionView Docs
-        </a>
-         (64% documented)
-      </p>
+    <header>
+      <div class="content-wrapper">
+        <p>
+          <a href="index.html">CollectionView Docs</a>
+          <span class="no-mobile"> (63% documented)</span>
+        </p>
     
-      <p class="header-col--secondary">
-        <form role="search" action="search.json">
-          <input type="text" placeholder="Search documentation" data-typeahead>
-        </form>
-      </p>
-    
-        <p class="header-col header-col--secondary">
-          <a class="header-link" href="https://github.com/TheNounProject/CollectionView">
-            <img class="header-icon" src="img/gh.png"/>
-            View on GitHub
+        <p class="header-right">
+          <a href="https://github.com/TheNounProject/CollectionView">
+            <img src="img/gh.png"/>
+            <span class="no-mobile">View on GitHub</span>
           </a>
         </p>
     
+      </div>
     </header>
-
-    <p class="breadcrumbs">
-      <a class="breadcrumb" href="index.html">CollectionView Reference</a>
-      <img class="carat" src="img/carat.png" />
-      Content Updates  Reference
-    </p>
-
-    <div class="content-wrapper">
-      <nav class="navigation">
-        <ul class="nav-groups">
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Guides.html">Guides</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="introduction.html">Introduction</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="basic-setup.html">Basic Setup</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="supplementary-views.html">Supplementary Views</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="layouts.html">Layouts</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="drag--drop.html">Drag &amp; Drop</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="content-updates.html">Content Updates</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="results-controller.html">Results Controller</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Collection View.html">Collection View</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionView.html">CollectionView</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionView.html#/s:14CollectionViewAAC13SelectionModeO">– SelectionMode</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewCell.html">CollectionViewCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionReusableView.html">CollectionReusableView</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewController.html">CollectionViewController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Collection View.html#/s:14CollectionView0aB17LayoutElementKindV">CollectionViewLayoutElementKind</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Collection View.html#/s:14CollectionView0A15ElementCategoryO">CollectionElementCategory</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Collection View.html#/s:14CollectionView0aB9DirectionO">CollectionViewDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Collection View.html#/s:14CollectionView0aB15ScrollDirectionO">CollectionViewScrollDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Collection View.html#/s:14CollectionView0aB14ScrollPositionO">CollectionViewScrollPosition</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewPreviewCell.html">CollectionViewPreviewCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewPreviewController.html">CollectionViewPreviewController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewPreviewControllerDelegate.html">CollectionViewPreviewControllerDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Collection View.html#/s:14CollectionView19AnimationCompletiona">AnimationCompletion</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Collection View Layouts.html">Collection View Layouts</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewLayout.html">CollectionViewLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC19ItemRenderDirectionO">– ItemRenderDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout.html#/s:14CollectionView0aB10FlowLayoutC12RowTransformO">– RowTransform</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Results Controller.html">Results Controller</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/ResultsController.html">ResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/MutableResultsController.html">MutableResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/FetchedResultsController.html">FetchedResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/RelationalResultsController.html">RelationalResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/FetchedSetController.html">FetchedSetController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Results Controller.html#/s:14CollectionView27ResultsControllerChangeTypeO">ResultsControllerChangeType</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewProvider.html">CollectionViewProvider</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Classes/CollectionViewResultsProxy.html">CollectionViewResultsProxy</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Other Enums.html">Other Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Enums/SortDescriptorResult.html">SortDescriptorResult</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Other Extensions.html">Other Extensions</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Extensions/IndexPath.html">IndexPath</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Other Protocols.html">Other Protocols</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Other Protocols.html#/s:14CollectionView30CustomDisplayStringConvertibleP">CustomDisplayStringConvertible</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="Other Structs.html">Other Structures</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="Structs/SortDescriptor.html">SortDescriptor</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
-      <article class="main-content">
-
-        <section class="section">
-          <div class="section-content">
-            
-            <h1 id='insert-delete-move-and-reload' class='heading'>Insert, Delete, Move and Reload</h1>
+    <div id="breadcrumbs-container">
+      <div class="content-wrapper">
+        <p id="breadcrumbs">
+          <span class="no-mobile">
+            <a href="index.html">CollectionView Reference</a>
+            <img id="carat" src="img/carat.png" />
+          </span>
+          Content Updates  Reference
+        </p>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div class="article-wrapper">
+        <article class="main-content">
+          <section>
+            <section class="section">
+              
+              <h1 id='insert-delete-move-and-reload' class='heading'>Insert, Delete, Move and Reload</h1>
 
 <p>As data changes a collection view displaying that data will need to update as well. New content could be pulled from a remote service or the user could take an action. Collection view supports inserting, deleting, moving, and reloading sections and items.</p>
 
@@ -308,16 +101,219 @@
 
 <p>Managing these changes can be tricky to understand especially when making many changes together. This is why we create ResultsController to help connect your collection view to your data.</p>
 
-          </div>
+            </section>
+          </section>
+        </article>
+      </div>
+      <div class="nav-wrapper">
+        <nav class="nav-bottom">
+          <ul class="nav-groups">
+            <li class="nav-group-name">
+              <a href="Guides.html">Guides</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="introduction.html">Introduction</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="basic-setup.html">Basic Setup</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="supplementary-views.html">Supplementary Views</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="layouts.html">Layouts</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="drag--drop.html">Drag &amp; Drop</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="content-updates.html">Content Updates</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="results-controller.html">Results Controller</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Collection View.html">Collection View</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionView.html">CollectionView</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionView.html#/s:14CollectionViewAAC13SelectionModeO">– SelectionMode</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewCell.html">CollectionViewCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionReusableView.html">CollectionReusableView</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewController.html">CollectionViewController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Collection View.html#/s:14CollectionView0aB17LayoutElementKindV">CollectionViewLayoutElementKind</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Collection View.html#/s:14CollectionView0A15ElementCategoryO">CollectionElementCategory</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Collection View.html#/s:14CollectionView0aB9DirectionO">CollectionViewDirection</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Collection View.html#/s:14CollectionView0aB15ScrollDirectionO">CollectionViewScrollDirection</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Collection View.html#/s:14CollectionView0aB14ScrollPositionO">CollectionViewScrollPosition</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewPreviewCell.html">CollectionViewPreviewCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewPreviewController.html">CollectionViewPreviewController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewPreviewControllerDelegate.html">CollectionViewPreviewControllerDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Collection View.html#/s:14CollectionView19AnimationCompletiona">AnimationCompletion</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Collection View Layouts.html">Collection View Layouts</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewLayout.html">CollectionViewLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC0D8StrategyO">– LayoutStrategy</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewFlowLayout.html#/s:14CollectionView0aB10FlowLayoutC12RowTransformO">– RowTransform</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Results Controller.html">Results Controller</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Protocols/ResultsController.html">ResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/MutableResultsController.html">MutableResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/FetchedResultsController.html">FetchedResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/RelationalResultsController.html">RelationalResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/FetchedSetController.html">FetchedSetController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Results Controller.html#/s:14CollectionView27ResultsControllerChangeTypeO">ResultsControllerChangeType</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewProvider.html">CollectionViewProvider</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="Classes/CollectionViewResultsProxy.html">CollectionViewResultsProxy</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Other Enums.html">Other Enumerations</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Enums/SortDescriptorResult.html">SortDescriptorResult</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Other Extensions.html">Other Extensions</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Extensions/IndexPath.html">IndexPath</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Other Protocols.html">Other Protocols</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Other Protocols.html#/s:14CollectionView30CustomDisplayStringConvertibleP">CustomDisplayStringConvertible</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="Other Structs.html">Other Structures</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="Structs/SortDescriptor.html">SortDescriptor</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-wrapper">
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-10-16)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
-
-
-      </article>
+      </div>
     </div>
-    <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-04-24)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
-    </section>
   </body>
 </div>
 </html>

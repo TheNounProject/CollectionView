@@ -4,939 +4,964 @@
     <title>CollectionViewLayout Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
+	<meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1.0" />
     <script src="../js/jquery.min.js" defer></script>
     <script src="../js/jazzy.js" defer></script>
     
-    <script src="../js/lunr.min.js" defer></script>
-    <script src="../js/typeahead.jquery.js" defer></script>
-    <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-
     <a name="//apple_ref/swift/Class/CollectionViewLayout" class="dashAnchor"></a>
-
     <a title="CollectionViewLayout Class Reference"></a>
-
-    <header class="header">
-      <p class="header-col header-col--primary">
-        <a class="header-link" href="../index.html">
-          CollectionView Docs
-        </a>
-         (64% documented)
-      </p>
+    <header>
+      <div class="content-wrapper">
+        <p>
+          <a href="../index.html">CollectionView Docs</a>
+          <span class="no-mobile"> (63% documented)</span>
+        </p>
     
-      <p class="header-col--secondary">
-        <form role="search" action="../search.json">
-          <input type="text" placeholder="Search documentation" data-typeahead>
-        </form>
-      </p>
-    
-        <p class="header-col header-col--secondary">
-          <a class="header-link" href="https://github.com/TheNounProject/CollectionView">
-            <img class="header-icon" src="../img/gh.png"/>
-            View on GitHub
+        <p class="header-right">
+          <a href="https://github.com/TheNounProject/CollectionView">
+            <img src="../img/gh.png"/>
+            <span class="no-mobile">View on GitHub</span>
           </a>
         </p>
     
+      </div>
     </header>
+    <div id="breadcrumbs-container">
+      <div class="content-wrapper">
+        <p id="breadcrumbs">
+          <span class="no-mobile">
+            <a href="../index.html">CollectionView Reference</a>
+            <img id="carat" src="../img/carat.png" />
+          </span>
+          CollectionViewLayout Class Reference
+        </p>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div class="article-wrapper">
+        <article class="main-content">
+          <section>
+            <section class="section">
+              <h1>CollectionViewLayout</h1>
+                <div class="declaration">
+                  <div class="language">
+                    <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">class</span> <span class="kt">CollectionViewLayout</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
 
-    <p class="breadcrumbs">
-      <a class="breadcrumb" href="../index.html">CollectionView Reference</a>
-      <img class="carat" src="../img/carat.png" />
-      CollectionViewLayout Class Reference
-    </p>
-
-    <div class="content-wrapper">
-      <nav class="navigation">
-        <ul class="nav-groups">
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Guides.html">Guides</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../introduction.html">Introduction</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../basic-setup.html">Basic Setup</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../supplementary-views.html">Supplementary Views</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../layouts.html">Layouts</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../drag--drop.html">Drag &amp; Drop</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../content-updates.html">Content Updates</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../results-controller.html">Results Controller</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Collection View.html">Collection View</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionView.html">CollectionView</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionView.html#/s:14CollectionViewAAC13SelectionModeO">– SelectionMode</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewCell.html">CollectionViewCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionReusableView.html">CollectionReusableView</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewController.html">CollectionViewController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0aB17LayoutElementKindV">CollectionViewLayoutElementKind</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0A15ElementCategoryO">CollectionElementCategory</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0aB9DirectionO">CollectionViewDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0aB15ScrollDirectionO">CollectionViewScrollDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0aB14ScrollPositionO">CollectionViewScrollPosition</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewPreviewCell.html">CollectionViewPreviewCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewPreviewController.html">CollectionViewPreviewController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewPreviewControllerDelegate.html">CollectionViewPreviewControllerDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView19AnimationCompletiona">AnimationCompletion</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Collection View Layouts.html">Collection View Layouts</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC19ItemRenderDirectionO">– ItemRenderDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:14CollectionView0aB10FlowLayoutC12RowTransformO">– RowTransform</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Results Controller.html">Results Controller</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/ResultsController.html">ResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/MutableResultsController.html">MutableResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/RelationalResultsController.html">RelationalResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Results Controller.html#/s:14CollectionView27ResultsControllerChangeTypeO">ResultsControllerChangeType</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewProvider.html">CollectionViewProvider</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewResultsProxy.html">CollectionViewResultsProxy</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Other Enums.html">Other Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Enums/SortDescriptorResult.html">SortDescriptorResult</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Other Extensions.html">Other Extensions</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Other Protocols.html">Other Protocols</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Other Protocols.html#/s:14CollectionView30CustomDisplayStringConvertibleP">CustomDisplayStringConvertible</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Other Structs.html">Other Structures</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Structs/SortDescriptor.html">SortDescriptor</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
-      <article class="main-content">
-
-        <section class="section">
-          <div class="section-content">
-            <h1>CollectionViewLayout</h1>
-              <div class="declaration">
-                <div class="language">
-                  <pre class="highlight"><code><span class="n">open</span> <span class="kd">class</span> <span class="kt">CollectionViewLayout</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
-
+                  </div>
                 </div>
+              <p>The CollectionViewLayout class is an abstract base class that you subclass and use to generate layout information for a collection view. The job of a layout object is to determine the placement of cells, supplementary views inside the collection view’s bounds and to report that information to the collection view when asked. The collection view then applies the provided layout information to the corresponding views so that they can be presented onscreen.</p>
+
+            </section>
+            <section class="section task-group-section">
+              <div class="task-group">
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC010collectionB0A2ACSgXwvp"></a>
+                      <a name="//apple_ref/swift/Property/collectionView" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC010collectionB0A2ACSgXwvp">collectionView</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The collection view this layout has been applied to</p>
+
+<p>Set when the layout is given to a collection view&rsquo;s collectionViewLayout property</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">internal(set)</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">collectionView</span><span class="p">:</span> <span class="kt"><a href="../Classes/CollectionView.html">CollectionView</a></span><span class="p">?</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC15scrollDirectionAA0ab6ScrollE0Ovp"></a>
+                      <a name="//apple_ref/swift/Property/scrollDirection" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC15scrollDirectionAA0ab6ScrollE0Ovp">scrollDirection</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The direction that the collection view should scroll</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">scrollDirection</span><span class="p">:</span> <span class="kt"><a href="../Collection View.html#/s:14CollectionView0aB15ScrollDirectionO">CollectionViewScrollDirection</a></span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC010collectionB11ContentSizeSo6CGSizeVvp"></a>
+                      <a name="//apple_ref/swift/Property/collectionViewContentSize" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC010collectionB11ContentSizeSo6CGSizeVvp">collectionViewContentSize</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>The size that encapsulates all views within the collection view</p>
+
+<p>Note: Subclasses must override this method and use it to return the width and height of the collection view’s content. These values represent the width and height of all the content, not just the content that is currently visible. The collection view uses this information to configure its own content size to facilitate scrolling.</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">collectionViewContentSize</span><span class="p">:</span> <span class="kt">CGSize</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC15pinHeadersToTopSbvp"></a>
+                      <a name="//apple_ref/swift/Property/pinHeadersToTop" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC15pinHeadersToTopSbvp">pinHeadersToTop</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>If supporting views should be pinned to the top of the view</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="k">var</span> <span class="nv">pinHeadersToTop</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
               </div>
-            <p>The CollectionViewLayout class is an abstract base class that you subclass and use to generate layout information for a collection view. The job of a layout object is to determine the placement of cells, supplementary views inside the collection view’s bounds and to report that information to the collection view when asked. The collection view then applies the provided layout information to the corresponding views so that they can be presented onscreen.</p>
-
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="section-content">
-            <div class="task-group">
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC15scrollDirectionAA0ab6ScrollE0Ovp"></a>
-                    <a name="//apple_ref/swift/Property/scrollDirection" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC15scrollDirectionAA0ab6ScrollE0Ovp">scrollDirection</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The direction that the collection view should scroll</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="k">var</span> <span class="nv">scrollDirection</span> <span class="p">:</span> <span class="kt"><a href="../Collection View.html#/s:14CollectionView0aB15ScrollDirectionO">CollectionViewScrollDirection</a></span></code></pre>
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Layout%20Validation"></a>
+                  <a name="//apple_ref/swift/Section/Layout Validation" class="dashAnchor"></a>
+                  <a href="#/Layout%20Validation">
+                    <h3 class="section-name">Layout Validation</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC10invalidateyyF"></a>
+                      <a name="//apple_ref/swift/Method/invalidate()" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC10invalidateyyF">invalidate()</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Currently this is only called when the layout is applied to a collection view.</p>
 
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC010collectionB11ContentSizeSC6CGSizeVvp"></a>
-                    <a name="//apple_ref/swift/Property/collectionViewContentSize" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC010collectionB11ContentSizeSC6CGSizeVvp">collectionViewContentSize</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>The size that encapsulates all views within the collection view</p>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">invalidate</span><span class="p">()</span></code></pre>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="k">var</span> <span class="nv">collectionViewContentSize</span> <span class="p">:</span> <span class="kt">CGSize</span></code></pre>
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC016shouldInvalidateC015forBoundsChangeSbSo6CGRectV_tF"></a>
+                      <a name="//apple_ref/swift/Method/shouldInvalidateLayout(forBoundsChange:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC016shouldInvalidateC015forBoundsChangeSbSo6CGRectV_tF">shouldInvalidateLayout(forBoundsChange:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Asks the layout if it should be invalidated due to a bounds change on the collection view</p>
 
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC15pinHeadersToTopSbvp"></a>
-                    <a name="//apple_ref/swift/Property/pinHeadersToTop" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC15pinHeadersToTopSbvp">pinHeadersToTop</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>If supporting views should be pinned to the top of the view</p>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">shouldInvalidateLayout</span><span class="p">(</span><span class="n">forBoundsChange</span> <span class="nv">newBounds</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="k">var</span> <span class="nv">pinHeadersToTop</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span></code></pre>
-
+                          </div>
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Layout%20Validation"></a>
-                <a name="//apple_ref/swift/Section/Layout Validation" class="dashAnchor"></a>
-                <a href="#/Layout%20Validation">
-                  <h3 class="section-name">Layout Validation</h3>
-                </a>
-              </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC10invalidateyyF"></a>
-                    <a name="//apple_ref/swift/Method/invalidate()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC10invalidateyyF">invalidate()</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Currently this is only called when the layout is applied to a collection view.</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">invalidate</span><span class="p">()</span></code></pre>
-
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>newBounds</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The new bounds of the collection view</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC016shouldInvalidateC0SbSC6CGRectV15forBoundsChange_tF"></a>
-                    <a name="//apple_ref/swift/Method/shouldInvalidateLayout(forBoundsChange:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC016shouldInvalidateC0SbSC6CGRectV15forBoundsChange_tF">shouldInvalidateLayout(forBoundsChange:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Asks the layout if it should be invalidated due to a bounds change on the collection view</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">shouldInvalidateLayout</span><span class="p">(</span><span class="n">forBoundsChange</span> <span class="nv">newBounds</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
-
+                        <div>
+                          <h4>Return Value</h4>
+                          <p>If the layout should be invalidated</p>
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>newBounds</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The new bounds of the collection view</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>If the layout should be invalidated</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC7prepareyyF"></a>
-                    <a name="//apple_ref/swift/Method/prepare()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC7prepareyyF">prepare()</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Tells the layout object to update the current layout.</p>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC7prepareyyF"></a>
+                      <a name="//apple_ref/swift/Method/prepare()" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC7prepareyyF">prepare()</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Tells the layout object to update the current layout.</p>
 <h2 id='discussion' class='heading'>Discussion</h2>
 
 <p>Layout updates occur the first time the collection view presents its content and whenever the layout is invalidated explicitly or implicitly because of a change to the view. During each layout update, the collection view calls this method first to give your layout object a chance to prepare for the upcoming layout operation.
 The default implementation of this method does nothing. Subclasses can override it and use it to set up data structures or perform any initial computations needed to perform the layout later.</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">prepare</span><span class="p">()</span></code></pre>
-
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Index%20Paths"></a>
-                <a name="//apple_ref/swift/Section/Index Paths" class="dashAnchor"></a>
-                <a href="#/Index%20Paths">
-                  <h3 class="section-name">Index Paths</h3>
-                </a>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">prepare</span><span class="p">()</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC13allIndexPathsAA10OrderedSetVy10Foundation0E4PathVGvp"></a>
-                    <a name="//apple_ref/swift/Property/allIndexPaths" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC13allIndexPathsAA10OrderedSetVy10Foundation0E4PathVGvp">allIndexPaths</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>All the index paths to be displayed by the collection view</p>
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Index%20Paths"></a>
+                  <a name="//apple_ref/swift/Section/Index Paths" class="dashAnchor"></a>
+                  <a href="#/Index%20Paths">
+                    <h3 class="section-name">Index Paths</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC13allIndexPathsAA10OrderedSetVy10Foundation0E4PathVGvp"></a>
+                      <a name="//apple_ref/swift/Property/allIndexPaths" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC13allIndexPathsAA10OrderedSetVy10Foundation0E4PathVGvp">allIndexPaths</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>All the index paths to be displayed by the collection view</p>
 
 <p>Becuase the layout likely needs to process all items in the data, setting this during prepare() can cut out the overhead of the collection view having to do so itself.</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">allIndexPaths</span> <span class="o">=</span> <span class="kt">OrderedSet</span><span class="o">&lt;</span><span class="kt">IndexPath</span><span class="o">&gt;</span><span class="p">()</span></code></pre>
-
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Layout%20Attributes"></a>
-                <a name="//apple_ref/swift/Section/Layout Attributes" class="dashAnchor"></a>
-                <a href="#/Layout%20Attributes">
-                  <h3 class="section-name">Layout Attributes</h3>
-                </a>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">allIndexPaths</span><span class="p">:</span> <span class="kt">OrderedSet</span><span class="o">&lt;</span><span class="kt">IndexPath</span><span class="o">&gt;</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC24layoutAttributesForItemsSayAA0abcE0CGSC6CGRectV2in_tF"></a>
-                    <a name="//apple_ref/swift/Method/layoutAttributesForItems(in:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC24layoutAttributesForItemsSayAA0abcE0CGSC6CGRectV2in_tF">layoutAttributesForItems(in:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns the layout attributes for all views in a given rect</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">layoutAttributesForItems</span><span class="p">(</span><span class="k">in</span> <span class="nv">rect</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt"><a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a></span><span class="p">]</span></code></pre>
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Layout%20Attributes"></a>
+                  <a name="//apple_ref/swift/Section/Layout Attributes" class="dashAnchor"></a>
+                  <a href="#/Layout%20Attributes">
+                    <h3 class="section-name">Layout Attributes</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC24layoutAttributesForItems2inSayAA0abcE0CGSo6CGRectV_tF"></a>
+                      <a name="//apple_ref/swift/Method/layoutAttributesForItems(in:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC24layoutAttributesForItems2inSayAA0abcE0CGSo6CGRectV_tF">layoutAttributesForItems(in:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Returns the layout attributes for all views in a given rect</p>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>rect</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The rect in which to look for elements</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC23layoutAttributesForItemAA0abcE0CSg10Foundation9IndexPathV2at_tF"></a>
-                    <a name="//apple_ref/swift/Method/layoutAttributesForItem(at:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC23layoutAttributesForItemAA0abcE0CSg10Foundation9IndexPathV2at_tF">layoutAttributesForItem(at:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns the layout attributes for an item at the given index path</p>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">layoutAttributesForItems</span><span class="p">(</span><span class="k">in</span> <span class="nv">rect</span><span class="p">:</span> <span class="kt">CGRect</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt"><a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a></span><span class="p">]</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>rect</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The rect in which to look for elements</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC23layoutAttributesForItem2atAA0abcE0CSg10Foundation9IndexPathV_tF"></a>
+                      <a name="//apple_ref/swift/Method/layoutAttributesForItem(at:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC23layoutAttributesForItem2atAA0abcE0CSg10Foundation9IndexPathV_tF">layoutAttributesForItem(at:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Returns the layout attributes for an item at the given index path</p>
 <h1 id='important' class='heading'>Important</h1>
 
 <p>This must be overridden by subclasses</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">layoutAttributesForItem</span><span class="p">(</span><span class="n">at</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a></span><span class="p">?</span></code></pre>
-
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>indexPath</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The index path of the item for which you want the attributes</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC032layoutAttributesForSupplementaryB0AA0abcE0CSgSS6ofKind_10Foundation9IndexPathV2attF"></a>
-                    <a name="//apple_ref/swift/Method/layoutAttributesForSupplementaryView(ofKind:at:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC032layoutAttributesForSupplementaryB0AA0abcE0CSgSS6ofKind_10Foundation9IndexPathV2attF">layoutAttributesForSupplementaryView(ofKind:at:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns the layout attributes for the supplementary view of the given kind and the given index path</p>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">layoutAttributesForItem</span><span class="p">(</span><span class="n">at</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a></span><span class="p">?</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>indexPath</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The index path of the item for which you want the attributes</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC032layoutAttributesForSupplementaryB06ofKind2atAA0abcE0CSgSS_10Foundation9IndexPathVtF"></a>
+                      <a name="//apple_ref/swift/Method/layoutAttributesForSupplementaryView(ofKind:at:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC032layoutAttributesForSupplementaryB06ofKind2atAA0abcE0CSgSS_10Foundation9IndexPathVtF">layoutAttributesForSupplementaryView(ofKind:at:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Returns the layout attributes for the supplementary view of the given kind and the given index path</p>
 <h1 id='important' class='heading'>Important</h1>
 
 <p>This must be override by a subclass</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">layoutAttributesForSupplementaryView</span><span class="p">(</span><span class="n">ofKind</span> <span class="nv">kind</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">at</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a></span><span class="p">?</span></code></pre>
-
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>elementKind</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The kind of the view</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>indexPath</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The index path of the view</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Section%20Frames"></a>
-                <a name="//apple_ref/swift/Section/Section Frames" class="dashAnchor"></a>
-                <a href="#/Section%20Frames">
-                  <h3 class="section-name">Section Frames</h3>
-                </a>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">layoutAttributesForSupplementaryView</span><span class="p">(</span><span class="n">ofKind</span> <span class="nv">kind</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">at</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a></span><span class="p">?</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>elementKind</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The kind of the view</p>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>indexPath</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The index path of the view</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC14rectForSectionSC6CGRectVSiF"></a>
-                    <a name="//apple_ref/swift/Method/rectForSection(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC14rectForSectionSC6CGRectVSiF">rectForSection(_:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns the frame that encapsulates all the content in the section</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">rectForSection</span><span class="p">(</span><span class="n">_</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CGRect</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>section</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The section to get the frame for</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>The rect containing all the views</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC21contentRectForSectionSC6CGRectVSiF"></a>
-                    <a name="//apple_ref/swift/Method/contentRectForSection(_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC21contentRectForSectionSC6CGRectVSiF">contentRectForSection(_:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns the rect that encapsulates just the items of a section</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">contentRectForSection</span><span class="p">(</span><span class="n">_</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CGRect</span></code></pre>
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Section%20Frames"></a>
+                  <a name="//apple_ref/swift/Section/Section Frames" class="dashAnchor"></a>
+                  <a href="#/Section%20Frames">
+                    <h3 class="section-name">Section Frames</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC14rectForSectionySo6CGRectVSiF"></a>
+                      <a name="//apple_ref/swift/Method/rectForSection(_:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC14rectForSectionySo6CGRectVSiF">rectForSection(_:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Returns the frame that encapsulates all the content in the section</p>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>section</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The section to get the content frame for</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>The rect containing all the items</p>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Scroll%20Frames"></a>
-                <a name="//apple_ref/swift/Section/Scroll Frames" class="dashAnchor"></a>
-                <a href="#/Scroll%20Frames">
-                  <h3 class="section-name">Scroll Frames</h3>
-                </a>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">rectForSection</span><span class="p">(</span><span class="n">_</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CGRect</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>section</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The section to get the frame for</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div>
+                          <h4>Return Value</h4>
+                          <p>The rect containing all the views</p>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC21contentRectForSectionySo6CGRectVSiF"></a>
+                      <a name="//apple_ref/swift/Method/contentRectForSection(_:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC21contentRectForSectionySo6CGRectVSiF">contentRectForSection(_:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Returns the rect that encapsulates just the items of a section</p>
+
+                        </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">contentRectForSection</span><span class="p">(</span><span class="n">_</span> <span class="nv">section</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CGRect</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>section</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The section to get the content frame for</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        <div>
+                          <h4>Return Value</h4>
+                          <p>The rect containing all the items</p>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC17scrollRectForItemSC6CGRectVSg10Foundation9IndexPathV2at_AA0aB14ScrollPositionO0lN0tF"></a>
-                    <a name="//apple_ref/swift/Method/scrollRectForItem(at:atPosition:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC17scrollRectForItemSC6CGRectVSg10Foundation9IndexPathV2at_AA0aB14ScrollPositionO0lN0tF">scrollRectForItem(at:atPosition:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Provides he layout a chance to adjust the frame to which the collection view should scroll to show an item</p>
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Scroll%20Frames"></a>
+                  <a name="//apple_ref/swift/Section/Scroll Frames" class="dashAnchor"></a>
+                  <a href="#/Scroll%20Frames">
+                    <h3 class="section-name">Scroll Frames</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC17scrollRectForItem2at0H8PositionSo6CGRectVSg10Foundation9IndexPathV_AA0ab6ScrollI0OtF"></a>
+                      <a name="//apple_ref/swift/Method/scrollRectForItem(at:atPosition:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC17scrollRectForItem2at0H8PositionSo6CGRectVSg10Foundation9IndexPathV_AA0ab6ScrollI0OtF">scrollRectForItem(at:atPosition:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Provides he layout a chance to adjust the frame to which the collection view should scroll to show an item</p>
 
 <p>The default implementation returns the value from layoutAttributesForItem(at:)</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">scrollRectForItem</span><span class="p">(</span><span class="n">at</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="nv">atPosition</span><span class="p">:</span> <span class="kt"><a href="../Collection View.html#/s:14CollectionView0aB14ScrollPositionO">CollectionViewScrollPosition</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CGRect</span><span class="p">?</span></code></pre>
-
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>indexPath</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The item to scroll to</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>atPosition</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The position at which to scroll the item to</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Item%20Direction"></a>
-                <a name="//apple_ref/swift/Section/Item Direction" class="dashAnchor"></a>
-                <a href="#/Item%20Direction">
-                  <h3 class="section-name">Item Direction</h3>
-                </a>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">scrollRectForItem</span><span class="p">(</span><span class="n">at</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">,</span> <span class="nv">atPosition</span><span class="p">:</span> <span class="kt"><a href="../Collection View.html#/s:14CollectionView0aB14ScrollPositionO">CollectionViewScrollPosition</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">CGRect</span><span class="p">?</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>indexPath</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The item to scroll to</p>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>atPosition</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The position at which to scroll the item to</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView0aB6LayoutC20indexPathForNextItem10Foundation05IndexE0VSgAA0aB9DirectionO6moving_AG4fromtF"></a>
-                    <a name="//apple_ref/swift/Method/indexPathForNextItem(moving:from:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView0aB6LayoutC20indexPathForNextItem10Foundation05IndexE0VSgAA0aB9DirectionO6moving_AG4fromtF">indexPathForNextItem(moving:from:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns the index path for the next item in a given direction</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="n">open</span> <span class="kd">func</span> <span class="nf">indexPathForNextItem</span><span class="p">(</span><span class="n">moving</span> <span class="nv">direction</span><span class="p">:</span> <span class="kt"><a href="../Collection View.html#/s:14CollectionView0aB9DirectionO">CollectionViewDirection</a></span><span class="p">,</span> <span class="n">from</span> <span class="nv">currentIndexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">IndexPath</span><span class="p">?</span></code></pre>
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Item%20Direction"></a>
+                  <a name="//apple_ref/swift/Section/Item Direction" class="dashAnchor"></a>
+                  <a href="#/Item%20Direction">
+                    <h3 class="section-name">Item Direction</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView0aB6LayoutC20indexPathForNextItem6moving4from10Foundation05IndexE0VSgAA0aB9DirectionO_AItF"></a>
+                      <a name="//apple_ref/swift/Method/indexPathForNextItem(moving:from:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView0aB6LayoutC20indexPathForNextItem6moving4from10Foundation05IndexE0VSgAA0aB9DirectionO_AItF">indexPathForNextItem(moving:from:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Returns the index path for the next item in a given direction</p>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>direction</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The direction in which to look for the next items (up, down, left, right)</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>currentIndexPath</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The current index path to seek from</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">open</span> <span class="kd">func</span> <span class="nf">indexPathForNextItem</span><span class="p">(</span><span class="n">moving</span> <span class="nv">direction</span><span class="p">:</span> <span class="kt"><a href="../Collection View.html#/s:14CollectionView0aB9DirectionO">CollectionViewDirection</a></span><span class="p">,</span> <span class="n">from</span> <span class="nv">currentIndexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">IndexPath</span><span class="p">?</span></code></pre>
+
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>direction</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The direction in which to look for the next items (up, down, left, right)</p>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>currentIndexPath</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The current index path to seek from</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </section>
+        </article>
+      </div>
+      <div class="nav-wrapper">
+        <nav class="nav-bottom">
+          <ul class="nav-groups">
+            <li class="nav-group-name">
+              <a href="../Guides.html">Guides</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../introduction.html">Introduction</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../basic-setup.html">Basic Setup</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../supplementary-views.html">Supplementary Views</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../layouts.html">Layouts</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../drag--drop.html">Drag &amp; Drop</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../content-updates.html">Content Updates</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../results-controller.html">Results Controller</a>
                 </li>
               </ul>
-            </div>
-          </div>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Collection View.html">Collection View</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionView.html">CollectionView</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionView.html#/s:14CollectionViewAAC13SelectionModeO">– SelectionMode</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewCell.html">CollectionViewCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionReusableView.html">CollectionReusableView</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewController.html">CollectionViewController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0aB17LayoutElementKindV">CollectionViewLayoutElementKind</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0A15ElementCategoryO">CollectionElementCategory</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0aB9DirectionO">CollectionViewDirection</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0aB15ScrollDirectionO">CollectionViewScrollDirection</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0aB14ScrollPositionO">CollectionViewScrollPosition</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewPreviewCell.html">CollectionViewPreviewCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewPreviewController.html">CollectionViewPreviewController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewPreviewControllerDelegate.html">CollectionViewPreviewControllerDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView19AnimationCompletiona">AnimationCompletion</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Collection View Layouts.html">Collection View Layouts</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC0D8StrategyO">– LayoutStrategy</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewFlowLayout.html#/s:14CollectionView0aB10FlowLayoutC12RowTransformO">– RowTransform</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Results Controller.html">Results Controller</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Protocols/ResultsController.html">ResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/MutableResultsController.html">MutableResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/RelationalResultsController.html">RelationalResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/FetchedSetController.html">FetchedSetController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Results Controller.html#/s:14CollectionView27ResultsControllerChangeTypeO">ResultsControllerChangeType</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewProvider.html">CollectionViewProvider</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewResultsProxy.html">CollectionViewResultsProxy</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Other Enums.html">Other Enumerations</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Enums/SortDescriptorResult.html">SortDescriptorResult</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Other Extensions.html">Other Extensions</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Extensions/IndexPath.html">IndexPath</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Other Protocols.html">Other Protocols</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Other Protocols.html#/s:14CollectionView30CustomDisplayStringConvertibleP">CustomDisplayStringConvertible</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Other Structs.html">Other Structures</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Structs/SortDescriptor.html">SortDescriptor</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-wrapper">
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-10-16)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
-
-      </article>
+      </div>
     </div>
-    <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-04-24)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
-    </section>
   </body>
 </div>
 </html>

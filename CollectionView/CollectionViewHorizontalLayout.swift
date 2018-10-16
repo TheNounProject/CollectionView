@@ -11,16 +11,13 @@ import Foundation
 /// The delegate for CollectionViewHorizontalListLayout
 @objc public protocol CollectionViewDelegateHorizontalListLayout: CollectionViewDelegate {
     
-    /**
-    Asks the delegate for the width of the item at a given index path
-
-     - Parameter collectionView: The collection view containing the item
-     - Parameter collectionViewLayout: The layout
-     - Parameter indexPath: The index path for the item
-     
-     - Returns: The desired width of the item at indexPath
-     
-     */
+    /// Asks the delegate for the width of the item at a given index path
+    ///
+    /// - Parameter collectionView: The collection view containing the item
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter indexPath: The index path for the item
+    ///
+    /// - Returns: The desired width of the item at indexPath
     @objc optional func collectionView (_ collectionView: CollectionView,
                                         layout collectionViewLayout: CollectionViewLayout,
                                         widthForItemAt indexPath: IndexPath) -> CGFloat

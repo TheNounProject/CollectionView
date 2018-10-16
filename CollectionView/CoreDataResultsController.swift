@@ -8,26 +8,21 @@
 
 import Foundation
 
-/**
- A FetchedResultsController provides the same data store and change reporting as a MutableResultsController but sources it's contents from a CoreData context.
- 
- Given an NSFetchRequest, the results from the provided context are fetched and analyzed to provide the data necessary to populate a CollectionView.
- 
- The controller can also be sorted, grouped into sections and automatically updated when changes are made in the managed obejct context.
- */
+/// A FetchedResultsController provides the same data store and change reporting as a MutableResultsController but sources it's contents from a CoreData context.
+///
+/// Given an NSFetchRequest, the results from the provided context are fetched and analyzed to provide the data necessary to populate a CollectionView.
+///
+/// The controller can also be sorted, grouped into sections and automatically updated when changes are made in the managed obejct context.
 public class FetchedResultsController<Section: SectionType, Element: NSManagedObject> : MutableResultsController<Section, Element> {
     
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     Controller initializer a given context and fetch request
-     
-     - Parameter context: A managed object context
-     - Parameter request: A fetch request with an entity name
-     - Parameter sectionKeyPath: An optional key path to use for section groupings
-     
-     */
+    /// Controller initializer a given context and fetch request
+    ///
+    /// - Parameter context: A managed object context
+    /// - Parameter request: A fetch request with an entity name
+    /// - Parameter sectionKeyPath: An optional key path to use for section groupings
     public init(context: NSManagedObjectContext, request: NSFetchRequest<Element>, sectionKeyPath: KeyPath<Element, Section>? = nil) {
         
         assert(request.entityName != nil, "request is missing entity name")
@@ -51,9 +46,7 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     An object the report to when content in the controller changes
-     */
+    /// An object the report to when content in the controller changes
     public override weak var delegate: ResultsControllerDelegate? {
         didSet {
             if (oldValue == nil) == (delegate == nil) { return }
@@ -78,14 +71,11 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         return self._managedObjectContext!
     }
     
-    /**
-     Update the managed object context used by the controller
-     
-     - Parameter moc: The new context to use
-     
-     - Returns: This implicitly calls performFetch which can throw
-     
-     */
+    /// Update the managed object context used by the controller
+    ///
+    /// - Parameter moc: The new context to use
+    ///
+    /// - Returns: This implicitly calls performFetch which can throw
     public func setManagedObjectContext(_ moc: NSManagedObjectContext) throws {
         guard moc != self.managedObjectContext else { return }
         self.setNeedsFetch()
@@ -132,12 +122,9 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         NotificationCenter.default.removeObserver(self, name: ManagedObjectContextObservationCoordinator.Notification.name, object: moc)
     }
     
-    /**
-     Performs the provided fetch request to populate the controller. Calling again resets the controller.
-     
-     - Throws: If the fetch request is invalid or the fetch fails
-     */
-    
+    /// Performs the provided fetch request to populate the controller. Calling again resets the controller.
+    ///
+    /// - Throws: If the fetch request is invalid or the fetch fails
     public func performFetch() throws {
         validateRequests()
         
@@ -283,18 +270,14 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
         validateRequests()
         precondition(isSectioned, "RelationalResultsController must have a sectionKeyPath")
         
-        // Manage notification registration
-        
-        // Add the queried sections if desired
         var sections: [Section]?
-        if self.fetchSections {
+        if self.fetchSections { // Add the queried sections if desired
             sections = try managedObjectContext.fetch(self.sectionFetchRequest)
         }
         
         let _objects = try managedObjectContext.fetch(self.fetchRequest)
         self.setContent(sections: sections ?? [], objects: _objects)
-            
-        register()
+        register() // Manage notification registration
         _fetched = true
     }
     
@@ -314,27 +297,21 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     A fetch request used to fetch, filter, and sort the section results of the controller.
-     
-     This is used to validate the section objects. If `fetchSections` is true, section objects will be fetched independent of the child objects.
-     
-     A parent object that does not match the request here, may still be visible if it has children that match the predicate of fetchRequest.
-     */
+    /// A fetch request used to fetch, filter, and sort the section results of the controller.
+    ///
+    /// This is used to validate the section objects. If `fetchSections` is true, section objects will be fetched independent of the child objects.
+    ///
+    /// A parent object that does not match the request here, may still be visible if it has children that match the predicate of fetchRequest.
     public let sectionFetchRequest: NSFetchRequest<Section>
     
-    /**
-     A keyPath of the section objects to get the displayable name
-     
-     For custom names, leave nil and conform your section objects to CustomDisplayStringConvertible
-     */
+    /// A keyPath of the section objects to get the displayable name
+    ///
+    /// For custom names, leave nil and conform your section objects to CustomDisplayStringConvertible
     public var sectionNameKeyPath: KeyPath<Section, String>?
     
-    /**
-     If true, sections will be fetched independent of objects using sectionFetchRequest.
-     
-     This is useful to populate the controller with section objects that may not have any children.
-     */
+    /// If true, sections will be fetched independent of objects using sectionFetchRequest.
+    ///
+    /// This is useful to populate the controller with section objects that may not have any children.
     public var fetchSections: Bool = true
     
     override func shouldRemoveEmptySection(_ section: SectionInfo<Section, Element>) -> Bool {
@@ -344,7 +321,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     // MARK: - Section Names
     /*-------------------------------------------------------------------------------*/
-    
     public override func sectionName(forSectionAt indexPath: IndexPath) -> String {
         guard let obj = sectionInfo(at: indexPath)?.representedObject else {
             return "Ungrouped"
@@ -358,7 +334,6 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     
     // MARK: - Handling Changes
     /*-------------------------------------------------------------------------------*/
-    
     override func processChanges(_ changes: [NSEntityDescription: ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
         guard let delegate = self.delegate, self._fetched else {
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
@@ -402,10 +377,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 }
             }
         }
-        
         super.processChanges(changes)
         endEditing()
-        
     }
-
 }

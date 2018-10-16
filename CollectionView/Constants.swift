@@ -8,9 +8,7 @@
 
 import Foundation
 
-/**
- AnimationCompletion
-*/
+/// AnimationCompletion
 public typealias AnimationCompletion = (_ finished: Bool) -> Void
 
 /// CollectionElementCategory

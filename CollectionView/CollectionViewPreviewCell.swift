@@ -8,85 +8,63 @@
 
 import Foundation
 
-/**
-A protocol for CollectionViewCells that need to customize their transition when used in CollectionViewPreviewController.
- 
- If you adopt this protocol in a custom CollectionViewCell subclass, see the source code for CollectionViewPreviewCell for an example implementation.
- */
+/// A protocol for CollectionViewCells that need to customize their transition when used in CollectionViewPreviewController.
+///
+/// If you adopt this protocol in a custom CollectionViewCell subclass, see the source code for CollectionViewPreviewCell for an example implementation.
 public protocol CollectionViewPreviewTransitionCell: class {
     
     // MARK: - Transitioning From Source
     /*-------------------------------------------------------------------------------*/
-    /**
-     Called just before the transition animation to prepare the cell
-     
-     Update the cell to prepare for transition from the item at indexPath in collectionView. Typically this will include fetching the layout attributes and/or cell using the provided index path and collection view, then applying the frame to self.
-     
-     - Parameter indexPath: The indexPath of the source cell
-     - Parameter collectionView: The source collection view
-     - Parameter layoutAttributes: The final layout attributes for the receiver
-     
-     */
+    /// Called just before the transition animation to prepare the cell
+    ///
+    /// Update the cell to prepare for transition from the item at indexPath in collectionView. Typically this will include fetching the layout attributes and/or cell using the provided index path and collection view, then applying the frame to self.
+    ///
+    /// - Parameter indexPath: The indexPath of the source cell
+    /// - Parameter collectionView: The source collection view
+    /// - Parameter layoutAttributes: The final layout attributes for the receiver
     func prepareForTransition(fromItemAt indexPath: IndexPath, in collectionView: CollectionView, to layoutAttributes: CollectionViewLayoutAttributes)
     
-    /**
-     Called within the animation block in which the cell should moved from the source position to the destination position
-     
-     Update the cell to position and style as needed to transition from it's source. Typically this will include fetching the layout attributes and/or cell using the provided index path and collection view, then applying the frame to self.
-     
-     - Parameter indexPath: The index path of the source item
-     - Parameter collectionView: The source collection view
-     - Parameter layoutAttributes: The final layout attributes of the receiver
-     
-     */
+    /// Called within the animation block in which the cell should moved from the source position to the destination position
+    ///
+    /// Update the cell to position and style as needed to transition from it's source. Typically this will include fetching the layout attributes and/or cell using the provided index path and collection view, then applying the frame to self.
+    ///
+    /// - Parameter indexPath: The index path of the source item
+    /// - Parameter collectionView: The source collection view
+    /// - Parameter layoutAttributes: The final layout attributes of the receiver
     func transition(fromItemAt indexPath: IndexPath, in collectionView: CollectionView, to layoutAttributes: CollectionViewLayoutAttributes)
     
-    /**
-     Called when the transition from the source has completed and the cell is in it's final position.
-     
-     - Parameter indexPath: The index path of the source item
-     - Parameter collectionView: The source collection view
-     
-     */
+    /// Called when the transition from the source has completed and the cell is in it's final position.
+    ///
+    /// - Parameter indexPath: The index path of the source item
+    /// - Parameter collectionView: The source collection view
     func finishTransition(fromItemAt indexPath: IndexPath, in collectionView: CollectionView)
     
     // MARK: - Transitioning To Source
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     Called just before the cell is transitioned back to it's source
-     
-     - Parameter indexPath: The index path of the source item
-     - Parameter collectionView: The source collection view
-     
-     */
+    /// Called just before the cell is transitioned back to it's source
+    ///
+    /// - Parameter indexPath: The index path of the source item
+    /// - Parameter collectionView: The source collection view
     func prepareForTransition(toItemAt indexPath: IndexPath, in collectionView: CollectionView)
     
-    /**
-     Called within the transition animation block in which the cell should move back to its source.
-     
-     Update the cell to position and style as needed to transition back to it's source. Typically this will include fetching the layout attributes and/or cell using the provided index path and collection view, then applying the frame to self.
-     
-     - Parameter indexPath: The index path of the source item
-     - Parameter collectionView: The source collection view
-     
-     */
+    /// Called within the transition animation block in which the cell should move back to its source.
+    ///
+    /// Update the cell to position and style as needed to transition back to it's source. Typically this will include fetching the layout attributes and/or cell using the provided index path and collection view, then applying the frame to self.
+    ///
+    /// - Parameter indexPath: The index path of the source item
+    /// - Parameter collectionView: The source collection view
     func transition(toItemAt indexPath: IndexPath, in collectionView: CollectionView)
     
-    /**
-     Called when the transition back to the source has completed and the containing preview controller will be removed.
-     
-     - Parameter indexPath: The index path of the source item
-     - Parameter collectionView: The source collection view
-     
-     */
+    /// Called when the transition back to the source has completed and the containing preview controller will be removed.
+    ///
+    /// - Parameter indexPath: The index path of the source item
+    /// - Parameter collectionView: The source collection view
     func finishTransition(toItemAt indexPath: IndexPath, in collectView: CollectionView)
     
 }
 
-/**
- A default implementation of CollectionViewPreviewTransitionCell
-*/
+/// A default implementation of CollectionViewPreviewTransitionCell
 open class CollectionViewPreviewCell: CollectionViewCell, CollectionViewPreviewTransitionCell {
     
 //    open override var wantsUpdateLayer: Bool { return true }
@@ -116,7 +94,6 @@ open class CollectionViewPreviewCell: CollectionViewCell, CollectionViewPreviewT
     
     // MARK: - Transitioning From Source
     /*-------------------------------------------------------------------------------*/
-    
     open func prepareForTransition(fromItemAt indexPath: IndexPath, in collectionView: CollectionView, to layoutAttributes: CollectionViewLayoutAttributes) {
         self.transitionState = .appearing
         guard let attrs = collectionView.layoutAttributesForItem(at: indexPath),
@@ -146,9 +123,7 @@ open class CollectionViewPreviewCell: CollectionViewCell, CollectionViewPreviewT
     
     // MARK: - Transitioning To Source
     /*-------------------------------------------------------------------------------*/
-    
     open func prepareForTransition(toItemAt indexPath: IndexPath, in collectionView: CollectionView) {
-        
         if self.transitionState == .appeaered {
             guard let converted = self.collectionView?.convert(self.frame, from: self.superview) else {
                     self.animator().alphaValue = 0
@@ -183,5 +158,4 @@ open class CollectionViewPreviewCell: CollectionViewCell, CollectionViewPreviewT
         }
         self.removeFromSuperview()
     }
-    
 }

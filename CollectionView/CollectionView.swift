@@ -49,16 +49,13 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return self.delegate as? CollectionViewDragDelegate
     }
     
-    /**
-     The content view in which all cells and views are displayed
-    */
+    /// The content view in which all cells and views are displayed
     public var contentDocumentView: CollectionViewDocumentView {
         return self.documentView as! CollectionViewDocumentView
     }
     
     // MARK: - Intialization
     /*-------------------------------------------------------------------------------*/
-    
     public init() {
         super.init(frame: NSRect.zero)
         self.setup()
@@ -119,7 +116,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
 
     open override var scrollerStyle: NSScroller.Style {
         didSet {
-//            log.debug("Scroller Style changed")
             self.reloadLayout(false)
         }
     }
@@ -146,31 +142,24 @@ open class CollectionView: ScrollView, NSDraggingSource {
                                        toItem: v, attribute: .right, multiplier: 1, constant: 0)
                     ])
                 v.translatesAutoresizingMaskIntoConstraints = false
-//                v.autoresizingMask.insert(.maxYMargin)
-//                v.autoresizingMask.insert(.height)
                 v.setContentHuggingPriority(NSLayoutConstraint.Priority(rawValue: 1000), for: .vertical)
                 v.autoresizingMask.insert(.width)
-//                v.autoresizingMask.insert(.height)
             }
         }
     }
     
     // MARK: - Registering reusable cells
     /*-------------------------------------------------------------------------------*/
-    
     private var _cellClasses: [String: CollectionViewCell.Type] = [:]
     private var _cellNibs: [String: NSNib] = [:]
     
     private var _supplementaryViewClasses: [SupplementaryViewIdentifier: CollectionReusableView.Type] = [:]
     private var _supplementaryViewNibs: [SupplementaryViewIdentifier: NSNib] = [:]
     
-    /**
-     Register a class to be initialized when loading reusable cells
-
-     - Parameter cellClass: A CollectionViewCell subclass
-     - Parameter identifier: A reuse identifier to deque cells of this class
-
-    */
+    /// Register a class to be initialized when loading reusable cells
+    ///
+    /// - Parameter cellClass: A CollectionViewCell subclass
+    /// - Parameter identifier: A reuse identifier to deque cells of this class
     public func register(class cellClass: CollectionViewCell.Type, forCellWithReuseIdentifier identifier: String) {
         assert(cellClass.isSubclass(of: CollectionViewCell.self), "CollectionView: Registered cells views must be subclasses of CollectionViewCell")
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
@@ -178,27 +167,21 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self._cellNibs[identifier] = nil
     }
     
-    /**
-     Register a nib to be loaded as reusable cells
-
-     - Parameter nib: The nib for the cell
-     - Parameter identifier: A reuse identifier to deque cells from this nib
-     
-    */
+    /// Register a nib to be loaded as reusable cells
+    ///
+    /// - Parameter nib: The nib for the cell
+    /// - Parameter identifier: A reuse identifier to deque cells from this nib
     public func register(nib: NSNib, forCellWithReuseIdentifier identifier: String) {
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
         self._cellClasses[identifier] = nil
         self._cellNibs[identifier] = nib
     }
     
-    /**
-     Register a class to be initialized when loading reusable supplementary views
-
-     - Parameter viewClass: A CollectionReusableview subclass
-     - Parameter elementKind: The kind of element the class represents
-     - Parameter identifier: A reuse identifier to deque views of this class
-
-    */
+    /// Register a class to be initialized when loading reusable supplementary views
+    ///
+    /// - Parameter viewClass: A CollectionReusableview subclass
+    /// - Parameter elementKind: The kind of element the class represents
+    /// - Parameter identifier: A reuse identifier to deque views of this class
     public func register(class viewClass: CollectionReusableView.Type, forSupplementaryViewOfKind kind: String, withReuseIdentifier identifier: String) {
         assert(viewClass.isSubclass(of: CollectionReusableView.self),
                "CollectionView: Registered supplementary views must be subclasses of CollectionReusableview")
@@ -210,16 +193,13 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self._allSupplementaryViewIdentifiers.insert(id)
     }
     
-    /**
-     Register a nib to be loaded as a supplementary view
-
-     - Parameter nib: The nib for the view
-     - Parameter elementKind: The kind of element this nib represents
-     - Parameter identifier: A reuse identifier to deque views from this nib
-     
-     - Note: The nib must contain a single view whose class is set to CollectionReusableview.
-
-    */
+    /// Register a nib to be loaded as a supplementary view
+    ///
+    /// - Parameter nib: The nib for the view
+    /// - Parameter elementKind: The kind of element this nib represents
+    /// - Parameter identifier: A reuse identifier to deque views from this nib
+    ///
+    /// - Note: The nib must contain a single view whose class is set to CollectionReusableview.
     public func register(nib: NSNib, forSupplementaryViewOfKind elementKind: String, withReuseIdentifier identifier: String) {
         assert(!identifier.isEmpty, "CollectionView: Reuse identifier cannot be an empty or blank string")
         let id = SupplementaryViewIdentifier(kind: elementKind, reuseIdentifier: identifier)
@@ -249,21 +229,17 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     // MARK: - Dequeing reusable cells
     /*-------------------------------------------------------------------------------*/
-    
     private var _reusableCells: [String: Set<CollectionViewCell>] = [:]
     private var _reusableSupplementaryView: [SupplementaryViewIdentifier: Set<CollectionReusableView>] = [:]
     
-    /**
-     Retrieve a cell for a given reuse identifier and index path. 
-     
-     If no reusable cell is available, one is created from the registered class/nib.
-
-     - Parameter identifier: The reuse identifier
-     - Parameter indexPath: The index path specifying the location of the supplementary view to load.
-
-     - Returns: A valid CollectionReusableView
-
-    */
+    /// Retrieve a cell for a given reuse identifier and index path.
+    ///
+    /// If no reusable cell is available, one is created from the registered class/nib.
+    ///
+    /// - Parameter identifier: The reuse identifier
+    /// - Parameter indexPath: The index path specifying the location of the supplementary view to load.
+    ///
+    /// - Returns: A valid CollectionReusableView
     public final func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> CollectionViewCell {
         
         var cell = self.contentDocumentView.preparedCellIndex[indexPath] ?? self._reusableCells[identifier]?.removeOne()
@@ -281,16 +257,13 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return cell!
     }
     
-    /**
-     Returns a reusable supplementary view located by its identifier and kind.
-
-     - Parameter elementKind: The kind of supplementary view to retrieve. This value is defined by the layout object. This parameter must not be nil.
-     - Parameter identifier: The reuse identifier for the specified view.
-     - Parameter indexPath: The index path specifying the location of the cell to load
-
-     - Returns: A valid CollectionViewCell
-
-    */
+    /// Returns a reusable supplementary view located by its identifier and kind.
+    ///
+    /// - Parameter elementKind: The kind of supplementary view to retrieve. This value is defined by the layout object. This parameter must not be nil.
+    /// - Parameter identifier: The reuse identifier for the specified view.
+    /// - Parameter indexPath: The index path specifying the location of the cell to load
+    ///
+    /// - Returns: A valid CollectionViewCell
     public final func dequeueReusableSupplementaryView(ofKind elementKind: String, withReuseIdentifier identifier: String, for indexPath: IndexPath) -> CollectionReusableView {
         let id = SupplementaryViewIdentifier(kind: elementKind, reuseIdentifier: identifier)
         
@@ -350,52 +323,37 @@ open class CollectionView: ScrollView, NSDraggingSource {
     /*-------------------------------------------------------------------------------*/
     let _floatingSupplementaryView = FloatingSupplementaryView(frame: NSRect.zero)
     
-    /**
-     A view atop the collection view used to display non-scrolling accessory views
-     */
+    /// A view atop the collection view used to display non-scrolling accessory views
     public var  floatingContentView: NSView {
         return _floatingSupplementaryView
     }
     
-    /**
-     Adds the given view to the floating content view
-     
-     - Parameter view: The view to add
-     
-     */
+    /// Adds the given view to the floating content view
+    ///
+    /// - Parameter view: The view to add
     public func addAccessoryView(_ view: NSView) {
         self._floatingSupplementaryView.addSubview(view)
     }
     
     // MARK: - Data
     /*-------------------------------------------------------------------------------*/
-    
     private var sections = [Int]()
-//    private var storage = [[Item]]()
-    
-    /**
-     Returns the number of sections displayed by the collection view.
 
-     - Returns: The number of sections
-     
-    */
+    /// Returns the number of sections displayed by the collection view.
+    ///
+    /// - Returns: The number of sections
     public var numberOfSections: Int { return self.sections.count }
     
-    /**
-     Returns the number of items in the specified section.
-
-     - Parameter section: The index of the section for which you want a count of the items.
-
-     - Returns: The number of items in the specified section
-
-    */
+    /// Returns the number of items in the specified section.
+    ///
+    /// - Parameter section: The index of the section for which you want a count of the items.
+    ///
+    /// - Returns: The number of items in the specified section
     public func numberOfItems(in section: Int) -> Int {
         return self.sections.object(at: section) ?? 0
     }
     
-    /**
-     Reloads all the data and views in the collection view
-     */
+    /// Reloads all the data and views in the collection view
     open func reloadData() {
         self.contentDocumentView.reset()
         
@@ -426,11 +384,9 @@ open class CollectionView: ScrollView, NSDraggingSource {
     // MARK: - Layout
     /*-------------------------------------------------------------------------------*/
     
-    /**
-        The layout used to organize the collected view’s items.
-     
-     - Note: Assigning a new layout object to this property does **NOT** apply the layout to the collection view. Call `reloadData()` or `reloadLayout(_:)` to do so.
-     */
+    ///    The layout used to organize the collected view’s items.
+    ///
+    /// - Note: Assigning a new layout object to this property does **NOT** apply the layout to the collection view. Call `reloadData()` or `reloadLayout(_:)` to do so.
     public var collectionViewLayout: CollectionViewLayout = CollectionViewLayout() {
         didSet {
             collectionViewLayout.collectionView = self
@@ -459,12 +415,9 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
-    /**
-     Force layout of all items, not just those in the visible content area
-     
-     - Note: This is not recommended for large data sets. It can be useful for smaller collection views to better manage transitions/animations.
-     
-     */
+    /// Force layout of all items, not just those in the visible content area
+    ///
+    /// - Note: This is not recommended for large data sets. It can be useful for smaller collection views to better manage transitions/animations.
     public var prepareAll: Bool = false
     
     // Returns the rect to prepare based on prepareAll option
@@ -477,12 +430,9 @@ open class CollectionView: ScrollView, NSDraggingSource {
     // Used to track positioning during resize/layout
     private var _topIP: IndexPath?
     
-    /**
-     Returns the frame for the specified section
-     
-     - Parameter indexPath: The index path of the section for which you want the frame
-     
-     */
+    /// Returns the frame for the specified section
+    ///
+    /// - Parameter indexPath: The index path of the section for which you want the frame
     open func frameForSection(at index: Int) -> CGRect? {
         return self.collectionViewLayout.rectForSection(index)
     }
@@ -501,29 +451,27 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return self.collectionViewLayout.layoutAttributesForSupplementaryView(ofKind: kind, at: indexPath)
     }
     
-    /**
-     Reload the data (section & item counts) when the collectionView bounds change. Defaults to false.
-     
-     - Note:
-     This will only be applied if the layout is also invalidated via `shouldInvalidateLayout(forBoundsChange:)`
-     
-     - Discussion:
-     Set to `true` if the number of sections or items per section can change depending on the collection view's size For example if you want to limit the size of a section but maintain item size, you can calculate the number of items that will fit in the section based on the size of the collection view and return that value in collectionView(_:numberOfItemsIn:) from the collection views data source.
-     
-     +----------+      +-----------------+
-     |          |      |                 |
-     |  +----+  |      |  +----+ +----+  |
-     |  |    |  |      |  |    | |    |  |
-     |  |    |  |      |  |    | |    |  |
-     |  +----+  | +--> |  +----+ +----+  |
-     |          |      |                 |
-     +----------+      +-----------------+
-     |Section 2 |      |Section 2        |
-     +----------+      +-----------------+
-     |          |      |                 |
-     +----------+      +-----------------+
-     
-    */
+    /// Reload the data (section & item counts) when the collectionView bounds change. Defaults to false.
+    ///
+    /// - Note:
+    /// This will only be applied if the layout is also invalidated via `shouldInvalidateLayout(forBoundsChange:)`
+    ///
+    /// - Discussion:
+    /// Set to `true` if the number of sections or items per section can change depending on the collection view's size For example if you want to limit the size of a section but maintain item size, you can calculate the number of items that will fit in the section based on the size of the collection view and return that value in collectionView(_:numberOfItemsIn:) from the collection views data source.
+    /// ```
+    /// +----------+      +-----------------+
+    /// |          |      |                 |
+    /// |  +----+  |      |  +----+ +----+  |
+    /// |  |    |  |      |  |    | |    |  |
+    /// |  |    |  |      |  |    | |    |  |
+    /// |  +----+  | +--> |  +----+ +----+  |
+    /// |          |      |                 |
+    /// +----------+      +-----------------+
+    /// |Section 2 |      |Section 2        |
+    /// +----------+      +-----------------+
+    /// |          |      |                 |
+    /// +----------+      +-----------------+
+    /// ```
     public var reloadDataOnBoundsChange: Bool = false
     
     private var _lastViewSize: CGSize = CGSize.zero
@@ -577,12 +525,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
     @available(*, unavailable, renamed: "reloadLayout(_:scrollPosition:completion:)")
     public func relayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion? = nil) { }
     
-    /**
-     Reload the collection view layout and apply the updated frames to the cells/views.
-     
-     - parameter animated:       If the layout should be animated
-     - parameter scrollPosition: Where (if any) the scroll position should be pinned
-     */
+    /// Reload the collection view layout and apply the updated frames to the cells/views.
+    ///
+    /// - parameter animated:       If the layout should be animated
+    /// - parameter scrollPosition: Where (if any) the scroll position should be pinned
     public func reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion? = nil) {
         self._reloadLayout(animated, scrollPosition: scrollPosition, completion: completion, needsRecalculation: true)
     }
@@ -739,52 +685,46 @@ open class CollectionView: ScrollView, NSDraggingSource {
         get { return self.clipView?.scrollEnabled ?? true }
     }
     
-    /**
-     Returns true if the collection view is currently scrolling
-    */
+    /// Returns true if the collection view is currently scrolling
     public internal(set) var isScrolling: Bool = false
     
     private var _previousOffset = CGPoint.zero
     private var _offsetMark = CACurrentMediaTime()
     
-    /**
-     Returns the current velocity of a scroll in points/second
-    */
+    /// Returns the current velocity of a scroll in points/second
     public private(set) var scrollVelocity = CGPoint.zero
     
-    /**
-     Returns the peak valocity of a scroll during the last scrolling session
-     
-     ## Example Usage
-     If your cells require complex loading that may slow scrolling performance, `peakScrollVelocity` can be used to determine if the cell content should be reduced or delayed until after the scrolling ends.
-     
-     For example in CollectionViewCell
-     ```
-     override func viewDidDisplay() {
-        if self.collectionView?.isScrolling != true ||  (self.collectionView?.peakScrollVelocity.maxAbsVelocity ?? 0) < 200 {
-            // load complex content
-        }
-        else {
-            // Wait until we are done scrolling
-        }
-     }
-     
-     func loadContent() { Do complex loading }
-     ```
-     
-     Then, in your collection view's delegate
-     ```
-     func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: Bool) {
-        guard collectionView.peakScrollVelocity.maxAbsVelocity > 200 else { return }
-        for ip in collectionView.indexPathsForVisibleItems {
-            if let c = collectionView.cellForItem(at:ip) as? MyCellClass {
-                c.loadContent
-            }
-        }
-     }
-     ```
-     
-    */
+    
+    /// Returns the peak valocity of a scroll during the last scrolling session
+    ///
+    /// ## Example Usage
+    /// If your cells require complex loading that may slow scrolling performance, `peakScrollVelocity` can be used to determine if the cell content should be reduced or delayed until after the scrolling ends.
+    ///
+    /// For example in CollectionViewCell
+    /// ```
+    /// override func viewDidDisplay() {
+    ///    if self.collectionView?.isScrolling != true ||  (self.collectionView?.peakScrollVelocity.maxAbsVelocity ?? 0) < 200 {
+    ///        // load complex content
+    ///    }
+    ///    else {
+    ///        // Wait until we are done scrolling
+    ///    }
+    /// }
+    ///
+    /// func loadContent() { Do complex loading }
+    /// ```
+    ///
+    /// Then, in your collection view's delegate
+    /// ```
+    /// func collectionViewDidEndScrolling(_ collectionView: CollectionView, animated: Bool) {
+    ///    guard collectionView.peakScrollVelocity.maxAbsVelocity > 200 else { return }
+    ///    for ip in collectionView.indexPathsForVisibleItems {
+    ///        if let c = collectionView.cellForItem(at:ip) as? MyCellClass {
+    ///            c.loadContent
+    ///        }
+    ///    }
+    /// }
+    /// ```
     public private(set) var peakScrollVelocity = CGPoint.zero
     
     @objc final func didScroll(_ notification: Notification) {
@@ -830,9 +770,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
 
-    /**
-     Returns the lowest index path of all visible items
-     */
+    /// Returns the lowest index path of all visible items
     open var indexPathsForVisibleSections: [IndexPath] {
         
         var ips = [IndexPath]()
@@ -846,9 +784,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return ips
     }
     
-    /**
-     Returns the lowest index path of all visible items
-    */
+    /// Returns the lowest index path of all visible items
     open var indexPathForFirstVisibleItem: IndexPath? {
         if self.delegate?.collectionViewLayoutAnchor == nil {
             return  _indexPathForFirstVisibleItem
@@ -856,9 +792,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return self.delegate?.collectionViewLayoutAnchor?(self)
     }
     
-    /**
-     Same as indexPathForFirstVisibleItem but doesn't ask the delegate for a suggestion. This is a convenient variable to use in collectionViewLayoutAnchor(_:) but asking the delegate within is not possibe.
-    */
+    /// Same as indexPathForFirstVisibleItem but doesn't ask the delegate for a suggestion. This is a convenient variable to use in collectionViewLayoutAnchor(_:) but asking the delegate within is not possibe.
     open var _indexPathForFirstVisibleItem: IndexPath? {
         var closest: (IndexPath, CGFloat)?
         for ip in self.contentDocumentView.preparedCellIndex.orderedIndexes {
@@ -884,13 +818,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
     /// The duration of animations when performing animated layout changes
     public var animationDuration: TimeInterval = 0.4
     
-	/**
-	Perform multiple updates to be applied together
-
-	- Parameter updates: A closure in which to apply the desired changes
-	- Parameter completion: A closure to call when the animation finished
-
-	*/
+	/// Perform multiple updates to be applied together
+    ///
+	/// - Parameter updates: A closure in which to apply the desired changes
+	/// - Parameter completion: A closure to call when the animation finished
     public func performBatchUpdates(_ updates: (() -> Void), completion: AnimationCompletion?) {
         self.beginEditing()
         updates()
@@ -931,14 +862,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
-	/**
-	Insert sections at the given indexes
-
-	- Parameter sections: The sections to insert
-	- Parameter animated: If the update should be animated
-
-     - Note: If called within performBatchUpdate(_:completion:) sections should be the final indexes after other updates are applied
-	*/
+	/// Insert sections at the given indexes
+    ///
+	/// - Parameter sections: The sections to insert
+	/// - Parameter animated: If the update should be animated
+    ///
+    /// - Note: If called within performBatchUpdate(_:completion:) sections should be the final indexes after other updates are applied
     public func insertSections(_ sections: IndexSet, animated: Bool) {
         guard !sections.isEmpty else { return }
         self.beginEditing()
@@ -946,14 +875,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
-	/**
-	Remove sections and their items
-
-	- Parameter sections: The sections to delete
-	- Parameter animated: If the update should be animated
-
-     - Note: If called within performBatchUpdate(_:completion:) sections should be the index prior to any other updates
-	*/
+	/// Remove sections and their items
+    ///
+	/// - Parameter sections: The sections to delete
+    /// - Parameter animated: If the update should be animated
+    ///
+    /// - Note: If called within performBatchUpdate(_:completion:) sections should be the index prior to any other updates
     public func deleteSections(_ sections: IndexSet, animated: Bool) {
         guard !sections.isEmpty else { return }
         self.beginEditing()
@@ -961,18 +888,15 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
-    /**
-     Move a section and its items
-     
-     - Parameter section: The source index of the section to move
-     - Parameter newSection: The destination index to move the section to
-     - Parameter animated: If the move should be animated
-     
-     - Note: If called within performBatchUpdate(_:completion:): 
-     - Source should be the index prior to any other updates
-     - Destination should be the final index after all other updates
-
-	*/
+    /// Move a section and its items
+    ///
+    /// - Parameter section: The source index of the section to move
+    /// - Parameter newSection: The destination index to move the section to
+    /// - Parameter animated: If the move should be animated
+    ///
+    /// - Note: If called within performBatchUpdate(_:completion:):
+    /// - Source should be the index prior to any other updates
+    /// - Destination should be the final index after all other updates
     public func moveSection(_ section: Int, to newSection: Int, animated: Bool) {
         self.beginEditing()
         self._updateContext.sections.moved[section] = newSection
@@ -984,13 +908,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     public typealias Move = (source: IndexPath, destination: IndexPath)
     
-	/**
-	Insert items at specific index paths
-
-	- Parameter indexPaths: The index paths at which to insert items.
-	- Parameter animated: If the insertion should be animated
-     
-	*/
+	/// Insert items at specific index paths
+    ///
+	/// - Parameter indexPaths: The index paths at which to insert items.
+	/// - Parameter animated: If the insertion should be animated
     public func insertItems(at indexPaths: [IndexPath], animated: Bool) {
         guard !indexPaths.isEmpty else { return }
         self.beginEditing()
@@ -999,13 +920,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
-    /**
-     Deletes the items at the specified index paths.
-
-     - Parameter indexPaths: The index paths for the items you want to delete
-     - Parameter animated: If the updates should be animated
-
-    */
+    /// Deletes the items at the specified index paths.
+    ///
+    /// - Parameter indexPaths: The index paths for the items you want to delete
+    /// - Parameter animated: If the updates should be animated
     public func deleteItems(at indexPaths: [IndexPath], animated: Bool) {
         guard !indexPaths.isEmpty else { return }
         self.beginEditing()
@@ -1013,15 +931,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
-    /**
-     Reload the items and the given index paths. 
-     
-     The cells will be reloaded, asking the data source for the cell to replace with.
-
-     - Parameter indexPaths: The index paths for the items you want to reoad
-     - Parameter animated: If the updates should be animated
-
-    */
+    /// Reload the items and the given index paths.
+    ///
+    /// The cells will be reloaded, asking the data source for the cell to replace with.
+    ///
+    /// - Parameter indexPaths: The index paths for the items you want to reoad
+    /// - Parameter animated: If the updates should be animated
     public func reloadItems(at indexPaths: [IndexPath], animated: Bool) {
         guard !indexPaths.isEmpty else { return }
         self.beginEditing()
@@ -1029,14 +944,11 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.endEditing(animated)
     }
     
-    /**
-     Moves the item from it's current index path to another
-     
-     - Parameter indexPath: The index path for the item to move
-     - Parameter destinationIndexPath: The index path to move the item to
-     - Parameter animated: If the update should be animated
-
-    */
+    /// Moves the item from it's current index path to another
+    ///
+    /// - Parameter indexPath: The index path for the item to move
+    /// - Parameter destinationIndexPath: The index path to move the item to
+    /// - Parameter animated: If the update should be animated
     public func moveItem(at indexPath: IndexPath, to destinationIndexPath: IndexPath, animated: Bool) {
         self.beginEditing()
         self._updateContext.items.moved[indexPath] = destinationIndexPath
@@ -1054,7 +966,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     // MARK: - Internal Manipulation
     /*-------------------------------------------------------------------------------*/
-
     private struct ItemTracker {
         var inserted = Set<IndexPath>()
         var deleted = Set<IndexPath>()
@@ -1425,9 +1336,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
     // MARK: - Mouse Tracking (section highlight)
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     If true, the delegate's `collectionView(_:,mouseMovedToSection:)` will be notified when the cursor is within a section frame
-    */
+    /// If true, the delegate's `collectionView(_:,mouseMovedToSection:)` will be notified when the cursor is within a section frame
     public var trackSectionHover: Bool = false {
         didSet { self.addTracking() }
     }
@@ -1465,7 +1374,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     // MARK: - Mouse Up/Down
     /*-------------------------------------------------------------------------------*/
-    
     override open var acceptsFirstResponder: Bool { return true }
     open override func acceptsFirstMouse(for theEvent: NSEvent?) -> Bool { return true }
     open override func becomeFirstResponder() -> Bool {
@@ -1604,9 +1512,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
     // MARK: - Selection options
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     If the collection view should allow selection of its items
-    */
+    /// If the collection view should allow selection of its items
     public var allowsSelection: Bool = true
     
     /// Determine how item selections are managed
@@ -1635,13 +1541,9 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     // MARK: - Selections
     /*-------------------------------------------------------------------------------*/
-  
-    // Select
     private var _selectedIndexPaths = Set<IndexPath>()
 
-    /**
-     The index path of the highlighted item, if any
-    */
+    /// The index path of the highlighted item, if any
     public internal(set) var indexPathForHighlightedItem: IndexPath? {
         didSet {
             if oldValue == indexPathForHighlightedItem { return }
@@ -1651,14 +1553,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
-    /**
-     Manually set the highlighted item reguardless of the cursor location
-
-     - Parameter indexPath: The index path of the item to highlight
-     - Parameter animated: If the change should be animated
-     
-     This can be use to adust the highlighted item in response to key events
-    */
+    /// Manually set the highlighted item reguardless of the cursor location
+    ///
+    /// - Parameter indexPath: The index path of the item to highlight
+    /// - Parameter animated: If the change should be animated
+    ///
+    /// This can be use to adust the highlighted item in response to key events
     public func highlightItem(at indexPath: IndexPath?, animated: Bool) {
         guard let ip = indexPath else {
             self.indexPathForHighlightedItem = nil
@@ -1669,14 +1569,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
-    /**
-     Returns the index paths for all selected items
-    */
+    /// Returns the index paths for all selected items
     public final var indexPathsForSelectedItems: Set<IndexPath> { return _selectedIndexPaths }
     
-    /**
-     Returns the index paths for all selected items ordered from first to last
-     */
+    /// Returns the index paths for all selected items ordered from first to last
     public final var sortedIndexPathsForSelectedItems: [IndexPath] {
         return indexPathsForSelectedItems.sorted { (ip1, ip2) -> Bool in
             let before =  ip1._section < ip2._section || (ip1._section == ip2._section && ip1._item < ip2._item)
@@ -1684,14 +1580,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
-    /**
-     Returns if the item at a given index path is selected
 
-     - Parameter indexPath: The index path of the item to check
-     
-     - Returns: True if the item at indexPath is selected
-
-    */
+    /// Returns if the item at a given index path is selected
+    ///
+    /// - Parameter indexPath: The index path of the item to check
+    ///
+    /// - Returns: True if the item at indexPath is selected
     public final func itemAtIndexPathIsSelected(_ indexPath: IndexPath) -> Bool {
         return _selectedIndexPaths.contains(indexPath)
     }
@@ -1699,40 +1593,32 @@ open class CollectionView: ScrollView, NSDraggingSource {
     // MARK: - Selecting Items
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     Selects all items in the collection view
-
-     - Parameter animated: If the selections should be animated
-     
-     - Note: The delegate will not be notified of the changes
-
-    */
+    /// Selects all items in the collection view
+    ///
+    /// - Parameter animated: If the selections should be animated
+    ///
+    /// - Note: The delegate will not be notified of the changes
     public func selectAllItems(_ animated: Bool = true) {
         self.selectItems(at: self.allIndexPaths, animated: animated)
     }
     
-    /**
-     Select an item at a given index path
-     
-     - Parameter indexPath: The indexPath to select
-     - Parameter animated: If the selections should be animated
-     - Parameter scrollPosition: The position to scroll the selected item to
-     
-     - Note: The delegate will not be notified of the changes
-     */
+    /// Select an item at a given index path
+    ///
+    /// - Parameter indexPath: The indexPath to select
+    /// - Parameter animated: If the selections should be animated
+    /// - Parameter scrollPosition: The position to scroll the selected item to
+    ///
+    /// - Note: The delegate will not be notified of the changes
     public func selectItem(at indexPath: IndexPath, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) {
         self.selectItems(at: Set([indexPath]), animated: animated, scrollPosition: scrollPosition)
     }
     
-    /**
-     Select the items at the given index paths
-
-     - Parameter indexPaths: The index paths of the items you want to select
-     - Parameter animated: If the selections should be animated
-     
-     - Note: The delegate will not be notified of the changes
-
-    */
+    ///Select the items at the given index paths
+    ///
+    ///- Parameter indexPaths: The index paths of the items you want to select
+    ///- Parameter animated: If the selections should be animated
+    ///
+    ///- Note: The delegate will not be notified of the changes
     public func selectItems<C: Collection>(at indexPaths: C, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) where C.Element == IndexPath {
         self.selectItems(at: Set(indexPaths), animated: animated)
     }
@@ -1744,15 +1630,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self._performProgramaticSelection(for: indexPaths, animated: animated, scrollPosition: scrollPosition)
     }
     
-    /**
-     Deselect cells at given index paths
-     
-     - Parameter indexPaths: The index paths to deselect
-     - Parameter animated: If the deselections should be animated
-     
-     - Note: The delegate will not be notified of the changes
-     
-     */
+    /// Deselect cells at given index paths
+    ///
+    /// - Parameter indexPaths: The index paths to deselect
+    /// - Parameter animated: If the deselections should be animated
+    ///
+    /// - Note: The delegate will not be notified of the changes
     public func deselectItems<C: Collection>(at indexPaths: C, animated: Bool) where C.Element == IndexPath {
         self.deselectItems(at: Set(indexPaths), animated: animated)
     }
@@ -1760,27 +1643,21 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self._deselectItems(at: indexPaths, animated: animated, notify: notifyDelegate)
     }
     
-    /**
-     Deselect all items in the collection view
-     
-     - Parameter animated: If the delselections should be animated
-     
-     - Note: The delegate will not be notified of the changes
-     
-     */
+    /// Deselect all items in the collection view
+    ///
+    /// - Parameter animated: If the delselections should be animated
+    ///
+    /// - Note: The delegate will not be notified of the changes
     public func deselectAllItems(_ animated: Bool = false) {
         self._deselectAllItems(animated, notify: notifyDelegate)
     }
     
-    /**
-     Deselect the item at a given index path
-     
-     - Parameter indexPath: The index path for the item to deselect
-     - Parameter animated: If the deselection should be animated
-     
-     - Note: The delegate will not be notified of the changes
-     
-     */
+    /// Deselect the item at a given index path
+    ///
+    /// - Parameter indexPath: The index path for the item to deselect
+    /// - Parameter animated: If the deselection should be animated
+    ///
+    /// - Note: The delegate will not be notified of the changes
     public func deselectItem(at indexPath: IndexPath, animated: Bool) {
         self._deselectItem(at: indexPath, animated: animated, notify: false)
     }
@@ -1792,7 +1669,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     // MARK: - Internal Selection Handling
     /*-------------------------------------------------------------------------------*/
-    
     private func _selectItems(at indexPaths: Set<IndexPath>, animated: Bool, clear: Bool = false, scrollPosition: CollectionViewScrollPosition = .none, notify: Bool) {
         let needApproval = repeatSelections ? indexPaths : indexPaths.subtracting(self._selectedIndexPaths)
         
@@ -1847,13 +1723,8 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
     }
     
-//    private func _shouldSelectItems(_ indexPaths: Set<IndexPath>) -> Set<IndexPath> {
-//
-//    }
-    
     // MARK: Special Selections
     /*-------------------------------------------------------------------------------*/
-    
     private func _performSelection(at indexPath: IndexPath?, for clickEvent: NSEvent) {
         
         guard let ip = indexPath else {
@@ -1998,32 +1869,22 @@ open class CollectionView: ScrollView, NSDraggingSource {
     // MARK: - Cells & Index Paths
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     Returns all index paths in the collection view
-     
-     - Note: This must be provided by the collectionViewLayout
-     
-    */
+    /// Returns all index paths in the collection view
+    ///
+    /// - Note: This must be provided by the collectionViewLayout
     internal final var allIndexPaths: OrderedSet<IndexPath> { return self.collectionViewLayout.allIndexPaths }
     
-    /**
-     Returns all visible cells in the collection view
-    */
+    /// Returns all visible cells in the collection view
     public final var visibleCells: [CollectionViewCell] { return Array( self.contentDocumentView.preparedCellIndex.values) }
     
-    /**
-     Returns the index paths for all visible cells in the collection view
-    */
+    //// Returns the index paths for all visible cells in the collection view
     public final var indexPathsForVisibleItems: [IndexPath] { return Array(self.contentDocumentView.preparedCellIndex.indexes) }
     
-    /**
-     Returns true if the item at the index path is visible
-
-     - Parameter indexPath: The index path of an item in the collection view
-
-     - Returns: True if the item is visible
-
-    */
+    /// Returns true if the item at the index path is visible
+    ///
+    /// - Parameter indexPath: The index path of an item in the collection view
+    ///
+    /// - Returns: True if the item is visible
     public final func itemAtIndexPathIsVisible(_ indexPath: IndexPath) -> Bool {
         if let frame = self.contentDocumentView.preparedCellIndex[indexPath]?.frame {
             return self.contentVisibleRect.intersects(frame)
@@ -2031,34 +1892,25 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return false
     }
     
-    /**
-     Returns the cell at a given index path if it is visible
-
-     - Parameter indexPath: An index path of an item in the collection view
-     
-     - Returns: The cell at the indexpath, or nil if it is not visible
-
-    */
+    /// Returns the cell at a given index path if it is visible
+    ///
+    /// - Parameter indexPath: An index path of an item in the collection view
+    ///
+    /// - Returns: The cell at the indexpath, or nil if it is not visible
     public final func cellForItem(at indexPath: IndexPath) -> CollectionViewCell? { return self.contentDocumentView.preparedCellIndex[indexPath] }
     
-    /**
-     Returns the index path for a cell in the collection view
-
-     - Parameter cell: A cell in the collection view
-     
-     - Returns: The index path of the cell, or nill if it is not visible in the collection view
-
-    */
+    /// Returns the index path for a cell in the collection view
+    ///
+    /// - Parameter cell: A cell in the collection view
+    ///
+    /// - Returns: The index path of the cell, or nill if it is not visible in the collection view
     public final func indexPath(for cell: CollectionViewCell) -> IndexPath? { return self.contentDocumentView.preparedCellIndex.index(of: cell) }
     
-    /**
-     Returns a index path for the item at a given point
-
-     - Parameter point: A point within the collection views contentVisibleRect
-     
-     - Returns: The index path of the item at point, if any
-
-    */
+    /// Returns a index path for the item at a given point
+    ///
+    /// - Parameter point: A point within the collection views contentVisibleRect
+    ///
+    /// - Returns: The index path of the item at point, if any
     public func indexPathForItem(at point: CGPoint) -> IndexPath? {
         if self.numberOfSections == 0 { return nil }
         for sectionIndex in 0..<self.numberOfSections {
@@ -2077,15 +1929,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return nil
     }
     
-    /**
-     Returns the first index path within a given distance of a point
-
-     - Parameter point: A point within the contentDocumentView's frame
-     - Parameter radius: The distance around the point to check
-
-     - Returns: The index path for a matching item or nil if no items were found
-     
-    */
+    /// Returns the first index path within a given distance of a point
+    ///
+    /// - Parameter point: A point within the contentDocumentView's frame
+    /// - Parameter radius: The distance around the point to check
+    ///
+    /// - Returns: The index path for a matching item or nil if no items were found
     public func firstIndexPathForItem(near point: CGPoint, radius: CGFloat) -> IndexPath? {
         if self.numberOfSections == 0 { return nil }
         
@@ -2106,14 +1955,11 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return nil
     }
     
-    /**
-     Returns the first index path found intersecting a given rect
-
-     - Parameter rect: A rect within the contentDocumentView's frame
-
-     - Returns: The index path for the matching item or nil if no items were found
-     
-    */
+    /// Returns the first index path found intersecting a given rect
+    ///
+    /// - Parameter rect: A rect within the contentDocumentView's frame
+    ///
+    /// - Returns: The index path for the matching item or nil if no items were found
     public func firstIndexPathForItem(in rect: CGRect) -> IndexPath? {
         if self.numberOfSections == 0 { return nil }
         
@@ -2132,14 +1978,11 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return nil
     }
     
-    /**
-     Returns all items intersecting a given rect
-
-     - Parameter rect: A rect within the contentDocumentView's frame
-     
-     - Returns: The index paths for all items in the rect. Will be empty if no items were found
-
-    */
+    /// Returns all items intersecting a given rect
+    ///
+    /// - Parameter rect: A rect within the contentDocumentView's frame
+    ///
+    /// - Returns: The index paths for all items in the rect. Will be empty if no items were found
     public func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         return self.collectionViewLayout.indexPathsForItems(in: rect)
     }
@@ -2154,15 +1997,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     // MARK: - Supplementary Views & Index Paths
     /*-------------------------------------------------------------------------------*/
-    
-    /**
-     Returns the indexPath for the section that contains the given point
 
-     - Parameter point: The point the section must contain
-     
-     - Returns: The index path for the section contianing the point
-
-    */
+    /// Returns the indexPath for the section that contains the given point
+    ///
+    /// - Parameter point: The point the section must contain
+    ///
+    /// - Returns: The index path for the section contianing the point
     public final func indexPathForSection(at point: CGPoint) -> IndexPath? {
         for sectionIndex in 0..<self.numberOfSections {
             let rect =  self.collectionViewLayout.rectForSection(sectionIndex)
@@ -2181,46 +2021,35 @@ open class CollectionView: ScrollView, NSDraggingSource {
 //        return nil
     }
     
-    /**
-     Returns all visible cells in the collection view
-     */
+    /// Returns all visible cells in the collection view
     public final var visibleSupplementaryViews: [CollectionReusableView] {
         return Array(self.contentDocumentView.preparedSupplementaryViewIndex.values)
     }
     
-    /**
-     Returns the index path for a supplementary view
-
-     - Parameter view: The supplementary view for which you want the index path
-     
-     - Returns: The index path for the view
-
-    */
+    /// Returns the index path for a supplementary view
+    ///
+    /// - Parameter view: The supplementary view for which you want the index path
+    ///
+    /// - Returns: The index path for the view
     public final func indexPath(forSupplementaryView view: CollectionReusableView) -> IndexPath? { return view.attributes?.indexPath }
     
-    /**
-     Returns the visible supplementary view of the given kind at indexPath
-     
-     - Parameter kind: The kind of the supplementary view
-     - Parameter indexPath: The index path of the supplementary view
-     
-     - Returns: The view of kind at the given index path
-     
-     */
+    /// Returns the visible supplementary view of the given kind at indexPath
+    ///
+    /// - Parameter kind: The kind of the supplementary view
+    /// - Parameter indexPath: The index path of the supplementary view
+    ///
+    /// - Returns: The view of kind at the given index path
     public final func supplementaryViews(forElementKind kind: String, at indexPath: IndexPath) -> CollectionReusableView? {
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: indexPath)
         return self.contentDocumentView.preparedSupplementaryViewIndex[id]
     }
     
-    /**
-     Returns the visible supplementary view of the given kind at indexPath
-
-     - Parameter kind: The kind of the supplementary view
-     - Parameter indexPath: The index path of the supplementary view
-     
-     - Returns: The view of kind at the given index path
-
-    */
+    /// Returns the visible supplementary view of the given kind at indexPath
+    ///
+    /// - Parameter kind: The kind of the supplementary view
+    /// - Parameter indexPath: The index path of the supplementary view
+    ///
+    /// - Returns: The view of kind at the given index path
     public final func supplementaryView(forElementKind kind: String, at indexPath: IndexPath) -> CollectionReusableView? {
         let id = SupplementaryViewIdentifier(kind: kind, reuseIdentifier: "", indexPath: indexPath)
         return self.contentDocumentView.preparedSupplementaryViewIndex[id]
@@ -2246,7 +2075,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     // MARK: - Programatic Scrollin
     /*-------------------------------------------------------------------------------*/
-    
     public  func cancelScrollAnimation() {
         self.clipView?.cancelScrollAnimation()
     }
@@ -2258,15 +2086,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
                         completion: completion)
     }
     
-    /**
-     Scroll an item into view
-
-     - Parameter indexPath: The index path of the item to scroll to
-     - Parameter scrollPosition: The position to scroll the item to within the visible frame
-     - Parameter animated: If the scroll should be animated
-     - Parameter completion: A closure to call on completion of the scroll
-
-    */
+    /// Scroll an item into view
+    ///
+    /// - Parameter indexPath: The index path of the item to scroll to
+    /// - Parameter scrollPosition: The position to scroll the item to within the visible frame
+    /// - Parameter animated: If the scroll should be animated
+    /// - Parameter completion: A closure to call on completion of the scroll
     public func scrollItem(at indexPath: IndexPath, to scrollPosition: CollectionViewScrollPosition, animated: Bool, completion: AnimationCompletion?) {
         self._scrollItem(at: indexPath, to: scrollPosition, animated: animated, prepare: true, completion: completion)
     }
@@ -2292,15 +2117,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
 
     }
     
-    /**
-     Scroll an given rect into view
-
-     - Parameter aRect: The rect within the contentDocumentView to scroll to
-     - Parameter scrollPosition: The position to scroll the rect to
-     - Parameter animated: If the scroll should be animated
-     - Parameter completion: A closure to call on completion of the scroll
-
-    */
+    /// Scroll an given rect into view
+    ///
+    /// - Parameter aRect: The rect within the contentDocumentView to scroll to
+    /// - Parameter scrollPosition: The position to scroll the rect to
+    /// - Parameter animated: If the scroll should be animated
+    /// - Parameter completion: A closure to call on completion of the scroll
     public func scrollRect(_ aRect: CGRect, to scrollPosition: CollectionViewScrollPosition, animated: Bool, completion: AnimationCompletion?) {
         self._scrollRect(aRect, to: scrollPosition, animated: animated, prepare: true, completion: completion)
     }
@@ -2388,9 +2210,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
     // MARK: - Dragging Source
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     The index paths for items included in the currect dragging session
-    */
+    /// The index paths for items included in the currect dragging session
     public var indexPathsForDraggingItems: [IndexPath] {
         return draggedIPs
     }

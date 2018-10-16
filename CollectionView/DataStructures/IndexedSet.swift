@@ -85,13 +85,10 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
         return byIndex[index] != nil
     }
     
-    /**
-     Set the value-index pair removing any existing entries for either
-
-     - Parameter value: The value
-     - Parameter index: The index
-
-    */
+    /// Set the value-index pair removing any existing entries for either
+    ///
+    /// - Parameter value: The value
+    /// - Parameter index: The index
     public mutating func set(_ value: Value, for index: Index) {
         self.removeValue(for: index)
         self.remove(value)
@@ -99,23 +96,12 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
         byIndex[index] = value
     }
     
-    /**
-     Insert value for the given index if the value does not exist.
-
-     - Parameter value: A value
-     - Parameter index: An index
-
-    */
+    /// Insert value for the given index if the value does not exist.
+    ///
+    /// - Parameter value: A value
+    /// - Parameter index: An index
     public mutating func insert(_ value: Value, for index: Index) {
         self.set(value, for: index)
-//        guard byValue[value] == nil else { return }
-//        if let object = self.byIndex.removeValue(forKey: index) {
-//            byValue.removeValue(forKey: object)
-//        }
-//
-//        byValue[value] = index
-//        byIndex[index] = value
-//        assert(byIndex.count == byValue.count)
     }
     
     @discardableResult public mutating func removeValue(for index: Index) -> Value? {

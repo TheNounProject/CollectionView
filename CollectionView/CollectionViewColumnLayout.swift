@@ -8,90 +8,74 @@
 
 import Foundation
 
-/**
- *  The delegate for CollectionViewColumnLayout to dynamically customize the layout
- */
+/// The delegate for CollectionViewColumnLayout to dynamically customize the layout
 @objc public protocol CollectionViewDelegateColumnLayout: CollectionViewDelegate {
     
     // MARK: - Spacing & Insets
     /*-------------------------------------------------------------------------------*/
-    /**
-     Asks the delegate for the number fo columns in a section
-     
-     - Parameter collectionView: The collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: A section index
-     
-     - Returns: The desired number of columns in the section
-     
-     */
+    
+    /// Asks the delegate for the number fo columns in a section
+    ///
+    /// - Parameter collectionView: The collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: A section index
+    ///
+    /// - Returns: The desired number of columns in the section
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                        numberOfColumnsInSection section: Int) -> Int
     
-    /**
-     Asks the delegate for insets to be applied to content of a given section
-     
-     - Parameter collectionView: The collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: A section index
-     
-     - Returns: Insets for the section
-     
-     */
+    /// Asks the delegate for insets to be applied to content of a given section
+    ///
+    /// - Parameter collectionView: The collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: A section index
+    ///
+    /// - Returns: Insets for the section
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                        insetForSectionAt section: NSInteger) -> NSEdgeInsets
     
     // Between to items in the same column
     
-    /**
-     Asks the delegate for the item spacing to be applied to items of the same column of a section
-     
-     - Parameter collectionView: The collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: A section index
-     
-     - Returns: <#CGFloat return description#>
-     
-     */
+    /// Asks the delegate for the item spacing to be applied to items of the same column of a section
+    ///
+    /// - Parameter collectionView: The collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: A section index
+    ///
+    /// - Returns: The desired spacing between items in the same column
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                        interitemSpacingForSectionAt section: Int) -> CGFloat
     
-    /**
-     Asks the delegate for the column spacing to applied to items in a given section
-     
-     - Parameter collectionView: The collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: A section index
-     
-     - Returns: <#CGFloat return description#>
-     
-     */
+    /// Asks the delegate for the column spacing to applied to items in a given section
+    ///
+    /// - Parameter collectionView: The collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: A section index
+    ///
+    /// - Returns: The desired spacing between columns in the section
     @objc optional func collectionview(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                        columnSpacingForSectionAt section: Int) -> CGFloat
     
     // MARK: - Item Size
     /*-------------------------------------------------------------------------------*/
-    /**
-     The height for the item at the given indexPath (Priority 2)
-     
-     - parameter collectionView:       The collection view the item is in
-     - parameter collectionViewLayout: The CollectionViewLayout
-     - parameter indexPath:            The indexPath for the item
-     
-     - returns: The height for the item
-     */
+    
+    /// The height for the item at the given indexPath (Priority 2)
+    ///
+    /// - parameter collectionView:       The collection view the item is in
+    /// - parameter collectionViewLayout: The CollectionViewLayout
+    /// - parameter indexPath:            The indexPath for the item
+    ///
+    /// - returns: The height for the item
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                        heightForItemAt indexPath: IndexPath) -> CGFloat
     
-    /**
-     The aspect ration for the item at the given indexPath (Priority 1). Width and height must be greater than 0.
-     
-     - parameter collectionView:       The collection view the item is in
-     - parameter collectionViewLayout: The CollectionViewLayout
-     - parameter indexPath:            The indexPath for the item
-     
-     - returns: The aspect ration for the item
-     */
+    /// The aspect ration for the item at the given indexPath (Priority 1). Width and height must be greater than 0.
+    ///
+    /// - parameter collectionView:       The collection view the item is in
+    /// - parameter collectionViewLayout: The CollectionViewLayout
+    /// - parameter indexPath:            The indexPath for the item
+    ///
+    /// - returns: The aspect ration for the item
     @objc optional func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout,
                                        aspectRatioForItemAt indexPath: IndexPath) -> CGSize
     
@@ -118,9 +102,7 @@ import Foundation
     
 }
 
-/**
- CollectionViewLayoutElementKind
- */
+/// CollectionViewLayoutElementKind
 public struct CollectionViewLayoutElementKind {
     public static let SectionHeader: String = "CollectionElementKindSectionHeader"
     public static let SectionFooter: String = "CollectionElementKindSectionFooter"
@@ -454,7 +436,6 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
                     }
                     for item in column.items {
                         guard item.frame.intersects(rect) else {
-//                            guard item.frame.minY < rect.maxY else { break }
                             continue
                         }
                         results.append(reducer(item))

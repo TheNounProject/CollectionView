@@ -8,51 +8,40 @@
 
 import Foundation
 
-/**
- A vertical list based layout similiar to a native table view
-*/
+/// A vertical list based layout similiar to a native table view
 @objc public protocol CollectionViewDelegateListLayout: CollectionViewDelegate {
     
     // MARK: - Element Size
     /*-------------------------------------------------------------------------------*/
-    /**
-     Asks the delegate for the height of the item at index path
-
-     - Parameter collectionView: The asking collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter indexPath: The index path for the item in question
-     
-     - Returns: The height for the item
-
-    */
+    /// Asks the delegate for the height of the item at index path
+    ///
+    /// - Parameter collectionView: The asking collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter indexPath: The index path for the item in question
+    ///
+    /// - Returns: The height for the item
     @objc optional func collectionView(_ collectionView: CollectionView,
                                        layout collectionViewLayout: CollectionViewLayout,
                                        heightForItemAt indexPath: IndexPath) -> CGFloat
     
-    /**
-     Asks the delegate for the height of the header in a given section
-     
-     - Parameter collectionView: The asking collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: A section index
-     
-     - Returns: The desired height of section header or 0 for no header
-     
-     */
+    /// Asks the delegate for the height of the header in a given section
+    ///
+    /// - Parameter collectionView: The asking collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: A section index
+    ///
+    /// - Returns: The desired height of section header or 0 for no header
     @objc optional func collectionView(_ collectionView: CollectionView,
                                        layout collectionViewLayout: CollectionViewLayout,
                                        heightForHeaderInSection section: Int) -> CGFloat
     
-    /**
-     Asks the delegate for the height of the footer in a given section.
-     
-     - Parameter collectionView: The asking collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: The section of the footer in question
-     
-     - Returns: The desired height of the section footer or 0 for no footer
-     
-     */
+    /// Asks the delegate for the height of the footer in a given section.
+    ///
+    /// - Parameter collectionView: The asking collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: The section of the footer in question
+    ///
+    /// - Returns: The desired height of the section footer or 0 for no footer
     @objc optional func collectionView(_ collectionView: CollectionView,
                                        layout collectionViewLayout: CollectionViewLayout,
                                        heightForFooterInSection section: Int) -> CGFloat
@@ -60,30 +49,24 @@ import Foundation
     // MARK: - Spacing & Insets
     /*-------------------------------------------------------------------------------*/
     
-    /**
-     Asks the delegate for the spacing between items in a given section
-
-     - Parameter collectionView: The asking collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: A section index
-     
-     - Returns: The desired item spacing to be applied between items in the given section
-
-    */
+    /// Asks the delegate for the spacing between items in a given section
+    ///
+    /// - Parameter collectionView: The asking collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: A section index
+    ///
+    /// - Returns: The desired item spacing to be applied between items in the given section
     @objc optional func collectionView(_ collectionView: CollectionView,
                                        layout collectionViewLayout: CollectionViewLayout,
                                        interitemSpacingForItemsInSection section: Int) -> CGFloat
     
-    /**
-     Asks the delegate for insets to use when laying out items in a given section
-
-     - Parameter collectionView: The asking collection view
-     - Parameter collectionViewLayout: The layout
-     - Parameter section: A section index
-     
-     - Returns: The edge insets for the section
-
-    */
+    /// Asks the delegate for insets to use when laying out items in a given section
+    ///
+    /// - Parameter collectionView: The asking collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Parameter section: A section index
+    ///
+    /// - Returns: The edge insets for the section
     @objc optional func collectionView(_ collectionView: CollectionView,
                                        layout collectionViewLayout: CollectionViewLayout,
                                        insetForSectionAt section: Int) -> NSEdgeInsets

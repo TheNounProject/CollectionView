@@ -4,560 +4,554 @@
     <title>RelationalResultsController Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
+	<meta name="viewport" content="width=device-width, viewport-fit=cover, initial-scale=1.0" />
     <script src="../js/jquery.min.js" defer></script>
     <script src="../js/jazzy.js" defer></script>
     
-    <script src="../js/lunr.min.js" defer></script>
-    <script src="../js/typeahead.jquery.js" defer></script>
-    <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-
     <a name="//apple_ref/swift/Class/RelationalResultsController" class="dashAnchor"></a>
-
     <a title="RelationalResultsController Class Reference"></a>
-
-    <header class="header">
-      <p class="header-col header-col--primary">
-        <a class="header-link" href="../index.html">
-          CollectionView Docs
-        </a>
-         (64% documented)
-      </p>
+    <header>
+      <div class="content-wrapper">
+        <p>
+          <a href="../index.html">CollectionView Docs</a>
+          <span class="no-mobile"> (63% documented)</span>
+        </p>
     
-      <p class="header-col--secondary">
-        <form role="search" action="../search.json">
-          <input type="text" placeholder="Search documentation" data-typeahead>
-        </form>
-      </p>
-    
-        <p class="header-col header-col--secondary">
-          <a class="header-link" href="https://github.com/TheNounProject/CollectionView">
-            <img class="header-icon" src="../img/gh.png"/>
-            View on GitHub
+        <p class="header-right">
+          <a href="https://github.com/TheNounProject/CollectionView">
+            <img src="../img/gh.png"/>
+            <span class="no-mobile">View on GitHub</span>
           </a>
         </p>
     
+      </div>
     </header>
+    <div id="breadcrumbs-container">
+      <div class="content-wrapper">
+        <p id="breadcrumbs">
+          <span class="no-mobile">
+            <a href="../index.html">CollectionView Reference</a>
+            <img id="carat" src="../img/carat.png" />
+          </span>
+          RelationalResultsController Class Reference
+        </p>
+      </div>
+    </div>
+    <div class="wrapper">
+      <div class="article-wrapper">
+        <article class="main-content">
+          <section>
+            <section class="section">
+              <h1>RelationalResultsController</h1>
+                <div class="declaration">
+                  <div class="language">
+                    <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">RelationalResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="../Classes/FetchedResultsController.html">FetchedResultsController</a></span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span> <span class="k">where</span> <span class="kt">Section</span> <span class="p">:</span> <span class="kt">NSManagedObject</span><span class="p">,</span> <span class="kt">Element</span> <span class="p">:</span> <span class="kt">NSManagedObject</span></code></pre>
 
-    <p class="breadcrumbs">
-      <a class="breadcrumb" href="../index.html">CollectionView Reference</a>
-      <img class="carat" src="../img/carat.png" />
-      RelationalResultsController Class Reference
-    </p>
-
-    <div class="content-wrapper">
-      <nav class="navigation">
-        <ul class="nav-groups">
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Guides.html">Guides</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../introduction.html">Introduction</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../basic-setup.html">Basic Setup</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../supplementary-views.html">Supplementary Views</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../layouts.html">Layouts</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../drag--drop.html">Drag &amp; Drop</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../content-updates.html">Content Updates</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../results-controller.html">Results Controller</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Collection View.html">Collection View</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionView.html">CollectionView</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionView.html#/s:14CollectionViewAAC13SelectionModeO">– SelectionMode</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewCell.html">CollectionViewCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionReusableView.html">CollectionReusableView</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewController.html">CollectionViewController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0aB17LayoutElementKindV">CollectionViewLayoutElementKind</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0A15ElementCategoryO">CollectionElementCategory</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0aB9DirectionO">CollectionViewDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0aB15ScrollDirectionO">CollectionViewScrollDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView0aB14ScrollPositionO">CollectionViewScrollPosition</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewPreviewCell.html">CollectionViewPreviewCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewPreviewController.html">CollectionViewPreviewController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewPreviewControllerDelegate.html">CollectionViewPreviewControllerDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Collection View.html#/s:14CollectionView19AnimationCompletiona">AnimationCompletion</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Collection View Layouts.html">Collection View Layouts</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC19ItemRenderDirectionO">– ItemRenderDirection</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout.html#/s:14CollectionView0aB10FlowLayoutC12RowTransformO">– RowTransform</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Results Controller.html">Results Controller</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/ResultsController.html">ResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/MutableResultsController.html">MutableResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/RelationalResultsController.html">RelationalResultsController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/FetchedSetController.html">FetchedSetController</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Results Controller.html#/s:14CollectionView27ResultsControllerChangeTypeO">ResultsControllerChangeType</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewProvider.html">CollectionViewProvider</a>
-              </li>
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Classes/CollectionViewResultsProxy.html">CollectionViewResultsProxy</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Other Enums.html">Other Enumerations</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Enums/SortDescriptorResult.html">SortDescriptorResult</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Other Extensions.html">Other Extensions</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Extensions/IndexPath.html">IndexPath</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Other Protocols.html">Other Protocols</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Other Protocols.html#/s:14CollectionView30CustomDisplayStringConvertibleP">CustomDisplayStringConvertible</a>
-              </li>
-            </ul>
-          </li>
-          <li class="nav-group-name">
-            <a class="nav-group-name-link" href="../Other Structs.html">Other Structures</a>
-            <ul class="nav-group-tasks">
-              <li class="nav-group-task">
-                <a class="nav-group-task-link" href="../Structs/SortDescriptor.html">SortDescriptor</a>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
-      <article class="main-content">
-
-        <section class="section">
-          <div class="section-content">
-            <h1>RelationalResultsController</h1>
-              <div class="declaration">
-                <div class="language">
-                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">RelationalResultsController</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="p">,</span> <span class="kt">Element</span><span class="p">:</span> <span class="kt">NSManagedObject</span><span class="o">&gt;</span> <span class="p">:</span> <span class="kt"><a href="../Classes/FetchedResultsController.html">FetchedResultsController</a></span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">Element</span><span class="o">&gt;</span></code></pre>
-
+                  </div>
                 </div>
-              </div>
-            <p>Extending on FetchedResultsController and it&rsquo;s section grouping, this controller allows for sections to be created from a parent ententy.- </p>
+              <p>Extending on FetchedResultsController and it&rsquo;s section grouping, this controller allows for sections to be created from a parent ententy.- </p>
 
 <p>In a FetchedResultsController (and NSFetchedResultsController) you would use sectionKeyPath to achieve the following:</p>
-<pre class="highlight plaintext"><code>Things
-   { sectionKeyPath : "Things" }
-   { sectionKeyPath : "Things" }
+<pre class="highlight swift"><code><span class="kt">Things</span>
+   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Things"</span> <span class="p">}</span>
+   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Things"</span> <span class="p">}</span>
 
-Not Things
-   { sectionKeyPath : "Not Things" }
-   { sectionKeyPath : "Not Things" }
+<span class="kt">Not</span> <span class="kt">Things</span>
+   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Not Things"</span> <span class="p">}</span>
+   <span class="p">{</span> <span class="nv">sectionKeyPath</span> <span class="p">:</span> <span class="s">"Not Things"</span> <span class="p">}</span>
 </code></pre>
 
 <p>While this is great, it does not work well for the common Parent-Child data model. In a Department - Employee model for example we woul want:</p>
-<pre class="highlight plaintext"><code>Sales {}
-   Jim {}
-   Samantha {}
+<pre class="highlight swift"><code><span class="kt">Sales</span> <span class="p">{}</span>
+   <span class="kt">Jim</span> <span class="p">{}</span>
+   <span class="kt">Samantha</span> <span class="p">{}</span>
 
-Managment {}
-   Sarah {}
-   Howard {}
+<span class="kt">Managment</span> <span class="p">{}</span>
+   <span class="kt">Sarah</span> <span class="p">{}</span>
+   <span class="kt">Howard</span> <span class="p">{}</span>
 
 
-Delivery {}
-   &lt;No employees&gt;
+<span class="kt">Delivery</span> <span class="p">{}</span>
+   <span class="o">&lt;</span><span class="kt">No</span> <span class="n">employees</span><span class="o">&gt;</span>
 </code></pre>
 
 <p>In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController where sections consist of the available values in the fetched objects, the <q>Delivery</q> would not be included. With a RelationalResultsController though you can opt to fetch both the sections and object independently (see <code>fetchSections</code>).</p>
 
-          </div>
-        </section>
-
-        <section class="section">
-          <div class="section-content">
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Initialization"></a>
-                <a name="//apple_ref/swift/Section/Initialization" class="dashAnchor"></a>
-                <a href="#/Initialization">
-                  <h3 class="section-name">Initialization</h3>
-                </a>
-              </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerCACyxq_GSo22NSManagedObjectContextC7context_So14NSFetchRequestCyq_G7requestAIyxG07sectionK0s7KeyPathCyq_xSgG0mnO0tcfc"></a>
-                    <a name="//apple_ref/swift/Method/init(context:request:sectionRequest:sectionKeyPath:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerCACyxq_GSo22NSManagedObjectContextC7context_So14NSFetchRequestCyq_G7requestAIyxG07sectionK0s7KeyPathCyq_xSgG0mnO0tcfc">init(context:request:sectionRequest:sectionKeyPath:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Intialize a controller</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span><span class="p">,</span> <span class="nv">request</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">sectionRequest</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Section</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">sectionKeyPath</span> <span class="nv">keyPath</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Section</span><span class="p">?</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
+            </section>
+            <section class="section task-group-section">
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Initialization"></a>
+                  <a name="//apple_ref/swift/Section/Initialization" class="dashAnchor"></a>
+                  <a href="#/Initialization">
+                    <h3 class="section-name">Initialization</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView27RelationalResultsControllerC7context7request14sectionRequest0H7KeyPathACyxq_GSo22NSManagedObjectContextC_So07NSFetchI0Cyq_GALyxGs0jK0Cyq_xSgGtcfc"></a>
+                      <a name="//apple_ref/swift/Method/init(context:request:sectionRequest:sectionKeyPath:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC7context7request14sectionRequest0H7KeyPathACyxq_GSo22NSManagedObjectContextC_So07NSFetchI0Cyq_GALyxGs0jK0Cyq_xSgGtcfc">init(context:request:sectionRequest:sectionKeyPath:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Intialize a controller</p>
 
                         </div>
-                      </div>
-                      <div>
-                        <h4>Parameters</h4>
-                        <table class="graybox">
-                          <tbody>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>context</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>A managed object context</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>request</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>A request for fetching objects</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>sectionRequest</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>A request for fetching sections (if fetchSections is true)</p>
-                                </div>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td>
-                                <code>
-                                <em>keyPath</em>
-                                </code>
-                              </td>
-                              <td>
-                                <div>
-                                  <p>The key path on the controllers objects that references the sections</p>
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerC12performFetchyyKF"></a>
-                    <a name="//apple_ref/swift/Method/performFetch()" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC12performFetchyyKF">performFetch()</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Executes a fetch to populate the controller</p>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">context</span><span class="p">:</span> <span class="kt">NSManagedObjectContext</span><span class="p">,</span> <span class="nv">request</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Element</span><span class="o">&gt;</span><span class="p">,</span> <span class="nv">sectionRequest</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Section</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">sectionKeyPath</span> <span class="nv">keyPath</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">Element</span><span class="p">,</span> <span class="kt">Section</span><span class="p">?</span><span class="o">&gt;</span><span class="p">)</span></code></pre>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="k">override</span> <span class="kd">public</span> <span class="kd">func</span> <span class="nf">performFetch</span><span class="p">()</span> <span class="k">throws</span></code></pre>
+                          </div>
+                        </div>
+                        <div>
+                          <h4>Parameters</h4>
+                          <table class="graybox">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>context</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>A managed object context</p>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>request</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>A request for fetching objects</p>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>sectionRequest</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>A request for fetching sections (if fetchSections is true)</p>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <code>
+                                  <em>keyPath</em>
+                                  </code>
+                                </td>
+                                <td>
+                                  <div>
+                                    <p>The key path on the controllers objects that references the sections</p>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView27RelationalResultsControllerC12performFetchyyKF"></a>
+                      <a name="//apple_ref/swift/Method/performFetch()" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC12performFetchyyKF">performFetch()</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>Executes a fetch to populate the controller</p>
 
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Configuration"></a>
-                <a name="//apple_ref/swift/Section/Configuration" class="dashAnchor"></a>
-                <a href="#/Configuration">
-                  <h3 class="section-name">Configuration</h3>
-                </a>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">public</span> <span class="kd">func</span> <span class="nf">performFetch</span><span class="p">()</span> <span class="k">throws</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerC19sectionFetchRequestSo07NSFetchH0CyxGvp"></a>
-                    <a name="//apple_ref/swift/Property/sectionFetchRequest" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC19sectionFetchRequestSo07NSFetchH0CyxGvp">sectionFetchRequest</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>A fetch request used to fetch, filter, and sort the section results of the controller.</p>
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Configuration"></a>
+                  <a name="//apple_ref/swift/Section/Configuration" class="dashAnchor"></a>
+                  <a href="#/Configuration">
+                    <h3 class="section-name">Configuration</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView27RelationalResultsControllerC19sectionFetchRequestSo07NSFetchH0CyxGvp"></a>
+                      <a name="//apple_ref/swift/Property/sectionFetchRequest" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC19sectionFetchRequestSo07NSFetchH0CyxGvp">sectionFetchRequest</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A fetch request used to fetch, filter, and sort the section results of the controller.</p>
 
 <p>This is used to validate the section objects. If <code><a href="../Classes/RelationalResultsController.html#/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbvp">fetchSections</a></code> is true, section objects will be fetched independent of the child objects.</p>
 
 <p>A parent object that does not match the request here, may still be visible if it has children that match the predicate of fetchRequest.</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">sectionFetchRequest</span> <span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Section</span><span class="o">&gt;</span></code></pre>
-
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerC18sectionNameKeyPaths0hI0CyxSSGSgvp"></a>
-                    <a name="//apple_ref/swift/Property/sectionNameKeyPath" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC18sectionNameKeyPaths0hI0CyxSSGSgvp">sectionNameKeyPath</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>A keyPath of the section objects to get the displayable name</p>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">sectionFetchRequest</span><span class="p">:</span> <span class="kt">NSFetchRequest</span><span class="o">&lt;</span><span class="kt">Section</span><span class="o">&gt;</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView27RelationalResultsControllerC18sectionNameKeyPaths0hI0CyxSSGSgvp"></a>
+                      <a name="//apple_ref/swift/Property/sectionNameKeyPath" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC18sectionNameKeyPaths0hI0CyxSSGSgvp">sectionNameKeyPath</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>A keyPath of the section objects to get the displayable name</p>
 
 <p>For custom names, leave nil and conform your section objects to CustomDisplayStringConvertible</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sectionNameKeyPath</span> <span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;</span><span class="p">?</span></code></pre>
-
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbvp"></a>
-                    <a name="//apple_ref/swift/Property/fetchSections" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbvp">fetchSections</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>If true, sections will be fetched independent of objects using sectionFetchRequest.</p>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">sectionNameKeyPath</span><span class="p">:</span> <span class="kt">KeyPath</span><span class="o">&lt;</span><span class="kt">Section</span><span class="p">,</span> <span class="kt">String</span><span class="o">&gt;</span><span class="p">?</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbvp"></a>
+                      <a name="//apple_ref/swift/Property/fetchSections" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC13fetchSectionsSbvp">fetchSections</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          <p>If true, sections will be fetched independent of objects using sectionFetchRequest.</p>
 
 <p>This is useful to populate the controller with section objects that may not have any children.</p>
 
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">fetchSections</span> <span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">true</span></code></pre>
-
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="task-group">
-              <div class="task-name-container">
-                <a name="/Section%20Names"></a>
-                <a name="//apple_ref/swift/Section/Section Names" class="dashAnchor"></a>
-                <a href="#/Section%20Names">
-                  <h3 class="section-name">Section Names</h3>
-                </a>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">fetchSections</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
               </div>
-              <ul class="item-container">
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:14CollectionView27RelationalResultsControllerC11sectionNameSS10Foundation9IndexPathV12forSectionAt_tF"></a>
-                    <a name="//apple_ref/swift/Method/sectionName(forSectionAt:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC11sectionNameSS10Foundation9IndexPathV12forSectionAt_tF">sectionName(forSectionAt:)</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">sectionName</span><span class="p">(</span><span class="n">forSectionAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
-
+              <div class="task-group">
+                <div class="task-name-container">
+                  <a name="/Section%20Names"></a>
+                  <a name="//apple_ref/swift/Section/Section Names" class="dashAnchor"></a>
+                  <a href="#/Section%20Names">
+                    <h3 class="section-name">Section Names</h3>
+                  </a>
+                </div>
+                <ul>
+                  <li class="item">
+                    <div>
+                      <code>
+                      <a name="/s:14CollectionView27RelationalResultsControllerC11sectionName12forSectionAtSS10Foundation9IndexPathV_tF"></a>
+                      <a name="//apple_ref/swift/Method/sectionName(forSectionAt:)" class="dashAnchor"></a>
+                      <a class="token" href="#/s:14CollectionView27RelationalResultsControllerC11sectionName12forSectionAtSS10Foundation9IndexPathV_tF">sectionName(forSectionAt:)</a>
+                      </code>
+                    </div>
+                    <div class="height-container">
+                      <div class="pointer-container"></div>
+                      <section class="section">
+                        <div class="pointer"></div>
+                        <div class="abstract">
+                          
                         </div>
-                      </div>
-                    </section>
-                  </div>
+                        <div class="declaration">
+                          <h4>Declaration</h4>
+                          <div class="language">
+                            <p class="aside-title">Swift</p>
+                            <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">override</span> <span class="kd">func</span> <span class="nf">sectionName</span><span class="p">(</span><span class="n">forSectionAt</span> <span class="nv">indexPath</span><span class="p">:</span> <span class="kt">IndexPath</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                          </div>
+                        </div>
+                      </section>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </section>
+        </article>
+      </div>
+      <div class="nav-wrapper">
+        <nav class="nav-bottom">
+          <ul class="nav-groups">
+            <li class="nav-group-name">
+              <a href="../Guides.html">Guides</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../introduction.html">Introduction</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../basic-setup.html">Basic Setup</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../supplementary-views.html">Supplementary Views</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../layouts.html">Layouts</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../drag--drop.html">Drag &amp; Drop</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../content-updates.html">Content Updates</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../results-controller.html">Results Controller</a>
                 </li>
               </ul>
-            </div>
-          </div>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Collection View.html">Collection View</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionView.html">CollectionView</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionView.html#/s:14CollectionViewAAC13SelectionModeO">– SelectionMode</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDataSource.html">CollectionViewDataSource</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegate.html">CollectionViewDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDragDelegate.html">CollectionViewDragDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewCell.html">CollectionViewCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionReusableView.html">CollectionReusableView</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewController.html">CollectionViewController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0aB17LayoutElementKindV">CollectionViewLayoutElementKind</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0A15ElementCategoryO">CollectionElementCategory</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0aB9DirectionO">CollectionViewDirection</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0aB15ScrollDirectionO">CollectionViewScrollDirection</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView0aB14ScrollPositionO">CollectionViewScrollPosition</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewPreviewCell.html">CollectionViewPreviewCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewPreviewController.html">CollectionViewPreviewController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewPreviewTransitionCell.html">CollectionViewPreviewTransitionCell</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewPreviewControllerDelegate.html">CollectionViewPreviewControllerDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Collection View.html#/s:14CollectionView19AnimationCompletiona">AnimationCompletion</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Collection View Layouts.html">Collection View Layouts</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewLayout.html">CollectionViewLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewLayoutAttributes.html">CollectionViewLayoutAttributes</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewListLayout.html">CollectionViewListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegateListLayout.html">CollectionViewDelegateListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewColumnLayout.html">CollectionViewColumnLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewColumnLayout.html#/s:14CollectionView0aB12ColumnLayoutC0D8StrategyO">– LayoutStrategy</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegateColumnLayout.html">CollectionViewDelegateColumnLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewFlowLayout.html">CollectionViewFlowLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewFlowLayout.html#/s:14CollectionView0aB10FlowLayoutC12RowTransformO">– RowTransform</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewFlowLayout/ItemStyle.html">– ItemStyle</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegateFlowLayout.html">CollectionViewDelegateFlowLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewHorizontalListLayout.html">CollectionViewHorizontalListLayout</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/CollectionViewDelegateHorizontalListLayout.html">CollectionViewDelegateHorizontalListLayout</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Results Controller.html">Results Controller</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Protocols/ResultsController.html">ResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Protocols/ResultsControllerDelegate.html">ResultsControllerDelegate</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/MutableResultsController.html">MutableResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/FetchedResultsController.html">FetchedResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/RelationalResultsController.html">RelationalResultsController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/FetchedSetController.html">FetchedSetController</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Results Controller.html#/s:14CollectionView27ResultsControllerChangeTypeO">ResultsControllerChangeType</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Results Controller.html#/s:14CollectionView22ResultsControllerErrorO">ResultsControllerError</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewProvider.html">CollectionViewProvider</a>
+                </li>
+                <li class="nav-group-task">
+                  <a href="../Classes/CollectionViewResultsProxy.html">CollectionViewResultsProxy</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Other Enums.html">Other Enumerations</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Enums/SortDescriptorResult.html">SortDescriptorResult</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Other Extensions.html">Other Extensions</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Extensions/IndexPath.html">IndexPath</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Other Protocols.html">Other Protocols</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Other Protocols.html#/s:14CollectionView30CustomDisplayStringConvertibleP">CustomDisplayStringConvertible</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-group-name">
+              <a href="../Other Structs.html">Other Structures</a>
+              <ul class="nav-group-tasks">
+                <li class="nav-group-task">
+                  <a href="../Structs/SortDescriptor.html">SortDescriptor</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="footer-wrapper">
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-10-16)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
         </section>
-
-      </article>
+      </div>
     </div>
-    <section class="footer">
-      <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external">Noun Project</a>. All rights reserved. (Last updated: 2018-04-24)</p>
-      <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
-    </section>
   </body>
 </div>
 </html>

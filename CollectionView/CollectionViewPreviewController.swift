@@ -345,8 +345,6 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
             }
             return false
         }
-        print(ips)
-        
         if animated, let sourceCV = self.sourceCollectionView, !ips.isEmpty {
             for ip in ips {
                 let cell = self.collectionView.cellForItem(at: ip)

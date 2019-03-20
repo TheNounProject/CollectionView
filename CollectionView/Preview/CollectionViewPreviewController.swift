@@ -294,10 +294,9 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
             self.view.addConstraintsToMatchParent()
         }
         
+        self.collectionView.frame = self.view.bounds
+        self.collectionView.layoutSubtreeIfNeeded()
         self.collectionView.reloadData()
-        
-         self.collectionView.frame = self.view.bounds
-         self.collectionView.layoutSubtreeIfNeeded()
         
         self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centered)
         

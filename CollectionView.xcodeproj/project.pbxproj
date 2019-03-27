@@ -330,7 +330,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Noun Project";
 				TargetAttributes = {
 					DE9071E81CAC7FD800AD0E37 = {
@@ -346,10 +346,11 @@
 			};
 			buildConfigurationList = DE9071E31CAC7FD800AD0E37 /* Build configuration list for PBXProject "CollectionView" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = DE9071DF1CAC7FD800AD0E37;
 			productRefGroup = DE9071EA1CAC7FD800AD0E37 /* Products */;

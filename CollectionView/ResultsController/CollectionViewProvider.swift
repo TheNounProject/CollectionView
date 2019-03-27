@@ -99,7 +99,7 @@ public extension CollectionViewResultsProxy {
     ///   - edits: A set of EditDistance Edits
     ///   - section: The section the changes should apply to
     /// - Returns: A new proxy with the edits added
-    public func addEdits<T: Collection>(from edits: EditDistance<T>, for section: Int = 0) where T.Iterator.Element: Hashable, T.Index == Int {
+    func addEdits<T: Collection>(from edits: EditDistance<T>, for section: Int = 0) where T.Iterator.Element: Hashable, T.Index == Int {
         for e in edits.edits {
             switch e.operation {
             case .deletion:
@@ -520,7 +520,7 @@ public extension CollectionView {
     ///
     /// - Parameter changeSet: The change set to apply
     /// - Parameter completion: A close to call when the update finishes
-    public func applyChanges(from changeSet: CollectionViewResultsProxy, completion: AnimationCompletion? = nil) {
+    func applyChanges(from changeSet: CollectionViewResultsProxy, completion: AnimationCompletion? = nil) {
         guard !changeSet.isEmpty else {
             completion?(true)
             return
@@ -532,7 +532,7 @@ public extension CollectionView {
         }, completion: completion)
     }
     
-    public func applyChanges(_ changes: SectionChangeSet) {
+    func applyChanges(_ changes: SectionChangeSet) {
         self.deleteSections(changes.deleted, animated: true)
         self.insertSections(changes.inserted, animated: true)
         self.reloadSupplementaryViews(in: changes.updated, animated: true)
@@ -541,7 +541,7 @@ public extension CollectionView {
         }
     }
     
-    public func applyChanges(_ changes: ItemChangeSet) {
+    func applyChanges(_ changes: ItemChangeSet) {
         self.deleteItems(at: Array(changes.deleted), animated: true)
         self.insertItems(at: Array(changes.inserted), animated: true)
         

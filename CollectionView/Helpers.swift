@@ -55,20 +55,20 @@ public extension IndexPath {
     /// - Returns: An initialized index path with the item and section
     ///
     /// - Note: item and section must be >= 0
-    public static func `for`(item: Int = 0, section: Int) -> IndexPath {
+    static func `for`(item: Int = 0, section: Int) -> IndexPath {
         precondition(item >= 0, "Attempt to create an indexPath with negative item")
         precondition(section >= 0, "Attempt to create an indexPath with negative section")
         return IndexPath(indexes: [section, item])
     }
     
-    public static var zero: IndexPath { return IndexPath.for(item: 0, section: 0) }
+    static var zero: IndexPath { return IndexPath.for(item: 0, section: 0) }
     
     /// Returns the item of the index path
-    public var _item: Int { return self[1] }
+    var _item: Int { return self[1] }
     
     /// Returns the section of the index path
-    public var _section: Int { return self[0] }
-    public static func inRange(_ range: CountableRange<Int>, section: Int) -> [IndexPath] {
+    var _section: Int { return self[0] }
+    static func inRange(_ range: CountableRange<Int>, section: Int) -> [IndexPath] {
         var ips = [IndexPath]()
         for idx in range {
             ips.append(IndexPath.for(item: idx, section: section))
@@ -76,17 +76,19 @@ public extension IndexPath {
         return ips
     }
     
-    public var previous: IndexPath? {
+    var previous: IndexPath? {
         guard self._item >= 1 else { return nil }
         return IndexPath.for(item: self._item - 1, section: self._section)
     }
-    public var next: IndexPath {
+    var next: IndexPath {
         return IndexPath.for(item: self._item + 1, section: self._section)
     }
-    public var nextSection: IndexPath {
+    var nextSection: IndexPath {
         return IndexPath.for(item: 0, section: self._section + 1)
     }
-    
+}
+
+extension IndexPath {
     var sectionCopy: IndexPath {
         return IndexPath.for(item: 0, section: self._section)
     }

@@ -105,13 +105,13 @@ extension Sequence where Element: Comparer {
 }
 
 public extension Array {
-    public mutating func sort(using sortDescriptor: SortDescriptor<Element>) {
+    mutating func sort(using sortDescriptor: SortDescriptor<Element>) {
         self.sort { (a, b) -> Bool in
             return sortDescriptor.compare(a, to: b) == .ascending
         }
     }
     
-    public mutating func sort(using sortDescriptors: [SortDescriptor<Element>]) {
+    mutating func sort(using sortDescriptors: [SortDescriptor<Element>]) {
         guard !sortDescriptors.isEmpty else { return }
         if sortDescriptors.count == 1 {
             return self.sort(using: sortDescriptors[0])
@@ -128,7 +128,7 @@ public extension Array {
         }
     }
     
-    public mutating func insert(_ element: Element, using sortDescriptors: [SortDescriptor<Element>]) -> Int {
+    mutating func insert(_ element: Element, using sortDescriptors: [SortDescriptor<Element>]) -> Int {
 
         if !sortDescriptors.isEmpty, let idx = (self.index { return sortDescriptors.compare(element, $0) != .ascending }) {
             self.insert(element, at: idx)

@@ -21,9 +21,8 @@ fileprivate struct RefKeyTable<Key: Hashable & AnyObject, Value: Any> : Sequence
             self.key = val
             self.keyHash = val.hashValue
         }
-        
-        var hashValue: Int {
-            return keyHash
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(keyHash)
         }
         static func ==(lhs: KeyRef, rhs: KeyRef) -> Bool {
             return lhs.key == rhs.key

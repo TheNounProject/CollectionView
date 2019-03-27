@@ -20,9 +20,8 @@ fileprivate class Child: ResultType, CustomStringConvertible {
         self.name = name ?? "Child \(rank)"
         self.parent = parent
     }
-    
-    var hashValue: Int {
-        return id.hashValue
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
     }
     static func ==(lhs: Child, rhs: Child) -> Bool {
         return lhs.id == rhs.id
@@ -35,8 +34,9 @@ fileprivate class Parent: SectionType, CustomStringConvertible {
     let id = UUID()
     var rank: Int
     var name: String
-    var hashValue: Int {
-        return id.hashValue
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
     }
     init(rank: Int, name: String? = nil) {
         self.rank = rank

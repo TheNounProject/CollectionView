@@ -130,7 +130,7 @@ public extension Array {
     
     mutating func insert(_ element: Element, using sortDescriptors: [SortDescriptor<Element>]) -> Int {
 
-        if !sortDescriptors.isEmpty, let idx = (self.index { return sortDescriptors.compare(element, $0) != .ascending }) {
+        if !sortDescriptors.isEmpty, let idx = (self.firstIndex { return sortDescriptors.compare(element, $0) != .ascending }) {
             self.insert(element, at: idx)
             return idx
         }

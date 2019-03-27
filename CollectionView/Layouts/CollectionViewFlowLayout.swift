@@ -271,7 +271,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
             
             if f.indexPath > indexPath { return nil }
             if l.indexPath < indexPath { return nil }
-            return self.items.index {
+            return self.items.firstIndex {
                 return $0.indexPath == indexPath
             }
         }

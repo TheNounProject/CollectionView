@@ -2253,8 +2253,8 @@ open class CollectionView: ScrollView, NSDraggingSource {
                 let item = NSDraggingItem(pasteboardWriter: writer)
                 item.draggingFrame = frame
                 
-                originalFrame.deinitialize()
-                originalFrame.deallocate(capacity: 1)
+                originalFrame.deinitialize(count: 1)
+                originalFrame.deallocate()
                 
                 if self.itemAtIndexPathIsVisible(ip) {
                     item.imageComponentsProvider = { () -> [NSDraggingImageComponent] in

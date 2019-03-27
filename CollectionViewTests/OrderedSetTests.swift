@@ -12,8 +12,9 @@ import CollectionView
 struct Person: Hashable {
     let name: String
     let age: Int
-    var hashValue: Int {
-        return name.hashValue^age
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.name)
+        hasher.combine(self.age)
     }
     static func ==(lhs: Person, rhs: Person) -> Bool {
         return lhs.age == rhs.age && lhs.name == rhs.name

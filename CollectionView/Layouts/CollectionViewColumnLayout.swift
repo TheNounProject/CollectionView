@@ -531,7 +531,7 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
                     
                     // Get the same column
                     if cFlat.intersects(flat) {
-                        guard let idx = (column.items.index { return $0.indexPath == currentIndexPath  }) else {
+                        guard let idx = (column.items.firstIndex { return $0.indexPath == currentIndexPath  }) else {
                             return nil
                         }
                         let next = column.items.index(before: idx)
@@ -568,7 +568,7 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
                     
                     // Get the same column
                     if cFlat.intersects(flat) {
-                        guard let idx = (column.items.index { return $0.indexPath == currentIndexPath  }) else {
+                        guard let idx = (column.items.firstIndex { return $0.indexPath == currentIndexPath  }) else {
                             return nil
                         }
                         let next = column.items.index(after: idx)

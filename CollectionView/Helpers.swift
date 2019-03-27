@@ -86,9 +86,7 @@ public extension IndexPath {
     var nextSection: IndexPath {
         return IndexPath.for(item: 0, section: self._section + 1)
     }
-}
-
-extension IndexPath {
+    
     var sectionCopy: IndexPath {
         return IndexPath.for(item: 0, section: self._section)
     }

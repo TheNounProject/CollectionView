@@ -8,8 +8,6 @@
 
 import Foundation
 
-//typealias HashValue = Int
-
 /// An implementation of an ordered set that favors lookup performance. Insertions and deletions 
 // incur the penalty of updating an index map for all elements beyond the insertion/deletion index.
 

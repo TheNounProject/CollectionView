@@ -381,7 +381,7 @@ fileprivate class Child: ResultType, CustomStringConvertible {
         return lhs === rhs
     }
     var description: String {
-        return "Child \(self.name) - [\(self.parent?.rank ?? "nil parent"), \(self.rank)]"
+        return "Child \(self.name) - [\(self.parent?.rank.description ?? "nil parent"), \(self.rank)]"
     }
 }
 fileprivate class Parent: SectionType, CustomStringConvertible {

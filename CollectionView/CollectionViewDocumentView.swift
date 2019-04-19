@@ -56,12 +56,13 @@ internal struct ItemUpdate: Hashable {
         precondition(a != nil, "Internal error: unable to find layout attributes for view at \(indexPath)")
         return a!
     }
-//    var hashValue: Int {
-//        return self.view.hashValue
-//    }
+
     func hash(into hasher: inout Hasher) {
-        hasher.combine(self.view)
+        hasher.combine(view)
     }
+//    var hashValue: Int {
+//        return view.hashValue
+//    }
 
     init(cell: CollectionViewCell, attrs: CollectionViewLayoutAttributes, type: Type) {
         self.view = cell

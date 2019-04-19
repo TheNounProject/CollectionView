@@ -13,12 +13,15 @@ struct SupplementaryViewIdentifier: Hashable, CustomStringConvertible {
     var indexPath: IndexPath?
     var kind: String
     var reuseIdentifier: String
-    
-    var hashValue: Int {
-        if let ip = self.indexPath {
-            return "\(ip._section)/\(self.kind)".hashValue
-        }
-        return "\(self.kind)/\(self.reuseIdentifier)".hashValue
+
+    func hash(into hasher: inout Hasher) {
+        let str: String = {
+            if let ip = self.indexPath {
+                return "\(ip._section)/\(self.kind)"
+            }
+            return "\(self.kind)/\(self.reuseIdentifier)"
+        }()
+        hasher.combine(str)
     }
     init(kind: String, reuseIdentifier: String, indexPath: IndexPath? = nil) {
         self.kind = kind

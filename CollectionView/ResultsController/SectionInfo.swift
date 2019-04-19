@@ -25,8 +25,8 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     
     // MARK: - Equatable
     /*-------------------------------------------------------------------------------*/
-    public var hashValue: Int {
-        return representedObject?.hashValue ?? 0
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(representedObject)
     }
     
     public static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {

@@ -232,7 +232,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
             ]
         
         eventMonitor = EventMonitor(mask: events, handler: { (event) in
-            guard let e = event, e.phase != .none else { return event }
+            guard let e = event, e.phase != [] else { return event }
             self.scrollWheel(with: e)
             return nil
         })

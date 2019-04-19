@@ -112,7 +112,7 @@ open class CollectionReusableView: NSView {
     open var trackMouseMoved: Bool = false {
         didSet {
             if trackMouseMoved == oldValue { return }
-            let idx = trackingOptions.index(of: NSTrackingArea.Options.mouseMoved)
+            let idx = trackingOptions.firstIndex(of: NSTrackingArea.Options.mouseMoved)
             if trackMouseMoved && idx == nil {
                 trackingOptions.append(NSTrackingArea.Options.mouseMoved)
             }

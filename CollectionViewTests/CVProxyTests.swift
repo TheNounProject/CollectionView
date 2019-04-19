@@ -373,24 +373,26 @@ fileprivate class Child: ResultType, CustomStringConvertible {
         self.name = name ?? "Child \(rank)"
         self.parent = parent
     }
-    
-    var hashValue: Int {
-        return id.hashValue
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
     }
     static func ==(lhs: Child, rhs: Child) -> Bool {
         return lhs === rhs
     }
     var description: String {
-        return "Child \(self.name) - [\(self.parent?.rank), \(self.rank)]"
+        return "Child \(self.name) - [\(self.parent?.rank.description ?? "nil parent"), \(self.rank)]"
     }
 }
 fileprivate class Parent: SectionType, CustomStringConvertible {
     let id = UUID()
     var rank: Int
     var name: String
-    var hashValue: Int {
-        return id.hashValue
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
     }
+
     init(rank: Int, name: String? = nil) {
         self.rank = rank
         self.name = name ?? "Parent \(rank)"

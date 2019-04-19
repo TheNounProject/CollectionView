@@ -46,7 +46,9 @@ public extension ResultsController {
 public protocol SectionType: Hashable { }
 
 struct NoSectionType: SectionType {
-    var hashValue: Int { return 0 }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(0)
+    }
     static func ==(lhs: NoSectionType, rhs: NoSectionType) -> Bool { return true }
 }
 extension String: SectionType { }
@@ -58,7 +60,7 @@ extension NSManagedObject: ResultType { }
 extension NSManagedObject: SectionType { }
 
 public extension Array where Element: Any {
-    public func object(at index: Int) -> Element? {
+    func object(at index: Int) -> Element? {
         if index >= 0 && index < self.count {
             return self[index]
         }

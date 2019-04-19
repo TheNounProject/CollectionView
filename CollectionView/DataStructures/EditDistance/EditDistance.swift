@@ -68,7 +68,10 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
         }
     }
 
-    public var hashValue: Int { return value.hashValue }
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(value)
+    }
+
     public static func ==(lhs: Edit<T>, rhs: Edit<T>) -> Bool {
         return lhs.value == rhs.value
     }

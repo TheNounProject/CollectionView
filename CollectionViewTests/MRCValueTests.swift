@@ -10,6 +10,7 @@ import XCTest
 @testable import CollectionView
 
 fileprivate struct Child: ResultType {
+
     let id = UUID()
     var rank: Int
     var name: String
@@ -20,9 +21,8 @@ fileprivate struct Child: ResultType {
         self.name = name ?? "Parent \(rank)"
         self.parent = parent
     }
-    
-    var hashValue: Int {
-        return id.hashValue
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
     }
     static func ==(lhs: Child, rhs: Child) -> Bool {
         return lhs.id == rhs.id
@@ -32,8 +32,9 @@ fileprivate struct Parent: SectionType {
     let id = UUID()
     var rank: Int
     var name: String
-    var hashValue: Int {
-        return id.hashValue
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.id)
     }
     init(rank: Int, name: String? = nil) {
         self.rank = rank

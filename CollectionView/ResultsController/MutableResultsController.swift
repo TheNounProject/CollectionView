@@ -344,6 +344,53 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         self.sortObjects()
         self.delegate?.controllerDidLoadContent(controller: self)
     }
+
+    /// An update method designed to be used with value types
+    ///
+    /// - Parameter objects: A list of objects to update with
+    public func updateContent(with objects: [Element] = []) {
+        self.beginEditing()
+
+        var inserted = [Element]()
+        let removed = self.allObjects.filter { return !objects.contains($0) }
+        var updated = [Element]()
+
+        for object in objects {
+            if !self.contains(object: object) {
+                inserted.append(object)
+            } else if let ip = self.indexPath(of: object) {
+                self._sections[ip._section].replace(object, at: ip._item)
+                updated.append(object)
+            }
+        }
+
+        self.insert(objects: inserted)
+        self.delete(objects: removed)
+        for o in updated {
+            self._didUpdate(object: o)
+        }
+        if let sectionAccessor = self.sectionGetter {
+            for element in objects {
+                let s = getOrCreateSectionInfo(for: sectionAccessor(element))
+                s.add(element)
+                self._objectSectionMap[element] = s
+            }
+        }
+        else if !objects.isEmpty {
+            if !sections.isEmpty {
+                print("ResultsController Warning: sections provided but no sectionKeyPath has been set")
+            }
+            let s = WrappedSectionInfo(object: nil, objects: objects)
+            self._sections = [s]
+            for o in objects {
+                self._objectSectionMap[o] = s
+            }
+        }
+        self.sortSections()
+        self.sortObjects()
+
+        self.endEditing()
+    }
     
     /// Clears all data and stops monitoring for changes in the context.
     public func reset() {
@@ -580,11 +627,10 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     public private(set) var placeholderChanges: CollectionViewProvider?
 }
 
-extension MutableResultsController where Section: AnyObject {
-    
+extension MutableResultsController {
     // MARK: - Section Manipulation
     /*-------------------------------------------------------------------------------*/
-    
+
     /// Remove the section representing the given value
     ///
     /// - Parameter section: A Section value represented by a section in the controller
@@ -597,7 +643,7 @@ extension MutableResultsController where Section: AnyObject {
         }
         self._removeSection(info: info)
     }
-    
+
     /// Insert a section representing the provided value
     ///
     /// - Parameter section: A Section value representing a section in the controller
@@ -607,36 +653,24 @@ extension MutableResultsController where Section: AnyObject {
         _sections.needsSort = true
         _ = self.getOrCreateSectionInfo(for: section)
     }
-    
-    /// Notify the controller that a section value has changed
-    ///
-    /// After an object is changed in a way that affects its representation as a section in the controller (i.e. sorting), the controller must be notified to process the change.
-    ///
-    /// - Parameter section: A section existing in the controller
-    public func didUpdate(section: Section) {
-        self.beginEditing()
-        defer { self.endEditing() }
-        _sections.needsSort = true
-    }
 }
 
-extension MutableResultsController where Element: AnyObject {
-    
+extension MutableResultsController {
     // MARK: - Object Manipulation
     /*-------------------------------------------------------------------------------*/
-    
+
     /// Delete objects from the controller
     ///
     /// - Parameter deletedObjects: A collection objects in the controller
     public func delete<C: Collection>(objects deletedObjects: C) where C.Iterator.Element == Element {
         self.beginEditing()
         defer { self.endEditing() }
-        
+
         for o in deletedObjects {
             self.delete(object: o)
         }
     }
-    
+
     /// Delete an object from the controller
     ///
     /// - Parameter object: An object in the controller
@@ -646,11 +680,11 @@ extension MutableResultsController where Element: AnyObject {
         guard let ip = self.indexPath(of: object),
             let section = self._objectSectionMap.removeValue(forKey: object) else { return }
         self._editingContext.objectChanges.deleted(object, at: ip)
-        
+
         section.ensureEditing()
         section.remove(object)
     }
-    
+
     /// Insert multiple objects into the controller
     ///
     /// - Parameter newObjects: A collection of objects
@@ -661,7 +695,7 @@ extension MutableResultsController where Element: AnyObject {
             self.insert(object: o)
         }
     }
-    
+
     /// Insert an object into the controller
     ///
     /// - Parameter object: An object
@@ -670,7 +704,7 @@ extension MutableResultsController where Element: AnyObject {
         self.beginEditing()
         defer { self.endEditing() }
         if let sectionAccessor = self.sectionGetter {
-            
+
             let sectionValue = sectionAccessor(object)
             if let existingSection = self.sectionInfo(representing: sectionValue) {
                 existingSection.ensureEditing()
@@ -697,14 +731,8 @@ extension MutableResultsController where Element: AnyObject {
         }
         self._editingContext.objectChanges.inserted(object)
     }
-    
-    /// Notify the controller that an existing object has been updated
-    ///
-    /// After an object is changed in a way that affects its section or sorting, the controller must be notified to process the change.
-    ///
-    /// - Parameter object: An existing object in the controller
-    public func didUpdate(object: Element) {
-        
+
+    private func _didUpdate(object: Element) {
         guard let tempIP = self.indexPath(of: object),
             let currentSection = self.sectionInfo(at: tempIP) else {
                 print("Skipping object update \(object)")
@@ -715,7 +743,7 @@ extension MutableResultsController where Element: AnyObject {
         currentSection.ensureEditing()
         if let sectionAccessor = self.sectionGetter {
             let sectionValue = sectionAccessor(object)
-            
+
             if sectionValue == currentSection.representedObject {
                 // Move within the same section
                 currentSection.add(object)
@@ -735,10 +763,37 @@ extension MutableResultsController where Element: AnyObject {
             let sec = getOrCreateSectionInfo(for: nil)
             sec.ensureEditing()
             sec.add(object)
-            
+
             // Maybe check if the sort keys were actually updated before doing this
             _objectSectionMap[object] = sec
         }
         self._editingContext.objectChanges.updated(object, at: tempIP)
+    }
+}
+
+extension MutableResultsController where Section: AnyObject {
+    
+    /// Notify the controller that a section value has changed
+    ///
+    /// After an object is changed in a way that affects its representation as a section in the controller (i.e. sorting), the controller must be notified to process the change.
+    ///
+    /// - Parameter section: A section existing in the controller
+    public func didUpdate(section: Section) {
+        self.beginEditing()
+        defer { self.endEditing() }
+        _sections.needsSort = true
+    }
+}
+
+extension MutableResultsController where Element: AnyObject {
+    
+    /// Notify the controller that an existing object has been updated
+    ///
+    /// After an object is changed in a way that affects its section or sorting, the controller must be notified to process the change.
+    ///
+    /// - Parameter object: An existing object in the controller
+    public func didUpdate(object: Element) {
+        self._didUpdate(object: object)
+
     }
 }

@@ -59,6 +59,10 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
             self._storage.append(element)
         }
     }
+
+    func replace(_ element: Element, at index: Int) {
+        self._storage.replace(object: element, at: index)
+    }
     
     func sort(using sortDescriptors: [SortDescriptor<Element>]) {
         self._storage.sort(using: sortDescriptors)

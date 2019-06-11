@@ -821,10 +821,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
     ///
 	/// - Parameter updates: A closure in which to apply the desired changes
 	/// - Parameter completion: A closure to call when the animation finished
-    public func performBatchUpdates(_ updates: (() -> Void), completion: AnimationCompletion?) {
+    public func performBatchUpdates(animated: Bool = true, _ updates: (() -> Void), completion: AnimationCompletion?) {
         self.beginEditing()
         updates()
-        self.endEditing(true, completion: completion)
+        self.endEditing(animated, completion: completion)
     }
     
     // MARK: - Manipulating Sections

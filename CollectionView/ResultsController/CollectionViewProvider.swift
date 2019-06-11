@@ -128,6 +128,7 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
     
     /// The last known section count of real data
     private var sectionCount = 0
+    public var animateChanges = true
     
     public init(_ collectionView: CollectionView, resultsController: ResultsController) {
         self.collectionView = collectionView
@@ -374,7 +375,7 @@ extension CollectionViewProvider: ResultsControllerDelegate {
             }
         }
         let completion = self.delegate?.providerDidChangeContent(self)
-        self.collectionView.applyChanges(from: self, completion: completion)
+        self.collectionView.applyChanges(from: self, animated: self.animateChanges, completion: completion)
     }
     
     private func processSections() -> [Section?] {
@@ -520,35 +521,35 @@ public extension CollectionView {
     ///
     /// - Parameter changeSet: The change set to apply
     /// - Parameter completion: A close to call when the update finishes
-    func applyChanges(from changeSet: CollectionViewResultsProxy, completion: AnimationCompletion? = nil) {
+    func applyChanges(from changeSet: CollectionViewResultsProxy, animated: Bool = true, completion: AnimationCompletion? = nil) {
         guard !changeSet.isEmpty else {
             completion?(true)
             return
         }
 
-        self.performBatchUpdates({
-            applyChanges(changeSet.itemUpdates)
-            applyChanges(changeSet.sectionUpdates)
+        self.performBatchUpdates(animated: animated, {
+            self.applyChanges(changeSet.itemUpdates, animated: animated)
+            self.applyChanges(changeSet.sectionUpdates, animated: animated)
         }, completion: completion)
     }
     
-    func applyChanges(_ changes: SectionChangeSet) {
-        self.deleteSections(changes.deleted, animated: true)
-        self.insertSections(changes.inserted, animated: true)
-        self.reloadSupplementaryViews(in: changes.updated, animated: true)
+    func applyChanges(_ changes: SectionChangeSet, animated: Bool = true) {
+        self.deleteSections(changes.deleted, animated: animated)
+        self.insertSections(changes.inserted, animated: animated)
+        self.reloadSupplementaryViews(in: changes.updated, animated: animated)
         for m in changes.moved {
-            self.moveSection(m.source, to: m.destination, animated: true)
+            self.moveSection(m.source, to: m.destination, animated: animated)
         }
     }
     
-    func applyChanges(_ changes: ItemChangeSet) {
-        self.deleteItems(at: Array(changes.deleted), animated: true)
-        self.insertItems(at: Array(changes.inserted), animated: true)
+    func applyChanges(_ changes: ItemChangeSet, animated: Bool = true) {
+        self.deleteItems(at: Array(changes.deleted), animated: animated)
+        self.insertItems(at: Array(changes.inserted), animated: animated)
         
         for move in changes.moved {
-            self.moveItem(at: move.source, to: move.destination, animated: true)
+            self.moveItem(at: move.source, to: move.destination, animated: animated)
         }
-        self.reloadItems(at: Array(changes.updated), animated: true)
+        self.reloadItems(at: Array(changes.updated), animated: animated)
     }
     
 }

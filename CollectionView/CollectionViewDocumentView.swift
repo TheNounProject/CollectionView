@@ -380,6 +380,7 @@ final public class CollectionViewDocumentView: NSView {
                                                               willDisplaySupplementaryView: view,
                                                               ofElementKind: identifier.kind,
                                                               at: identifier.indexPath!)
+                view.viewWillDisplay()
                 if view.superview == nil {
                     if attrs.floating == true {
                         self.collectionView._floatingSupplementaryView.addSubview(view)

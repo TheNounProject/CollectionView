@@ -82,6 +82,8 @@ public protocol CollectionViewProviderDelegate: class {
     func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
     func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
     func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion?
+
+    func provider(_ provider: CollectionViewProvider, didToggleSectionAt index: Int, collapsed: Bool)
 }
 
 public extension CollectionViewProviderDelegate {
@@ -89,6 +91,7 @@ public extension CollectionViewProviderDelegate {
     func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) { }
     func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) { }
     func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion? { return nil }
+    func provider(_ provider: CollectionViewProvider, didToggleSectionAt index: Int, collapsed: Bool) { }
 }
 
 public extension CollectionViewResultsProxy {
@@ -198,7 +201,7 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
     func expandAllSections() {
         
     }
-    
+
     func setSection(at sectionIndex: Int, expanded: Bool, animated: Bool) {
         if expanded {
             self.expandSection(at: sectionIndex, animated: animated)
@@ -207,7 +210,7 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
             self.collapseSection(at: sectionIndex, animated: animated)
         }
     }
-    
+
     public func isSectionCollapsed(at index: Int) -> Bool {
         return collapsedSections.contains(index)
     }
@@ -217,12 +220,28 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         collapsedSections.insert(sectionIndex)
         self.collectionView.deleteItems(at: ips, animated: animated)
+        self.delegate?.provider(self, didToggleSectionAt: sectionIndex, collapsed: true)
     }
     
     public func expandSection(at sectionIndex: Int, animated: Bool) {
         guard collapsedSections.remove(sectionIndex) != nil else { return }
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         self.collectionView.insertItems(at: ips, animated: animated)
+        self.delegate?.provider(self, didToggleSectionAt: sectionIndex, collapsed: false)
+    }
+
+    /// Toggle the expansion state for a section
+    ///
+    /// - Parameters:
+    ///   - index: The index of the section to toggle
+    ///   - animated: If the change should be animated
+    /// - Returns: True if the section is now collapsed as a result of the toggle
+    public func toggleExpansion(forSectionAt index: Int, animated: Bool) -> Bool {
+        let isCollapsed = self.isSectionCollapsed(at: index)
+        self.setSection(at: index,
+                        expanded: isCollapsed,
+                        animated: animated)
+        return !isCollapsed
     }
 }
 

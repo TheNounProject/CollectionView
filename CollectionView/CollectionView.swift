@@ -1405,10 +1405,11 @@ open class CollectionView: ScrollView, NSDraggingSource {
         guard accept.accept else {
             return
         }
-        self.window?.makeFirstResponder(self)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
         mouseDownLocation = theEvent.locationInWindow
         let point = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
+        
+        self.window?.makeFirstResponder(self)
         
         if accept.itemSpecific {
             self.mouseDownIP = self.indexPathForItem(at: point)

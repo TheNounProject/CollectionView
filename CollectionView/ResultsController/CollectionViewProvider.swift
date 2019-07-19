@@ -82,6 +82,8 @@ public protocol CollectionViewProviderDelegate: class {
     func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
     func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
     func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion?
+
+    func provider(_ provider: CollectionViewProvider, didToggleSectionAt index: Int, collapsed: Bool)
 }
 
 public extension CollectionViewProviderDelegate {
@@ -89,6 +91,7 @@ public extension CollectionViewProviderDelegate {
     func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) { }
     func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType) { }
     func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion? { return nil }
+    func provider(_ provider: CollectionViewProvider, didToggleSectionAt index: Int, collapsed: Bool) { }
 }
 
 public extension CollectionViewResultsProxy {
@@ -128,6 +131,7 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
     
     /// The last known section count of real data
     private var sectionCount = 0
+    public var animateChanges = true
     
     public init(_ collectionView: CollectionView, resultsController: ResultsController) {
         self.collectionView = collectionView
@@ -197,7 +201,7 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
     func expandAllSections() {
         
     }
-    
+
     func setSection(at sectionIndex: Int, expanded: Bool, animated: Bool) {
         if expanded {
             self.expandSection(at: sectionIndex, animated: animated)
@@ -206,7 +210,7 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
             self.collapseSection(at: sectionIndex, animated: animated)
         }
     }
-    
+
     public func isSectionCollapsed(at index: Int) -> Bool {
         return collapsedSections.contains(index)
     }
@@ -216,12 +220,28 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         collapsedSections.insert(sectionIndex)
         self.collectionView.deleteItems(at: ips, animated: animated)
+        self.delegate?.provider(self, didToggleSectionAt: sectionIndex, collapsed: true)
     }
     
     public func expandSection(at sectionIndex: Int, animated: Bool) {
         guard collapsedSections.remove(sectionIndex) != nil else { return }
         let ips = (0..<self.numberOfItems(in: sectionIndex)).map { return IndexPath.for(item: $0, section: sectionIndex) }
         self.collectionView.insertItems(at: ips, animated: animated)
+        self.delegate?.provider(self, didToggleSectionAt: sectionIndex, collapsed: false)
+    }
+
+    /// Toggle the expansion state for a section
+    ///
+    /// - Parameters:
+    ///   - index: The index of the section to toggle
+    ///   - animated: If the change should be animated
+    /// - Returns: True if the section is now collapsed as a result of the toggle
+    public func toggleExpansion(forSectionAt index: Int, animated: Bool) -> Bool {
+        let isCollapsed = self.isSectionCollapsed(at: index)
+        self.setSection(at: index,
+                        expanded: isCollapsed,
+                        animated: animated)
+        return !isCollapsed
     }
 }
 
@@ -374,7 +394,7 @@ extension CollectionViewProvider: ResultsControllerDelegate {
             }
         }
         let completion = self.delegate?.providerDidChangeContent(self)
-        self.collectionView.applyChanges(from: self, completion: completion)
+        self.collectionView.applyChanges(from: self, animated: self.animateChanges, completion: completion)
     }
     
     private func processSections() -> [Section?] {
@@ -520,35 +540,35 @@ public extension CollectionView {
     ///
     /// - Parameter changeSet: The change set to apply
     /// - Parameter completion: A close to call when the update finishes
-    func applyChanges(from changeSet: CollectionViewResultsProxy, completion: AnimationCompletion? = nil) {
+    func applyChanges(from changeSet: CollectionViewResultsProxy, animated: Bool = true, completion: AnimationCompletion? = nil) {
         guard !changeSet.isEmpty else {
             completion?(true)
             return
         }
 
-        self.performBatchUpdates({
-            applyChanges(changeSet.itemUpdates)
-            applyChanges(changeSet.sectionUpdates)
+        self.performBatchUpdates(animated: animated, {
+            self.applyChanges(changeSet.itemUpdates, animated: animated)
+            self.applyChanges(changeSet.sectionUpdates, animated: animated)
         }, completion: completion)
     }
     
-    func applyChanges(_ changes: SectionChangeSet) {
-        self.deleteSections(changes.deleted, animated: true)
-        self.insertSections(changes.inserted, animated: true)
-        self.reloadSupplementaryViews(in: changes.updated, animated: true)
+    func applyChanges(_ changes: SectionChangeSet, animated: Bool = true) {
+        self.deleteSections(changes.deleted, animated: animated)
+        self.insertSections(changes.inserted, animated: animated)
+        self.reloadSupplementaryViews(in: changes.updated, animated: animated)
         for m in changes.moved {
-            self.moveSection(m.source, to: m.destination, animated: true)
+            self.moveSection(m.source, to: m.destination, animated: animated)
         }
     }
     
-    func applyChanges(_ changes: ItemChangeSet) {
-        self.deleteItems(at: Array(changes.deleted), animated: true)
-        self.insertItems(at: Array(changes.inserted), animated: true)
+    func applyChanges(_ changes: ItemChangeSet, animated: Bool = true) {
+        self.deleteItems(at: Array(changes.deleted), animated: animated)
+        self.insertItems(at: Array(changes.inserted), animated: animated)
         
         for move in changes.moved {
-            self.moveItem(at: move.source, to: move.destination, animated: true)
+            self.moveItem(at: move.source, to: move.destination, animated: animated)
         }
-        self.reloadItems(at: Array(changes.updated), animated: true)
+        self.reloadItems(at: Array(changes.updated), animated: animated)
     }
     
 }

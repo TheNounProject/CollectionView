@@ -210,7 +210,14 @@ public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collect
         }
         self._remap(startingAt: sorted[0])
     }
-    
+
+    @discardableResult public mutating func replace(object: Element, at index: Int) -> Element {
+        let e = self._data.remove(at: index)
+        _map.removeValue(forKey: e)
+        self.insert(object, at: index)
+        return e
+    }
+
     var needsSort: Bool = false
     mutating func _batchRemove(_ object: Element) {
         self.needsSort = true

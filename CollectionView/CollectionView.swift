@@ -821,10 +821,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
     ///
 	/// - Parameter updates: A closure in which to apply the desired changes
 	/// - Parameter completion: A closure to call when the animation finished
-    public func performBatchUpdates(_ updates: (() -> Void), completion: AnimationCompletion?) {
+    public func performBatchUpdates(animated: Bool = true, _ updates: (() -> Void), completion: AnimationCompletion?) {
         self.beginEditing()
         updates()
-        self.endEditing(true, completion: completion)
+        self.endEditing(animated, completion: completion)
     }
     
     // MARK: - Manipulating Sections
@@ -1405,10 +1405,11 @@ open class CollectionView: ScrollView, NSDraggingSource {
         guard accept.accept else {
             return
         }
-        self.window?.makeFirstResponder(self)
         // super.mouseDown(theEvent) DONT DO THIS, it will consume the event and mouse up is not called
         mouseDownLocation = theEvent.locationInWindow
         let point = self.contentDocumentView.convert(theEvent.locationInWindow, from: nil)
+        
+        self.window?.makeFirstResponder(self)
         
         if accept.itemSpecific {
             self.mouseDownIP = self.indexPathForItem(at: point)

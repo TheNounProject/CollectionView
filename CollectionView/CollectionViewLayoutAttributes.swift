@@ -100,8 +100,7 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
         var attrs: CollectionViewLayoutAttributes!
         if self.representedElementCategory == .cell {
             attrs = CollectionViewLayoutAttributes(forCellWith: self.indexPath)
-        }
-        else {
+        } else {
             attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: self.representedElementKind!, with: indexPath)
         }
         attrs.frame = self.frame
@@ -115,8 +114,7 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
         var attrs: CollectionViewLayoutAttributes!
         if self.representedElementCategory == .cell {
             attrs = CollectionViewLayoutAttributes(forCellWith: newIndexPath)
-        }
-        else {
+        } else {
             attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: self.representedElementKind!, with: newIndexPath)
         }
         attrs.frame = self.frame

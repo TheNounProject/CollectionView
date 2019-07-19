@@ -29,7 +29,7 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
         hasher.combine(representedObject)
     }
     
-    public static func ==(lhs: SectionInfo, rhs: SectionInfo) -> Bool {
+    public static func == (lhs: SectionInfo, rhs: SectionInfo) -> Bool {
         return lhs.representedObject == rhs.representedObject
     }
     
@@ -46,16 +46,14 @@ public class SectionInfo<Section: SectionType, Element: Hashable>: Hashable {
     func remove(_ object: Element) {
         if self.isEditing {
             self._removed.insert(object)
-        }
-        else {
+        } else {
             _storage.remove(object)
         }
     }
     func add(_ element: Element) {
         if self.isEditing {
             self._updated.insert(element)
-        }
-        else {
+        } else {
             self._storage.append(element)
         }
     }

@@ -34,8 +34,7 @@ struct IndexPathSet: Sequence {
     mutating func insert(_ indexPath: IndexPath) {
         if self.storage[indexPath._section] == nil {
             self.storage[indexPath._item] = IndexSet(integer: indexPath._item)
-        }
-        else {
+        } else {
             self.storage[indexPath._section]!.insert(indexPath._item)
         }
     }

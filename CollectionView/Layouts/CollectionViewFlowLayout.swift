@@ -404,8 +404,11 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
                                                                                                     width: contentWidth,
                                                                                                     spacing: interitemSpacing)
                                 
-                                if let s = self.spanGroupSpacingAfter, previousStyle?.isSpan == true { spacing = s }
-                                else { spacing = interitemSpacing }
+                                if let s = self.spanGroupSpacingAfter, previousStyle?.isSpan == true {
+                                    spacing = s
+                                } else {
+                                    spacing = interitemSpacing
+                                }
                             }
                             
                             attrs.frame = CGRect(x: insets.left, y: top + spacing, width: size.width, height: size.height)
@@ -421,10 +424,8 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
                                 attrs.frame = CGRect(x: prev.frame.maxX + interitemSpacing, y: prev.frame.origin.y,
                                                      width: size.width, height: size.height)
                                 sectionAttrs.rows[sectionAttrs.rows.count - 1].add(attributes: attrs)
-                            }
-                            else { newRow() }
-                        }
-                        else { newRow() }
+                            } else { newRow() }
+                        } else { newRow() }
                         forceBreak = false
                         
                     case let .span(size):
@@ -440,11 +441,9 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
                         if !sectionAttrs.rows.isEmpty {
                             if let s = self.spanGroupSpacingBefore, previousStyle?.isSpan == false {
                                 spacing = s
-                            }
-                            else if let s = self.interpanSpacing, previousStyle?.isSpan == true {
+                            } else if let s = self.interpanSpacing, previousStyle?.isSpan == true {
                                 spacing = s
-                            }
-                            else {
+                            } else {
                                 spacing = interitemSpacing
                             }
                         }                        
@@ -564,8 +563,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
 //                }
             }
             return attrs
-        }
-        else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
+        } else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
             return self.sectionAttributes[indexPath._section].footer?.copy()
         }
         return nil

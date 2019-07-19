@@ -30,8 +30,7 @@ public final class CVDiff: DiffAware {
             if let s = sIdx, let t = tIdx {
                 if s == t {
                     
-                }
-                else {
+                } else {
                     let adjust = insertions.count(in: 0...s) - deletions.count(in: 0...s)
                     if s + adjust == t {
                         continue
@@ -41,12 +40,10 @@ public final class CVDiff: DiffAware {
                     insertions.insert(t)
                     deletions.insert(s)
                 }
-            }
-            else if let idx = sIdx {
+            } else if let idx = sIdx {
                 _edits.delete(value, index: idx)
                 deletions.insert(idx)
-            }
-            else if let idx = tIdx {
+            } else if let idx = tIdx {
                 _edits.insert(value, index: idx)
                 insertions.insert(idx)
             }

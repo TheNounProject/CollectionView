@@ -232,8 +232,7 @@ extension NSView {
             sv.addConstraints([top, bottom, right, left])
             self.translatesAutoresizingMaskIntoConstraints = false
             return (top, right, bottom, left)
-        }
-        else {
+        } else {
             debugPrint("Toolkit Warning: Attempt to add contraints to match parent but the view had not superview.")
         }
         return nil

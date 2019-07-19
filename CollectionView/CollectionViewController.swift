@@ -15,8 +15,7 @@ open class CollectionViewController: NSViewController, CollectionViewDataSource,
     public let collectionView = CollectionView()
     
     open override func loadView() {
-        if self.nibName != nil { super.loadView() }
-        else {
+        if self.nibName != nil { super.loadView() } else {
             self.view = NSView(frame: NSRect(origin: CGPoint.zero, size: CGSize(width: 100, height: 100)))
         }
     }
@@ -74,8 +73,7 @@ open class CollectionViewController: NSViewController, CollectionViewDataSource,
                 if let val = value {
                     constraint.constant = val
                     constraint.isActive = true
-                }
-                else {
+                } else {
                     constraint.isActive = false
                 }
                 return

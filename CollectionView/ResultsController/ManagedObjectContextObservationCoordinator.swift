@@ -24,7 +24,7 @@ fileprivate struct RefKeyTable<Key: Hashable & AnyObject, Value: Any> : Sequence
         func hash(into hasher: inout Hasher) {
             hasher.combine(keyHash)
         }
-        static func ==(lhs: KeyRef, rhs: KeyRef) -> Bool {
+        static func == (lhs: KeyRef, rhs: KeyRef) -> Bool {
             return lhs.key == rhs.key
         }
     }
@@ -144,8 +144,7 @@ class ManagedObjectContextObservationCoordinator {
                                                       name: .NSManagedObjectContextObjectsDidChange,
                                                       object: context)
             _ = contexts.removeValue(forKey: context)
-        }
-        else {
+        } else {
             contexts[context] = count - 1
         }
     }

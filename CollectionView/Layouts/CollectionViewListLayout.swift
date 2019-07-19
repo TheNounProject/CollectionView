@@ -262,8 +262,7 @@ public final class CollectionViewListLayout: CollectionViewLayout {
             
             if rect.contains(section.contentFrame) {
                 results.append(contentsOf: section.items.map { return reducer($0) })
-            }
-            else {
+            } else {
                 for item in section.items {
                     guard item.frame.intersects(rect) else {
                         guard item.frame.minY < rect.maxY else { break }
@@ -298,8 +297,7 @@ public final class CollectionViewListLayout: CollectionViewLayout {
                 attrs.floating = attrs.frame.origin.y > frame.origin.y
             }
             return attrs
-        }
-        else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
+        } else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
             return section.footer?.copy()
         }
         return nil

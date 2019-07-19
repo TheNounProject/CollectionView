@@ -61,8 +61,7 @@ open class ContextObserver {
         }
         if wait {
             self.managedObjectContext.performAndWait { run() }
-        }
-        else {
+        } else {
             self.managedObjectContext.perform { run() }
         }
     }

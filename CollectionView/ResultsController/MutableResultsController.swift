@@ -261,8 +261,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                 let sIndex = self._sections.index(of: section),
                 let idx = section.index(of: object) else { return nil }
             return IndexPath.for(item: idx, section: sIndex)
-        }
-        else if let idx = _sections.first?.index(of: object) {
+        } else if let idx = _sections.first?.index(of: object) {
             return IndexPath.for(item: idx, section: 0)
         }
         return nil
@@ -329,8 +328,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                 s.add(element)
                 self._objectSectionMap[element] = s
             }
-        }
-        else if !objects.isEmpty {
+        } else if !objects.isEmpty {
             if !sections.isEmpty {
                 print("ResultsController Warning: sections provided but no sectionKeyPath has been set")
             }
@@ -375,8 +373,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                 s.add(element)
                 self._objectSectionMap[element] = s
             }
-        }
-        else if !objects.isEmpty {
+        } else if !objects.isEmpty {
             if !sections.isEmpty {
                 print("ResultsController Warning: sections provided but no sectionKeyPath has been set")
             }
@@ -710,21 +707,18 @@ extension MutableResultsController {
                 existingSection.ensureEditing()
                 existingSection.add(object)
                 _objectSectionMap[object] = existingSection
-            }
-            else {
+            } else {
                 // The section value doesn't exist yet, the section will be inserted
                 let sec = getOrCreateSectionInfo(for: sectionValue)
                 sec.add(object)
                 _objectSectionMap[object] = sec
             }
-        }
-        else if let section = self._sections.first {
+        } else if let section = self._sections.first {
             // No key path, just one section
             section.ensureEditing()
             section.add(object)
             _objectSectionMap[object] = section
-        }
-        else {
+        } else {
             let s = self.getOrCreateSectionInfo(for: nil)
             s.add(object)
             _objectSectionMap[object] = s
@@ -748,8 +742,7 @@ extension MutableResultsController {
                 // Move within the same section
                 currentSection.add(object)
                 _objectSectionMap[object] = currentSection
-            }
-            else {
+            } else {
                 currentSection.remove(object)
                 let newSection = self.getOrCreateSectionInfo(for: sectionValue)
                 _sections.needsSort = true
@@ -758,8 +751,7 @@ extension MutableResultsController {
                 self._editingContext.itemsWithSectionChange.insert(object)
                 _objectSectionMap[object] = newSection
             }
-        }
-        else {
+        } else {
             let sec = getOrCreateSectionInfo(for: nil)
             sec.ensureEditing()
             sec.add(object)

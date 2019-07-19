@@ -170,8 +170,7 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
             self.displayCount = displayCount
         }
         
-        static func ==(lhs: CollectionViewProvider.Section,
-                       rhs: CollectionViewProvider.Section) -> Bool {
+        static func == (lhs: CollectionViewProvider.Section, rhs: CollectionViewProvider.Section) -> Bool {
             return lhs.source == rhs.source && lhs.target == rhs.target
         }
         var description: String {
@@ -205,8 +204,7 @@ public class CollectionViewProvider: CollectionViewResultsProxy {
     func setSection(at sectionIndex: Int, expanded: Bool, animated: Bool) {
         if expanded {
             self.expandSection(at: sectionIndex, animated: animated)
-        }
-        else {
+        } else {
             self.collapseSection(at: sectionIndex, animated: animated)
         }
     }
@@ -325,8 +323,7 @@ extension CollectionViewProvider: ResultsControllerDelegate {
                 if let s = sec?.source, self.collapsedSections.contains(s),
                     let t = sec?.target {
                     _collapsed.insert(t)
-                }
-                else if defaultCollapse, sec?.source == nil, let t = sec?.target {
+                } else if defaultCollapse, sec?.source == nil, let t = sec?.target {
                     _collapsed.insert(t)
                 }
             }
@@ -348,11 +345,9 @@ extension CollectionViewProvider: ResultsControllerDelegate {
                 
                 if sourceCollapsed && !targetCollapsed {
                     self.itemUpdates.inserted.insert(m.destination)
-                }
-                else if !sourceCollapsed && targetCollapsed {
+                } else if !sourceCollapsed && targetCollapsed {
                     self.itemUpdates.deleted.insert(m.source)
-                }
-                else if !sourceCollapsed && !targetCollapsed {
+                } else if !sourceCollapsed && !targetCollapsed {
                     _moves.append(m)
                 }
                 // If both are collapsed, drop the update
@@ -371,13 +366,11 @@ extension CollectionViewProvider: ResultsControllerDelegate {
             if !wasEmpty && isEmpty {
                 // populate
                 self.addChange(forSectionAt: nil, with: .insert(IndexPath.zero))
-            }
-            else if wasEmpty && !isEmpty {
+            } else if wasEmpty && !isEmpty {
                 // Remove placeholder
                 self.addChange(forSectionAt: IndexPath.zero, with: .delete)
             }
-        }
-        else if self.populateEmptySections && controller.numberOfSections > 0 {
+        } else if self.populateEmptySections && controller.numberOfSections > 0 {
             for sec in target {
                 if let s = sec, s.source != nil, let t = s.target, !collapsedSections.contains(t) {
                     let _isEmpty = controller.numberOfObjects(in: t) == 0
@@ -385,8 +378,7 @@ extension CollectionViewProvider: ResultsControllerDelegate {
                     if !_wasEmpty && _isEmpty {
                         // populate
                         self.addChange(forItemAt: nil, with: .insert(IndexPath.for(section: t)))
-                    }
-                    else if _wasEmpty && !_isEmpty {
+                    } else if _wasEmpty && !_isEmpty {
                         // Remove placeholder
                         self.addChange(forItemAt: IndexPath.for(section: t), with: .delete)
                     }

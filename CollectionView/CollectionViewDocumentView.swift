@@ -48,8 +48,7 @@ internal struct ItemUpdate: Hashable {
         var a: CollectionViewLayoutAttributes?
         if let id = identifier {
             a = cv.layoutAttributesForSupplementaryView(ofKind: id.kind, at: indexPath)
-        }
-        else if view is CollectionViewCell {
+        } else if view is CollectionViewCell {
             a = cv.layoutAttributesForItem(at: indexPath)
         }
         a = a ?? view.attributes
@@ -95,7 +94,7 @@ internal struct ItemUpdate: Hashable {
         self.type = type
     }
     
-    static func ==(lhs: ItemUpdate, rhs: ItemUpdate) -> Bool {
+    static func == (lhs: ItemUpdate, rhs: ItemUpdate) -> Bool {
         return lhs.view == rhs.view
     }
 }
@@ -194,8 +193,7 @@ final public class CollectionViewDocumentView: NSView {
                     attrs = attrs.copy()
                     attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
                     view.apply(attrs, animated: false)
-                }
-                else if view.superview == self.collectionView._floatingSupplementaryView {
+                } else if view.superview == self.collectionView._floatingSupplementaryView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
                     view.apply(attrs, animated: false)
@@ -239,15 +237,13 @@ final public class CollectionViewDocumentView: NSView {
             var removedRect = CGRect.zero
             for ip in removed {
                 if let cell = self.collectionView.cellForItem(at: ip) {
-                    if removedRect.isEmpty { removedRect = cell.frame }
-                    else { removedRect = removedRect.union(cell.frame) }
+                    if removedRect.isEmpty { removedRect = cell.frame } else { removedRect = removedRect.union(cell.frame) }
                     
                     cell.layer?.zPosition = 0
                     if animated, let attrs = self.collectionView.layoutAttributesForItem(at: ip) ?? cell.attributes {
                         self.preparedCellIndex[ip] = nil
                         updates.append(ItemUpdate(cell: cell, attrs: attrs, type: .remove))
-                    }
-                    else {
+                    } else {
                         self.collectionView.enqueueCellForReuse(cell)
                         self.preparedCellIndex[ip] = nil
                         self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: ip)
@@ -259,8 +255,7 @@ final public class CollectionViewDocumentView: NSView {
                 if self.collectionView.collectionViewLayout.scrollDirection == .vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.minYEdge : CGRectEdge.maxYEdge
                     self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
-                }
-                else {
+                } else {
                     let edge = self.visibleRect.origin.x > removedRect.origin.x ? CGRectEdge.minXEdge : CGRectEdge.maxXEdge
                     self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
@@ -318,8 +313,7 @@ final public class CollectionViewDocumentView: NSView {
             for identifier in removed {
                 if let view = self.preparedSupplementaryViewIndex[identifier] {
                     
-                    if removedRect.isEmpty { removedRect = view.frame }
-                    else { removedRect = removedRect.union(view.frame) }
+                    if removedRect.isEmpty { removedRect = view.frame } else { removedRect = removedRect.union(view.frame) }
                     
                     view.layer?.zPosition = -100
                     
@@ -334,14 +328,12 @@ final public class CollectionViewDocumentView: NSView {
                             }
                             attrs = attrs.copy()
                             attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
-                        }
-                        else if view.superview == self.collectionView._floatingSupplementaryView {
+                        } else if view.superview == self.collectionView._floatingSupplementaryView {
                             view.removeFromSuperview()
                             self.collectionView.contentDocumentView.addSubview(view)
                         }
                         updates.append(ItemUpdate(view: view, attrs: attrs, type: .remove, identifier: identifier))
-                    }
-                    else {
+                    } else {
                         self.collectionView.delegate?.collectionView?(self.collectionView,
                                                                       didEndDisplayingSupplementaryView: view,
                                                                       ofElementKind: identifier.kind,
@@ -355,8 +347,7 @@ final public class CollectionViewDocumentView: NSView {
                 if self.collectionView.collectionViewLayout.scrollDirection == .vertical {
                     let edge = self.visibleRect.origin.y > removedRect.origin.y ? CGRectEdge.minYEdge : CGRectEdge.maxYEdge
                     self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
-                }
-                else {
+                } else {
                     let edge = self.visibleRect.origin.x > removedRect.origin.x ? CGRectEdge.minXEdge : CGRectEdge.maxXEdge
                     self.preparedRect = self.preparedRect.subtracting(removedRect, edge: edge)
                 }
@@ -385,8 +376,7 @@ final public class CollectionViewDocumentView: NSView {
                 if view.superview == nil {
                     if attrs.floating == true {
                         self.collectionView._floatingSupplementaryView.addSubview(view)
-                    }
-                    else {
+                    } else {
                         self.addSubview(view)
                     }
                 }
@@ -415,8 +405,7 @@ final public class CollectionViewDocumentView: NSView {
                     }
                     attrs = attrs.copy()
                     attrs.frame = self.collectionView._floatingSupplementaryView.convert(attrs.frame, from: self)
-                }
-                else if view.superview == self.collectionView._floatingSupplementaryView {
+                } else if view.superview == self.collectionView._floatingSupplementaryView {
                     view.removeFromSuperview()
                     self.collectionView.contentDocumentView.addSubview(view)
                 }
@@ -458,13 +447,11 @@ final public class CollectionViewDocumentView: NSView {
                     completion?(true)
                 }
              }
-        }
-        else {
+        } else {
             for item in _updates {
                 if item.type == .remove {
                     removeItem(item)
-                }
-                else {
+                } else {
                     let attrs = item.attrs
                     item.view.apply(attrs, animated: false)
                     if item.type == .insert {
@@ -485,15 +472,13 @@ final public class CollectionViewDocumentView: NSView {
         if let cell = item.view as? CollectionViewCell {
             self.collectionView.delegate?.collectionView?(self.collectionView, didEndDisplayingCell: cell, forItemAt: cell.attributes!.indexPath)
             self.collectionView.enqueueCellForReuse(cell)
-        }
-        else if let id = item.identifier {
+        } else if let id = item.identifier {
             self.collectionView.delegate?.collectionView?(self.collectionView,
                                                           didEndDisplayingSupplementaryView: item.view,
                                                           ofElementKind: id.kind,
                                                           at: id.indexPath!)
             self.collectionView.enqueueSupplementaryViewForReuse(item.view, withIdentifier: id)
-        }
-        else {
+        } else {
             log.error("Invalid item for removal")
         }
     }

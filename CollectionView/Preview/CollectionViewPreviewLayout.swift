@@ -126,8 +126,7 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
                 if let f = attr?.frame {
                     if f.intersects(rect) {
                         indexPaths.append(attr!.indexPath)
-                    }
-                    else if f.minX > rect.maxX {
+                    } else if f.minX > rect.maxX {
                         // If we are past the check region, we can return
                         break
                     }
@@ -152,8 +151,7 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
                 if let f = attr?.frame {
                     if f.intersects(rect) {
                         result.append(attr!)
-                    }
-                    else if f.minX > rect.maxX {
+                    } else if f.minX > rect.maxX {
                         // If we are past the check region, we can return
                         break
                     }

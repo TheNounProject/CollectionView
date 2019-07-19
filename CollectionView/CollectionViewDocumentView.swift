@@ -143,11 +143,12 @@ final public class CollectionViewDocumentView: NSView {
                                                           ofElementKind: id.kind,
                                                           at: id.indexPath!)
         }
-        
         for v in self.subviews where v is CollectionReusableView {
             v.removeFromSuperview()
         }
-        
+        for v in self.collectionView.floatingContentView.subviews where v is CollectionReusableView {
+            v.removeFromSuperview()
+        }
         preparedSupplementaryViewIndex.removeAll()
         self.preparedRect = CGRect.zero
     }

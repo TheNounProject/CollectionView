@@ -432,6 +432,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
     ///
     /// - Parameter indexPath: The index path of the section for which you want the frame
     open func frameForSection(at index: Int) -> CGRect? {
+        guard !self.sections.isEmpty && index < self.sections.count else { return nil }
         return self.collectionViewLayout.rectForSection(index)
     }
     public func frameForSection(at indexPath: IndexPath) -> CGRect? {

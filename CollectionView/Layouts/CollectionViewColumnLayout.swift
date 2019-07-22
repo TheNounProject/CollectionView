@@ -246,8 +246,7 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
                 if let addHeight = variableHeight {
                     itemHeight += addHeight
                 }
-            }
-            else {
+            } else {
                 itemHeight = variableHeight ?? defaultHeight
             }
             
@@ -428,8 +427,7 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
             
             if rect.contains(section.contentFrame) {
                 results.append(contentsOf: section.items.map { return reducer($0) })
-            }
-            else {
+            } else {
                 for column in section.columns {
                     guard column.frame.intersects(rect) else {
                         continue
@@ -468,8 +466,7 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
                 attrs.floating = indexPath._section == 0 || attrs.frame.origin.y > frame.origin.y
             }
             return attrs
-        }
-        else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
+        } else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
             return section.footer?.copy()
         }
         return nil
@@ -487,8 +484,7 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
             let height = frame.size.height + attrs.frame.size.height
             frame.size.height = height
             frame.origin.y = y
-        }
-        else {
+        } else {
             frame.origin.y += inset
         }
         return frame

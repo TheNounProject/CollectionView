@@ -50,8 +50,7 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
     public override weak var delegate: ResultsControllerDelegate? {
         didSet {
             if (oldValue == nil) == (delegate == nil) { return }
-            if delegate == nil { unregister() }
-            else if _fetched { register() }
+            if delegate == nil { unregister() } else if _fetched { register() }
         }
     }
     
@@ -158,10 +157,8 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
                 let match = evaluate(object: o)
                 
                 if self.contains(object: o) {
-                    if !match { self.delete(object: o) }
-                    else { self.didUpdate(object: o) }
-                }
-                else if match {
+                    if !match { self.delete(object: o) } else { self.didUpdate(object: o) }
+                } else if match {
                     self.insert(object: o)
                 }
             }
@@ -353,14 +350,11 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
                 let match = self.evaluate(section: section)
                 if self.fetchSections {
                     if self.contains(sectionObject: section) {
-                        if !match { self.delete(section: section) }
-                        else { self.didUpdate(section: section) }
-                    }
-                    else if match {
+                        if !match { self.delete(section: section) } else { self.didUpdate(section: section) }
+                    } else if match {
                         self.insert(section: section)
                     }
-                }
-                else if self.contains(sectionObject: section) {
+                } else if self.contains(sectionObject: section) {
                     self.didUpdate(section: section)
                 }
             }

@@ -64,8 +64,7 @@ public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDeb
     public subscript(index: Index) -> Value? {
         get { return value(for: index) }
         set(newValue) {
-            if let v = newValue { insert(v, for: index) }
-            else { _ = removeValue(for: index) }
+            if let v = newValue { insert(v, for: index) } else { _ = removeValue(for: index) }
         }
     }
     

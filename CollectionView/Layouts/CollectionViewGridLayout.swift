@@ -185,11 +185,9 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
                 if let addHeight = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemsInSection: section) {
                     rowHeight += addHeight
                 }
-            }
-            else if let h = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemsInSection: section) {
+            } else if let h = self.delegate?.collectionView?(self.collectionView!, layout: self, heightForItemsInSection: section) {
                 rowHeight = h
-            }
-            else {
+            } else {
                 rowHeight = self.aspectRatio.height * (itemWidth/self.aspectRatio.width)
             }
             
@@ -255,8 +253,7 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
                         row = []
                         xPos = contentRect.origin.x
                         yPos += rowHeight + rowSpacing
-                    }
-                    else {
+                    } else {
                         xPos += itemWidth + colSpacing
                     }
                 }
@@ -403,8 +400,7 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
                 currentAttrs.floating = currentAttrs.frame.origin.y > frame.origin.y
             }
             return attrs
-        }
-        else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
+        } else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
             return self.footersAttributes[indexPath._section]
         }
         return nil

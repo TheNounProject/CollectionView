@@ -113,8 +113,7 @@ public class FetchedSetController: ContextObserver {
     public weak var delegate: FetchedSetControllerDelegate? {
         didSet {
             if (oldValue == nil) == (delegate == nil) { return }
-            if delegate == nil { unregister() }
-            else if _fetched { register() }
+            if delegate == nil { unregister() } else if _fetched { register() }
         }
     }
 
@@ -166,10 +165,8 @@ public class FetchedSetController: ContextObserver {
             let match = self.fetchRequest.predicate == nil || self.fetchRequest.predicate?.evaluate(with: obj) == true
             
             if existed {
-                if !match { deleted.insert(obj) }
-                else { updated.insert(obj) }
-            }
-            else if match {
+                if !match { deleted.insert(obj) } else { updated.insert(obj) }
+            } else if match {
                 inserted.insert(obj)
             }
         }

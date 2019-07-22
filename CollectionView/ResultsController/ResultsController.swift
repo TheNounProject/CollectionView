@@ -49,7 +49,7 @@ struct NoSectionType: SectionType {
     func hash(into hasher: inout Hasher) {
         hasher.combine(0)
     }
-    static func ==(lhs: NoSectionType, rhs: NoSectionType) -> Bool { return true }
+    static func == (lhs: NoSectionType, rhs: NoSectionType) -> Bool { return true }
 }
 extension String: SectionType { }
 extension NSNumber: SectionType { }
@@ -99,10 +99,10 @@ extension Int: CustomDisplayStringConvertible {
 
 /// :nodoc:
 extension NSNumber: Comparable {
-    public static func ==(lhs: NSNumber, rhs: NSNumber) -> Bool {
+    public static func == (lhs: NSNumber, rhs: NSNumber) -> Bool {
         return lhs.compare(rhs) == .orderedSame
     }
-    public static func <(lhs: NSNumber, rhs: NSNumber) -> Bool {
+    public static func < (lhs: NSNumber, rhs: NSNumber) -> Bool {
         return lhs.compare(rhs) == .orderedAscending
     }
 }

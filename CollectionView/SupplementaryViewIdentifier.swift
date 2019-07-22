@@ -35,7 +35,7 @@ struct SupplementaryViewIdentifier: Hashable, CustomStringConvertible {
         return s
     }
     
-    static func ==(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {
+    static func == (lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {
         return lhs.indexPath == rhs.indexPath && lhs.kind == rhs.kind && lhs.reuseIdentifier == rhs.reuseIdentifier
     }
     
@@ -46,7 +46,7 @@ struct SupplementaryViewIdentifier: Hashable, CustomStringConvertible {
 }
 
 extension SupplementaryViewIdentifier: Comparable {
-    static func <(lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {
+    static func < (lhs: SupplementaryViewIdentifier, rhs: SupplementaryViewIdentifier) -> Bool {
         guard let l = lhs.indexPath, let r = rhs.indexPath else { return true }
         return l < r
     }

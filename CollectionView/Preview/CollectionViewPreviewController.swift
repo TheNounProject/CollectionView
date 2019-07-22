@@ -134,8 +134,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     open weak var delegate: CollectionViewPreviewControllerDelegate?
     
     open override func loadView() {
-        if self.nibName != nil { super.loadView() }
-        else {
+        if self.nibName != nil { super.loadView() } else {
             self.view = NSView(frame: NSRect(origin: CGPoint.zero, size: CGSize(width: 100, height: 100)))
         }
         self.interactiveGestureEnabled = true
@@ -289,8 +288,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         controller.view.addSubview(self.view)
         if let config = self.layoutConstraintConfiguration {
             config(controller, self)
-        }
-        else {
+        } else {
             self.view.addConstraintsToMatchParent()
         }
         
@@ -364,8 +362,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
                     self.removeFromParent()
                 }
             }
-        }
-        else {
+        } else {
             self.removeFromParent()
             self.view.removeFromSuperview()
             completion?(true)

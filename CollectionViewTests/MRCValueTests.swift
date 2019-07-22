@@ -25,7 +25,7 @@ fileprivate struct Child: ResultType {
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
     }
-    static func ==(lhs: Child, rhs: Child) -> Bool {
+    static func == (lhs: Child, rhs: Child) -> Bool {
         return lhs.id == rhs.id
     }
 }
@@ -42,7 +42,7 @@ fileprivate struct Parent: SectionType {
         self.rank = rank
         self.name = name ?? "Parent \(rank)"
     }
-    static func ==(lhs: Parent, rhs: Parent) -> Bool {
+    static func == (lhs: Parent, rhs: Parent) -> Bool {
         return lhs.id == rhs.id
     }
 }

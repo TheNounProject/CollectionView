@@ -23,7 +23,7 @@ fileprivate class Child: ResultType, CustomStringConvertible {
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.id)
     }
-    static func ==(lhs: Child, rhs: Child) -> Bool {
+    static func == (lhs: Child, rhs: Child) -> Bool {
         return lhs.id == rhs.id
     }
     var description: String {
@@ -42,7 +42,7 @@ fileprivate class Parent: SectionType, CustomStringConvertible {
         self.rank = rank
         self.name = name ?? "Parent \(rank)"
     }
-    static func ==(lhs: Parent, rhs: Parent) -> Bool {
+    static func == (lhs: Parent, rhs: Parent) -> Bool {
         return lhs.id == rhs.id
     }
     

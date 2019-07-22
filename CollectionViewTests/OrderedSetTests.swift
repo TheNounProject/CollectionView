@@ -16,7 +16,7 @@ struct Person: Hashable {
         hasher.combine(self.name)
         hasher.combine(self.age)
     }
-    static func ==(lhs: Person, rhs: Person) -> Bool {
+    static func == (lhs: Person, rhs: Person) -> Bool {
         return lhs.age == rhs.age && lhs.name == rhs.name
     }
     

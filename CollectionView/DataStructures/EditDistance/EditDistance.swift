@@ -72,7 +72,7 @@ public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
         hasher.combine(value)
     }
 
-    public static func ==(lhs: Edit<T>, rhs: Edit<T>) -> Bool {
+    public static func == (lhs: Edit<T>, rhs: Edit<T>) -> Bool {
         return lhs.value == rhs.value
     }
     

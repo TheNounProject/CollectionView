@@ -76,13 +76,11 @@ extension CollapsableCollectionViewProvider: ResultsControllerDelegate {
             if !wasEmpty && isEmpty {
                 // populate
                 self.addChange(forSectionAt: nil, with: .insert(IndexPath.zero))
-            }
-            else if wasEmpty && !isEmpty {
+            } else if wasEmpty && !isEmpty {
                 // Remove placeholder
                 self.addChange(forSectionAt: IndexPath.zero, with: .delete)
             }
-        }
-        else if self.populateEmptySections && controller.numberOfSections > 0 {
+        } else if self.populateEmptySections && controller.numberOfSections > 0 {
             
         }
         let completion = self.delegate?.providerDidChangeContent(self)

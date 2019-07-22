@@ -68,8 +68,7 @@ open class CollectionReusableView: NSView {
             self.animator().alphaValue = layoutAttributes.alpha
             self.layer?.zPosition = layoutAttributes.zIndex
             self.animator().isHidden = layoutAttributes.hidden
-        }
-        else {
+        } else {
             self.frame = layoutAttributes.frame
             self.alphaValue = layoutAttributes.alpha
             self.layer?.zPosition = layoutAttributes.zIndex
@@ -115,8 +114,7 @@ open class CollectionReusableView: NSView {
             let idx = trackingOptions.firstIndex(of: NSTrackingArea.Options.mouseMoved)
             if trackMouseMoved && idx == nil {
                 trackingOptions.append(NSTrackingArea.Options.mouseMoved)
-            }
-            else if !trackMouseMoved, let i = idx {
+            } else if !trackMouseMoved, let i = idx {
                 trackingOptions.remove(at: i)
             }
             self.updateTrackingAreas()

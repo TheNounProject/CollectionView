@@ -21,8 +21,7 @@ open class ClipView: NSClipView {
     /// The rate of deceleration for animated scrolls. Higher is slower. default is 0.78
     public var decelerationRate = DefaultDecelerationRate {
         didSet {
-            if decelerationRate > 1 { self.decelerationRate = 1 }
-            else if decelerationRate < 0 { self.decelerationRate = 0 }
+            if decelerationRate > 1 { self.decelerationRate = 1 } else if decelerationRate < 0 { self.decelerationRate = 0 }
         }
     }
     
@@ -102,8 +101,7 @@ open class ClipView: NSClipView {
             let screenID = screenDictionary[NSDeviceDescriptionKey("NSScreenNumber")] as! NSNumber
             let displayID = screenID.uint32Value
             CVDisplayLinkSetCurrentCGDisplay(displayLink, displayID)
-        }
-        else {
+        } else {
             CVDisplayLinkSetCurrentCGDisplay(displayLink, CGMainDisplayID())
         }
     }

@@ -35,7 +35,7 @@ public final class Heckel: DiffAware {
         // Alternatively, OLNO would have to assume multiple values or none at all.
         var indexesInOld: [Int] = []
         
-        static func ==(lhs: TableEntry, rhs: TableEntry) -> Bool {
+        static func == (lhs: TableEntry, rhs: TableEntry) -> Bool {
             return lhs.oldCounter == rhs.oldCounter && lhs.newCounter == rhs.newCounter && lhs.indexesInOld == rhs.indexesInOld
         }
     }

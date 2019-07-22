@@ -49,10 +49,10 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
     fileprivate override func isEqual(_ object: Any?) -> Bool {
         return self._value == (object as? FetchedSectionInfo<ValueType, Element>)?._value
     }
-    public static func ==(lhs: FetchedSectionInfo, rhs: FetchedSectionInfo) -> Bool {
+    public static func == (lhs: FetchedSectionInfo, rhs: FetchedSectionInfo) -> Bool {
         return lhs._value == rhs._value
     }
-    static func <(lhs: FetchedSectionInfo, rhs: FetchedSectionInfo) -> Bool {
+    static func < (lhs: FetchedSectionInfo, rhs: FetchedSectionInfo) -> Bool {
         if let v1 = lhs._value,
             let v2 = rhs._value {
             return v1 < v2
@@ -176,10 +176,8 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
                 if let s = self._sectionInfo(representing: section) {
                     
                     if let _sec = section {
-                        if additional[_sec] == nil { additional[_sec] = objects }
-                        else { additional[_sec]?.append(contentsOf: objects) }
-                    }
-                    else {
+                        if additional[_sec] == nil { additional[_sec] = objects } else { additional[_sec]?.append(contentsOf: objects) }
+                    } else {
                         orphaned.append(contentsOf: objects)
                     }
                     return s
@@ -195,8 +193,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
                     let parentValue = object.value(forKey: keyPath) as? Section
                     _objectSectionMap[object] = _insert(section: parentValue, objects: [object])
                 }
-            }
-            else {
+            } else {
                 _ = _insert(section: nil, objects: _objects)
             }
         }
@@ -241,8 +238,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
     public weak var delegate: ResultsControllerDelegate? {
         didSet {
             if (oldValue == nil) == (delegate == nil) { return }
-            if delegate == nil { unregister() }
-            else if _fetched { register() }
+            if delegate == nil { unregister() } else if _fetched { register() }
         }
     }
     
@@ -323,8 +319,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
                 let sIndex = self._sections.index(of: section),
                 let idx = section.index(of: object) else { return nil }
             return IndexPath.for(item: idx, section: sIndex)
-        }
-        else if let idx = _sections.first?.index(of: object) {
+        } else if let idx = _sections.first?.index(of: object) {
             return IndexPath.for(item: idx, section: 0)
         }
         return nil
@@ -497,8 +492,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             if targetIP._item != proposedEdit.index {
                 _ = processedSections[targetSection]?.edit(withSource: targetIP._item)
                 // Nothing to do
-            }
-            else if case .substitution = proposedEdit.operation, let obj = self.context.objectChanges.object(for: targetIP) {
+            } else if case .substitution = proposedEdit.operation, let obj = self.context.objectChanges.object(for: targetIP) {
                 let insert = Edit(.deletion, value: obj, index: proposedEdit.index)
                 processedSections[targetSection]?.operationIndex.deletes.insert(insert, for: targetIP._item)
             }
@@ -516,12 +510,10 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
             }
             if old == 0 && !_sections.isEmpty {
                 self.placeholderChanges?.addChange(forItemAt: IndexPath.zero, with: .delete)
-            }
-            else if old != 0 && _sections.isEmpty {
+            } else if old != 0 && _sections.isEmpty {
                 self.placeholderChanges?.addChange(forItemAt: nil, with: .insert(IndexPath.zero))
             }
-        }
-        else {
+        } else {
             self.placeholderChanges = nil
         }
         
@@ -600,10 +592,8 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
                         let match = request.predicate == nil || request.predicate?.evaluate(with: o) == true
                         
                         if let ip = _ip {
-                            if !match { objects.add(deleted: o, for: ip) }
-                            else { objects.add(updated: o, for: ip) }
-                        }
-                        else if match {
+                            if !match { objects.add(deleted: o, for: ip) } else { objects.add(updated: o, for: ip) }
+                        } else if match {
                             objects.add(inserted: o)
                         }
                     }
@@ -646,21 +636,18 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
                     _objectSectionMap[object] = existingSection
                     
                     // Should items in inserted sections be included?
-                }
-                else {
+                } else {
                     // The section value doesn't exist yet, the section will be inserted
                     let sec = SectionInfo(controller: self, value: sectionValue, objects: [object])
                     self._sections.add(sec)
                     _objectSectionMap[object] = sec
                 }
-            }
-            else if let section = self._sections.first {
+            } else if let section = self._sections.first {
                 // No key path, just one section
                 section.ensureEditing()
                 section.add(object)
                 _objectSectionMap[object] = section
-            }
-            else {
+            } else {
                 let s = self._insert(section: nil)
                 _ = s.appendOrdered(object)
                 _objectSectionMap[object] = s
@@ -708,8 +695,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
                     sec.add(object)
                     _objectSectionMap[object] = sec
                 }
-            }
-            else {
+            } else {
                 
                 let sec = _insert(section: nil)
                 sec.ensureEditing()

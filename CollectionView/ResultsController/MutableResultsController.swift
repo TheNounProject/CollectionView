@@ -318,7 +318,10 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     ///
     /// - Parameter content: An array of elements
     public func setContent(sections: [Section] = [], objects: [Element]) {
-        self._sections = []
+        self._sections.removeAll()
+        self._sectionsCopy = nil
+        self._objectSectionMap.removeAll()
+
         if let sectionAccessor = self.sectionGetter {
             for section in sections {
                 _ = getOrCreateSectionInfo(for: section)

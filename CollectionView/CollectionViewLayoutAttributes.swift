@@ -30,19 +30,19 @@ public class CollectionViewLayoutAttributes: CustomStringConvertible {
     /// The center point of the item.
     public var center: CGPoint {
         get { return CGPoint(x: frame.origin.x + frame.size.width/2, y: frame.origin.y + frame.size.height/2) }
-        set { self.frame.origin = CGPoint(x: center.x - frame.size.width/2, y: center.y - frame.size.height/2) }
+        set { self.frame.origin = CGPoint(x: newValue.x - frame.size.width/2, y: newValue.y - frame.size.height/2) }
     }
     
     /// The size of the item
     public var size: CGSize {
         get { return self.frame.size }
-        set { self.frame.size = size }
+        set { self.frame.size = newValue }
     }
     
     /// The bounds of the item
     public var bounds: CGRect {
         get { return CGRect(origin: CGPoint.zero, size: self.frame.size) }
-        set { self.frame.size = bounds.size }
+        set { self.frame.size = newValue.size }
     }
     
     /// The transparency of the item.

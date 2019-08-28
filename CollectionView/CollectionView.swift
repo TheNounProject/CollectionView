@@ -536,6 +536,8 @@ open class CollectionView: ScrollView, NSDraggingSource {
                 let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
                 if contentVisibleRect.origin.y > ignore {
                     self._topIP = indexPathForFirstVisibleItem
+                } else {
+                    self._topIP = nil
                 }
             } else {
                 self._topIP = indexPathForFirstVisibleItem
@@ -551,10 +553,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
             v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
             v.frame.origin.x = 0
         }
-//        if let v = self.leadingView {
-//            v.frame.origin.x = self.contentInsets.left
-//            v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
-//        }
     }
     
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {

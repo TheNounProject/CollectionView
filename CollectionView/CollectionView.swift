@@ -494,6 +494,18 @@ open class CollectionView: ScrollView, NSDraggingSource {
             if needsLayoutReload { self.needsLayout = true }
         }
     }
+
+    private var _layoutRequested = false
+    open func requestLayout(animated: Bool = false, delay delayTime: TimeInterval = 0.01) {
+        if _layoutRequested { return }
+        self._layoutRequested = true
+        delay(delayTime) {
+            if self._layoutRequested {
+                self.reloadLayout(animated, scrollPosition: .nearest, completion: nil)
+            }
+        }
+
+    }
     
     open override func layout() {
         self._floatingSupplementaryView.frame = self.bounds
@@ -517,6 +529,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
             self.contentDocumentView.prepareRect(_preperationRect, force: false)
         }
         self.needsLayoutReload = false
+        self._layoutRequested = false
     }
     
     @available(*, unavailable, renamed: "reloadLayout(_:scrollPosition:completion:)")
@@ -556,6 +569,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
     }
     
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
+        self._layoutRequested = false
         self.layoutLeadingViews()
         
         if needsRecalculation {
@@ -2315,7 +2329,9 @@ open class CollectionView: ScrollView, NSDraggingSource {
         return sender.draggingSourceOperationMask
     }
     open override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
-        self.isDragging = false
+        defer {
+            self.isDragging = false
+        }
         if let perform = self.interactionDelegate?.collectionView?(self, performDragOperation: sender) {
             return perform
         }

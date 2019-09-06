@@ -819,6 +819,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     /// The duration of animations when performing animated layout changes
     public var animationDuration: TimeInterval = 0.4
+    public var allowImplicitAnimations = false
     
 	/// Perform multiple updates to be applied together
     ///

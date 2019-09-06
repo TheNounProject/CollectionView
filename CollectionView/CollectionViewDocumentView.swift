@@ -422,12 +422,14 @@ final public class CollectionViewDocumentView: NSView {
         
         if animated {
             let _animDuration = self.collectionView.animationDuration
+            let _allowImplicitAnimations = self.collectionView.allowImplicitAnimations
 
             // Dispatch to allow frame changes from reloadLayout() to apply before beginning the animations
             DispatchQueue.main.async { [unowned self] in
                 var removals = [ItemUpdate]()
                 NSAnimationContext.runAnimationGroup({ (context) -> Void in
                     context.duration = _animDuration
+                    context.allowsImplicitAnimation = _allowImplicitAnimations
                     context.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
                     
                     for item in _updates {

@@ -13,7 +13,7 @@ import Foundation
 
 // There must be an implementation that could improve this but this works for now
 
-public struct OrderedSet<Element: Hashable> : ExpressibleByArrayLiteral, Collection, CustomStringConvertible {
+public struct OrderedSet<Element: Hashable>: ExpressibleByArrayLiteral, Collection, CustomStringConvertible {
     
     fileprivate var _map = [Element: Int]()
     fileprivate var _data = [Element]()

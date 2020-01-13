@@ -8,7 +8,7 @@
 
 import Foundation
 
-fileprivate struct ChangeContext<Element: NSManagedObject> : CustomStringConvertible {
+fileprivate struct ChangeContext<Element: NSManagedObject>: CustomStringConvertible {
     
     var objectChanges = ObjectChangeSet<IndexPath, Element>()
     var itemsWithSectionChange = Set<Element>()
@@ -129,7 +129,7 @@ fileprivate class FetchedSectionInfo<ValueType: SectionRepresentable, Element: N
  
  A fetch request is supplied for each entity type but they are sorted and managed as the same type. Each entity included must share properties used for sorting.
 */
-public class MergedFetchedResultsController<Section: SectionRepresentable, Element: NSManagedObject> : NSObject, ResultsController {
+public class MergedFetchedResultsController<Section: SectionRepresentable, Element: NSManagedObject>: NSObject, ResultsController {
     
     fileprivate typealias SectionInfo = FetchedSectionInfo<Section, Element>
     

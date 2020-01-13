@@ -13,7 +13,7 @@ import Foundation
 /// Given an NSFetchRequest, the results from the provided context are fetched and analyzed to provide the data necessary to populate a CollectionView.
 ///
 /// The controller can also be sorted, grouped into sections and automatically updated when changes are made in the managed obejct context.
-public class FetchedResultsController<Section: SectionType, Element: NSManagedObject> : MutableResultsController<Section, Element> {
+public class FetchedResultsController<Section: SectionType, Element: NSManagedObject>: MutableResultsController<Section, Element> {
     
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/
@@ -225,7 +225,7 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
  
  In this case, both the parent and child are NSManagedObjects joined by a relationship. Also, notice the Delivery department has no employees. With a standard FetchedResultsController where sections consist of the available values in the fetched objects, the "Delivery" would not be included. With a RelationalResultsController though you can opt to fetch both the sections and object independently (see `fetchSections`).
 */
-public class RelationalResultsController<Section: NSManagedObject, Element: NSManagedObject> : FetchedResultsController<Section, Element> {
+public class RelationalResultsController<Section: NSManagedObject, Element: NSManagedObject>: FetchedResultsController<Section, Element> {
     
     // MARK: - Initialization
     /*-------------------------------------------------------------------------------*/

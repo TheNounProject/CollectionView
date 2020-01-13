@@ -57,7 +57,7 @@ fileprivate struct ChangeIndex<Index: Hashable, Object: Hashable>: CustomStringC
 }
 
 /// A results controller not only manages data, it also provides an easy to use, consistent interface for working with CollectionViews. While a typical controller fetches and manages data changes internally, this slimmed down version leaves the manipulation of it's content up to you so you can use the same interface with any type of data.
-public class MutableResultsController<Section: SectionType, Element: ResultType> : ResultsController {
+public class MutableResultsController<Section: SectionType, Element: ResultType>: ResultsController {
     
     typealias WrappedSectionInfo = SectionInfo<Section, Element>
     

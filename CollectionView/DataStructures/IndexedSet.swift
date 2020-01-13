@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct IndexedSet<Index: Hashable, Value: Hashable> : Sequence, CustomDebugStringConvertible, ExpressibleByDictionaryLiteral {
+public struct IndexedSet<Index: Hashable, Value: Hashable>: Sequence, CustomDebugStringConvertible, ExpressibleByDictionaryLiteral {
     
     //    var table = MapTab
     fileprivate var byValue = [Value: Index]()

@@ -607,7 +607,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
                 // absoluteCellFrames[v] = self.convert(attrs.frame, from: v.superview)
             }
         }
-        // TODO: Get removed items from pending updates and adjust them
+        // IDEA: Get removed items from pending updates and adjust them
         if sizeChanged {
             if scrollPosition != .none, let ip = self._topIP,
                 let rect = self.collectionViewLayout.scrollRectForItem(at: ip, atPosition: scrollPosition) ?? self.rectForItem(at: ip) {

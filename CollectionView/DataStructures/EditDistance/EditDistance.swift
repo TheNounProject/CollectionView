@@ -29,7 +29,7 @@ public enum EditOperation {
     }
 }
 
-public struct Edit<T: Hashable> : CustomStringConvertible, Hashable {
+public struct Edit<T: Hashable>: CustomStringConvertible, Hashable {
     
     public let operation: EditOperation
     public let value: T

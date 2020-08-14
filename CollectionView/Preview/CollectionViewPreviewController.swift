@@ -435,8 +435,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         
         event.trackSwipeEvent(options: [.clampGestureAmount],
                               dampenAmountThresholdMin: next == nil ? 0 : -0.5,
-                              max: prev == nil ? 0 : 0.5) { (delta, phase, completed, stop) in
-                                
+                              max: prev == nil ? 0 : 0.5) { (delta, phase, _, stop) in
                                 if phase == .cancelled {
                                     stop.pointee = true
                                     self.collectionView.scrollItem(at: ip, to: .centered, animated: true, completion: nil)

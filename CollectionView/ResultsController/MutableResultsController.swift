@@ -495,7 +495,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         var deletedSections = IndexSet()
         
         if let oldSections = _sectionsCopy {
-            var sectionChanges = EditDistance(source: oldSections, target: _sections)
+            let sectionChanges = EditDistance(source: oldSections, target: _sections)
             for change in sectionChanges.edits {
                 switch change.operation {
                 case .insertion:

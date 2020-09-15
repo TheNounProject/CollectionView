@@ -172,7 +172,11 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         collectionView.delegate = self
         collectionView.allowsEmptySelection = false
         collectionView.allowsMultipleSelection = false
+
         collectionView.horizontalScroller = nil
+        collectionView.hasHorizontalScroller = false
+        collectionView.verticalScrollElasticity = .none
+        
         collectionView.animationDuration = 0.2
         collectionView.backgroundColor = NSColor.clear
         collectionView.verticalScrollElasticity = .none

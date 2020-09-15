@@ -172,16 +172,20 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         collectionView.delegate = self
         collectionView.allowsEmptySelection = false
         collectionView.allowsMultipleSelection = false
+
+        collectionView.horizontalScroller = nil
+        collectionView.hasHorizontalScroller = false
+        collectionView.verticalScrollElasticity = .none
         
         collectionView.animationDuration = 0.2
         collectionView.backgroundColor = NSColor.clear
+        collectionView.verticalScrollElasticity = .none
+        self.collectionView.clipView?.decelerationRate = 0.88
         
         self.view.acceptsTouchEvents = true
         overlay.useLayer = true
         self.view.addSubview(overlay, positioned: .below, relativeTo: nil)
         overlay.addConstraintsToMatchParent()
-        
-        collectionView.horizontalScroller = nil
         
         let gesture = NSMagnificationGestureRecognizer(target: self,
                                                        action: #selector(CollectionViewPreviewController.magnificationGestureRecognized(_:)))
@@ -400,46 +404,63 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         get { return self.view.acceptsTouchEvents }
     }
     open override func wantsScrollEventsForSwipeTracking(on axis: NSEvent.GestureAxis) -> Bool {
-        return true
-    }
-    open override func wantsForwardedScrollEvents(for axis: NSEvent.GestureAxis) -> Bool {
-        return true
+        return axis == .horizontal
     }
     
-    private var pauseGesture = false
     open override func scrollWheel(with event: NSEvent) {
-        guard !pauseGesture, event.type == .scrollWheel,
-            event.phase == .began, abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY) else { return }
+        guard event.type == .scrollWheel, event.phase == .began else { return }
         
-        let start = self.collectionView.contentOffset
-        let adjust = (self.collectionView.collectionViewLayout as? CollectionViewPreviewLayout)?.interItemSpacing ?? 8
-        let max = self.collectionView.contentVisibleRect.width + adjust
-        guard let ip = self.currentIndexPath else {
+        // If the scroll doesn't stop off horizontal, track it to consume the event
+        // but then cancel as soon as it ends
+        guard abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY) else {
+            event.trackSwipeEvent(options: [], dampenAmountThresholdMin: 0, max: 0) { (_, phase, _, stop) in
+                if phase == .cancelled || phase == .ended {
+                    stop.pointee = true
+                }
+            }
             return
         }
+        
+        guard let ip = self.currentIndexPath else { return }
+        
+        let start = self.collectionView.contentOffset.x
+        let adjust = (self.collectionView.collectionViewLayout as? CollectionViewPreviewLayout)?.interItemSpacing ?? 8
+        var maxUp = self.collectionView.contentVisibleRect.width + adjust
+        var maxDown = self.collectionView.contentVisibleRect.width + adjust
         let next = self.collectionView.collectionViewLayout.indexPathForNextItem(moving: .right, from: ip)
         let prev = self.collectionView.collectionViewLayout.indexPathForNextItem(moving: .left, from: ip)
         
+        if let ip = next, let attrs = self.collectionView.layoutAttributesForItem(at: ip) {
+            maxUp = attrs.frame.minX - start
+        }
+        if let ip = prev, let attrs = self.collectionView.layoutAttributesForItem(at: ip) {
+            maxDown = start - attrs.frame.minX
+        }
+        
         event.trackSwipeEvent(options: [.clampGestureAmount],
-                              dampenAmountThresholdMin: next == nil ? 0 : -1,
-                              max: prev == nil ? 0 : 1) { (delta, phase, completed, _) in
-
-            if phase == .began {
-                self.pauseGesture = true
-            }
-            
-            let newX = -delta * max
-            let offset = start.x + newX
-            
-            self.collectionView.contentOffset.x = offset
-
-            if completed {
-                self.pauseGesture = false
-                if  let ip = self.collectionView.indexPathForFirstVisibleItem {
-                    self.collectionView.selectItem(at: ip, animated: false)
-                    self.delegate?.collectionViewPreview(self, didMoveToItemAt: ip)
-                }
-            }
+                              dampenAmountThresholdMin: next == nil ? 0 : -0.5,
+                              max: prev == nil ? 0 : 0.5) { (delta, phase, _, stop) in
+                                if phase == .cancelled {
+                                    stop.pointee = true
+                                    self.collectionView.scrollItem(at: ip, to: .centered, animated: true, completion: nil)
+                                    return
+                                } else if phase == .ended {
+                                    if delta < 0, let ip = next {
+                                        self.collectionView.selectItem(at: ip, animated: true, scrollPosition: .centered)
+                                        self.delegate?.collectionViewPreview(self, didMoveToItemAt: ip)
+                                        stop.pointee = true
+                                        return
+                                    } else if delta >= 0, let ip = prev {
+                                        self.collectionView.selectItem(at: ip, animated: true, scrollPosition: .centered)
+                                        self.delegate?.collectionViewPreview(self, didMoveToItemAt: ip)
+                                        stop.pointee = true
+                                        return
+                                    }
+                                }
+                                
+                                let newX = -delta * (delta < 0 ? maxUp : maxDown)
+                                let offset = start + newX
+                                self.collectionView.contentOffset.x = offset
         }
     }
 }

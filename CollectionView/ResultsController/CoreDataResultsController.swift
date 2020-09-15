@@ -332,7 +332,7 @@ public class RelationalResultsController<Section: NSManagedObject, Element: NSMa
     // MARK: - Handling Changes
     /*-------------------------------------------------------------------------------*/
     override func processChanges(_ changes: [NSEntityDescription: ManagedObjectContextObservationCoordinator.EntityChangeSet]) {
-        guard let delegate = self.delegate, self._fetched else {
+        guard self.delegate != nil, self._fetched else {
             print("Ignoring context notification because results controller doesn't have a delegate or has not been fetched yet")
             return
         }

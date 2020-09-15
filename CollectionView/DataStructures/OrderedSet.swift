@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// An implementation of an ordered set that favors lookup performance. Insertions and deletions 
+// An implementation of an ordered set that favors lookup performance. Insertions and deletions 
 // incur the penalty of updating an index map for all elements beyond the insertion/deletion index.
 
 // There must be an implementation that could improve this but this works for now

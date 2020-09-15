@@ -405,6 +405,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         get { return self.contentVisibleRect.origin }
         set {
             self.isScrollEnabled = true
+            self.clipView?.cancelScrollAnimation()
             self.clipView?.shouldAnimateOriginChange = false
             self.clipView?.scroll(to: newValue)
             self.reflectScrolledClipView(self.clipView!)

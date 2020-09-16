@@ -233,7 +233,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         let events: NSEvent.EventTypeMask = [
             NSEvent.EventTypeMask.scrollWheel
             ]
-        
+
         eventMonitor = EventMonitor(mask: events, handler: { (event) in
             guard let e = event, e.phase != [] else { return event }
             self.scrollWheel(with: e)
@@ -300,7 +300,10 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         self.collectionView.layoutSubtreeIfNeeded()
         self.collectionView.reloadData()
         
-        self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centered)
+        self.collectionView.isScrollEnabled = true
+        self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .none)
+        self.collectionView.scrollItem(at: indexPath, to: .centered, animated: false, completion: nil)
+        self.collectionView.isScrollEnabled = false
         
         self.startEventMonitor()
         
@@ -308,6 +311,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
             let attrs = self.collectionView.layoutAttributesForItem(at: indexPath) else {
                 self.overlay.alphaValue = 1
                 self.view.window?.makeFirstResponder(self.collectionView)
+                self.collectionView.isScrollEnabled = true
                 completion?(true)
                 return
         }
@@ -326,6 +330,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
             }) {
                 completion?(true)
                 trans?.finishTransition(fromItemAt: indexPath, in: sourceCollectionView)
+                self.collectionView.isScrollEnabled = true
             }
             self.overlay.animator().alphaValue = 1
         }
@@ -338,7 +343,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     /// - Parameter completion: A block to call when the tranision is complete
     open func dismiss(animated: Bool, completion: AnimationCompletion? = nil) {
         self.delegate?.collectionViewPreviewControllerWillDismiss(self)
-        self.stopEventMonitor()
+        self.collectionView.isScrollEnabled = false
         
         let ips = self.collectionView.indexPathsForVisibleItems.filter {
             if let cell = self.collectionView.cellForItem(at: $0) {
@@ -360,6 +365,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
                     trans?.transition(toItemAt: ip, in: sourceCV)
                     self.overlay.animator().alphaValue = 0
                 }) {
+                    self.stopEventMonitor()
                     completion?(true)
                     trans?.finishTransition(toItemAt: ip, in: sourceCV)
                     self.view.removeFromSuperview()
@@ -369,6 +375,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         } else {
             self.removeFromParent()
             self.view.removeFromSuperview()
+            self.stopEventMonitor()
             completion?(true)
         }
     }
@@ -412,7 +419,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         
         // If the scroll doesn't stop off horizontal, track it to consume the event
         // but then cancel as soon as it ends
-        guard abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY) else {
+        guard self.collectionView.isScrollEnabled, abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY) else {
             event.trackSwipeEvent(options: [], dampenAmountThresholdMin: 0, max: 0) { (_, phase, _, stop) in
                 if phase == .cancelled || phase == .ended {
                     stop.pointee = true

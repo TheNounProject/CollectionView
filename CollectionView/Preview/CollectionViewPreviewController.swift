@@ -236,6 +236,10 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
 
         eventMonitor = EventMonitor(mask: events, handler: { (event) in
             guard let e = event, e.phase != [] else { return event }
+            guard let v = self.view.window?.contentView?.hitTest(e.locationInWindow),
+                v.isDescendant(of: self.view) else {
+                return e
+            }
             self.scrollWheel(with: e)
             return nil
         })

@@ -242,7 +242,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
     /// - Returns: A valid CollectionReusableView
     public final func dequeueReusableCell(withReuseIdentifier identifier: String, for indexPath: IndexPath) -> CollectionViewCell {
         
-        var cell = self.contentDocumentView.preparedCellIndex[indexPath] ?? self._reusableCells[identifier]?.removeOne()
+        var cell: CollectionViewCell?
+        if let c = self.contentDocumentView.preparedCellIndex[indexPath], c.reuseIdentifier == identifier {
+            cell = c
+        } else {
+            cell = self._reusableCells[identifier]?.removeOne()
+        }
         if cell == nil {
             if let nib = self._cellNibs[identifier] {
                 cell = _firstObjectOfClass(CollectionViewCell.self, inNib: nib) as? CollectionViewCell

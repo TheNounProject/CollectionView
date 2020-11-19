@@ -11,4 +11,4 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Test
-                run: xcodebuild clean && xcodebuild test -project CollectionView.xcodeproj -scheme CollectionViewTests
+        run: xcodebuild clean && xcodebuild test -project CollectionView.xcodeproj -scheme CollectionViewTests

@@ -1,6 +1,6 @@
 ![CollectionView](https://raw.githubusercontent.com/TheNounProject/CollectionView/master/img/header.png "Collection View")
 
-[![Build Status](https://travis-ci.org/TheNounProject/CollectionView.svg?branch=master)](https://travis-ci.org/TheNounProject/CollectionView)
+![Main](https://github.com/TheNounProject/CollectionView/workflows/Main/badge.svg)
 
 An easy to use, highly customizable replacement for NSCollectionView.
 

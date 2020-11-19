@@ -1,0 +1,14 @@
+on:
+  push:
+    branches:
+      - "main"
+
+name: Main
+jobs:
+  build:
+    name: Test
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Test
+                run: xcodebuild clean && xcodebuild test -project CollectionView.xcodeproj -scheme CollectionViewTests

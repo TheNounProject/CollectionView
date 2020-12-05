@@ -390,7 +390,7 @@ extension CollectionViewProvider: ResultsControllerDelegate {
     }
     
     private func processSections() -> [Section?] {
-        var source = self.sections
+        let source = self.sections
         var target = [Section?](repeatElement(nil, count: resultsController.numberOfSections))
         
         // Populate target with inserted

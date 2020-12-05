@@ -346,7 +346,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         
         for sec in 0..<numSections {
            
-            var insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
+            let insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
 //            insets.left += contentInsets.left
 //            insets.right += contentInsets.right
             let transform = self.delegate?.collectionView(cv, flowLayout: self, rowTransformForSectionAt: sec) ?? self.defaultRowTransform
@@ -390,7 +390,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
                     let ip = IndexPath.for(item: item, section: sec)
                     allIndexPaths.append(ip)
                     let style = self.delegate?.collectionView(cv, flowLayout: self, styleForItemAt: ip) ?? defaultItemStyle
-                    var attrs = CollectionViewLayoutAttributes(forCellWith: ip)
+                    let attrs = CollectionViewLayoutAttributes(forCellWith: ip)
                     
                     switch style {
                     case let .flow(size):

@@ -1161,7 +1161,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
         
         // Validate the section changes
-        var sectionDelta = self._updateContext.sections.inserted.count - self._updateContext.sections.deleted.count
+        let sectionDelta = self._updateContext.sections.inserted.count - self._updateContext.sections.deleted.count
         precondition(newData.count - oldData.count == sectionDelta, "Invalid section changes. Had \(oldData.count) delta of \(sectionDelta) is \(oldData.count - sectionDelta) but expected \(newData.count)")
         
         var source = [SectionValidator]()

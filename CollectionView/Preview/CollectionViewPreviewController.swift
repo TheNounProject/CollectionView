@@ -167,6 +167,8 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
         
         let layout = CollectionViewPreviewLayout()
         collectionView.collectionViewLayout = layout
+        collectionView.automaticallyAdjustsContentInsets = false
+        collectionView.contentInsets = .zero
         
         collectionView.dataSource = self
         collectionView.delegate = self

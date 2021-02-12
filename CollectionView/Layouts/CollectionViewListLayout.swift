@@ -226,7 +226,7 @@ public final class CollectionViewListLayout: CollectionViewLayout {
         
         if self.numSections == 0 { return size }
         
-        size.width = cv.contentVisibleRect.size.width - cv.contentInsets.width
+        size.width = cv.contentVisibleRect.size.width
         let height = self.sections.last?.frame.maxY ?? 0
         size.height = max(height, cv.contentVisibleRect.size.height - cv.contentInsets.height)
         return size

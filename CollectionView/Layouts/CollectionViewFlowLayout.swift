@@ -583,7 +583,6 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         if numberOfSections == 0 { return CGSize.zero }
         
         var contentSize = cv.contentVisibleRect.size as CGSize
-        contentSize.width -= cv.contentInsets.width
         let height = self.sectionAttributes.last?.frame.maxY ?? 0
         if height == 0 { return CGSize.zero }
         contentSize.height = max(height, cv.contentVisibleRect.height - cv.contentInsets.height)

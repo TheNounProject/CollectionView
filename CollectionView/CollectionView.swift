@@ -81,7 +81,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.hasVerticalScroller = true
         self.scrollsDynamically = true
         self.automaticallyAdjustsContentInsets = false
-        self.scrollerStyle = .overlay
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(CollectionView.didScroll(_:)),
@@ -402,8 +401,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
     /// The visible rect of the document view that is visible
     public var contentVisibleRect: CGRect {
         var rect = self.documentVisibleRect
-        print("\(self) -- \(rect.width) - \(self.bounds.size.width - self.contentInsets.width) -- \(self.autohidesScrollers)")
         rect.size.width = self.bounds.size.width - self.contentInsets.width
+        if self.scrollerStyle == .legacy, let scroller = self.verticalScroller {
+            rect.size.width -= scroller.frame.width
+        }
         return rect
     }
     

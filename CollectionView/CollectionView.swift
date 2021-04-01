@@ -515,7 +515,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self._layoutRequested = true
         delay(delayTime) {
             if self._layoutRequested {
-                self.reloadLayout(animated, scrollPosition: .nearest, completion: nil)
+                self.reloadLayout(animated, scrollPosition: .none, completion: nil)
             }
         }
 

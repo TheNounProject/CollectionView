@@ -100,6 +100,11 @@ public final class CollectionViewListLayout: CollectionViewLayout {
         return self.collectionView!.delegate as? CollectionViewDelegateListLayout
     }
     
+    /// If true, the content size will always match the hight of the contents.
+    /// The default false will always ensure the content size is note
+    /// smaller than the size of the collection view itself
+    public var hugContents: Bool = false
+    
     private var sections: [SectionAttributes] = []
     
     private struct SectionAttributes: CustomStringConvertible {
@@ -228,7 +233,7 @@ public final class CollectionViewListLayout: CollectionViewLayout {
         
         size.width = cv.contentVisibleRect.size.width
         let height = self.sections.last?.frame.maxY ?? 0
-        size.height = max(height, cv.contentVisibleRect.size.height - cv.contentInsets.height)
+        size.height = hugContents ? height : max(height, cv.contentVisibleRect.size.height - cv.contentInsets.height)
         return size
     }
     

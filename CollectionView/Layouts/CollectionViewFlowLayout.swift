@@ -198,7 +198,10 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         case none
         case center
         case fill(CGFloat)
+        case custom(RowTransformer)
     }
+    
+    public typealias RowTransformer = ([(IndexPath, CGRect)], CGFloat) -> [CGRect]
     
     /// Styles for CollectionViewFlowLayout
     public enum ItemStyle {
@@ -239,35 +242,53 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         }
         
         mutating func applyTransform(_ transform: RowTransform, leftInset: CGFloat, width: CGFloat, spacing: CGFloat) -> CGFloat {
-            
+            func apply(_ transformer: RowTransformer) -> CGRect {
+                
+                let _items = self.items.map { attrs in (attrs.indexPath, attrs.frame)}
+                let transformed = transformer(_items, width)
+                var union = CGRect()
+                for (idx, item) in items.enumerated() {
+                    let f = transformed[idx].integral
+                    item.frame = f
+                    union = union.union(f)
+                }
+                return union
+            }
+            var union: CGRect
             switch transform {
             case .center:
                 let adjust = ((width - frame.size.width)/2)
-                for item in items {
-                    item.frame.origin.x += adjust
-                    item.frame = item.frame.integral
+                union = apply { (attrs, _) in
+                    attrs.map { $0.1.offsetBy(dx: adjust, dy: 0) }
                 }
+                
             case let .fill(maxScale):
                 var scale = width/frame.size.width
                 if maxScale > 1 && scale  > maxScale { scale = maxScale }
                 var left = leftInset
-                for item in items {
-                    item.frame.origin.x = left
-                    item.frame.size.width *= scale
-                    item.frame.size.height *= item.frame.size.height
-                    item.frame = item.frame.integral
-                    self.frame = frame.union(item.frame)
-                    left = item.frame.maxX + spacing
+                union = apply { (attrs, _) in
+                    attrs.map { attr -> CGRect in
+                        var frame = attr.1
+                        frame.origin.x = left
+                        frame.size.width *= scale
+                        frame.size.height *= scale
+                        frame = frame.integral
+                        left = frame.maxX + spacing
+                        return frame
+                    }
                 }
+            case let .custom(transformer):
+                union = apply(transformer)
                 
-            default: break
+            case .none: union = self.frame
             }
-            return frame.maxY
+            self.frame = self.frame.union(union)
+            return self.frame.maxY
         }
         
         func index(of indexPath: IndexPath) -> Int? {
             guard let f = self.items.first,
-                let l = self.items.last else { return nil }
+                  let l = self.items.last else { return nil }
             
             if f.indexPath > indexPath { return nil }
             if l.indexPath < indexPath { return nil }
@@ -279,7 +300,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         func item(verticallyAlignedTo attrs: CollectionViewLayoutAttributes) -> IndexPath? {
             
             guard self.items.count > 1, !self.items.isEmpty,
-                let l = self.items.last else { return items.last?.indexPath }
+                  let l = self.items.last else { return items.last?.indexPath }
             
             let center = attrs.frame.midX
             
@@ -345,10 +366,10 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         let contentInsets = cv.contentInsets
         
         for sec in 0..<numSections {
-           
+            
             let insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
-//            insets.left += contentInsets.left
-//            insets.right += contentInsets.right
+            //            insets.left += contentInsets.left
+            //            insets.right += contentInsets.right
             let transform = self.delegate?.collectionView(cv, flowLayout: self, rowTransformForSectionAt: sec) ?? self.defaultRowTransform
             
             var sectionAttrs = SectionAttributes(insets: insets, transform: transform)
@@ -432,9 +453,9 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
                         
                         if !sectionAttrs.rows.isEmpty && previousStyle?.isSpan != true {
                             top = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
-                                                                                                    leftInset: insets.left,
-                                                                                                    width: contentWidth,
-                                                                                                    spacing: interitemSpacing)
+                                                                                                leftInset: insets.left,
+                                                                                                width: contentWidth,
+                                                                                                spacing: interitemSpacing)
                         }
                         
                         var spacing: CGFloat = 0
@@ -464,9 +485,9 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
                 previousStyle = nil
                 if !sectionAttrs.rows.isEmpty {
                     top = sectionAttrs.rows[sectionAttrs.rows.count - 1].applyTransform(transform,
-                                                                                  leftInset: insets.left,
-                                                                                  width: contentWidth,
-                                                                                  spacing: interitemSpacing)
+                                                                                        leftInset: insets.left,
+                                                                                        width: contentWidth,
+                                                                                        spacing: interitemSpacing)
                 }
             }
             
@@ -488,7 +509,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
             }
             
             sectionAttributes.append(sectionAttrs)
-
+            
         }
     }
     
@@ -518,7 +539,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
             if rect.contains(sAttrs.frame) {
                 results.append(contentsOf: sAttrs.items.map { return reducer($0) })
             }
-                // Scan the rows of the section
+            // Scan the rows of the section
             else if !sAttrs.rows.isEmpty {
                 for row in sAttrs.rows {
                     guard row.frame.intersects(rect) else {
@@ -547,20 +568,20 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
                 let contentOffset = cv.contentOffset
                 let frame = currentAttrs.frame
                 
-//                let lead = cv.leadingView?.bounds.size.height ?? 0
-//                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
-//                    currentAttrs.frame.origin.y = lead
-//                    currentAttrs.floating = false
-//                }
-//                else {
-                    var nextHeaderOrigin = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude)
-                    if let nextHeader = self.sectionAttributes.object(at: indexPath._section + 1)?.header {
-                        nextHeaderOrigin = nextHeader.frame.origin
-                    }
-                    let topInset = cv.contentInsets.top
-                    currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset, frame.origin.y), nextHeaderOrigin.y - frame.height)
-                    currentAttrs.floating = indexPath._section == 0 || currentAttrs.frame.origin.y > frame.origin.y
-//                }
+                //                let lead = cv.leadingView?.bounds.size.height ?? 0
+                //                if indexPath._section == 0 && contentOffset.y < cv.contentInsets.top {
+                //                    currentAttrs.frame.origin.y = lead
+                //                    currentAttrs.floating = false
+                //                }
+                //                else {
+                var nextHeaderOrigin = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: CGFloat.greatestFiniteMagnitude)
+                if let nextHeader = self.sectionAttributes.object(at: indexPath._section + 1)?.header {
+                    nextHeaderOrigin = nextHeader.frame.origin
+                }
+                let topInset = cv.contentInsets.top
+                currentAttrs.frame.origin.y =  min(max(contentOffset.y + topInset, frame.origin.y), nextHeaderOrigin.y - frame.height)
+                currentAttrs.floating = indexPath._section == 0 || currentAttrs.frame.origin.y > frame.origin.y
+                //                }
             }
             return attrs
         } else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
@@ -598,7 +619,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         if let headerHeight = section.header?.frame.size.height {
             var y = frame.origin.y
             if pinHeadersToTop || section.rows.first?.contains(indexPath) == true {
-                 y = (frame.origin.y - headerHeight)
+                y = (frame.origin.y - headerHeight)
             }
             
             let height = frame.size.height + headerHeight
@@ -613,11 +634,11 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
     open override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
         guard let collectionView = self.collectionView else { fatalError() }
         
-//        var index = currentIndexPath._item
+        //        var index = currentIndexPath._item
         let section = currentIndexPath._section
         
-//        let numberOfSections = collectionView.numberOfSections
-//        let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
+        //        let numberOfSections = collectionView.numberOfSections
+        //        let numberOfItemsInSection = collectionView.numberOfItems(in: currentIndexPath._section)
         
         guard collectionView.rectForItem(at: currentIndexPath) != nil else { return nil }
         
@@ -687,7 +708,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
             }
             startingIP = ip
             fallthrough
-        
+            
         case .right :
             
             var ip = startingIP

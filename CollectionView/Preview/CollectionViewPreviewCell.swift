@@ -11,7 +11,7 @@ import Foundation
 /// A protocol for CollectionViewCells that need to customize their transition when used in CollectionViewPreviewController.
 ///
 /// If you adopt this protocol in a custom CollectionViewCell subclass, see the source code for CollectionViewPreviewCell for an example implementation.
-public protocol CollectionViewPreviewTransitionCell: class {
+public protocol CollectionViewPreviewTransitionCell: AnyObject {
     
     // MARK: - Transitioning From Source
     /*-------------------------------------------------------------------------------*/

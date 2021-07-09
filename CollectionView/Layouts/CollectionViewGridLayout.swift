@@ -164,7 +164,7 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
         for section in 0..<numberOfSections {
             let colCount = self.columnsInSection(section)
             
-            //1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
+            // 1. Get section-specific metrics (minimumInteritemSpacing, sectionInset)
             let sectionInsets =  self.delegate?.collectionView?(self.collectionView!, layout: self, insetsForSection: section)
                 ?? self.sectionInsets
             let rowSpacing = self.delegate?.collectionView?(self.collectionView!, layout: self, rowSpacingForSection: section)

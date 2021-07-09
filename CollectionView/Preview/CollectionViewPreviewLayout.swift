@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol CollectionViewDelegatePreviewLayout: class {
+protocol CollectionViewDelegatePreviewLayout: AnyObject {
     func previewLayout(_ layout: CollectionViewPreviewLayout, canPreviewItemAt indexPath: IndexPath) -> Bool
 }
 

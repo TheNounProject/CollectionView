@@ -6,7 +6,6 @@
 //  Copyright © 2016 Noun Project. All rights reserved.
 //
 
-//import Foundation
 import AppKit
 
 open class ClipView: NSClipView {
@@ -77,7 +76,7 @@ open class ClipView: NSClipView {
     var displayLink: CVDisplayLink {
         if let link = _displayLink { return link }
         
-        let linkCallback: CVDisplayLinkOutputCallback = {( displayLink, _, _, _, _, displayLinkContext) -> CVReturn in
+        let linkCallback: CVDisplayLinkOutputCallback = {( _, _, _, _, _, displayLinkContext) -> CVReturn in
             unsafeBitCast(displayLinkContext, to: ClipView.self).updateOrigin()
             return kCVReturnSuccess
         }

@@ -180,7 +180,7 @@ public final class CollectionViewListLayout: CollectionViewLayout {
             // Insets are between header and section content
             top += insets.top
             
-            //3. Section items
+            // 3. Section items
             section.contentFrame = CGRect(x: insets.left, y: top, width: itemWidth, height: 0)
             
             if itemCount > 0 {

@@ -165,8 +165,8 @@ fileprivate class LayoutTester: CollectionViewDataSource, CollectionViewDelegate
     
     let collectionView = CollectionView(frame: NSRect(x: 0, y: 0, width: 1000, height: 800))
     var frame: CGRect {
-        set { self.collectionView.frame = newValue }
         get { return self.collectionView.frame }
+        set { self.collectionView.frame = newValue }
     }
     let layout = CollectionViewFlowLayout()
     var data: [Int]

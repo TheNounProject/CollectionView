@@ -699,8 +699,8 @@ open class CollectionView: ScrollView, NSDraggingSource {
     override open class var isCompatibleWithResponsiveScrolling: Bool { return true }
     
     public var isScrollEnabled: Bool {
-        set { self.clipView?.scrollEnabled = newValue }
         get { return self.clipView?.scrollEnabled ?? true }
+        set { self.clipView?.scrollEnabled = newValue }
     }
     
     /// Returns true if the collection view is currently scrolling
@@ -1625,12 +1625,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.selectItems(at: Set([indexPath]), animated: animated, scrollPosition: scrollPosition)
     }
     
-    ///Select the items at the given index paths
+    /// Select the items at the given index paths
     ///
-    ///- Parameter indexPaths: The index paths of the items you want to select
-    ///- Parameter animated: If the selections should be animated
+    /// - Parameter indexPaths: The index paths of the items you want to select
+    /// - Parameter animated: If the selections should be animated
     ///
-    ///- Note: The delegate will not be notified of the changes
+    /// - Note: The delegate will not be notified of the changes
     public func selectItems<C: Collection>(at indexPaths: C, animated: Bool, scrollPosition: CollectionViewScrollPosition = .none) where C.Element == IndexPath {
         self.selectItems(at: Set(indexPaths), animated: animated)
     }

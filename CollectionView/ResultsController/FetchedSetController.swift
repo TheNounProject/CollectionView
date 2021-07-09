@@ -14,7 +14,7 @@ public enum FetchedSetControllerChangeType {
     case insert
 }
 
-public protocol FetchedSetControllerDelegate: class {
+public protocol FetchedSetControllerDelegate: AnyObject {
     func controllerWillChangeContent(_ controller: FetchedSetController) -> Bool
     func controller(_ controller: FetchedSetController, didChangeObject object: NSManagedObject, for changeType: FetchedSetControllerChangeType)
     func controllerDidChangeContent(_ controller: FetchedSetController)

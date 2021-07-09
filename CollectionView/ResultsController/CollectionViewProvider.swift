@@ -77,7 +77,7 @@ public class CollectionViewResultsProxy: CustomDebugStringConvertible {
     }
 }
 
-public protocol CollectionViewProviderDelegate: class {
+public protocol CollectionViewProviderDelegate: AnyObject {
     func providerWillChangeContent(_ provider: CollectionViewProvider)
     func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
     func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)

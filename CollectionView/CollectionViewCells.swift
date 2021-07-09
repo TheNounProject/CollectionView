@@ -170,8 +170,8 @@ open class CollectionViewCell: CollectionReusableView {
     
     /// The selection state of the cell.
     public var selected: Bool {
-        set { self.setSelected(newValue, animated: false) }
         get { return self._selected }
+        set { self.setSelected(newValue, animated: false) }
     }
     
     open func setSelected(_ selected: Bool, animated: Bool = true) {

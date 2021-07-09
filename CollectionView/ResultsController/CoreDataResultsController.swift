@@ -54,7 +54,7 @@ public class FetchedResultsController<Section: SectionType, Element: NSManagedOb
         }
     }
     
-    ///The fetch request for the controller
+    /// The fetch request for the controller
     public let fetchRequest: NSFetchRequest<Element>
     
     override var sectionGetter: SectionAccessor? {

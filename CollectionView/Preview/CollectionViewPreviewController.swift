@@ -9,7 +9,7 @@
 import Foundation
 
 /// a CollectionViewPreviewControllerDelegate is responsible for providing data to a CollectionViewPreviewController.
-public protocol CollectionViewPreviewControllerDelegate: class {
+public protocol CollectionViewPreviewControllerDelegate: AnyObject {
     
     /// Asks the delegate for a cell to use to preview the item at indexPath
     ///
@@ -413,8 +413,8 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     // MARK: - Interactive Gesture
     /*-------------------------------------------------------------------------------*/
     public var interactiveGestureEnabled: Bool {
-        set { self.view.acceptsTouchEvents = newValue }
         get { return self.view.acceptsTouchEvents }
+        set { self.view.acceptsTouchEvents = newValue }
     }
     open override func wantsScrollEventsForSwipeTracking(on axis: NSEvent.GestureAxis) -> Bool {
         return axis == .horizontal

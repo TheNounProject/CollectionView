@@ -11,7 +11,7 @@ import CoreData
 ///
 /// - FetchedResultsController
 /// - RelationalResultsController
-public protocol ResultsController: class {
+public protocol ResultsController: AnyObject {
     
     /// The delegate to notify about data changes
     var delegate: ResultsControllerDelegate? { get set }
@@ -110,7 +110,7 @@ extension NSNumber: Comparable {
 /// The ResultsControllerDelegate defines methods that allow you to respond to changes in the results controller.
 ///
 /// Use ResultChangeSet to easily track changes and apply them to a CollectionView
-public protocol ResultsControllerDelegate: class {
+public protocol ResultsControllerDelegate: AnyObject {
     
     /// Tells the delegate that the controller did load its initial content
     ///

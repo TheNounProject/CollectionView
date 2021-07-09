@@ -67,42 +67,6 @@ public final class WagnerFischer: DiffAware {
     
 }
 
-//struct MoveReducer<T> {
-//    func reduce<T: Equatable>(changes: [Edit<T>]) -> [Edit<T>] {
-//        // Find pairs of .insert and .delete with same item
-//        let inserts = changes.filter { (e) -> Bool in
-//            return e.operation.isInsertion
-//        }
-//
-//        if inserts.isEmpty {
-//            return changes
-//        }
-//
-//        var changes = changes
-//        inserts.forEach { insert in
-//            if let insertIndex = changes.index(where: { $0.insert?.item == insert.item }),
-//                let deleteIndex = changes.index(where: { $0.delete?.item == insert.item }) {
-//
-//                let insertChange = changes[insertIndex].insert!
-//                let deleteChange = changes[deleteIndex].delete!
-//
-//                let move = Move<T>(item: insert.item, fromIndex: deleteChange.index, toIndex: insertChange.index)
-//
-//                // .insert can be before or after .delete
-//                let minIndex = min(insertIndex, deleteIndex)
-//                let maxIndex = max(insertIndex, deleteIndex)
-//
-//                // remove both .insert and .delete, and replace by .move
-//                changes.remove(at: minIndex)
-//                changes.remove(at: maxIndex.advanced(by: -1))
-//                changes.insert(.move(move), at: minIndex)
-//            }
-//        }
-//
-//        return changes
-//    }
-//}
-
 // We can adapt the algorithm to use less space, O(m) instead of O(mn),
 // since it only requires that the previous row and current row be stored at any one time
 class Row<T: Collection> where T.Iterator.Element: Hashable {
@@ -165,7 +129,7 @@ class Row<T: Collection> where T.Iterator.Element: Hashable {
         case leftSlot.count:
             slots[slotIndex] = combine(
                 slot: leftSlot,
-                change: Edit(.insertion, value: newItem, index: indexInNew) //.insert(Insert(item: newItem, index: indexInNew))
+                change: Edit(.insertion, value: newItem, index: indexInNew)
             )
         case topLeftSlot.count:
             slots[slotIndex] = combine(

@@ -401,10 +401,14 @@ open class CollectionView: ScrollView, NSDraggingSource {
     /// The visible rect of the document view that is visible
     public var contentVisibleRect: CGRect {
         var rect = self.documentVisibleRect
-        rect.size.width = self.bounds.size.width - self.contentInsets.width
+        if self.collectionViewLayout.scrollDirection == .vertical {
+            rect.size.width = self.bounds.size.width - self.contentInsets.width
+            rect.origin.x = 0
+        }
         if self.scrollerStyle == .legacy, let scroller = self.verticalScroller {
             rect.size.width -= scroller.frame.width
         }
+        
         return rect
     }
     
@@ -2134,11 +2138,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     private func _scrollRect(_ aRect: CGRect, to scrollPosition: CollectionViewScrollPosition, animated: Bool, prepare: Bool, completion: AnimationCompletion?) {
         var rect = aRect.intersection(self.contentDocumentView.frame)
-        
-//        if rect.isEmpty {
-//            completion?(false)
-//            return
-//        }
         
         let scrollDirection = collectionViewLayout.scrollDirection
         

@@ -97,6 +97,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     // MARK: - Configuration
     /*-------------------------------------------------------------------------------*/
     
+    public var removeEmptySections: Bool = true
     public var sortDescriptors: [SortDescriptor<Element>] = []
     public var sectionSortDescriptors: [SortDescriptor<Section>] = []
     
@@ -439,7 +440,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
     
     func shouldRemoveEmptySection(_ section: SectionInfo<Section, Element>) -> Bool {
-        return true
+        return self.removeEmptySections
     }
     
     // MARK: - Making Updates

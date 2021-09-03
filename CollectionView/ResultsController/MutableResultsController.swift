@@ -302,7 +302,10 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     ///
     /// - Parameter content: A list of section, [Element] tuples to set as the content
     public func setContent(_ content: [(Section, [Element])]) {
-        self._sections = []
+        self._sections.removeAll()
+        self._sectionsCopy = nil
+        self._objectSectionMap.removeAll()
+        
         for s in content {
             let section = WrappedSectionInfo(object: s.0, objects: s.1)
             self._sections.append(section)

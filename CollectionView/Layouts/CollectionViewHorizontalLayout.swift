@@ -38,7 +38,9 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
     open var itemWidth: CGFloat = 100
     open var itemSpacing: CGFloat = 8
     
-    var cache: [CGRect] = []
+    public var centerContent: Bool = false
+    
+    var cache = [[CGRect]]()
     var contentWidth: CGFloat = 0
     
     open override func prepare() {
@@ -48,33 +50,44 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
         guard let cv = self.collectionView else { return }
         
         let numSections = cv.numberOfSections
-        assert(numSections <= 1, "Horizontal collection view cannot have more than 1 section")
+        var xPos: CGFloat = 0
         
-        if numSections == 0 { return }
-        let numRows = cv.numberOfItems(in: 0)
-        if numRows == 0 { return }
-        
-        var xPos: CGFloat = sectionInsets.left - self.itemSpacing
-        
-        for row in 0..<numRows {
+        for sectionIdx in 0..<numSections {
+            xPos += sectionInsets.left
             
-            let ip = IndexPath.for(item: row, section: 0)
-            self.allIndexPaths.append(ip)
-            var height = cv.bounds.height 
-            height -= sectionInsets.height
-            
-            let width = self.delegate?.collectionView?(cv, layout: self, widthForItemAt: ip) ?? itemWidth
-            
-            var x = xPos
-            x += self.itemSpacing
-            
-            let frame = CGRect(x: x, y: sectionInsets.top, width: width, height: height)
-            
-            cache.append(frame)
-            xPos = x + width
+            var items = [CGRect]()
+            let numItems = cv.numberOfItems(in: sectionIdx)
+            for idx in 0..<numItems {
+                let ip = IndexPath.for(item: idx, section: sectionIdx)
+                self.allIndexPaths.append(ip)
+                var height = cv.bounds.height
+                height -= sectionInsets.height
+                
+                let width = self.delegate?.collectionView?(cv, layout: self, widthForItemAt: ip) ?? itemWidth
+                
+                var x = xPos
+                if !items.isEmpty {
+                    x += self.itemSpacing
+                }
+                
+                let frame = CGRect(x: x, y: sectionInsets.top, width: width, height: height)
+                
+                items.append(frame)
+                xPos = x + width
+            }
+            self.cache.append(items)
         }
-        
         contentWidth = xPos + sectionInsets.right
+        
+        let cvWidth = cv.contentVisibleRect.width
+        if contentWidth < cvWidth {
+            let adjust = (cvWidth - contentWidth)/2
+
+            self.cache = self.cache.map { sec in
+                return sec.map { $0.offsetBy(dx: adjust, dy: 0) }
+            }
+            self.contentWidth += adjust
+        }
     }
     
     var _size = CGSize.zero
@@ -101,9 +114,10 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
     }
     
     open override func rectForSection(_ section: Int) -> CGRect {
-        guard let cv = self.collectionView else { return CGRect.zero }
-        let size = self.collectionViewContentSize
-        return CGRect(x: cv.contentInsets.left, y: 0, width: size.width, height: size.height)
+        guard let sectionItems = self.cache.object(at: section), !sectionItems.isEmpty else { return CGRect.zero }
+        return sectionItems.reduce(CGRect.null) { partialResult, rect in
+            return partialResult.union(rect)
+        }
     }
     open override func contentRectForSection(_ section: Int) -> CGRect {
         return rectForSection(section)
@@ -111,10 +125,13 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
     
     open override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         var ips = [IndexPath]()
-        for idx in 0..<cache.count {
-            if rect.intersects(cache[idx]) {
-                let ip = IndexPath.for(item: idx, section: 0)
-                ips.append(ip)
+        
+        for (sectionIdx, section) in cache.enumerated() {
+            for (idx, item) in section.enumerated() {
+                if rect.intersects(item) {
+                    let ip = IndexPath.for(item: idx, section: sectionIdx)
+                    ips.append(ip)
+                }
             }
         }
         return ips
@@ -125,7 +142,7 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
         attrs.alpha = 1
         attrs.zIndex = 1000
         
-        let frame = cache[indexPath._item]
+        let frame = cache[indexPath._section][indexPath._item]
         attrs.frame = frame
         return attrs
     }

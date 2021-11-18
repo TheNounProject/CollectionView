@@ -390,8 +390,8 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
                 self._objectSectionMap[o] = s
             }
         }
-        self.sortSections()
-        self.sortObjects()
+//        self.sortSections()
+//        self.sortObjects()
 
         self.endEditing()
     }

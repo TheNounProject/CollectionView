@@ -78,11 +78,17 @@ public class CollectionViewResultsProxy: CustomDebugStringConvertible {
 }
 
 public protocol CollectionViewProviderDelegate: AnyObject {
+    /// Notifies the delegate that the provider will update content
     func providerWillChangeContent(_ provider: CollectionViewProvider)
+    /// Notifies the delegate that an item did update
     func provider(_ provider: CollectionViewProvider, didUpdateItem item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    /// Notifies the delegate that a section did update
     func provider(_ provider: CollectionViewProvider, didUpdateSection item: Any, at indexPath: IndexPath?, for changeType: ResultsControllerChangeType)
+    /// Notifies the delegate when the provider finished changing content and is about to update the collection view
+    ///
+    /// - Returns: An optional callback to perform actions when the collection view has finished updating
     func providerDidChangeContent(_ provider: CollectionViewProvider) -> AnimationCompletion?
-
+    /// Notifies the delegate that a section did toggle being collapsed
     func provider(_ provider: CollectionViewProvider, didToggleSectionAt index: Int, collapsed: Bool)
 }
 

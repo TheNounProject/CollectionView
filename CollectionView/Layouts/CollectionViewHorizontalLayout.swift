@@ -70,7 +70,7 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
                     x += self.itemSpacing
                 }
                 
-                let frame = CGRect(x: x, y: sectionInsets.top, width: width, height: height)
+                let frame = CGRect(x: x, y: sectionInsets.top, width: width, height: height).integral
                 
                 items.append(frame)
                 xPos = x + width

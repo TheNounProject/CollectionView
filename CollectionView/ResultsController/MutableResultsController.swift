@@ -429,6 +429,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
         self.ensureSectionCopy()
         let s = WrappedSectionInfo(object: section, objects: [])
         _sections.append(s)
+        _sections.needsSort = true
         return s
     }
     

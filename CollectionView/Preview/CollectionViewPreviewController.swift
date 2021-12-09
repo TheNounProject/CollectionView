@@ -77,9 +77,9 @@ class BackgroundView: NSView {
 }
 
 internal class EventMonitor {
-    fileprivate var local: Any?
-    fileprivate let mask: NSEvent.EventTypeMask
-    fileprivate let handler: ((NSEvent?) -> NSEvent?)
+    private var local: Any?
+    private let mask: NSEvent.EventTypeMask
+    private let handler: ((NSEvent?) -> NSEvent?)
     
     public init(mask: NSEvent.EventTypeMask, handler: @escaping ((NSEvent?) -> NSEvent?)) {
         self.mask = mask

@@ -329,8 +329,8 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
                 let attributes = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.SectionHeader,
                                                                 with: IndexPath.for(section: sectionIdx))
                 attributes.frame = insetSupplementaryViews
-                    ? CGRect(x: sectionInsets.left, y: top, width: contentWidth, height: heightHeader)
-                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - contentInsets.width, height: heightHeader)
+                    ? CGRect(x: sectionInsets.left, y: top, width: contentWidth, height: heightHeader).integral
+                    : CGRect(x: contentInsets.left, y: top, width: cv.frame.size.width - contentInsets.width, height: heightHeader).integral
                 section.header = attributes
                 top = attributes.frame.maxY
             }

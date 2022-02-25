@@ -156,6 +156,7 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
         
         let numberOfSections = self.collectionView!.numberOfSections()
         if numberOfSections == 0 { return }
+        guard let cv = self.collectionView else { return }
         
         var top: CGFloat = 0.0
         
@@ -172,9 +173,9 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
             let colSpacing = self.delegate?.collectionview?(self.collectionView!, layout: self, columnSpacingForSection: section)
                 ?? self.columnSpacing
             
-            let contentWidth = self.collectionView!.bounds.size.width - sectionInsets.left - sectionInsets.right
+            let contentWidth = cv.contentVisibleRect.size.width - sectionInsets.width
             let spaceColumCount = CGFloat(colCount-1)
-            let itemWidth = (contentWidth - (spaceColumCount*colSpacing)) / CGFloat(colCount)
+            let itemWidth = (contentWidth - (spaceColumCount * colSpacing)) / CGFloat(colCount)
             
             var rowHeight: CGFloat = 0
             

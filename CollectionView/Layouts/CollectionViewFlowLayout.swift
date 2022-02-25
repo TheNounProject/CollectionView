@@ -397,8 +397,6 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
             let _interitemSpacing = self.delegate?.collectionView(cv, flowLayout: self, interitemSpacingForSectionAt: sec) ?? self.interitemSpacing
             let _interspanSpacing = self.delegate?.collectionView(cv, flowLayout: self, interspanSpacingForSectionAt: sec) ?? self.interpanSpacing
             let insets = self.delegate?.collectionView(cv, flowLayout: self, insetsForSectionAt: sec) ?? self.defaultSectionInsets
-            //            insets.left += contentInsets.left
-            //            insets.right += contentInsets.right
             let transform = self.delegate?.collectionView(cv, flowLayout: self, rowTransformForSectionAt: sec) ?? self.defaultRowTransform
             
             var sectionAttrs = SectionAttributes(insets: insets, transform: transform)
@@ -407,7 +405,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
             sectionAttrs.frame.origin.y = top
             sectionAttrs.contentFrame.origin.y = top
             
-            let contentWidth = cv.contentVisibleRect.size.width - (insets.width + contentInsets.width)
+            let contentWidth = cv.contentVisibleRect.size.width - insets.width
             
             let heightHeader: CGFloat = self.delegate?.collectionView(cv, flowLayout: self, heightForHeaderInSection: sec) ?? self.defaultHeaderHeight
             if heightHeader > 0 {

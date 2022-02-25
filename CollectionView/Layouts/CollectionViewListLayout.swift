@@ -156,7 +156,7 @@ public final class CollectionViewListLayout: CollectionViewLayout {
                                                                      layout: self,
                                                                      interitemSpacingForItemsInSection: sectionIdx) ?? self.interitemSpacing
             
-            let contentWidth = cv.contentVisibleRect.size.width - contentInsets.width
+            let contentWidth = cv.contentVisibleRect.size.width
             let itemWidth = contentWidth - insets.width
             
             let itemCount = cv.numberOfItems(in: sectionIdx)
@@ -231,7 +231,6 @@ public final class CollectionViewListLayout: CollectionViewLayout {
         
         if self.numSections == 0 { return size }
         
-        size.width = cv.contentVisibleRect.size.width
         let height = self.sections.last?.frame.maxY ?? 0
         size.height = hugContents ? height : max(height, cv.contentVisibleRect.size.height - cv.contentInsets.height)
         return size

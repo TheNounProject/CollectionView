@@ -318,7 +318,7 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
             let itemSpacing = self.delegate?.collectionView?(cv, layout: self, interitemSpacingForSectionAt: sectionIdx) ?? self.interitemSpacing
             let columnSpacing = self.delegate?.collectionview?(cv, layout: self, columnSpacingForSectionAt: sectionIdx) ?? self.columnSpacing
             
-            let contentWidth = cv.contentVisibleRect.size.width - (contentInsets.width + sectionInsets.width)
+            let contentWidth = cv.contentVisibleRect.size.width - sectionInsets.width
             
             let section = SectionAttributes(frame: CGRect(x: contentInsets.left, y: top, width: contentWidth, height: 0), insets: sectionInsets)
             

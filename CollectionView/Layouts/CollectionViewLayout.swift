@@ -20,7 +20,7 @@ open class CollectionViewLayout: NSObject {
     open var scrollDirection: CollectionViewScrollDirection { return .vertical }
     
     private func overrideWarning(_ function: String = #function) {
-        Swift.print("WARNING: CollectionViewLayout \(function) should be overridden in a subclass. Missing in \(type(of: self)). Make sure super is not called too.")
+        Swift.print("WARNING: CollectionViewLayout \(function) should be overridden in a subclass. Missing in \(self). Make sure super is not called too.")
     }
     
     /// The size that encapsulates all views within the collection view

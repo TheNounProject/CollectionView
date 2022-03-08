@@ -86,24 +86,9 @@ extension String: CustomDisplayStringConvertible {
 }
 
 /// :nodoc:
-extension NSNumber: CustomDisplayStringConvertible {
-    public var displayDescription: String { return "\(self)" }
-}
-
-/// :nodoc:
 extension Int: CustomDisplayStringConvertible {
     public var displayDescription: String {
         return "\(self)"
-    }
-}
-
-/// :nodoc:
-extension NSNumber: Comparable {
-    public static func == (lhs: NSNumber, rhs: NSNumber) -> Bool {
-        return lhs.compare(rhs) == .orderedSame
-    }
-    public static func < (lhs: NSNumber, rhs: NSNumber) -> Bool {
-        return lhs.compare(rhs) == .orderedAscending
     }
 }
 

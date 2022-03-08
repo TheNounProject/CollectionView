@@ -361,9 +361,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
     open func reloadData() {
         self.contentDocumentView.reset()
         
-        self._reloadDataCounts()
-        
-        doLayoutPrep()
+        prepareLayout(reloadData: true)
         self.delegate?.collectionViewDidReloadLayout?(self)
         setContentViewSize()
         self.reflectScrolledClipView(self.clipView!)
@@ -527,13 +525,13 @@ open class CollectionView: ScrollView, NSDraggingSource {
     
     open override func layout() {
         self._floatingSupplementaryView.frame = self.bounds
-        self.layoutLeadingViews()
+//        self.layoutLeadingViews()
         super.layout()
         if needsLayoutReload || self.collectionViewLayout.shouldInvalidateLayout(forBoundsChange: self.contentVisibleRect) {
-            if reloadDataOnBoundsChange {
-                self._reloadDataCounts()
-            }
-            doLayoutPrep()
+            
+            setContentViewSize()
+            
+            prepareLayout(reloadData: reloadDataOnBoundsChange)
             setContentViewSize()
             
             // Don't pin when implicitly reloading
@@ -561,7 +559,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self._reloadLayout(animated, scrollPosition: scrollPosition, completion: completion, needsRecalculation: true)
     }
     
-    private func doLayoutPrep() {
+    private func prepareLayout(reloadData: Bool) {
         if !self.inLiveResize {
             if self.collectionViewLayout.scrollDirection == .vertical {
                 let ignore = self.leadingView?.bounds.size.height ?? self.contentInsets.top
@@ -575,23 +573,28 @@ open class CollectionView: ScrollView, NSDraggingSource {
             }
         }
         self.delegate?.collectionViewWillReloadLayout?(self)
+        if reloadData {
+            self._reloadDataCounts()
+        }
+        
         self.leadingView?.layoutSubtreeIfNeeded()
         self.collectionViewLayout.prepare()
     }
     
-    private func layoutLeadingViews() {
-        if let v = self.leadingView {
-            v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
-            v.frame.origin.x = 0
-        }
-    }
+//    private func layoutLeadingViews() {
+//        if let v = self.leadingView {
+//            v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
+//            v.frame.origin.x = 0
+//            v.needsLayout = true
+//        }
+//    }
     
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
         self._layoutRequested = false
-        self.layoutLeadingViews()
+//        self.layoutLeadingViews()
         
         if needsRecalculation {
-            doLayoutPrep()
+            prepareLayout(reloadData: false)
         }
         let newContentSize = self.collectionViewLayout.collectionViewContentSize
         
@@ -1256,7 +1259,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
         
         // Do the layout prep
-        doLayoutPrep()
+        prepareLayout(reloadData: false)
 
         // Update selections
         self._selectedIndexPaths = Set(self._selectedIndexPaths.compactMap { (ip) -> IndexPath? in

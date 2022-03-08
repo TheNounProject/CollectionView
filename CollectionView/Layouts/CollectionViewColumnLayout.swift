@@ -386,14 +386,11 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
     
     override open var collectionViewContentSize: CGSize {
         guard let cv = collectionView else { return CGSize.zero }
-        let numberOfSections = cv.numberOfSections
-        if numberOfSections == 0 { return CGSize.zero }
         
         var contentSize = cv.contentVisibleRect.size
         contentSize.width -= cv.contentInsets.width
         
         let height = self.sections.last?.frame.maxY ?? 0
-        if height == 0 { return CGSize.zero }
         contentSize.height = height
         return  contentSize
     }

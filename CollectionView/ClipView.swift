@@ -197,10 +197,10 @@ open class ClipView: NSClipView {
             // Make sure we always finish out the animation with the actual coordinates
             DispatchQueue.main.async(execute: { 
                 super.scroll(to: self.destinationOrigin)
-                self.finishedScrolling(true)
                 if let cv = self.scrollView as? CollectionView {
                     cv.delegate?.collectionViewDidEndScrolling?(cv, animated: true)
                 }
+                self.finishedScrolling(true)
             })
         }
     }

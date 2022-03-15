@@ -184,8 +184,16 @@ extension CollectionViewDelegateFlowLayout {
  */
 open class CollectionViewFlowLayout: CollectionViewLayout {
     
+    public var collectionView: CollectionView?
+    
+    public var scrollDirection: CollectionViewScrollDirection { return .vertical}
+    
+    public var allIndexPaths = OrderedSet<IndexPath>()
+    
     // MARK: - Options
     /*-------------------------------------------------------------------------------*/
+    /// If supporting views should be pinned to the top of the view
+    open var pinHeadersToTop: Bool = true
     
     /// Spacing between flow elements
     public var interitemSpacing: CGFloat = 8
@@ -215,6 +223,12 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
     
     /// Only used during layout preparation to reference the width of the previously inserted row
     private(set) public var widthOfLastRow: CGFloat?
+    
+    private var delegate: CollectionViewDelegateFlowLayout? {
+        return self.collectionView?.delegate as? CollectionViewDelegateFlowLayout
+    }
+    
+    private var sectionAttributes = [SectionAttributes]()
     
     /// Row transforms can be applied to flow elements that fall within the same row
     ///
@@ -363,21 +377,21 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         }
     }
     
-    private var delegate: CollectionViewDelegateFlowLayout? {
-        return self.collectionView?.delegate as? CollectionViewDelegateFlowLayout
-    }
-    
-    private var sectionAttributes = [SectionAttributes]()
+    public init() { }
     
     // MARK: - Layout Overrides
     /*-------------------------------------------------------------------------------*/
     
     private var _lastSize = CGSize.zero
-    open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+    open func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return _lastSize != newBounds.size
     }
     
-    override open func prepare() {
+    public func invalidate() {
+        
+    }
+    
+    open func prepare() {
         
         self.allIndexPaths.removeAll()
         self.sectionAttributes.removeAll()
@@ -542,11 +556,11 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
     
     // MARK: - Query Content
     /*-------------------------------------------------------------------------------*/
-    override open func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
+    open func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         return itemAttributes(in: rect) { return $0.indexPath }
     }
     
-    override open func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
+    open func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
         return itemAttributes(in: rect) { return $0.copy() }
     }
     
@@ -582,11 +596,11 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         return results
     }
     
-    override open func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    open func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         return self.sectionAttributes.object(at: indexPath._section)?.items.object(at: indexPath._item)?.copy()
     }
     
-    override open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         
         if elementKind == CollectionViewLayoutElementKind.SectionHeader {
             let attrs = self.sectionAttributes[indexPath._section].header?.copy()
@@ -617,15 +631,15 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         return nil
     }
     
-    open override func rectForSection(_ section: Int) -> CGRect {
+    open func rectForSection(_ section: Int) -> CGRect {
         return sectionAttributes[section].frame
     }
     
-    open override func contentRectForSection(_ section: Int) -> CGRect {
+    open func contentRectForSection(_ section: Int) -> CGRect {
         return sectionAttributes[section].contentFrame
     }
     
-    override open var collectionViewContentSize: CGSize {
+    open var collectionViewContentSize: CGSize {
         guard let cv = collectionView else { return CGSize.zero }
         let numberOfSections = cv.numberOfSections
         if numberOfSections == 0 { return CGSize.zero }
@@ -637,7 +651,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         return  contentSize
     }
     
-    open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
+    open func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         guard var frame = self.layoutAttributesForItem(at: indexPath)?.frame else { return nil }
         
         let section = self.sectionAttributes[indexPath._section]
@@ -658,7 +672,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
         return frame
     }
     
-    open override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
+    open func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
         guard let collectionView = self.collectionView else { fatalError() }
         
         //        var index = currentIndexPath._item

@@ -127,13 +127,15 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.layer?.backgroundColor = self.drawsBackground ? self.backgroundColor.cgColor : nil
     }
     
+    @available(*, deprecated, message: "Use a leading supplementary view instead")
     public var leadingView: NSView? {
         didSet {
             if oldValue == leadingView { return }
             oldValue?.removeFromSuperview()
+            self.needsLayoutReload = true
+            self.needsLayout = true
             if let v = leadingView {
                 self.contentDocumentView.addSubview(v)
-                
                 self.contentDocumentView.addConstraints([
                     NSLayoutConstraint(item: self.contentDocumentView, attribute: .left, relatedBy: .equal,
                                        toItem: v, attribute: .left, multiplier: 1, constant: 0),
@@ -141,6 +143,8 @@ open class CollectionView: ScrollView, NSDraggingSource {
                                        toItem: v, attribute: .top, multiplier: 1, constant: 0),
                     NSLayoutConstraint(item: self.contentDocumentView, attribute: .right, relatedBy: .equal,
                                        toItem: v, attribute: .right, multiplier: 1, constant: 0)
+//                    NSLayoutConstraint(item: self.contentDocumentView.contentView, attribute: .top, relatedBy: .equal,
+//                                       toItem: v, attribute: .bottom, multiplier: 1, constant: 0)
                     ])
                 v.translatesAutoresizingMaskIntoConstraints = false
                 v.setContentHuggingPriority(NSLayoutConstraint.Priority(rawValue: 1000), for: .vertical)
@@ -389,7 +393,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
     ///    The layout used to organize the collected view’s items.
     ///
     /// - Note: Assigning a new layout object to this property does **NOT** apply the layout to the collection view. Call `reloadData()` or `reloadLayout(_:)` to do so.
-    public var collectionViewLayout: CollectionViewLayout = CollectionViewLayout() {
+    public var collectionViewLayout: CollectionViewLayout = CollectionViewListLayout() {
         didSet {
             collectionViewLayout.collectionView = self
             self.hasHorizontalScroller = collectionViewLayout.scrollDirection == .horizontal
@@ -520,19 +524,21 @@ open class CollectionView: ScrollView, NSDraggingSource {
                 self.reloadLayout(animated, scrollPosition: .none, completion: nil)
             }
         }
-
     }
     
     open override func layout() {
         self._floatingSupplementaryView.frame = self.bounds
-//        self.layoutLeadingViews()
+        
+        let leadingViewHeight = self.leadingView?.bounds.size.height ?? 0
+    
         super.layout()
         if needsLayoutReload || self.collectionViewLayout.shouldInvalidateLayout(forBoundsChange: self.contentVisibleRect) {
             
-            setContentViewSize()
-            
-            prepareLayout(reloadData: reloadDataOnBoundsChange)
-            setContentViewSize()
+            func performLayout() {
+                prepareLayout(reloadData: reloadDataOnBoundsChange)
+                setContentViewSize()
+            }
+            performLayout()
             
             // Don't pin when implicitly reloading
             if !self.needsLayoutReload, let ip = _topIP {
@@ -580,14 +586,6 @@ open class CollectionView: ScrollView, NSDraggingSource {
         self.leadingView?.layoutSubtreeIfNeeded()
         self.collectionViewLayout.prepare()
     }
-    
-//    private func layoutLeadingViews() {
-//        if let v = self.leadingView {
-//            v.frame.size.width = self.bounds.size.width - (self.contentInsets.left + self.contentInsets.right)
-//            v.frame.origin.x = 0
-//            v.needsLayout = true
-//        }
-//    }
     
     private func _reloadLayout(_ animated: Bool, scrollPosition: CollectionViewScrollPosition = .nearest, completion: AnimationCompletion?, needsRecalculation: Bool) {
         self._layoutRequested = false

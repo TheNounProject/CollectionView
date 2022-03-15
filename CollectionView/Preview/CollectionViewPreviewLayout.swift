@@ -12,14 +12,17 @@ protocol CollectionViewDelegatePreviewLayout: AnyObject {
     func previewLayout(_ layout: CollectionViewPreviewLayout, canPreviewItemAt indexPath: IndexPath) -> Bool
 }
 
-public final class CollectionViewPreviewLayout: CollectionViewLayout {
+public final class CollectionViewPreviewLayout: NSObject, CollectionViewLayout {
+    public var collectionView: CollectionView?
+    
+    public var allIndexPaths: OrderedSet<IndexPath> = []
+    
+    public var scrollDirection: CollectionViewScrollDirection { return .horizontal }
     
     // MARK: - Default layout values
     
     /// The vertical spacing between items in the same column
     public var interItemSpacing: CGFloat = 8 { didSet { invalidate() }}
-    
-    public override var scrollDirection: CollectionViewScrollDirection { return .horizontal }
     
     private var numSections: Int { return self.collectionView?.numberOfSections ?? 0 }
     private var sections = [Section]()
@@ -31,7 +34,7 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
     
     var usableIndexPaths = OrderedSet<IndexPath>()
     
-    public override func invalidate() {
+    public func invalidate() {
         _cvSize = collectionView?.bounds.size ?? CGSize.zero
     }
     
@@ -40,11 +43,8 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
     }
     
     var contentWidth: CGFloat = 0
-    override public init() {
-        super.init()
-    }
     
-    override public func prepare() {
+    public func prepare() {
         
         self.allIndexPaths.removeAll()
         self.sections.removeAll()
@@ -97,7 +97,7 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
         contentWidth = left
     }
     
-    public override var collectionViewContentSize: CGSize {
+    public var collectionViewContentSize: CGSize {
         guard let cv = collectionView else { return CGSize.zero }
         let numberOfSections = self.numSections
         if numberOfSections == 0 { return CGSize.zero }
@@ -108,11 +108,11 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
         return size
     }
     
-    public override func rectForSection(_ section: Int) -> CGRect {
+    public func rectForSection(_ section: Int) -> CGRect {
         return sections[section].frame
     }
     
-    public override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
+    public func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         
         guard !rect.isEmpty && !sections.isEmpty else { return [] }
         
@@ -136,7 +136,7 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
         return indexPaths
     }
     
-    public override func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
+    public func layoutAttributesForItems(in rect: CGRect) -> [CollectionViewLayoutAttributes] {
         
         guard !rect.isEmpty && !sections.isEmpty else { return [] }
         
@@ -161,13 +161,13 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
         return result
     }
     
-    public override func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    public func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         let a = self.sections.object(at: indexPath._section)?.itemAttributes.object(at: indexPath._item)
         return a!
     }
     
     fileprivate var _cvSize = CGSize.zero
-    public override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+    public func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         if !newBounds.size.equalTo(self._cvSize) {
             self._cvSize = newBounds.size
             return true
@@ -175,11 +175,11 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
         return false
     }
     
-    public override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
+    public func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         return self.layoutAttributesForItem(at: indexPath)?.frame
     }
     
-    public override func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
+    public func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
 
         switch direction {
         case .up, .left:
@@ -189,6 +189,10 @@ public final class CollectionViewPreviewLayout: CollectionViewLayout {
             return self.usableIndexPaths.object(after: currentIndexPath)
         }
         
+    }
+    
+    public func layoutAttributesForSupplementaryView(ofKind kind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+        return nil
     }
     
 }

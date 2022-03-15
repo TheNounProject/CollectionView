@@ -200,15 +200,15 @@ fileprivate class LayoutTester: CollectionViewDataSource, CollectionViewDelegate
     
     // Layout Delegate
     
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForHeaderInSection section: Int) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewColumnLayout, heightForHeaderInSection section: Int) -> CGFloat {
         return self.headerHeight
     }
     
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForItemAt indexPath: IndexPath) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewColumnLayout, heightForItemAt indexPath: IndexPath) -> CGFloat {
         return self.heightProvider?(indexPath) ?? self.defaultHeight
     }
     
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, aspectRatioForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewColumnLayout, aspectRatioForItemAt indexPath: IndexPath) -> CGSize {
         return self.ratioProvider?(indexPath) ?? CGSize.zero
     }
 }

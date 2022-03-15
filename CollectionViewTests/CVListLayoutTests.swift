@@ -177,11 +177,11 @@ fileprivate class LayoutTester: CollectionViewDataSource, CollectionViewDelegate
         return collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "Header", for: indexPath)
     }
     
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForHeaderInSection section: Int) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewListLayout, heightForHeaderInSection section: Int) -> CGFloat {
         return self.headerHeight
     }
     
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForItemAt indexPath: IndexPath) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewListLayout, heightForItemAt indexPath: IndexPath) -> CGFloat {
         return self.heightProvider?(indexPath) ?? self.defaultHeight
     }
 }

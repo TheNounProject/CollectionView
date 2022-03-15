@@ -116,61 +116,6 @@ public protocol CollectionViewDelegateColumnLayout {
                          heightForFooterInSection section: Int) -> CGFloat
 }
 
-//extension CollectionViewDelegateColumnLayout {
-//
-//    public func collectionView(_ collectionView: CollectionView,
-//                               layout collectionViewLayout: CollectionViewColumnLayout,
-//                               numberOfColumnsInSection section: Int) -> Int {
-//        return collectionViewLayout.columnCount
-//    }
-//
-//    public func collectionView(_ collectionView: CollectionView,
-//                               layout collectionViewLayout: CollectionViewColumnLayout,
-//                               insetForSectionAt section: NSInteger) -> NSEdgeInsets {
-//        return collectionViewLayout.sectionInset
-//    }
-//
-//    public func collectionView(_ collectionView: CollectionView,
-//                               layout collectionViewLayout: CollectionViewColumnLayout,
-//                               interitemSpacingForSectionAt section: Int) -> CGFloat {
-//        return collectionViewLayout.interitemSpacing
-//    }
-//
-//    public func collectionview(_ collectionView: CollectionView,
-//                               layout collectionViewLayout: CollectionViewColumnLayout,
-//                               columnSpacingForSectionAt section: Int) -> CGFloat {
-//        return collectionViewLayout.columnSpacing
-//    }
-//
-//    public func collectionView(_ collectionView: CollectionView,
-//                               layout collectionViewLayout: CollectionViewColumnLayout,
-//                               heightForItemAt indexPath: IndexPath) -> CGFloat {
-//        return collectionViewLayout.itemHeight
-//    }
-//
-//    public func collectionView(_ collectionView: CollectionView,
-//                               layout collectionViewLayout: CollectionViewColumnLayout,
-//                               aspectRatioForItemAt indexPath: IndexPath) -> CGSize {
-//        return .zero
-//    }
-//
-//    public func collectionViewLeadingViewHeight(_ collectionView: CollectionView,
-//                                                layout collectionViewLayout: CollectionViewColumnLayout) -> CGFloat {
-//        return 0
-//    }
-//
-//    public func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewColumnLayout,
-//                               heightForHeaderInSection section: Int) -> CGFloat {
-//        return collectionViewLayout.headerHeight
-//    }
-//
-//    public func collectionView (_ collectionView: CollectionView,
-//                                layout collectionViewLayout: CollectionViewColumnLayout,
-//                                heightForFooterInSection section: Int) -> CGFloat {
-//        return collectionViewLayout.footerHeight
-//    }
-//}
-
 /**
  This layout is column based which means you provide the number of columns and cells are placed in the appropriate one. It can be display items all the same size or as a "Pinterest" style layout.
  

@@ -529,16 +529,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
     open override func layout() {
         self._floatingSupplementaryView.frame = self.bounds
         
-        let leadingViewHeight = self.leadingView?.bounds.size.height ?? 0
-    
         super.layout()
         if needsLayoutReload || self.collectionViewLayout.shouldInvalidateLayout(forBoundsChange: self.contentVisibleRect) {
-            
-            func performLayout() {
-                prepareLayout(reloadData: reloadDataOnBoundsChange)
-                setContentViewSize()
-            }
-            performLayout()
+            prepareLayout(reloadData: reloadDataOnBoundsChange)
+            setContentViewSize()
             
             // Don't pin when implicitly reloading
             if !self.needsLayoutReload, let ip = _topIP {

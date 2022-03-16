@@ -303,8 +303,7 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
             }
             
             if sectionIdx == 0, let leading = leadingViewAttributes {
-                section.frame.origin.y = leading.frame.minY
-                section.frame.size.height = top - leading.frame.minY
+                section.frame = section.frame.union(leading.frame)
             }
             
             section.frame.size.height += sectionInsets.bottom

@@ -301,6 +301,12 @@ open class CollectionViewColumnLayout: CollectionViewLayout {
                 section.frame.size.height += attributes.frame.size.height
                 top = attributes.frame.maxY
             }
+            
+            if sectionIdx == 0, let leading = leadingViewAttributes {
+                section.frame.origin.y = leading.frame.minY
+                section.frame.size.height = top - leading.frame.minY
+            }
+            
             section.frame.size.height += sectionInsets.bottom
             top = section.frame.maxY
             sections.append(section)

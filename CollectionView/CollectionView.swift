@@ -1693,7 +1693,7 @@ open class CollectionView: ScrollView, NSDraggingSource {
                 : needApproval
         }
         
-        if clear {
+        if clear && (allowsEmptySelection || !approved.isEmpty) {
             let deselect = self._selectedIndexPaths.removing(indexPaths)
             self._deselectItems(at: deselect, animated: true, notify: notify)
         }
@@ -1771,12 +1771,12 @@ open class CollectionView: ScrollView, NSDraggingSource {
             
             // Standard selection
         else {
-            var de = self._selectedIndexPaths
-            de.remove(ip)
-            self._deselectItems(at: de, animated: true, notify: true)
+//            var de = self._selectedIndexPaths
+//            de.remove(ip)
+//            self._deselectItems(at: de, animated: true, notify: true)
             
             self._extendingStart = ip
-            self._selectItems(at: Set([ip]), animated: true, notify: true)
+            self._selectItems(at: Set([ip]), animated: true, clear: true, notify: true)
         }
     }
     

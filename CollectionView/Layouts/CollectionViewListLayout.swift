@@ -30,7 +30,7 @@ import Foundation
     /// - Parameter collectionViewLayout: The layout
     /// - Returns: The desired leading view height or 0 for no view
     @objc optional func collectionViewLeadingViewHeight(_ collectionView: CollectionView,
-                                         layout collectionViewLayout: CollectionViewListLayout) -> CGFloat
+                                                        layout collectionViewLayout: CollectionViewListLayout) -> CGFloat
     
     /// Asks the delegate for the height of the header in a given section
     ///

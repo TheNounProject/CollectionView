@@ -24,6 +24,14 @@ import Foundation
                                        layout collectionViewLayout: CollectionViewListLayout,
                                        heightForItemAt indexPath: IndexPath) -> CGFloat
     
+    /// Asks the delegate for the height of the leading view
+    ///
+    /// - Parameter collectionView: The collection view
+    /// - Parameter collectionViewLayout: The layout
+    /// - Returns: The desired leading view height or 0 for no view
+    @objc optional func collectionViewLeadingViewHeight(_ collectionView: CollectionView,
+                                         layout collectionViewLayout: CollectionViewListLayout) -> CGFloat
+    
     /// Asks the delegate for the height of the header in a given section
     ///
     /// - Parameter collectionView: The asking collection view
@@ -113,6 +121,7 @@ public final class CollectionViewListLayout: NSObject, CollectionViewLayout {
     /// smaller than the size of the collection view itself
     public var hugContents: Bool = false
     
+    private var leadingViewAttributes: CollectionViewLayoutAttributes?
     private var sections: [SectionAttributes] = []
     
     private struct SectionAttributes: CustomStringConvertible {
@@ -155,6 +164,15 @@ public final class CollectionViewListLayout: NSObject, CollectionViewLayout {
         
         var top: CGFloat = self.collectionView?.leadingView?.bounds.size.height ?? 0
         let contentInsets = cv.contentInsets
+        
+        if let leadingHeight = self.delegate?.collectionViewLeadingViewHeight?(cv, layout: self), leadingHeight > 0 {
+            let attrs = CollectionViewLayoutAttributes(forSupplementaryViewOfKind: CollectionViewLayoutElementKind.LeadingView, with: .zero)
+            attrs.frame = CGRect(x: contentInsets.left, y: top,
+                                 width: cv.frame.size.width - contentInsets.width,
+                                 height: leadingHeight).integral
+            self.leadingViewAttributes = attrs
+            top = attrs.frame.maxY
+        }
         
         for sectionIdx in 0..<numberOfSections {
             
@@ -213,6 +231,10 @@ public final class CollectionViewListLayout: NSObject, CollectionViewLayout {
                 top = newTop
             }
             section.contentFrame.size.height = top - section.contentFrame.origin.y
+            
+            if sectionIdx == 0, let leading = leadingViewAttributes {
+                section.frame = section.frame.union(leading.frame)
+            }
             
             // 4. Footers
             let footerHeight = self.delegate?.collectionView?(cv, layout: self, heightForFooterInSection: sectionIdx) ?? self.footerHeight
@@ -294,7 +316,10 @@ public final class CollectionViewListLayout: NSObject, CollectionViewLayout {
     public func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         let section = self.sections[indexPath._section]
         
-        if elementKind == CollectionViewLayoutElementKind.SectionHeader {
+        switch elementKind {
+        case CollectionViewLayoutElementKind.LeadingView:
+            return leadingViewAttributes?.copy()
+        case CollectionViewLayoutElementKind.SectionHeader:
             guard let attrs = section.header?.copy() else { return nil }
             if pinHeadersToTop, let cv = self.collectionView {
                 let contentOffset = cv.contentOffset
@@ -309,10 +334,10 @@ public final class CollectionViewListLayout: NSObject, CollectionViewLayout {
                 attrs.floating = attrs.frame.origin.y > frame.origin.y
             }
             return attrs
-        } else if elementKind == CollectionViewLayoutElementKind.SectionFooter {
+        case CollectionViewLayoutElementKind.SectionFooter:
             return section.footer?.copy()
+        default: return nil
         }
-        return nil
     }
    
     public func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {

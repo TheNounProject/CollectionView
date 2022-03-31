@@ -627,7 +627,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
     open func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         switch elementKind {
         case CollectionViewLayoutElementKind.LeadingView:
-            return leadingViewAttributes
+            return leadingViewAttributes?.copy()
         case CollectionViewLayoutElementKind.SectionHeader:
             let attrs = self.sectionAttributes[indexPath._section].header?.copy()
             if pinHeadersToTop, let currentAttrs = attrs, let cv = self.collectionView {

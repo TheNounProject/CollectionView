@@ -1078,7 +1078,10 @@ open class CollectionView: ScrollView, NSDraggingSource {
         }
         
         mutating func index(of previousIndex: Int) -> Int? {
-            return final[previousIndex]
+            if previousIndex < final.count {
+                return final[previousIndex]
+            }
+            return nil
         }
     }
     

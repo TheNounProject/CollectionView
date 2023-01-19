@@ -144,11 +144,9 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
         var ips = [IndexPath]()
         
         for (sectionIdx, section) in cache.enumerated() {
-            for (idx, item) in section.enumerated() {
-                if rect.intersects(item) {
-                    let ip = IndexPath.for(item: idx, section: sectionIdx)
-                    ips.append(ip)
-                }
+            for (idx, item) in section.enumerated() where rect.intersects(item) {
+                let ip = IndexPath.for(item: idx, section: sectionIdx)
+                ips.append(ip)
             }
         }
         return ips

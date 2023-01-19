@@ -139,7 +139,7 @@ public class FetchedSetController: ContextObserver {
         return self.delegate != nil
     }
     
-    public override func process(_ changes: [NSEntityDescription : (inserted: Set<NSManagedObject>, deleted: Set<NSManagedObject>, updated: Set<NSManagedObject>)]) {
+    public override func process(_ changes: [NSEntityDescription: (inserted: Set<NSManagedObject>, deleted: Set<NSManagedObject>, updated: Set<NSManagedObject>)]) {
         
         guard let changes = changes[self.fetchRequest.entity!] else { return }
         

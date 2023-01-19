@@ -533,7 +533,7 @@ extension CollectionViewColumnLayout {
     public typealias ItemRenderDirection = LayoutStrategy
     
     @available(*, deprecated, renamed: "layoutStrategy")
-    open var itemRenderDirection: LayoutStrategy {
+    public var itemRenderDirection: LayoutStrategy {
         get { return layoutStrategy }
         set { self.layoutStrategy = newValue }
     }
@@ -619,11 +619,11 @@ extension CollectionViewColumnLayout {
         
         private func nextColumnIndexForItem(_ indexPath: IndexPath, strategy: LayoutStrategy) -> Column {
             switch strategy {
-            case .shortestFirst :
+            case .shortestFirst:
                 return columns.min(by: { (c1, c2) -> Bool in
                     return c1.frame.size.height < c2.frame.size.height
                 })!
-            case .leftToRight :
+            case .leftToRight:
                 let colCount = self.columns.count
                 let index = (indexPath._item % colCount)
                 return self.columns[index]

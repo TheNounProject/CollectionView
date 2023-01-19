@@ -27,7 +27,7 @@ class CVListLayoutTests: XCTestCase {
         XCTAssertFalse(test.layout.shouldInvalidateLayout(forBoundsChange: test.frame.offsetBy(dx: 4, dy: 5)))
     }
     
-    private let _prepareCounts = (sections: 100, items:  300)
+    private let _prepareCounts = (sections: 100, items: 300)
     func testTesterPerformance_bigSection() {
         self.measure {
             _ = LayoutTester(sections: 1, itemsPerSection: _prepareCounts.sections * _prepareCounts.items)
@@ -65,7 +65,7 @@ class CVListLayoutTests: XCTestCase {
     // MARK: - Multi Section indexPathsForItems(in rect)
     /*-------------------------------------------------------------------------------*/
     
-    private let _counts = (sections: 100, items:  5000)
+    private let _counts = (sections: 100, items: 5000)
     
     func testIndexPathsInRectPerformance_multiSection_top() {
         let test = LayoutTester(sections: _counts.sections, itemsPerSection: _counts.items)

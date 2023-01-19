@@ -768,7 +768,7 @@ open class CollectionViewFlowLayout: CollectionViewLayout {
             startingIP = ip
             fallthrough
             
-        case .right :
+        case .right:
             
             var ip = startingIP
             while true {

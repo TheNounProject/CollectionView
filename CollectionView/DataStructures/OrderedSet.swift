@@ -168,11 +168,9 @@ public struct OrderedSet<Element: Hashable>: ExpressibleByArrayLiteral, Collecti
     
     public mutating func insert<C: Collection>(contentsOf newElements: C, at index: Int) -> Set<Element> where C.Iterator.Element == Element {
         var inserted = Set<Element>()
-        for (idx, e) in newElements.enumerated() {
-            if !self.contains(e) {
-                self._data.insert(e, at: index + idx)
-                inserted.insert(e)
-            }
+        for (idx, e) in newElements.enumerated() where !self.contains(e) {
+            self._data.insert(e, at: index + idx)
+            inserted.insert(e)
         }
         if !inserted.isEmpty {
             self._remap(startingAt: index)

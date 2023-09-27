@@ -626,10 +626,10 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
     
     @available(*, unavailable, message: "This functionality has been replaced with CollectionViewProvider.")
-    public var hasEmptyPlaceholder: Bool = false
+    public var hasEmptyPlaceholder: Bool { return false }
     
     @available(*, unavailable, message: "This functionality has been replaced with CollectionViewProvider.")
-    public private(set) var placeholderChanges: CollectionViewProvider?
+    public var placeholderChanges: CollectionViewProvider? { return nil }
 }
 
 extension MutableResultsController {

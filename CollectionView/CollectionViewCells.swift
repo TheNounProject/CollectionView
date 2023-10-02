@@ -94,7 +94,7 @@ open class CollectionReusableView: NSView {
         if let c = self.backgroundColor {
             NSGraphicsContext.saveGraphicsState()
             c.setFill()
-            dirtyRect.fill()
+            self.bounds.intersection(dirtyRect).fill()
             NSGraphicsContext.restoreGraphicsState()
         }
         super.draw(dirtyRect)

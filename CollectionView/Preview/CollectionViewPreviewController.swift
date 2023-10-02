@@ -70,7 +70,7 @@ class BackgroundView: NSView {
         if !self.isHidden, let c = backgroundColor {
             NSGraphicsContext.saveGraphicsState()
             c.set()
-            dirtyRect.fill()
+            self.bounds.intersection(dirtyRect).fill()
             NSGraphicsContext.restoreGraphicsState()
         }
     }

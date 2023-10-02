@@ -568,7 +568,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             for e in sourceEdits {
                 switch e.operation {
                 case .substitution: _affected = _affected ?? (e.value, e.index)
-                case .move(origin: _): _affected = (e.value, e.index)
+                case .move: _affected = (e.value, e.index)
                 default: break
                 }
                 processedSections[sourceSectionIndex]!.operationIndex.remove(edit: e)
@@ -591,7 +591,7 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
             for edit in changes {
                 switch edit.operation {
                     
-                case .move(origin: _):
+                case .move:
                     // Get the source and target
                     guard let source = self._editingContext.objectChanges.updated.index(of: edit.value),
                         let dest = self.indexPath(of: edit.value) else {
@@ -626,10 +626,10 @@ public class MutableResultsController<Section: SectionType, Element: ResultType>
     }
     
     @available(*, unavailable, message: "This functionality has been replaced with CollectionViewProvider.")
-    public var hasEmptyPlaceholder: Bool = false
+    public var hasEmptyPlaceholder: Bool { return false }
     
     @available(*, unavailable, message: "This functionality has been replaced with CollectionViewProvider.")
-    public private(set) var placeholderChanges: CollectionViewProvider?
+    public var placeholderChanges: CollectionViewProvider? { return nil }
 }
 
 extension MutableResultsController {

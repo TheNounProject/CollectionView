@@ -341,10 +341,8 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
                 let rowFrame = sec.frameForRow(rowIdx)
                 if !rowFrame.intersects(rect) { continue }
                 
-                for attr in rowAttrs[rowIdx] {
-                    if attr.frame.intersects(rect) {
-                        indexPaths.insert(attr.indexPath as IndexPath)
-                    }
+                for attr in rowAttrs[rowIdx] where attr.frame.intersects(rect) {
+                    indexPaths.insert(attr.indexPath as IndexPath)
                 }
             }
         }
@@ -370,10 +368,8 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
                 let rowFrame = sec.frameForRow(rowIdx)
                 if rowFrame.intersects(rect) { continue }
                 
-                for attr in rowAttrs[rowIdx] {
-                    if attr.frame.intersects(rect) {
-                        attrs.append(attr)
-                    }
+                for attr in rowAttrs[rowIdx] where attr.frame.intersects(rect) {
+                    attrs.append(attr)
                 }
             }
         }
@@ -542,7 +538,7 @@ public final class CollectionViewGridLayout: CollectionViewLayout {
                 index = collectionView.numberOfItems(in: currentIndexPath._section - 1) - 1
             }
             return IndexPath.for(item: index, section: section)
-        case .right :
+        case .right:
             if section == numberOfSections - 1 && index == numberOfItemsInSection - 1 {
                 return currentIndexPath
             }

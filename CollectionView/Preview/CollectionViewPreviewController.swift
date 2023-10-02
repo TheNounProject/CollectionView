@@ -70,7 +70,7 @@ class BackgroundView: NSView {
         if !self.isHidden, let c = backgroundColor {
             NSGraphicsContext.saveGraphicsState()
             c.set()
-            dirtyRect.fill()
+            self.bounds.intersection(dirtyRect).fill()
             NSGraphicsContext.restoreGraphicsState()
         }
     }
@@ -262,7 +262,7 @@ open class CollectionViewPreviewController: CollectionViewController, Collection
     // MARK: - Transitions
     /*-------------------------------------------------------------------------------*/
     
-    public var layoutConstraintConfiguration : ((_ container: NSViewController, _ controller: CollectionViewPreviewController) -> Void)?
+    public var layoutConstraintConfiguration: ((_ container: NSViewController, _ controller: CollectionViewPreviewController) -> Void)?
     
     /// The duration of present/dismiss transitions
     open var transitionDuration: TimeInterval = 0.25

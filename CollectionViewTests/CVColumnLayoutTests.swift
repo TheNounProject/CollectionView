@@ -35,7 +35,7 @@ class CVColumnLayoutTests: XCTestCase {
         XCTAssertEqual(items.count, 42)
     }
     
-    private let _prepareCounts = (sections: 100, items:  300)
+    private let _prepareCounts = (sections: 100, items: 300)
     func testTesterPerformance_bigSection() {
         self.measure {
             _ = LayoutTester(sections: 1, itemsPerSection: _prepareCounts.sections * _prepareCounts.items)
@@ -86,7 +86,7 @@ class CVColumnLayoutTests: XCTestCase {
     // MARK: - Multi Section indexPathsForItems(in rect)
     /*-------------------------------------------------------------------------------*/
     
-    private let _counts = (sections: 20, items:  2000)
+    private let _counts = (sections: 20, items: 2000)
     
     func testIndexPathsInRectPerformance_multiSection_top() {
         let test = LayoutTester(sections: _counts.sections, itemsPerSection: _counts.items)
@@ -200,15 +200,15 @@ fileprivate class LayoutTester: CollectionViewDataSource, CollectionViewDelegate
     
     // Layout Delegate
     
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForHeaderInSection section: Int) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewColumnLayout, heightForHeaderInSection section: Int) -> CGFloat {
         return self.headerHeight
     }
     
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, heightForItemAt indexPath: IndexPath) -> CGFloat {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewColumnLayout, heightForItemAt indexPath: IndexPath) -> CGFloat {
         return self.heightProvider?(indexPath) ?? self.defaultHeight
     }
     
-    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewLayout, aspectRatioForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: CollectionView, layout collectionViewLayout: CollectionViewColumnLayout, aspectRatioForItemAt indexPath: IndexPath) -> CGSize {
         return self.ratioProvider?(indexPath) ?? CGSize.zero
     }
 }

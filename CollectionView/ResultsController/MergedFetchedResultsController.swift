@@ -531,7 +531,7 @@ public class MergedFetchedResultsController<Section: SectionRepresentable, Eleme
                 for edit in changes.edits {
                     switch edit.operation {
                         
-                    case .move(origin: _):
+                    case .move:
                         guard let source = self.context.objectChanges.updated.index(of: edit.value),
                             let dest = self.indexPath(of: edit.value) else {
                                 continue

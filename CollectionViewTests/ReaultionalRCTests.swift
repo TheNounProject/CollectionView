@@ -295,7 +295,6 @@ extension String {
             randomString += NSString(characters: &nextChar, length: 1) as String
         }
         return randomString
-    }
 }
 
 fileprivate class Parent: NSManagedObject, CustomDisplayStringConvertible {

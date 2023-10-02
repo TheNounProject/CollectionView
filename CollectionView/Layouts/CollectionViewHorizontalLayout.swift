@@ -9,7 +9,7 @@
 import Foundation
 
 /// The delegate for CollectionViewHorizontalListLayout
-@objc public protocol CollectionViewDelegateHorizontalListLayout: CollectionViewDelegate {
+public protocol CollectionViewDelegateHorizontalListLayout: CollectionViewDelegate {
     
     /// Asks the delegate for the width of the item at a given index path
     ///
@@ -18,15 +18,26 @@ import Foundation
     /// - Parameter indexPath: The index path for the item
     ///
     /// - Returns: The desired width of the item at indexPath
-    @objc optional func collectionView (_ collectionView: CollectionView,
-                                        layout collectionViewLayout: CollectionViewLayout,
-                                        widthForItemAt indexPath: IndexPath) -> CGFloat
+    func collectionView (_ collectionView: CollectionView,
+                         layout collectionViewLayout: CollectionViewHorizontalListLayout,
+                         widthForItemAt indexPath: IndexPath) -> CGFloat
+}
+
+public extension CollectionViewDelegateHorizontalListLayout {
+    func collectionView (_ collectionView: CollectionView,
+                         layout collectionViewLayout: CollectionViewHorizontalListLayout,
+                         widthForItemAt indexPath: IndexPath) -> CGFloat {
+        return collectionViewLayout.itemWidth
+    }
 }
 
 /// A full height horizontal scrolling layout 
 open class CollectionViewHorizontalListLayout: CollectionViewLayout {
+    public var collectionView: CollectionView?
     
-    override open var scrollDirection: CollectionViewScrollDirection {
+    public var allIndexPaths = OrderedSet<IndexPath>()
+    
+    open var scrollDirection: CollectionViewScrollDirection {
         return CollectionViewScrollDirection.horizontal
     }
     
@@ -43,7 +54,13 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
     var cache = [[CGRect]]()
     var contentWidth: CGFloat = 0
     
-    open override func prepare() {
+    public init() { }
+    
+    public func invalidate() {
+        
+    }
+    
+    open func prepare() {
         cache = []
         self.allIndexPaths.removeAll()
         
@@ -63,7 +80,7 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
                 var height = cv.bounds.height
                 height -= sectionInsets.height
                 
-                let width = self.delegate?.collectionView?(cv, layout: self, widthForItemAt: ip) ?? itemWidth
+                let width = self.delegate?.collectionView(cv, layout: self, widthForItemAt: ip) ?? itemWidth
                 
                 var x = xPos
                 if !items.isEmpty {
@@ -91,7 +108,7 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
     }
     
     var _size = CGSize.zero
-    open override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+    open func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         if !newBounds.size.equalTo(_size) {
             self._size = newBounds.size
             return true
@@ -99,7 +116,7 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
         return false
     }
     
-    open override var collectionViewContentSize: CGSize {
+    open var collectionViewContentSize: CGSize {
         let numberOfSections = self.collectionView!.numberOfSections
         if numberOfSections == 0 {
             return CGSize.zero
@@ -109,35 +126,33 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
         return  contentSize
     }
     
-    open override func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
+    open func scrollRectForItem(at indexPath: IndexPath, atPosition: CollectionViewScrollPosition) -> CGRect? {
         return layoutAttributesForItem(at: indexPath)?.frame
     }
     
-    open override func rectForSection(_ section: Int) -> CGRect {
+    open func rectForSection(_ section: Int) -> CGRect {
         guard let sectionItems = self.cache.object(at: section), !sectionItems.isEmpty else { return CGRect.zero }
         return sectionItems.reduce(CGRect.null) { partialResult, rect in
             return partialResult.union(rect)
         }
     }
-    open override func contentRectForSection(_ section: Int) -> CGRect {
+    open func contentRectForSection(_ section: Int) -> CGRect {
         return rectForSection(section)
     }
     
-    open override func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
+    open func indexPathsForItems(in rect: CGRect) -> [IndexPath] {
         var ips = [IndexPath]()
         
         for (sectionIdx, section) in cache.enumerated() {
-            for (idx, item) in section.enumerated() {
-                if rect.intersects(item) {
-                    let ip = IndexPath.for(item: idx, section: sectionIdx)
-                    ips.append(ip)
-                }
+            for (idx, item) in section.enumerated() where rect.intersects(item) {
+                let ip = IndexPath.for(item: idx, section: sectionIdx)
+                ips.append(ip)
             }
         }
         return ips
     }
     
-    open override func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+    open func layoutAttributesForItem(at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
         let attrs = CollectionViewLayoutAttributes(forCellWith: indexPath)
         attrs.alpha = 1
         attrs.zIndex = 1000
@@ -146,11 +161,19 @@ open class CollectionViewHorizontalListLayout: CollectionViewLayout {
         attrs.frame = frame
         return attrs
     }
+    
+    public func layoutAttributesForSupplementaryView(ofKind kind: String, at indexPath: IndexPath) -> CollectionViewLayoutAttributes? {
+        return nil
+    }
+    
+    public func indexPathForNextItem(moving direction: CollectionViewDirection, from currentIndexPath: IndexPath) -> IndexPath? {
+        return nil
+    }
 }
 
 open class HorizontalCollectionView: CollectionView {
     
-    override public init() {
+    public override init() {
         super.init()
         self.hasVerticalScroller = false
         self.hasHorizontalScroller = false

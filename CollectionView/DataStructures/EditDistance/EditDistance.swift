@@ -109,7 +109,7 @@ public struct EditOperationIndex<T: Hashable> {
                 deletes.insert(e, for: e.index)
             case .substitution:
                 substitutions.insert(e, for: e.index)
-            case .move(origin: _):
+            case .move:
                 moves.insert(e, for: e.index)
             }
         }
@@ -161,7 +161,7 @@ public struct EditOperationIndex<T: Hashable> {
         case .deletion: self.deletes.remove(edit)
         case .insertion: self.inserts.remove(edit)
         case .substitution: self.substitutions.remove(edit)
-        case .move(origin: _): self.moves.remove(edit)
+        case .move: self.moves.remove(edit)
         }
     }
     

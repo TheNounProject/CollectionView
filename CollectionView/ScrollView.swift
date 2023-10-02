@@ -36,10 +36,8 @@ open class ScrollView: NSScrollView {
 class FloatingSupplementaryView: NSView {
     override var isFlipped: Bool { return true }
     internal override func hitTest(_ aPoint: NSPoint) -> NSView? {
-        for view in self.subviews {
-            if view.frame.contains(aPoint) {
-                return super.hitTest(aPoint)
-            }
+        for view in self.subviews where view.frame.contains(aPoint) {
+            return super.hitTest(aPoint)
         }
         return nil
     }

@@ -10,7 +10,7 @@ import Foundation
 
 fileprivate let nilKeyHash = UUID().hashValue
 
-fileprivate struct RefKeyTable<Key: Hashable & AnyObject, Value: Any> : Sequence, ExpressibleByDictionaryLiteral {
+fileprivate struct RefKeyTable<Key: Hashable & AnyObject, Value: Any>: Sequence, ExpressibleByDictionaryLiteral {
     
     private struct KeyRef: Hashable {
         
@@ -166,17 +166,13 @@ class ManagedObjectContextObservationCoordinator {
         if let invalidated = info[NSInvalidatedObjectsKey] as? Set<NSManagedObject> {
             deleted = deleted.union(invalidated)
         }
-        for obj in deleted {
-            if changeSets[obj.entity]?.deleted(obj) == nil {
-                changeSets[obj.entity] = EntityChangeSet(deleted: obj)
-            }
+        for obj in deleted where changeSets[obj.entity]?.deleted(obj) == nil {
+            changeSets[obj.entity] = EntityChangeSet(deleted: obj)
         }
         
         if let inserted = info[NSInsertedObjectsKey] as? Set<NSManagedObject> {
-            for obj in inserted {
-                if changeSets[obj.entity]?.inserted(obj) == nil {
-                    changeSets[obj.entity] = EntityChangeSet(inserted: obj)
-                }
+            for obj in inserted where changeSets[obj.entity]?.inserted(obj) == nil {
+                changeSets[obj.entity] = EntityChangeSet(inserted: obj)
             }
         }
         
@@ -184,10 +180,8 @@ class ManagedObjectContextObservationCoordinator {
         if let invalidated = info[NSRefreshedObjectsKey] as? Set<NSManagedObject> {
             updated = updated.union(invalidated)
         }
-        for obj in updated {
-            if changeSets[obj.entity]?.updated(obj) == nil {
-                changeSets[obj.entity] = EntityChangeSet(updated: obj)
-            }
+        for obj in updated where changeSets[obj.entity]?.updated(obj) == nil {
+            changeSets[obj.entity] = EntityChangeSet(updated: obj)
         }
         
         NotificationCenter.default.post(name: Notification.name, object: notification.object, userInfo: [

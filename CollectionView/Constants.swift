@@ -67,3 +67,10 @@ public enum CollectionViewDirection {
     case up
     case down
 }
+
+/// CollectionViewLayoutElementKind
+public struct CollectionViewLayoutElementKind {
+    public static let LeadingView: String = "CollectionElementKindLeadingView"
+    public static let SectionHeader: String = "CollectionElementKindSectionHeader"
+    public static let SectionFooter: String = "CollectionElementKindSectionFooter"
+}
